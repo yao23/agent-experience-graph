@@ -1,14 +1,14 @@
 ---
 name: agent-experience-graph
 description: Use when an agent should learn from prior task-solving traces, recommend tools or skills for a new decomposed task, record reusable execution experience, or compare current subtasks with solved tasks from other agents.
-version: 0.1.0
+version: 0.1.1
 metadata:
   short-description: Learn tools and skills from prior agent traces
   openclaw:
     requires:
       bins:
         - python3
-    homepage: https://github.com/yao23/ContextBridgeIngestionDemo
+    homepage: https://github.com/yao23/agent-experience-graph
 ---
 
 # Agent Experience Graph
