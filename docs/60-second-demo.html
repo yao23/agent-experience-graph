@@ -3,218 +3,407 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agent Experience Graph — 60 Second Demo</title>
+  <title>Agent Experience Graph — Demo</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --panel: #121a33;
-      --panel-2: #17213f;
-      --text: #eef3ff;
-      --muted: #9fb0d1;
-      --accent: #66e3ff;
-      --accent-2: #93f5b7;
-      --warn: #ffce73;
-      --danger: #ff8f8f;
-      --border: rgba(255,255,255,0.12);
-      --shadow: 0 24px 70px rgba(0,0,0,0.35);
+      --bg: #080b14;
+      --panel: rgba(18, 24, 43, 0.86);
+      --panel-2: rgba(255, 255, 255, 0.055);
+      --panel-3: rgba(255, 255, 255, 0.085);
+      --text: #f3f6ff;
+      --muted: #9ba9c9;
+      --line: rgba(255,255,255,0.11);
+      --blue: #74d7ff;
+      --green: #8ff3b0;
+      --purple: #b79cff;
+      --red: #ff8e9a;
+      --yellow: #ffe08a;
+      --shadow: 0 32px 90px rgba(0,0,0,0.42);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(102,227,255,0.18), transparent 32rem),
-        radial-gradient(circle at bottom right, rgba(147,245,183,0.13), transparent 30rem),
+        radial-gradient(circle at 18% 8%, rgba(116, 215, 255, 0.22), transparent 30rem),
+        radial-gradient(circle at 88% 20%, rgba(183, 156, 255, 0.16), transparent 28rem),
+        radial-gradient(circle at 82% 88%, rgba(143, 243, 176, 0.13), transparent 28rem),
         var(--bg);
+      padding: 28px;
+    }
+
+    .shell {
+      width: min(1240px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 56px);
+    }
+
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 32px;
+      gap: 12px;
+      margin-bottom: 26px;
     }
-    .app {
-      width: min(1180px, 100%);
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--blue), var(--green));
       display: grid;
-      grid-template-columns: 0.95fr 1.35fr;
-      gap: 22px;
+      place-items: center;
+      color: #08101c;
+      font-weight: 950;
+      letter-spacing: -0.05em;
     }
-    .hero, .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
+
+    .brand-text { line-height: 1.15; }
+    .brand-title { font-size: 13px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue); }
+    .brand-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 4vw, 58px);
+      line-height: 0.98;
+      letter-spacing: -0.065em;
     }
-    .hero { padding: 34px; }
-    .eyebrow { color: var(--accent); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
-    h1 { margin: 14px 0 10px; font-size: 44px; line-height: 1.02; letter-spacing: -0.04em; }
-    .subtitle { color: var(--muted); font-size: 18px; line-height: 1.55; margin: 0 0 28px; }
-    .task-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
+
+    .lead {
+      color: #b7c4e4;
+      font-size: 17px;
+      line-height: 1.6;
+      margin: 20px 0 26px;
+    }
+
+    .prompt-box {
+      border: 1px solid var(--line);
       border-radius: 22px;
       padding: 18px;
-      margin-top: 22px;
+      background: var(--panel-2);
+      margin-top: 6px;
     }
-    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.11em; font-weight: 700; }
-    .task { margin-top: 8px; font-size: 21px; font-weight: 700; }
+
+    .label {
+      color: #b9c5e6;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .task {
+      margin-top: 9px;
+      font-size: 19px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .actions { margin-top: 20px; display: grid; gap: 12px; }
+
     button {
-      width: 100%;
-      margin-top: 22px;
-      border: none;
-      color: #07111f;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      font-weight: 800;
-      font-size: 16px;
+      border: 0;
       border-radius: 16px;
-      padding: 15px 18px;
+      padding: 15px 16px;
       cursor: pointer;
-      box-shadow: 0 14px 32px rgba(102,227,255,0.25);
+      font-weight: 900;
+      font-size: 15px;
     }
-    button.secondary {
-      background: rgba(255,255,255,0.1);
+
+    .primary {
+      color: #06101e;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      box-shadow: 0 16px 36px rgba(116, 215, 255, 0.22);
+    }
+
+    .secondary {
       color: var(--text);
-      border: 1px solid var(--border);
-      box-shadow: none;
+      background: var(--panel-3);
+      border: 1px solid var(--line);
     }
-    .panel { padding: 24px; min-height: 640px; position: relative; overflow: hidden; }
-    .stage-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
-    .stage-title h2 { margin: 0; font-size: 25px; letter-spacing: -0.02em; }
-    .pill { color: var(--accent-2); background: rgba(147,245,183,0.1); border: 1px solid rgba(147,245,183,0.25); padding: 7px 11px; border-radius: 99px; font-size: 12px; font-weight: 800; }
-    .timeline { display: grid; gap: 13px; }
-    .step {
+
+    .speaker-notes {
+      margin-top: auto;
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .demo {
+      padding: 22px;
+      min-height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 8px 4px 2px;
+    }
+
+    .topbar h2 { margin: 0; font-size: 25px; letter-spacing: -0.03em; }
+    .status { color: var(--green); background: rgba(143,243,176,0.1); border: 1px solid rgba(143,243,176,0.26); border-radius: 999px; padding: 8px 12px; font-weight: 850; font-size: 12px; white-space: nowrap; }
+
+    .conversation {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row {
       opacity: 0;
-      transform: translateY(14px);
-      transition: all 420ms ease;
-      background: rgba(255,255,255,0.055);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 15px;
+      transform: translateY(12px);
+      transition: opacity 360ms ease, transform 360ms ease;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 20px;
+      padding: 16px;
     }
-    .step.visible { opacity: 1; transform: translateY(0); }
-    .step strong { display: block; margin-bottom: 6px; }
-    .step p { margin: 0; color: var(--muted); line-height: 1.45; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-    .metric { background: rgba(255,255,255,0.055); border: 1px solid var(--border); border-radius: 18px; padding: 15px; }
-    .metric .num { font-size: 29px; font-weight: 900; color: var(--accent-2); }
-    .metric .cap { color: var(--muted); font-size: 13px; margin-top: 3px; }
-    .workflow { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
-    .node { padding: 10px 12px; background: rgba(102,227,255,0.11); border: 1px solid rgba(102,227,255,0.25); border-radius: 14px; font-size: 13px; font-weight: 800; }
-    .arrow { color: var(--muted); }
-    .warning { color: var(--warn); }
-    .danger { color: var(--danger); }
-    .footer-note { position: absolute; left: 24px; right: 24px; bottom: 20px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); padding-top: 14px; }
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      h1 { font-size: 36px; }
-      .panel { min-height: 560px; }
+
+    .row.visible { opacity: 1; transform: translateY(0); }
+
+    .row-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .row-title { font-weight: 900; font-size: 15px; }
+    .row-meta { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .row p { margin: 0; color: #b7c4e4; line-height: 1.48; }
+
+    .highlight { color: var(--blue); font-weight: 850; }
+    .danger { color: var(--red); font-weight: 850; }
+
+    .workflow {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .node {
+      padding: 9px 11px;
+      border-radius: 13px;
+      color: #dff6ff;
+      background: rgba(116, 215, 255, 0.12);
+      border: 1px solid rgba(116, 215, 255, 0.32);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .arrow { color: var(--muted); font-weight: 900; }
+
+    .result {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 360ms ease;
+    }
+
+    .result.visible { opacity: 1; transform: translateY(0); }
+
+    .metric {
+      border-radius: 20px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(143,243,176,0.12), rgba(255,255,255,0.045));
+      border: 1px solid rgba(143,243,176,0.2);
+    }
+
+    .metric .num { font-size: 29px; font-weight: 950; color: var(--green); letter-spacing: -0.04em; }
+    .metric .caption { margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 700; }
+
+    .empty-state {
+      height: 100%;
+      min-height: 480px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed rgba(255,255,255,0.16);
+      border-radius: 24px;
+      padding: 38px;
+    }
+
+    .empty-state strong { display: block; color: var(--text); font-size: 24px; margin-bottom: 8px; }
+
+    @media (max-width: 980px) {
+      body { padding: 18px; }
+      .shell { grid-template-columns: 1fr; }
+      .hero, .demo { min-height: auto; }
+      .result { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .result { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <section class="hero">
-      <div class="eyebrow">Agent Experience Graph</div>
-      <h1>Agents should not start from zero every time.</h1>
-      <p class="subtitle">A 60-second demo of reusable execution knowledge: retrieve similar traces, recommend a workflow, and avoid known failure paths before the next agent runs.</p>
-
-      <div class="task-card">
-        <div class="label">Current task</div>
-        <div class="task">Build a documentation ingestion pipeline for an agent coding assistant</div>
+  <main class="shell">
+    <section class="hero card">
+      <div class="brand">
+        <div class="logo">AEG</div>
+        <div class="brand-text">
+          <div class="brand-title">Agent Experience Graph</div>
+          <div class="brand-subtitle">Runtime intelligence for AI agents</div>
+        </div>
       </div>
 
-      <button id="runBtn">Run Experience Lookup</button>
-      <button id="resetBtn" class="secondary">Reset Demo</button>
+      <h1>Stop making agents relearn the same work.</h1>
+      <p class="lead">A product-style demo showing how an agent can retrieve prior execution experience, reuse a proven workflow, and avoid known failure paths before spending tokens.</p>
+
+      <div class="prompt-box">
+        <div class="label">New agent task</div>
+        <div class="task">Build a documentation ingestion pipeline for an agent coding assistant.</div>
+      </div>
+
+      <div class="actions">
+        <button id="runBtn" class="primary">Run Experience Lookup</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="speaker-notes">
+        Talk track: today agents share foundation models, but not execution experience. AEG explores whether traces, workflows, failures, and guardrails can become reusable assets.
+      </div>
     </section>
 
-    <section class="panel">
-      <div class="stage-title">
-        <h2 id="stageTitle">Ready</h2>
-        <span class="pill" id="stagePill">Demo mode</span>
+    <section class="demo card">
+      <div class="topbar">
+        <h2 id="headline">Ready to retrieve experience</h2>
+        <div id="status" class="status">Demo ready</div>
       </div>
-      <div class="timeline" id="timeline"></div>
-      <div class="footer-note">Narrative: current task → retrieve prior execution traces → recommend workflow/tools/guardrails → reduce retries and token waste.</div>
+      <div id="conversation" class="conversation">
+        <div class="empty-state">
+          <div>
+            <strong>Click “Run Experience Lookup”</strong>
+            Watch a new task turn into a recommended execution plan in under 60 seconds.
+          </div>
+        </div>
+      </div>
+      <div id="result" class="result"></div>
     </section>
   </main>
 
   <script>
     const steps = [
       {
-        title: "1. Embed current task",
-        body: "The system converts the new task into an experience query, including goal, subtasks, expected output, and constraints."
+        title: "Task understood",
+        meta: "Intent + constraints",
+        body: "Current task normalized into an experience query: documentation ingestion, coding assistant retrieval, structured output, validation before indexing."
       },
       {
-        title: "2. Search Experience Graph",
-        body: "14 similar executions found. Top match: Build RAG pipeline for API documentation ingestion. Similarity: 94%."
+        title: "Similar executions found",
+        meta: "14 traces · 94% top match",
+        body: "Top match: <span class='highlight'>Build RAG pipeline for API documentation ingestion</span>. The match is based on task goal, subtasks, tool chain, and validation pattern."
       },
       {
-        title: "3. Retrieve proven workflow",
-        body: "Successful trace found with reusable tool chain and validation pattern.",
+        title: "Recommended workflow",
+        meta: "Reusable plan",
+        body: "Reuse a successful execution path instead of starting from scratch.",
         workflow: ["Firecrawl", "Markdown", "Chunk", "Embed", "Vector DB", "Validate"]
       },
       {
-        title: "4. Surface failure warnings",
-        body: "Avoid PDF Parser X: previous traces show high retry rate and malformed section metadata.",
-        warning: true
+        title: "Failure warning",
+        meta: "Avoid known retry loop",
+        body: "<span class='danger'>Avoid PDF Parser X</span>: previous traces show malformed section metadata and repeated tool retries on similar docs."
       },
       {
-        title: "5. Apply execution guardrails",
-        body: "Recommended constraints: timeout limit, validation before indexing, retry cap, and human review before irreversible writes."
+        title: "Guardrails applied",
+        meta: "Safer execution",
+        body: "Add timeout limits, retry cap, validation before indexing, and human approval before irreversible writes."
       },
       {
-        title: "6. Improve next execution",
-        body: "The next agent starts with collective execution experience instead of an empty slate.",
-        metrics: true
+        title: "Plan ready",
+        meta: "Experience reused",
+        body: "The next agent starts with collective execution knowledge instead of an empty slate."
       }
     ];
 
-    const timeline = document.getElementById('timeline');
+    const metrics = [
+      ["$1.82 → $0.31", "estimated run cost"],
+      ["47 → 12", "tool calls"],
+      ["↓52%", "retry probability"],
+      ["94%", "workflow confidence"]
+    ];
+
+    const conversation = document.getElementById('conversation');
+    const result = document.getElementById('result');
+    const headline = document.getElementById('headline');
+    const status = document.getElementById('status');
     const runBtn = document.getElementById('runBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const stageTitle = document.getElementById('stageTitle');
-    const stagePill = document.getElementById('stagePill');
 
-    function makeStep(step) {
-      const el = document.createElement('div');
-      el.className = 'step';
-      let html = `<strong>${step.title}</strong><p>${step.warning ? '<span class="danger">Known failure:</span> ' : ''}${step.body}</p>`;
-      if (step.workflow) {
-        html += '<div class="workflow">' + step.workflow.map((n, i) => `<span class="node">${n}</span>${i < step.workflow.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('') + '</div>';
-      }
-      if (step.metrics) {
-        html += `<div class="grid"><div class="metric"><div class="num">↓37%</div><div class="cap">estimated token cost</div></div><div class="metric"><div class="num">↓52%</div><div class="cap">retry probability</div></div></div>`;
-      }
-      el.innerHTML = html;
-      return el;
+    function stepHtml(step) {
+      const workflow = step.workflow ? '<div class="workflow">' + step.workflow.map((item, idx) => `<span class="node">${item}</span>${idx < step.workflow.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('') + '</div>' : '';
+      return `<div class="row-header"><div class="row-title">${step.title}</div><div class="row-meta">${step.meta}</div></div><p>${step.body}</p>${workflow}`;
     }
 
     function reset() {
-      timeline.innerHTML = '';
-      stageTitle.textContent = 'Ready';
-      stagePill.textContent = 'Demo mode';
       runBtn.disabled = false;
+      headline.textContent = 'Ready to retrieve experience';
+      status.textContent = 'Demo ready';
+      conversation.innerHTML = '<div class="empty-state"><div><strong>Click “Run Experience Lookup”</strong>Watch a new task turn into a recommended execution plan in under 60 seconds.</div></div>';
+      result.innerHTML = '';
+      result.classList.remove('visible');
     }
 
-    function runDemo() {
-      reset();
+    function run() {
       runBtn.disabled = true;
-      stageTitle.textContent = 'Looking up reusable execution knowledge';
-      stagePill.textContent = 'Running';
-      steps.forEach((step, i) => {
+      headline.textContent = 'Searching reusable execution knowledge';
+      status.textContent = 'Running';
+      conversation.innerHTML = '';
+      result.innerHTML = '';
+      result.classList.remove('visible');
+
+      steps.forEach((step, index) => {
         setTimeout(() => {
-          const el = makeStep(step);
-          timeline.appendChild(el);
-          requestAnimationFrame(() => el.classList.add('visible'));
-          if (i === steps.length - 1) {
-            stageTitle.textContent = 'Workflow recommended';
-            stagePill.textContent = 'Experience reused';
-            runBtn.disabled = false;
+          const node = document.createElement('div');
+          node.className = 'row';
+          node.innerHTML = stepHtml(step);
+          conversation.appendChild(node);
+          requestAnimationFrame(() => node.classList.add('visible'));
+          if (index === steps.length - 1) {
+            setTimeout(showMetrics, 420);
           }
-        }, 650 * i);
+        }, index * 640);
       });
     }
 
-    runBtn.addEventListener('click', runDemo);
+    function showMetrics() {
+      headline.textContent = 'Recommended execution plan ready';
+      status.textContent = 'Experience reused';
+      result.innerHTML = metrics.map(([num, caption]) => `<div class="metric"><div class="num">${num}</div><div class="caption">${caption}</div></div>`).join('');
+      requestAnimationFrame(() => result.classList.add('visible'));
+      runBtn.disabled = false;
+    }
+
+    runBtn.addEventListener('click', run);
     resetBtn.addEventListener('click', reset);
   </script>
 </body>
