@@ -13,6 +13,24 @@ For example:
 
 The goal is simple: agents should not start from zero every time. They should be able to reuse lessons from past work, just like people do.
 
+## 60-Second Demo
+
+Open the lightweight demo in a browser:
+
+```bash
+open docs/60-second-demo.html
+```
+
+The demo shows the core product moment:
+
+1. A new agent task starts.
+2. Agent Experience Graph searches previous execution traces.
+3. It retrieves a similar successful workflow.
+4. It recommends tools, skills, guardrails, and failure warnings.
+5. The next agent begins with reusable execution knowledge instead of an empty slate.
+
+Use [`docs/60-second-demo.md`](docs/60-second-demo.md) for a short meeting talk track.
+
 ## Why This Matters
 
 Modern AI agents can use many tools: browsers, code editors, search systems, databases, GitHub, terminal commands, design tools, and specialized skills. But choosing the right tool at the right time is still hard.
@@ -51,6 +69,7 @@ It is intentionally runtime-neutral:
 - `capability.json` describes the capability for launchers, registries, and importers.
 - `scripts/recommend_traces.py` ranks similar traces and recommends reusable skills/tools.
 - `references/trace_schema.md` defines the trace data contract.
+- `docs/60-second-demo.html` shows the core experience-reuse product moment.
 
 In plain English, this repository contains:
 
@@ -58,6 +77,7 @@ In plain English, this repository contains:
 - a simple data format for saving agent work summaries
 - a small script that compares a new task against past tasks
 - example traces so people can try the idea quickly
+- a short demo that makes the product idea easy to explain
 
 ## Who It Is For
 
@@ -114,4 +134,4 @@ Do not include secrets, credentials, private user data, proprietary snippets, or
 
 ## License
 
-MIT-0.
+MIT-0

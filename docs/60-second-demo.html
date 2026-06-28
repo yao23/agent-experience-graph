@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Experience Graph — 60 Second Demo</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a33;
+      --panel-2: #17213f;
+      --text: #eef3ff;
+      --muted: #9fb0d1;
+      --accent: #66e3ff;
+      --accent-2: #93f5b7;
+      --warn: #ffce73;
+      --danger: #ff8f8f;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 24px 70px rgba(0,0,0,0.35);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(102,227,255,0.18), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(147,245,183,0.13), transparent 30rem),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+    .app {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: 0.95fr 1.35fr;
+      gap: 22px;
+    }
+    .hero, .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 34px; }
+    .eyebrow { color: var(--accent); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+    h1 { margin: 14px 0 10px; font-size: 44px; line-height: 1.02; letter-spacing: -0.04em; }
+    .subtitle { color: var(--muted); font-size: 18px; line-height: 1.55; margin: 0 0 28px; }
+    .task-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      margin-top: 22px;
+    }
+    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.11em; font-weight: 700; }
+    .task { margin-top: 8px; font-size: 21px; font-weight: 700; }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      border: none;
+      color: #07111f;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 800;
+      font-size: 16px;
+      border-radius: 16px;
+      padding: 15px 18px;
+      cursor: pointer;
+      box-shadow: 0 14px 32px rgba(102,227,255,0.25);
+    }
+    button.secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .panel { padding: 24px; min-height: 640px; position: relative; overflow: hidden; }
+    .stage-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .stage-title h2 { margin: 0; font-size: 25px; letter-spacing: -0.02em; }
+    .pill { color: var(--accent-2); background: rgba(147,245,183,0.1); border: 1px solid rgba(147,245,183,0.25); padding: 7px 11px; border-radius: 99px; font-size: 12px; font-weight: 800; }
+    .timeline { display: grid; gap: 13px; }
+    .step {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: all 420ms ease;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 15px;
+    }
+    .step.visible { opacity: 1; transform: translateY(0); }
+    .step strong { display: block; margin-bottom: 6px; }
+    .step p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .metric { background: rgba(255,255,255,0.055); border: 1px solid var(--border); border-radius: 18px; padding: 15px; }
+    .metric .num { font-size: 29px; font-weight: 900; color: var(--accent-2); }
+    .metric .cap { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .workflow { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+    .node { padding: 10px 12px; background: rgba(102,227,255,0.11); border: 1px solid rgba(102,227,255,0.25); border-radius: 14px; font-size: 13px; font-weight: 800; }
+    .arrow { color: var(--muted); }
+    .warning { color: var(--warn); }
+    .danger { color: var(--danger); }
+    .footer-note { position: absolute; left: 24px; right: 24px; bottom: 20px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); padding-top: 14px; }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      h1 { font-size: 36px; }
+      .panel { min-height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="eyebrow">Agent Experience Graph</div>
+      <h1>Agents should not start from zero every time.</h1>
+      <p class="subtitle">A 60-second demo of reusable execution knowledge: retrieve similar traces, recommend a workflow, and avoid known failure paths before the next agent runs.</p>
+
+      <div class="task-card">
+        <div class="label">Current task</div>
+        <div class="task">Build a documentation ingestion pipeline for an agent coding assistant</div>
+      </div>
+
+      <button id="runBtn">Run Experience Lookup</button>
+      <button id="resetBtn" class="secondary">Reset Demo</button>
+    </section>
+
+    <section class="panel">
+      <div class="stage-title">
+        <h2 id="stageTitle">Ready</h2>
+        <span class="pill" id="stagePill">Demo mode</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+      <div class="footer-note">Narrative: current task → retrieve prior execution traces → recommend workflow/tools/guardrails → reduce retries and token waste.</div>
+    </section>
+  </main>
+
+  <script>
+    const steps = [
+      {
+        title: "1. Embed current task",
+        body: "The system converts the new task into an experience query, including goal, subtasks, expected output, and constraints."
+      },
+      {
+        title: "2. Search Experience Graph",
+        body: "14 similar executions found. Top match: Build RAG pipeline for API documentation ingestion. Similarity: 94%."
+      },
+      {
+        title: "3. Retrieve proven workflow",
+        body: "Successful trace found with reusable tool chain and validation pattern.",
+        workflow: ["Firecrawl", "Markdown", "Chunk", "Embed", "Vector DB", "Validate"]
+      },
+      {
+        title: "4. Surface failure warnings",
+        body: "Avoid PDF Parser X: previous traces show high retry rate and malformed section metadata.",
+        warning: true
+      },
+      {
+        title: "5. Apply execution guardrails",
+        body: "Recommended constraints: timeout limit, validation before indexing, retry cap, and human review before irreversible writes."
+      },
+      {
+        title: "6. Improve next execution",
+        body: "The next agent starts with collective execution experience instead of an empty slate.",
+        metrics: true
+      }
+    ];
+
+    const timeline = document.getElementById('timeline');
+    const runBtn = document.getElementById('runBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const stageTitle = document.getElementById('stageTitle');
+    const stagePill = document.getElementById('stagePill');
+
+    function makeStep(step) {
+      const el = document.createElement('div');
+      el.className = 'step';
+      let html = `<strong>${step.title}</strong><p>${step.warning ? '<span class="danger">Known failure:</span> ' : ''}${step.body}</p>`;
+      if (step.workflow) {
+        html += '<div class="workflow">' + step.workflow.map((n, i) => `<span class="node">${n}</span>${i < step.workflow.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('') + '</div>';
+      }
+      if (step.metrics) {
+        html += `<div class="grid"><div class="metric"><div class="num">↓37%</div><div class="cap">estimated token cost</div></div><div class="metric"><div class="num">↓52%</div><div class="cap">retry probability</div></div></div>`;
+      }
+      el.innerHTML = html;
+      return el;
+    }
+
+    function reset() {
+      timeline.innerHTML = '';
+      stageTitle.textContent = 'Ready';
+      stagePill.textContent = 'Demo mode';
+      runBtn.disabled = false;
+    }
+
+    function runDemo() {
+      reset();
+      runBtn.disabled = true;
+      stageTitle.textContent = 'Looking up reusable execution knowledge';
+      stagePill.textContent = 'Running';
+      steps.forEach((step, i) => {
+        setTimeout(() => {
+          const el = makeStep(step);
+          timeline.appendChild(el);
+          requestAnimationFrame(() => el.classList.add('visible'));
+          if (i === steps.length - 1) {
+            stageTitle.textContent = 'Workflow recommended';
+            stagePill.textContent = 'Experience reused';
+            runBtn.disabled = false;
+          }
+        }, 650 * i);
+      });
+    }
+
+    runBtn.addEventListener('click', runDemo);
+    resetBtn.addEventListener('click', reset);
+  </script>
+</body>
+</html>
