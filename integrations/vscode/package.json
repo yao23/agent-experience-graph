@@ -1,0 +1,63 @@
+{
+  "name": "agent-experience-graph",
+  "displayName": "Agent Experience Graph",
+  "description": "Discover, recommend, rate, and measure agent skills directly in VS Code.",
+  "version": "0.1.0",
+  "publisher": "yao23",
+  "license": "MIT-0",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["AI", "Other"],
+  "activationEvents": [
+    "onCommand:aeg.discoverSkills",
+    "onCommand:aeg.recommendSkill",
+    "onCommand:aeg.rateSkill",
+    "onCommand:aeg.showSkillMetrics"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {"command": "aeg.discoverSkills", "title": "AEG: Discover Workspace Skills"},
+      {"command": "aeg.recommendSkill", "title": "AEG: Recommend Skill for Current Task"},
+      {"command": "aeg.rateSkill", "title": "AEG: Rate a Skill"},
+      {"command": "aeg.showSkillMetrics", "title": "AEG: Show Skill Metrics"}
+    ],
+    "menus": {
+      "commandPalette": [
+        {"command": "aeg.discoverSkills"},
+        {"command": "aeg.recommendSkill"},
+        {"command": "aeg.rateSkill"},
+        {"command": "aeg.showSkillMetrics"}
+      ],
+      "editor/context": [
+        {"command": "aeg.recommendSkill", "when": "editorHasSelection", "group": "navigation"}
+      ]
+    },
+    "configuration": {
+      "title": "Agent Experience Graph",
+      "properties": {
+        "aeg.skillGlobs": {
+          "type": "array",
+          "default": ["**/SKILL.md", "**/capability.json"],
+          "description": "Workspace globs used to discover agent skills."
+        },
+        "aeg.telemetryFile": {
+          "type": "string",
+          "default": ".aeg/skill-metrics.json",
+          "description": "Workspace-relative file used for local skill usage metrics."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.5.0"
+  }
+}
