@@ -269,6 +269,28 @@ button {
   letter-spacing: -0.016em;
 }
 
+.hero-context {
+  display: grid;
+  gap: 5px;
+  max-width: 650px;
+  margin-top: 22px;
+  padding: 15px 17px;
+  border-left: 3px solid var(--acid);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hero-context strong {
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.hero-context span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1332,6 +1354,10 @@ button {
   font-size: 9px;
 }
 
+.mobile-actions {
+  display: none;
+}
+
 [hidden] {
   display: none !important;
 }
@@ -1403,6 +1429,10 @@ button {
 }
 
 @media (max-width: 720px) {
+  body {
+    padding-bottom: 68px;
+  }
+
   .shell,
   .architecture,
   .contribute {
@@ -1421,6 +1451,7 @@ button {
 
   .header-cta {
     padding: 9px 12px;
+    min-height: 44px;
   }
 
   .hero {
@@ -1429,11 +1460,23 @@ button {
   }
 
   .hero h1 {
-    font-size: clamp(47px, 15vw, 70px);
+    font-size: clamp(44px, 13vw, 54px);
+    line-height: 0.98;
+    letter-spacing: -0.06em;
   }
 
   .hero-lede {
     font-size: 16px;
+  }
+
+  .hero-context {
+    margin-top: 19px;
+    padding: 13px 14px;
+  }
+
+  .hero-context strong {
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .hero-actions .button {
@@ -1446,7 +1489,7 @@ button {
   }
 
   .hero-visual {
-    min-height: 570px;
+    min-height: 500px;
     border-radius: 20px;
   }
 
@@ -1462,6 +1505,10 @@ button {
   .graph-node {
     min-width: 118px;
     padding: 13px;
+  }
+
+  .graph-stage {
+    min-height: 250px;
   }
 
   .node-task {
@@ -1489,6 +1536,14 @@ button {
   .section-heading,
   .feature-grid {
     grid-template-columns: 1fr;
+  }
+
+  .manifesto h2,
+  .section-heading h2,
+  .quickstart h2,
+  .contribute h2 {
+    font-size: clamp(36px, 10.5vw, 45px);
+    line-height: 1.04;
   }
 
   .manifesto-grid {
@@ -1558,6 +1613,41 @@ button {
 
   .site-footer > div:last-child {
     justify-self: start;
+  }
+
+  .mobile-actions {
+    position: fixed;
+    z-index: 40;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    display: grid;
+    grid-template-columns: 1fr 0.78fr;
+    gap: 7px;
+    padding: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 17px;
+    background: rgba(8, 17, 15, 0.94);
+    box-shadow: 0 14px 40px rgba(8, 17, 15, 0.3);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-actions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    border-radius: 11px;
+    color: var(--ink);
+    background: var(--acid);
+    font-size: 12px;
+    font-weight: 850;
+  }
+
+  .mobile-actions a:last-child {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
