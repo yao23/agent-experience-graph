@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Install the Agent Experience Graph alpha extension for VS Code and start discovering, recommending, rating, and measuring local agent skills." />
+  <meta property="og:title" content="Install AEG for VS Code" />
+  <meta property="og:description" content="Find the right agent skill without leaving your editor. Build and install the AEG alpha extension in about five minutes." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yao23.github.io/agent-experience-graph/docs/install-vscode-extension.html" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Install AEG for VS Code — Agent Experience Graph</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a33;
+      --panel-2: #17213f;
+      --text: #eef3ff;
+      --muted: #a7b5d2;
+      --accent: #66e3ff;
+      --accent-2: #93f5b7;
+      --warn: #ffce73;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(102, 227, 255, 0.19), transparent 34rem),
+        radial-gradient(circle at 95% 28%, rgba(147, 245, 183, 0.12), transparent 28rem),
+        var(--bg);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--warn);
+      outline-offset: 3px;
+    }
+
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 16, 32, 0.86);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: #06121d;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 28px rgba(102, 227, 255, 0.24);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 18px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 700; }
+    .nav-links a:hover { color: var(--text); }
+
+    header { padding: 86px 0 54px; }
+    .hero { max-width: 880px; }
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      align-items: center;
+      margin-bottom: 18px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 11px;
+      border: 1px solid rgba(147, 245, 183, 0.26);
+      border-radius: 999px;
+      color: var(--accent-2);
+      background: rgba(147, 245, 183, 0.09);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 850px;
+      font-size: clamp(46px, 7vw, 78px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(110deg, var(--accent), var(--accent-2));
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .lede { max-width: 760px; margin: 24px 0 0; color: var(--muted); font-size: 20px; line-height: 1.55; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 850;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .button:hover { transform: translateY(-2px); border-color: rgba(102, 227, 255, 0.45); }
+    .button.primary { color: #06121d; border: none; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .button.secondary { background: rgba(255, 255, 255, 0.055); }
+
+    .alpha-note {
+      margin: 34px 0 0;
+      padding: 15px 18px;
+      border: 1px solid rgba(255, 206, 115, 0.27);
+      border-radius: 16px;
+      color: #f5dfb7;
+      background: rgba(255, 206, 115, 0.08);
+    }
+    .alpha-note strong { color: var(--warn); }
+
+    section { padding: 46px 0; }
+    .section-heading { max-width: 760px; margin-bottom: 24px; }
+    .kicker { margin: 0 0 6px; color: var(--accent); font-size: 13px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; }
+    .section-copy { margin: 12px 0 0; color: var(--muted); font-size: 17px; }
+
+    .requirements, .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card, .step {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+      box-shadow: var(--shadow);
+    }
+
+    .card { padding: 20px; }
+    .card strong { display: block; font-size: 17px; }
+    .card span { display: block; margin-top: 5px; color: var(--muted); font-size: 14px; }
+
+    .steps { display: grid; gap: 16px; }
+    .step {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 18px;
+      padding: 24px;
+    }
+    .step-number {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #07111f;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-size: 18px;
+      font-weight: 950;
+    }
+    .step h3 { margin: 2px 0 6px; font-size: 23px; letter-spacing: -0.02em; }
+    .step p { margin: 0 0 14px; color: var(--muted); }
+
+    .code-wrap { position: relative; }
+    pre {
+      margin: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 18px 68px 18px 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #080d1b;
+      font: 13.5px/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      white-space: pre;
+      scrollbar-color: var(--panel-2) transparent;
+    }
+    code { color: #dce9ff; }
+    .copy {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-height: 36px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      background: var(--panel-2);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .copy:hover { color: var(--text); }
+
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .choice {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+    }
+    .choice strong { display: block; margin-bottom: 6px; }
+    .choice p { margin: 0; color: var(--muted); }
+
+    .command-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .command-list li {
+      padding: 13px 15px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255,255,255,0.035);
+    }
+    .command-list code { color: var(--accent); font-weight: 800; }
+
+    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .feature-grid .card { min-height: 160px; }
+    .feature-grid p { margin: 8px 0 0; color: var(--muted); }
+
+    .privacy {
+      padding: 28px;
+      border: 1px solid rgba(147, 245, 183, 0.25);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(147,245,183,0.1), rgba(102,227,255,0.08));
+    }
+    .privacy h2 { font-size: clamp(27px, 4vw, 38px); }
+    .privacy p { max-width: 790px; margin: 12px 0 0; color: #d4e2e8; }
+
+    details {
+      padding: 17px 19px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(255,255,255,0.035);
+    }
+    details + details { margin-top: 10px; }
+    summary { cursor: pointer; font-weight: 850; }
+    details p { margin: 10px 0 0; color: var(--muted); }
+
+    .cta {
+      margin: 36px 0 76px;
+      padding: 34px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(102,227,255,0.12), rgba(147,245,183,0.08));
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { max-width: 760px; margin: 0 auto; }
+    .cta p { max-width: 650px; margin: 13px auto 0; color: var(--muted); }
+    .cta .hero-actions { justify-content: center; }
+
+    footer { padding: 24px 0 38px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .footer-inner a:hover { color: var(--text); }
+
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 28px, 1120px); }
+      .nav-inner { min-height: 62px; }
+      .nav-links a:not(:last-child) { display: none; }
+      header { padding: 58px 0 30px; }
+      h1 { font-size: clamp(41px, 13vw, 60px); }
+      .lede { font-size: 18px; }
+      section { padding: 34px 0; }
+      .requirements, .feature-grid, .choice-grid { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 44px minmax(0, 1fr); gap: 13px; padding: 18px 15px; }
+      .step-number { width: 40px; height: 40px; border-radius: 12px; }
+      .step h3 { font-size: 20px; }
+      pre { padding: 16px 58px 16px 14px; font-size: 12px; }
+      .privacy, .cta { padding: 23px 19px; }
+      .button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Primary navigation">
+    <div class="shell nav-inner">
+      <a class="brand" href="../" aria-label="Agent Experience Graph home">
+        <span class="brand-mark" aria-hidden="true">AEG</span>
+        <span>Agent Experience Graph</span>
+      </a>
+      <div class="nav-links">
+        <a href="../">Home</a>
+        <a href="60-second-demo.html">60-second demo</a>
+        <a href="https://github.com/yao23/agent-experience-graph">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <header>
+    <div class="shell hero">
+      <div class="eyebrow">
+        <span>AEG for VS Code</span>
+        <span class="badge">0.1.0 alpha</span>
+      </div>
+      <h1>Find the right <span class="gradient-text">agent skill</span> without leaving your editor.</h1>
+      <p class="lede">Discover local skills, get a recommendation for the task in front of you, record lightweight usage metrics, and share feedback—all inside VS Code.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#install">Install the alpha</a>
+        <a class="button secondary" href="https://github.com/yao23/agent-experience-graph/tree/main/integrations/vscode">View source</a>
+      </div>
+      <p class="alpha-note"><strong>Early access:</strong> the extension is not yet listed in the VS Code Marketplace. The instructions below build a local VSIX from the open-source repository and install it in about five minutes.</p>
+    </div>
+  </header>
+
+  <main>
+    <section aria-labelledby="requirements-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">Before you begin</p>
+          <h2 id="requirements-title">Three things you need</h2>
+        </div>
+        <div class="requirements">
+          <div class="card"><strong>VS Code 1.90+</strong><span>Desktop version with access to Extensions.</span></div>
+          <div class="card"><strong>Node.js + npm</strong><span>Node.js 20 LTS or a newer supported release.</span></div>
+          <div class="card"><strong>Git</strong><span>Used to clone the AEG repository locally.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" aria-labelledby="install-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">Install</p>
+          <h2 id="install-title">Build once. Install from VSIX.</h2>
+          <p class="section-copy">These commands download the source, compile the TypeScript extension, and create <code>agent-experience-graph-0.1.0.vsix</code>.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <div class="step-number" aria-hidden="true">1</div>
+            <div>
+              <h3>Clone the repository</h3>
+              <p>Run this in Terminal, PowerShell, or the integrated terminal in VS Code.</p>
+              <div class="code-wrap">
+                <pre><code>git clone https://github.com/yao23/agent-experience-graph.git
+cd agent-experience-graph/integrations/vscode</code></pre>
+                <button class="copy" type="button" aria-label="Copy clone commands">Copy</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">2</div>
+            <div>
+              <h3>Compile and package the extension</h3>
+              <p><code>npx</code> runs the official VS Code extension packager without requiring a global install.</p>
+              <div class="code-wrap">
+                <pre><code>npm install
+npm run compile
+npx @vscode/vsce package</code></pre>
+                <button class="copy" type="button" aria-label="Copy package commands">Copy</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">3</div>
+            <div>
+              <h3>Install the generated VSIX</h3>
+              <div class="choice-grid">
+                <div class="choice">
+                  <strong>In VS Code</strong>
+                  <p>Open <strong>Extensions</strong> → select the <strong>…</strong> menu → <strong>Install from VSIX…</strong> → choose <code>agent-experience-graph-0.1.0.vsix</code>.</p>
+                </div>
+                <div class="choice">
+                  <strong>From the command line</strong>
+                  <p>Run the command below from <code>integrations/vscode</code>.</p>
+                  <div class="code-wrap" style="margin-top: 10px;">
+                    <pre><code>code --install-extension agent-experience-graph-0.1.0.vsix</code></pre>
+                    <button class="copy" type="button" aria-label="Copy VSIX install command">Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="first-run-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">First run</p>
+          <h2 id="first-run-title">Try the product loop</h2>
+          <p class="section-copy">Open a workspace that contains at least one <code>SKILL.md</code> or <code>capability.json</code>, then open the Command Palette with <strong>⇧⌘P</strong> on macOS or <strong>Ctrl+Shift+P</strong> on Windows/Linux.</p>
+        </div>
+        <ol class="command-list">
+          <li><code>AEG: Discover Workspace Skills</code> — scan the current workspace for local agent skills.</li>
+          <li><code>AEG: Recommend Skill for Current Task</code> — select code or text, right-click, and ask AEG for a relevant skill.</li>
+          <li><code>AEG: Rate a Skill</code> — add a 1–5 rating after you try a recommendation.</li>
+          <li><code>AEG: Show Skill Metrics</code> — inspect local use count, estimated context tokens, and average rating.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="features-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">What is included</p>
+          <h2 id="features-title">A small alpha with a focused job</h2>
+        </div>
+        <div class="feature-grid">
+          <div class="card"><strong>Discover</strong><p>Find <code>SKILL.md</code> and <code>capability.json</code> files across your workspace.</p></div>
+          <div class="card"><strong>Recommend</strong><p>Match the current task or selected editor text to a relevant local skill.</p></div>
+          <div class="card"><strong>Rate</strong><p>Capture lightweight developer feedback after using a skill.</p></div>
+          <div class="card"><strong>Measure locally</strong><p>Review usage and estimated token metrics before hosted telemetry exists.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="privacy-title">
+      <div class="shell privacy">
+        <p class="kicker">Privacy by default</p>
+        <h2 id="privacy-title">Your alpha metrics stay in your workspace.</h2>
+        <p>AEG stores local metrics in <code>.aeg/skill-metrics.json</code>. Version 0.1.0 does not send telemetry to a hosted service. Token counts are estimates based on text length, not model-provider billing records.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="help-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">Troubleshooting</p>
+          <h2 id="help-title">Quick fixes</h2>
+        </div>
+        <details>
+          <summary>AEG found no skills</summary>
+          <p>Make sure the folder currently open in VS Code contains a <code>SKILL.md</code> or <code>capability.json</code>. You can change the default patterns in the <code>aeg.skillGlobs</code> setting.</p>
+        </details>
+        <details>
+          <summary>The VSIX was not created</summary>
+          <p>Confirm you are inside <code>agent-experience-graph/integrations/vscode</code>. Run <code>npm install</code> and <code>npm run compile</code> again, then rerun <code>npx @vscode/vsce package</code>.</p>
+        </details>
+        <details>
+          <summary>The <code>code</code> command is unavailable</summary>
+          <p>Use the VS Code interface instead: Extensions → … → Install from VSIX…. On macOS, you can also install the shell command from the Command Palette with “Shell Command: Install 'code' command in PATH”.</p>
+        </details>
+      </div>
+    </section>
+
+    <div class="shell cta">
+      <p class="kicker">Help shape AEG</p>
+      <h2>Try one real task, then tell us what made the recommendation useful—or wrong.</h2>
+      <p>The alpha is designed to learn from concrete developer workflows before the Marketplace release.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/yao23/agent-experience-graph/issues/new">Share alpha feedback</a>
+        <a class="button secondary" href="60-second-demo.html">See the 60-second demo</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>Agent Experience Graph · MIT-0</span>
+      <span><a href="https://github.com/yao23/agent-experience-graph">Source</a> · <a href="../">Project home</a></span>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.copy').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const code = button.parentElement.querySelector('code').innerText;
+        try {
+          await navigator.clipboard.writeText(code);
+          const original = button.textContent;
+          button.textContent = 'Copied';
+          setTimeout(() => { button.textContent = original; }, 1400);
+        } catch {
+          button.textContent = 'Select text';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
