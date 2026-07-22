@@ -337,6 +337,16 @@ button {
   background: var(--paper);
 }
 
+.button-feedback {
+  color: var(--ink);
+  border-color: rgba(11, 23, 20, 0.22);
+  background: var(--acid);
+}
+
+.button-feedback:hover {
+  background: var(--mint);
+}
+
 .hero-signals {
   display: flex;
   flex-wrap: wrap;
@@ -1299,6 +1309,28 @@ button {
 .contribute .button:hover {
   color: var(--ink);
   background: var(--mint);
+}
+
+.contribute-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.contribute-actions .button {
+  margin-top: 0;
+}
+
+.contribute-actions .button-feedback {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.contribute-actions .button-feedback:hover {
+  color: var(--ink);
+  background: var(--acid);
 }
 
 .contribution-list {
