@@ -1199,6 +1199,44 @@ button {
   line-height: 1.7;
 }
 
+.quickstart-install {
+  max-width: 470px;
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid rgba(8, 17, 15, 0.13);
+  border-radius: 18px;
+  background: rgba(212, 255, 88, 0.14);
+}
+
+.quickstart-install .quickstart-install-label {
+  margin: 0 0 9px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.quickstart-install h3 {
+  margin: 0;
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.2;
+}
+
+.quickstart-install > p:not(.quickstart-install-label) {
+  margin: 12px 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.quickstart-install .button {
+  min-height: 46px;
+  padding: 0 18px;
+  font-size: 11px;
+}
+
 .text-link {
   display: inline-flex;
   gap: 11px;
