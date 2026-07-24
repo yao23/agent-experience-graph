@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Install the Agent Experience Graph alpha extension for VS Code and start discovering, recommending, rating, and measuring local agent skills." />
   <meta property="og:title" content="Install AEG for VS Code" />
-  <meta property="og:description" content="Find the right agent skill without leaving your editor. Build and install the AEG alpha extension in about five minutes." />
+  <meta property="og:description" content="Find, recommend, rate, and measure agent skills without leaving VS Code. Install AEG directly from the Visual Studio Marketplace." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://yao23.github.io/agent-experience-graph/docs/install-vscode-extension.html" />
   <meta name="theme-color" content="#0b1020" />
@@ -338,15 +338,15 @@
     <div class="shell hero">
       <div class="eyebrow">
         <span>AEG for VS Code</span>
-        <span class="badge">0.1.0 alpha</span>
+        <span class="badge">Now on the VS Code Marketplace</span>
       </div>
       <h1>Find the right <span class="gradient-text">agent skill</span> without leaving your editor.</h1>
       <p class="lede">Discover local skills, get a recommendation for the task in front of you, record lightweight usage metrics, and share feedback—all inside VS Code.</p>
       <div class="hero-actions">
-        <a class="button primary" href="#install">Install the alpha</a>
+        <a class="button primary" href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph" target="_blank" rel="noopener">Install from Marketplace</a>
         <a class="button secondary" href="https://github.com/yao23/agent-experience-graph/tree/main/integrations/vscode">View source</a>
       </div>
-      <p class="alpha-note"><strong>Early access:</strong> the extension is not yet listed in the VS Code Marketplace. The instructions below build a local VSIX from the open-source repository and install it in about five minutes.</p>
+      <p class="alpha-note"><strong>Marketplace release:</strong> install AEG in one click and receive updates through VS Code. This early release keeps metrics local while you discover, recommend, rate, and measure agent skills in your workspace.</p>
     </div>
   </header>
 
@@ -354,23 +354,61 @@
     <section aria-labelledby="requirements-title">
       <div class="shell">
         <div class="section-heading">
-          <p class="kicker">Before you begin</p>
-          <h2 id="requirements-title">Three things you need</h2>
+          <p class="kicker">Get started</p>
+          <h2 id="requirements-title">Install in seconds</h2>
         </div>
         <div class="requirements">
-          <div class="card"><strong>VS Code 1.90+</strong><span>Desktop version with access to Extensions.</span></div>
-          <div class="card"><strong>Node.js + npm</strong><span>Node.js 20 LTS or a newer supported release.</span></div>
-          <div class="card"><strong>Git</strong><span>Used to clone the AEG repository locally.</span></div>
+          <div class="card"><strong>VS Code 1.90+</strong><span>Use the desktop editor with access to Extensions.</span></div>
+          <div class="card"><strong>One-click installation</strong><span>No cloning, Node.js, or manual packaging is required.</span></div>
+          <div class="card"><strong>Your local skills</strong><span>Open a workspace containing <code>SKILL.md</code> or <code>capability.json</code>.</span></div>
         </div>
       </div>
     </section>
 
-    <section id="install" aria-labelledby="install-title">
+    <section id="install" aria-labelledby="marketplace-install-title">
       <div class="shell">
         <div class="section-heading">
-          <p class="kicker">Install</p>
-          <h2 id="install-title">Build once. Install from VSIX.</h2>
-          <p class="section-copy">These commands download the source, compile the TypeScript extension, and create <code>agent-experience-graph-0.1.0.vsix</code>.</p>
+          <p class="kicker">Recommended installation</p>
+          <h2 id="marketplace-install-title">Get AEG from the VS Code Marketplace.</h2>
+          <p class="section-copy">AEG brings skill discovery, task-aware recommendations, ratings, and local usage metrics into your editor. Install the official extension published by <code>AgentExperienceGraph</code>.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <div class="step-number" aria-hidden="true">1</div>
+            <div>
+              <h3>Open the Marketplace listing</h3>
+              <p>Review the extension details, release notes, and permissions on the official listing.</p>
+              <a class="button primary" href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph" target="_blank" rel="noopener">View AEG in the Marketplace</a>
+            </div>
+          </article>
+          <article class="step">
+            <div class="step-number" aria-hidden="true">2</div>
+            <div>
+              <h3>Select Install</h3>
+              <p>Allow the browser to open VS Code, then confirm installation. VS Code will manage future updates automatically.</p>
+              <div class="code-wrap">
+                <pre><code>ext install AgentExperienceGraph.agent-experience-graph</code></pre>
+                <button class="copy" type="button" aria-label="Copy extension identifier">Copy</button>
+              </div>
+            </div>
+          </article>
+          <article class="step">
+            <div class="step-number" aria-hidden="true">3</div>
+            <div>
+              <h3>Open a workspace and try AEG</h3>
+              <p>Open the Command Palette and run <code>AEG: Discover Workspace Skills</code>. AEG looks for local <code>SKILL.md</code> and <code>capability.json</code> files.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="source-install" aria-labelledby="install-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="kicker">Developer option</p>
+          <h2 id="install-title">Build and install from source.</h2>
+          <p class="section-copy">Contributors can still compile the open-source extension and create a local <code>agent-experience-graph-0.1.0.vsix</code>. This path requires Node.js 20+ and Git.</p>
         </div>
 
         <div class="steps">
@@ -488,7 +526,7 @@ npx @vscode/vsce package</code></pre>
     <div class="shell cta">
       <p class="kicker">Help shape AEG</p>
       <h2>Try one real task, then tell us what made the recommendation useful—or wrong.</h2>
-      <p>The alpha is designed to learn from concrete developer workflows before the Marketplace release.</p>
+      <p>The Marketplace release is still early. Concrete feedback from real developer workflows will shape skill matching, metrics, and the broader Agent Experience Graph.</p>
       <div class="hero-actions">
         <a class="button primary" href="https://github.com/yao23/agent-experience-graph/issues/new">Share alpha feedback</a>
         <a class="button secondary" href="60-second-demo.html">See the 60-second demo</a>
