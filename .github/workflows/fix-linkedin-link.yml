@@ -1,0 +1,29 @@
+name: Fix founder LinkedIn link
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-linkedin-link.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-link:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Correct LinkedIn URL
+        run: |
+          sed -i 's#https://www.linkedin.com/in/yaoli13/#https://www.linkedin.com/in/liyao13/#g' pitch/index.html
+
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pitch/index.html
+          git diff --cached --quiet || git commit -m "Correct founder LinkedIn URL"
+          git push
