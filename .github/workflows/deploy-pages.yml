@@ -1,0 +1,68 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "styles.css"
+      - "script.js"
+      - "favicon.svg"
+      - ".nojekyll"
+      - "docs/**"
+      - "pitch/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source from main
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Check out current published site
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: public
+
+      - name: Assemble site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf public/.git
+
+          # Keep the existing homepage assets until they are moved to main.
+          for file in index.html styles.css script.js favicon.svg .nojekyll; do
+            if [[ -f "source/$file" ]]; then
+              cp "source/$file" "public/$file"
+            fi
+          done
+
+          # These directories are canonical on main and are fully synchronized.
+          rm -rf public/docs public/pitch
+          mkdir -p public/docs public/pitch
+          cp -R source/docs/. public/docs/
+          cp -R source/pitch/. public/pitch/
+
+          touch public/.nojekyll
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: public
+          force_orphan: false
+          enable_jekyll: false
+          commit_message: "Deploy site from main at ${{ github.sha }}"
