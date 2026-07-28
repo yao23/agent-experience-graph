@@ -13,6 +13,14 @@ For example:
 
 The goal is simple: agents should not start from zero every time. They should be able to reuse lessons from past work, just like people do.
 
+## Living Pitch
+
+Open the investor- and partner-friendly living pitch:
+
+- [Experience Infrastructure for AI Agents](pitch/index.html)
+
+The pitch covers the vision, problem, architecture, initial product, early progress, business model, roadmap, founder, and current ask.
+
 ## 60-Second Demo
 
 Open the lightweight demo in a browser:
