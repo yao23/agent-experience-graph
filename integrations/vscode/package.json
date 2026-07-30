@@ -1,15 +1,40 @@
 {
   "name": "agent-experience-graph",
   "displayName": "Agent Experience Graph",
-  "description": "Discover, recommend, rate, and measure agent skills directly in VS Code.",
-  "version": "0.1.0",
-  "publisher": "yao23",
+  "description": "Diagnose Playwright failures with reusable recovery playbooks and capture verified engineering experience locally.",
+  "version": "0.1.1",
+  "publisher": "AgentExperienceGraph",
   "license": "MIT-0",
+  "homepage": "https://yao23.github.io/agent-experience-graph/docs/install-vscode-extension.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yao23/agent-experience-graph.git",
+    "directory": "integrations/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/yao23/agent-experience-graph/issues"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
-  "categories": ["AI", "Other"],
+  "categories": [
+    "AI",
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "playwright",
+    "testing",
+    "debugging",
+    "agent",
+    "skills",
+    "experience"
+  ],
   "activationEvents": [
+    "onView:aeg.playwright",
+    "onCommand:aeg.diagnosePlaywrightFailure",
+    "onCommand:aeg.verifyLatestExperience",
+    "onCommand:aeg.showExperiences",
     "onCommand:aeg.discoverSkills",
     "onCommand:aeg.recommendSkill",
     "onCommand:aeg.rateSkill",
@@ -18,34 +43,153 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      {"command": "aeg.discoverSkills", "title": "AEG: Discover Workspace Skills"},
-      {"command": "aeg.recommendSkill", "title": "AEG: Recommend Skill for Current Task"},
-      {"command": "aeg.rateSkill", "title": "AEG: Rate a Skill"},
-      {"command": "aeg.showSkillMetrics", "title": "AEG: Show Skill Metrics"}
+      {
+        "command": "aeg.diagnosePlaywrightFailure",
+        "title": "AEG: Diagnose Playwright Failure",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "aeg.verifyLatestExperience",
+        "title": "AEG: Mark Latest Diagnosis Outcome",
+        "icon": "$(pass)"
+      },
+      {
+        "command": "aeg.showExperiences",
+        "title": "AEG: Show Playwright Experiences",
+        "icon": "$(history)"
+      },
+      {
+        "command": "aeg.openGettingStarted",
+        "title": "AEG: Playwright Getting Started"
+      },
+      {
+        "command": "aeg.discoverSkills",
+        "title": "AEG: Discover Workspace Skills"
+      },
+      {
+        "command": "aeg.recommendSkill",
+        "title": "AEG: Recommend Skill for Current Task"
+      },
+      {
+        "command": "aeg.rateSkill",
+        "title": "AEG: Rate a Skill"
+      },
+      {
+        "command": "aeg.showSkillMetrics",
+        "title": "AEG: Show Skill Metrics"
+      }
     ],
     "menus": {
       "commandPalette": [
-        {"command": "aeg.discoverSkills"},
-        {"command": "aeg.recommendSkill"},
-        {"command": "aeg.rateSkill"},
-        {"command": "aeg.showSkillMetrics"}
+        {
+          "command": "aeg.diagnosePlaywrightFailure"
+        },
+        {
+          "command": "aeg.verifyLatestExperience"
+        },
+        {
+          "command": "aeg.showExperiences"
+        },
+        {
+          "command": "aeg.openGettingStarted"
+        },
+        {
+          "command": "aeg.discoverSkills"
+        },
+        {
+          "command": "aeg.recommendSkill"
+        },
+        {
+          "command": "aeg.rateSkill"
+        },
+        {
+          "command": "aeg.showSkillMetrics"
+        }
       ],
       "editor/context": [
-        {"command": "aeg.recommendSkill", "when": "editorHasSelection", "group": "navigation"}
+        {
+          "command": "aeg.diagnosePlaywrightFailure",
+          "when": "editorHasSelection",
+          "group": "navigation@1"
+        },
+        {
+          "command": "aeg.recommendSkill",
+          "when": "editorHasSelection",
+          "group": "navigation@2"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "aeg.diagnosePlaywrightFailure",
+          "when": "view == aeg.playwright",
+          "group": "navigation@1"
+        },
+        {
+          "command": "aeg.showExperiences",
+          "when": "view == aeg.playwright",
+          "group": "navigation@2"
+        }
       ]
     },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aeg",
+          "title": "AEG Playwright",
+          "icon": "resources/aeg-playwright.svg"
+        }
+      ]
+    },
+    "views": {
+      "aeg": [
+        {
+          "id": "aeg.playwright",
+          "name": "Playwright Diagnosis"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "aeg.playwright",
+        "contents": "Diagnose Playwright failures and capture reusable local experience.\n[Diagnose a failure](command:aeg.diagnosePlaywrightFailure)\n[Open getting started](command:aeg.openGettingStarted)"
+      }
+    ],
     "configuration": {
       "title": "Agent Experience Graph",
       "properties": {
         "aeg.skillGlobs": {
           "type": "array",
-          "default": ["**/SKILL.md", "**/capability.json"],
+          "default": [
+            "**/SKILL.md",
+            "**/capability.json"
+          ],
           "description": "Workspace globs used to discover agent skills."
         },
         "aeg.telemetryFile": {
           "type": "string",
           "default": ".aeg/skill-metrics.json",
           "description": "Workspace-relative file used for local skill usage metrics."
+        },
+        "aeg.experienceDirectory": {
+          "type": "string",
+          "default": ".aeg/experiences",
+          "description": "Workspace-relative directory for local Playwright experience receipts."
+        },
+        "aeg.playwrightArtifactGlobs": {
+          "type": "array",
+          "default": [
+            "**/test-results/**/error-context.md",
+            "**/test-results/**/*.txt",
+            "**/test-results/**/*.log",
+            "**/playwright-report/**/*.json",
+            "**/junit*.xml"
+          ],
+          "description": "Workspace globs used to find Playwright failure artifacts."
+        },
+        "aeg.notifyOnPlaywrightArtifacts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a local notification when AEG detects a new Playwright failure artifact."
         }
       }
     }
@@ -53,11 +197,14 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test test/core.test.js",
+    "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.6.2",
     "typescript": "^5.5.0"
   }
 }
