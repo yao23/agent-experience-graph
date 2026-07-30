@@ -1,5 +1,10 @@
-src/**
-tsconfig.json
-node_modules/**
+.github/**
 .vscode/**
-*.map
+src/**
+test/**
+tsconfig.json
+**/*.map
+**/*.vsix
+node_modules/.cache/**
+.npm-cache/**
+.npmrc
