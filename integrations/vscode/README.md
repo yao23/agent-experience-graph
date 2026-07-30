@@ -1,73 +1,93 @@
 # Agent Experience Graph for VS Code
 
-An early IDE integration for discovering, recommending, rating, and measuring agent skills directly inside a developer workspace.
+AEG v0.1.1 helps developers diagnose Playwright failures with reusable recovery playbooks and records whether the recovery actually worked.
 
-## MVP Features
+The extension is an early, local-first implementation of the Agent Experience Graph:
 
-- Discovers local `SKILL.md` and `capability.json` files.
-- Recommends skills for selected code/text or a task description.
-- Opens the selected skill or copies its path for use by an agent.
-- Records local skill-use counts and estimated selection-context tokens.
-- Lets developers rate skills from 1 to 5.
-- Displays usage, estimated tokens, and average ratings.
+**Failure context → Recovery skill → Execution steps → Verified outcome**
 
-Metrics remain local in `.aeg/skill-metrics.json` by default. This MVP does not send telemetry to a hosted service.
+## What is new in v0.1.1
 
-## Run Locally
+- A dedicated **AEG Playwright** sidebar and status-bar entry point.
+- Failure input from selected text, the latest Playwright artifact, the active file, a copied error, or a short description.
+- Ten bundled Playwright recovery playbooks:
+  - timeouts
+  - unstable selectors
+  - authentication and session state
+  - network and API mocking
+  - flaky tests
+  - browser-specific failures
+  - test-data isolation
+  - CI-only failures
+  - trace and artifact diagnosis
+  - accessibility failures
+- Local experience receipts using the minimum AEG structure:
+  - Intent
+  - Context
+  - Steps
+  - Skills
+  - Artifacts
+  - Failures
+  - Recovery
+  - Outcome
+  - Cost
+- Explicit resolved/unresolved verification after a recovery attempt.
+- Automatic detection of new text-based artifacts under `test-results`.
 
-```bash
-cd integrations/vscode
-npm install
-npm run compile
+## First diagnosis
+
+1. Open a project in VS Code.
+2. Run a Playwright test and copy its error, or select an error/stack trace in the editor.
+3. Click **AEG Playwright** in the Activity Bar or status bar.
+4. Choose **Diagnose Playwright failure**.
+5. Select a recommended playbook and try its recovery steps.
+6. Re-run the test and mark the outcome **Test passed** or **Still failing**.
+
+AEG stores the receipt under:
+
+```text
+.aeg/experiences/
 ```
 
-Open this directory in VS Code and press `F5` to launch an Extension Development Host.
+Use **AEG: Show Playwright Experiences** to inspect prior receipts.
 
-## Commands
+## Privacy
 
-Open the Command Palette and run:
+Version 0.1.1 does not upload code, logs, artifacts, or experience receipts.
+
+- Receipts are local by default.
+- Common authorization headers, passwords, tokens, API keys, and credential-bearing URLs are redacted from captured failure signatures.
+- Artifact paths are recorded, but raw artifact contents are not written into receipts.
+- Sharing is intentionally excluded until AEG has an explicit preview, consent, and redaction flow.
+
+Review a receipt before committing `.aeg/` to source control. Add `.aeg/` to `.gitignore` if the repository should not retain local experience data.
+
+## Existing skill commands
+
+The v0.1.0 local-skill workflow remains available:
 
 - `AEG: Discover Workspace Skills`
 - `AEG: Recommend Skill for Current Task`
 - `AEG: Rate a Skill`
 - `AEG: Show Skill Metrics`
 
-You can also select text in an editor, right-click, and choose `AEG: Recommend Skill for Current Task`.
+These commands scan local `SKILL.md` and `capability.json` files. Skill metrics remain local in `.aeg/skill-metrics.json`.
 
-## Skill Discovery
+## Development
 
-The extension scans these workspace patterns by default:
-
-```json
-[
-  "**/SKILL.md",
-  "**/capability.json"
-]
+```bash
+npm install
+npm test
+npm run package
 ```
 
-They can be changed with `aeg.skillGlobs`.
+Open the extension directory in VS Code and press `F5` to launch an Extension Development Host.
 
-## Local Metrics Format
+## Current limitations
 
-```json
-{
-  "skills/example/SKILL.md": {
-    "uses": 4,
-    "totalEstimatedTokens": 820,
-    "ratings": [5, 4],
-    "lastUsed": "2026-07-15T12:00:00.000Z"
-  }
-}
-```
+- Playbook ranking is deterministic keyword/signature matching, not semantic retrieval.
+- AEG cannot read arbitrary integrated-terminal output; use a selection, clipboard, file, or Playwright artifact.
+- Test outcome verification is user-confirmed in this release.
+- Token counts are estimates based on captured text length.
 
-The current token number is an estimate based on text length. A production version should collect actual model usage from supported agent runtimes.
-
-## Next Steps
-
-- Semantic embeddings and hybrid ranking instead of keyword overlap.
-- Parse richer skill manifests: inputs, outputs, tools, constraints, and compatibility.
-- Connect to Codex, OpenAI Agents SDK, Claude Code, MCP, and other runtimes.
-- Record actual tokens, cost, latency, retries, validation results, and success rate.
-- Add trusted automatic skill loading/install with permission boundaries.
-- Publish team and community skill leaderboards.
-- Package and publish to the VS Code Marketplace and Open VSX.
+These constraints keep the first data loop understandable and auditable while AEG validates the Playwright failure-diagnosis wedge.
