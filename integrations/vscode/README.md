@@ -1,12 +1,29 @@
 # Agent Experience Graph for VS Code
 
-AEG v0.1.1 helps developers diagnose Playwright failures with reusable recovery playbooks and records whether the recovery actually worked.
+AEG v0.1.2 preserves the Playwright diagnosis workflow and adds one auditable
+public repair experiment that measures baseline Codex against AEG-assisted Codex.
 
 The extension is an early, local-first implementation of the Agent Experience Graph:
 
 **Failure context → Recovery skill → Execution steps → Verified outcome**
 
-## What is new in v0.1.1
+## What is new in v0.1.2
+
+- **AEG: Run Public Repair Lab** launches two isolated repairs of one real,
+  MIT-licensed PySnooper bug.
+- The baseline and assisted arms receive identical issue text, code, and tests;
+  only the assisted arm receives a sanitized AEG recovery experience.
+- Objective verification and JSONL telemetry capture duration, commands, test
+  runs, token usage, changed files, and patches under `.aeg/repair-lab/`.
+- The runner uses `codex exec --ephemeral --sandbox workspace-write`; it never
+  pushes code or contacts the upstream project.
+- The experiment is explicitly an instrumentation trial, not a statistical
+  performance claim.
+
+Run it from the AEG sidebar or command palette. The local `codex` executable
+must be available on `PATH`.
+
+## Playwright diagnosis (from v0.1.1)
 
 - A dedicated **AEG Playwright** sidebar and status-bar entry point.
 - Failure input from selected text, the latest Playwright artifact, the active file, a copied error, or a short description.
@@ -53,7 +70,7 @@ Use **AEG: Show Playwright Experiences** to inspect prior receipts.
 
 ## Privacy
 
-Version 0.1.1 does not upload code, logs, artifacts, or experience receipts.
+Version 0.1.2 does not upload code, logs, artifacts, or experience receipts.
 
 - Receipts are local by default.
 - Common authorization headers, passwords, tokens, API keys, and credential-bearing URLs are redacted from captured failure signatures.

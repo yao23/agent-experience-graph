@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "0.1.2",
+  "id": "experience-python-path-writer-closure",
+  "intent": "Repair a deferred file writer that fails only when its returned callback executes",
+  "context": {
+    "language": "python",
+    "taskFamily": "unit-test-repair",
+    "signals": [
+      "NameError inside a nested callback",
+      "path-like output accepted during setup",
+      "failure occurs when the callback is invoked"
+    ]
+  },
+  "steps": [
+    "Run the focused test before editing and retain the exact traceback.",
+    "Inspect names captured or referenced by the returned closure.",
+    "Compare the setup parameter with the variable used when the callback opens the path.",
+    "Apply the smallest production-code correction and rerun the focused test."
+  ],
+  "skills": ["python-traceback-localization", "closure-variable-consistency"],
+  "artifacts": ["focused unittest", "traceback", "git diff"],
+  "failures": [
+    "Avoid adding a new alias merely to silence the NameError when the existing parameter already represents the path.",
+    "Do not edit the regression test or broaden the refactor."
+  ],
+  "recovery": "For deferred callbacks, validate that every referenced name exists in the enclosing scope and represents the original validated input.",
+  "outcome": {
+    "status": "verified-on-similar-task",
+    "verification": "Focused path-output test writes and appends expected UTF-8 text"
+  },
+  "cost": {
+    "expectedTestRuns": 2,
+    "expectedFilesChanged": 1
+  },
+  "source": {
+    "type": "sanitized-derived-experience",
+    "containsRawUpstreamCode": false
+  }
+}
