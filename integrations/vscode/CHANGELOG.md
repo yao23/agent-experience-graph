@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2
+
+- Add the AEG Public Repair Lab command and sidebar entry.
+- Package one reproducible, MIT-licensed PySnooper path-output bug as the first narrow A/B task.
+- Run isolated baseline and AEG-assisted Codex sessions through `codex exec` when it is available.
+- Capture JSONL events, verification results, duration, token usage, command/test counts, and changed files.
+- Generate JSON and Markdown comparison reports without pushing patches or contacting the upstream repository.
+- Preserve all v0.1.1 Playwright diagnosis behavior.
+
 ## 0.1.1
 
 - Focus AEG on Playwright failure diagnosis as the first outcome-driven experience loop.

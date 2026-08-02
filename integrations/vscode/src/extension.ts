@@ -85,6 +85,12 @@ class PlaywrightViewProvider implements vscode.TreeDataProvider<AegTreeItem> {
         {command: 'aeg.showExperiences', title: 'Show experiences'}
       ),
       new AegTreeItem(
+        'Run public repair lab',
+        'baseline vs AEG-assisted',
+        'beaker',
+        {command: 'aeg.runPublicRepairLab', title: 'Run repair lab'}
+      ),
+      new AegTreeItem(
         'Privacy',
         'local only · no upload',
         'shield',
@@ -137,6 +143,7 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand('aeg.showExperiences', showExperiences),
     vscode.commands.registerCommand('aeg.openGettingStarted', openGettingStarted),
+    vscode.commands.registerCommand('aeg.runPublicRepairLab', () => runPublicRepairLab(context.extensionUri)),
     vscode.commands.registerCommand('aeg.discoverSkills', discoverSkills),
     vscode.commands.registerCommand('aeg.recommendSkill', recommendSkill),
     vscode.commands.registerCommand('aeg.rateSkill', rateSkill),
@@ -451,7 +458,7 @@ function recoveryHtml(
   <h2>Verify the outcome</h2>
   <p>After trying the playbook and re-running the test, record the objective result.</p>
   <p><button data-outcome="resolved">Test passed</button><button class="secondary" data-outcome="unresolved">Still failing</button></p>
-  <p><small>Local only: AEG v0.1.1 does not upload code, logs, or experience receipts.</small></p>
+  <p><small>Local only: AEG v0.1.2 does not upload code, logs, or experience receipts.</small></p>
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     document.querySelectorAll('[data-command]').forEach(button => button.addEventListener('click', () => vscode.postMessage({command: button.dataset.command})));
@@ -539,9 +546,10 @@ async function showExperiences(): Promise<void> {
 async function openGettingStarted(): Promise<void> {
   const document = await vscode.workspace.openTextDocument({
     language: 'markdown',
-    content: `# AEG Playwright Diagnosis
+    content: `# AEG Playwright Diagnosis & Public Repair Lab
 
-AEG v0.1.1 turns a Playwright failure into a local, reusable experience receipt.
+AEG v0.1.2 turns a Playwright failure into a local, reusable experience receipt
+and adds an auditable public repair experiment.
 
 ## Start
 
@@ -556,9 +564,41 @@ AEG v0.1.1 turns a Playwright failure into a local, reusable experience receipt.
 Intent, Context, Steps, Skills, Artifacts, Failures, Recovery, Outcome, and Cost.
 
 Receipts are stored under \`.aeg/experiences\`. This release does not upload code, logs, or receipts.
+
+## Public Repair Lab (v0.1.2)
+
+Run **AEG: Run Public Repair Lab** to compare two isolated Codex repairs of the same
+MIT-licensed PySnooper bug: a baseline run and an AEG-assisted run. The runner keeps
+patches local and writes machine-readable events, verification results, cost metrics,
+and a comparison report under \`.aeg/repair-lab\`.
 `
   });
   await vscode.window.showTextDocument(document, {preview: true});
+}
+
+async function runPublicRepairLab(extensionUri: vscode.Uri): Promise<void> {
+  const root = workspaceRoot();
+  if (!root) {
+    void vscode.window.showWarningMessage('Open the Agent Experience Graph repository before running the repair lab.');
+    return;
+  }
+  const runner = vscode.Uri.joinPath(extensionUri, 'repair-lab', 'run_experiment.py');
+  try {
+    await vscode.workspace.fs.stat(runner);
+  } catch {
+    void vscode.window.showWarningMessage('The packaged AEG repair-lab runner is missing. Reinstall the extension.');
+    return;
+  }
+
+  const terminal = vscode.window.createTerminal({
+    name: 'AEG Public Repair Lab',
+    cwd: root
+  });
+  terminal.show(true);
+  terminal.sendText(`python3 "${runner.fsPath.replace(/"/g, '\\"')}"`, true);
+  void vscode.window.showInformationMessage(
+    'AEG started the isolated baseline and assisted repair runs. Results will be written under .aeg/repair-lab.'
+  );
 }
 
 async function findLatestArtifact(): Promise<vscode.Uri | undefined> {

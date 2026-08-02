@@ -1,0 +1,4 @@
+out/
+repair-lab/
+node_modules/
+*.vsix

@@ -78,6 +78,23 @@ It is intentionally runtime-neutral:
 - `scripts/recommend_traces.py` ranks similar traces and recommends reusable skills/tools.
 - `references/trace_schema.md` defines the trace data contract.
 - `docs/60-second-demo.html` shows the core experience-reuse product moment.
+- `experiments/public-repair-lab/` runs the first baseline-versus-AEG public bug repair experiment.
+
+## Public Repair Lab (v0.1.2)
+
+AEG now includes one deliberately narrow, reproducible A/B task based on an
+MIT-licensed PySnooper bug. Two fresh Codex sessions receive the same issue,
+buggy code, and regression test; only the assisted arm receives a sanitized AEG
+experience. The runner records objective verification, JSONL events, duration,
+commands, test invocations, token usage, changed files, and patches.
+
+```bash
+python3 experiments/public-repair-lab/run_experiment.py --prepare-only
+# Remove --prepare-only when `codex` is available on PATH.
+```
+
+This first task validates the experiment and receipt pipeline. It is not yet
+evidence that AEG improves coding-agent performance across repositories.
 
 In plain English, this repository contains:
 

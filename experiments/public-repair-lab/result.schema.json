@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "summary": {"type": "string"},
+    "root_cause": {"type": "string"},
+    "files_changed": {"type": "array", "items": {"type": "string"}},
+    "verification_command": {"type": "string"},
+    "verification_passed": {"type": "boolean"},
+    "aeg_experience_used": {"type": "boolean"}
+  },
+  "required": [
+    "summary",
+    "root_cause",
+    "files_changed",
+    "verification_command",
+    "verification_passed",
+    "aeg_experience_used"
+  ],
+  "additionalProperties": false
+}
