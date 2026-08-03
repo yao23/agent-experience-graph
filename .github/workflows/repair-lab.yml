@@ -1,0 +1,48 @@
+name: Validate Repair Lab
+
+on:
+  pull_request:
+    paths:
+      - "experiments/public-repair-lab/**"
+      - "integrations/vscode/**"
+      - ".github/workflows/repair-lab.yml"
+  push:
+    branches: [main]
+    paths:
+      - "experiments/public-repair-lab/**"
+      - "integrations/vscode/**"
+      - ".github/workflows/repair-lab.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: integrations/vscode/package-lock.json
+
+      - name: Test Repair Lab telemetry and task preparation
+        run: |
+          python3 experiments/public-repair-lab/test_run_experiment.py
+          python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task fastapi-nested-response --trials 3 --output /tmp/aeg-fastapi
+          python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task pysnooper-path-output --output /tmp/aeg-pysnooper
+
+      - name: Install extension dependencies
+        working-directory: integrations/vscode
+        run: npm ci
+
+      - name: Test and package extension
+        working-directory: integrations/vscode
+        run: |
+          npm test
+          npm run package

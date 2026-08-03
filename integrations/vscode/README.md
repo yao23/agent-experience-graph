@@ -1,24 +1,25 @@
 # Agent Experience Graph for VS Code
 
-AEG v0.1.2 preserves the Playwright diagnosis workflow and adds one auditable
-public repair experiment that measures baseline Codex against AEG-assisted Codex.
+AEG v0.1.3 preserves the Playwright diagnosis workflow and adds repeatable,
+auditable public repair experiments that measure baseline Codex against
+AEG-assisted Codex.
 
 The extension is an early, local-first implementation of the Agent Experience Graph:
 
 **Failure context → Recovery skill → Execution steps → Verified outcome**
 
-## What is new in v0.1.2
+## What is new in v0.1.3
 
-- **AEG: Run Public Repair Lab** launches two isolated repairs of one real,
-  MIT-licensed PySnooper bug.
+- **AEG: Run Public Repair Lab** launches isolated repairs of a real,
+  MIT-licensed FastAPI nested response-model bug by default.
 - The baseline and assisted arms receive identical issue text, code, and tests;
-  only the assisted arm receives a sanitized AEG recovery experience.
-- Objective verification and JSONL telemetry capture duration, commands, test
-  runs, token usage, changed files, and patches under `.aeg/repair-lab/`.
+  only the assisted arm receives a compact retrieved recovery capsule.
+- Repeated paired trials alternate execution order. Corrected telemetry captures
+  duration, completed commands, actual test runs, token usage, changed files, and
+  patches under `.aeg/repair-lab/`.
 - The runner uses `codex exec --ephemeral --sandbox workspace-write`; it never
   pushes code or contacts the upstream project.
-- The experiment is explicitly an instrumentation trial, not a statistical
-  performance claim.
+- Verdicts require at least three trials and remain specific to the selected task.
 
 Run it from the AEG sidebar or command palette. The local `codex` executable
 must be available on `PATH`.
@@ -70,7 +71,7 @@ Use **AEG: Show Playwright Experiences** to inspect prior receipts.
 
 ## Privacy
 
-Version 0.1.2 does not upload code, logs, artifacts, or experience receipts.
+Version 0.1.3 does not upload code, logs, artifacts, or experience receipts.
 
 - Receipts are local by default.
 - Common authorization headers, passwords, tokens, API keys, and credential-bearing URLs are redacted from captured failure signatures.

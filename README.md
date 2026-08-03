@@ -80,21 +80,30 @@ It is intentionally runtime-neutral:
 - `docs/60-second-demo.html` shows the core experience-reuse product moment.
 - `experiments/public-repair-lab/` runs the first baseline-versus-AEG public bug repair experiment.
 
-## Public Repair Lab (v0.1.2)
+## Public Repair Lab (v0.1.3)
 
-AEG now includes one deliberately narrow, reproducible A/B task based on an
-MIT-licensed PySnooper bug. Two fresh Codex sessions receive the same issue,
-buggy code, and regression test; only the assisted arm receives a sanitized AEG
-experience. The runner records objective verification, JSONL events, duration,
-commands, test invocations, token usage, changed files, and patches.
+AEG includes two narrow, reproducible A/B tasks derived from MIT-licensed public
+bugs. The default reproduces FastAPI's nested response-model data leak; the
+original PySnooper path-output task remains available. Fresh Codex sessions
+receive identical issues, buggy code, and regression tests. The assisted arm
+also receives a compact, sanitized recovery capsule injected directly into its
+prompt.
+
+The runner supports repeated paired trials with alternating execution order and
+records objective verification, completed commands, actual test invocations,
+token usage, duration, changed files, patches, and raw JSONL events. It requires
+at least three trials before reporting an efficiency verdict.
 
 ```bash
 python3 experiments/public-repair-lab/run_experiment.py --prepare-only
-# Remove --prepare-only when `codex` is available on PATH.
+python3 experiments/public-repair-lab/run_experiment.py --trials 5
 ```
 
-This first task validates the experiment and receipt pipeline. It is not yet
-evidence that AEG improves coding-agent performance across repositories.
+In the v0.1.3 five-pair validation, all ten arms produced the same verified
+one-line fix. AEG-assisted runs used one fewer completed command in the paired
+median and 732 fewer non-cached tokens, while wall time regressed by 18.2 seconds.
+This is a bounded tool-cycle/cost signal on one task family, not a general speed
+or success-rate claim. See `experiments/public-repair-lab/RESULTS.md`.
 
 In plain English, this repository contains:
 

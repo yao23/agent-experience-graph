@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "0.1.3",
+  "id": "experience-recursive-response-field-cloning",
+  "intent": "Prevent nested subclass data from bypassing a declared response schema",
+  "context": {
+    "language": "python",
+    "taskFamily": "security-sensitive-unit-test-repair",
+    "signals": [
+      "top-level filtering works but a nested object leaks an extra field",
+      "the nested value is a subclass of the declared response type",
+      "the response validator clones schema fields before serialization"
+    ]
+  },
+  "steps": [
+    "Run the focused regression test and distinguish the working outer filter from the failing nested filter.",
+    "Trace how the response schema is cloned at every model boundary.",
+    "Check whether nested model fields are reused by identity while only the outer field is cloned.",
+    "Recursively apply the existing field-cloning operation to nested model fields.",
+    "Rerun the focused test and confirm both outer and nested undeclared fields are absent."
+  ],
+  "skills": [
+    "response-schema-boundary-analysis",
+    "recursive-structure-cloning",
+    "subclass-data-leak-prevention"
+  ],
+  "artifacts": ["focused unittest", "schema graph", "git diff"],
+  "failures": [
+    "Do not blacklist the sensitive field name; enforce the declared schema generically.",
+    "Do not remove the optimization globally or edit serialization output after validation.",
+    "Do not change the regression test or the model inheritance relationship."
+  ],
+  "recovery": "When an outer response field is cloned to break trusted input-model inheritance, recursively clone nested model fields too; a shallow clone leaves a nested trust path intact.",
+  "outcome": {
+    "status": "verified-on-similar-task",
+    "verification": "Nested subclass-only fields are removed while declared nested fields remain"
+  },
+  "cost": {
+    "expectedTestRuns": 2,
+    "expectedFilesChanged": 1
+  },
+  "source": {
+    "type": "sanitized-derived-experience",
+    "containsRawUpstreamCode": false
+  }
+}

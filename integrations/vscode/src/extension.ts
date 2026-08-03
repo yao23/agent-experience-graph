@@ -458,7 +458,7 @@ function recoveryHtml(
   <h2>Verify the outcome</h2>
   <p>After trying the playbook and re-running the test, record the objective result.</p>
   <p><button data-outcome="resolved">Test passed</button><button class="secondary" data-outcome="unresolved">Still failing</button></p>
-  <p><small>Local only: AEG v0.1.2 does not upload code, logs, or experience receipts.</small></p>
+  <p><small>Local only: AEG v0.1.3 does not upload code, logs, or experience receipts.</small></p>
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     document.querySelectorAll('[data-command]').forEach(button => button.addEventListener('click', () => vscode.postMessage({command: button.dataset.command})));
@@ -548,8 +548,8 @@ async function openGettingStarted(): Promise<void> {
     language: 'markdown',
     content: `# AEG Playwright Diagnosis & Public Repair Lab
 
-AEG v0.1.2 turns a Playwright failure into a local, reusable experience receipt
-and adds an auditable public repair experiment.
+AEG v0.1.3 turns a Playwright failure into a local, reusable experience receipt
+and adds repeatable, auditable public repair experiments.
 
 ## Start
 
@@ -565,12 +565,13 @@ Intent, Context, Steps, Skills, Artifacts, Failures, Recovery, Outcome, and Cost
 
 Receipts are stored under \`.aeg/experiences\`. This release does not upload code, logs, or receipts.
 
-## Public Repair Lab (v0.1.2)
+## Public Repair Lab (v0.1.3)
 
-Run **AEG: Run Public Repair Lab** to compare two isolated Codex repairs of the same
-MIT-licensed PySnooper bug: a baseline run and an AEG-assisted run. The runner keeps
-patches local and writes machine-readable events, verification results, cost metrics,
-and a comparison report under \`.aeg/repair-lab\`.
+Run **AEG: Run Public Repair Lab** to compare isolated Codex repairs of the same
+MIT-licensed FastAPI nested response-model bug: a baseline run and an AEG-assisted
+run with a compact retrieved recovery capsule. The runner keeps patches local and
+writes machine-readable events, verification results, corrected cost metrics, and
+a comparison report under \`.aeg/repair-lab\`.
 `
   });
   await vscode.window.showTextDocument(document, {preview: true});
