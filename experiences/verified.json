@@ -168,5 +168,102 @@
         "publishing a verified reusable experience"
       ]
     }
+  },
+  {
+    "id": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "task": "Restore Tornado WebSocket TCP_NODELAY delegation after stream ownership moved behind the protocol",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Detect a green-suite false positive by checking the real public delegation path",
+        "skills": ["contract-testing", "historical-test-audit"],
+        "tools": ["python", "unittest", "git"],
+        "outcome": "success",
+        "lessons": ["A proxy repair can pass the existing suite while targeting the wrong public surface; the contract test must begin at the caller named in the issue."]
+      },
+      {
+        "description": "Route WebSocketHandler set_nodelay through the protocol to the active stream",
+        "skills": ["delegation-repair", "api-contract-repair"],
+        "tools": ["python", "unittest", "Tornado test runner"],
+        "outcome": "success",
+        "lessons": ["When resource ownership moves behind an abstraction, public controls must follow the ownership chain instead of retaining a stale direct reference."]
+      }
+    ],
+    "skills": ["contract-testing", "historical-test-audit", "delegation-repair", "api-contract-repair"],
+    "tools": ["python", "unittest", "git", "Tornado test runner", "BugsInPy"],
+    "constraints": [
+      "CPython 3.7 was unavailable on macOS arm64; the complete suite used isolated CPython 3.8.20 with a temporary cancellation-only compatibility shim that was removed after testing.",
+      "The first frozen candidate targeted the wrong client surface and was rejected after evaluator comparison; the successful second attempt was therefore evaluator-informed.",
+      "No raw logs, prompts, source patches, credentials, or private workspace paths are published."
+    ],
+    "lessons": [
+      "Trace delegation from the issue's public entry point through every ownership boundary before choosing where to add a proxy.",
+      "A full green legacy suite cannot validate behavior that has no regression test; add a focused contract test that asserts the exact delegate call.",
+      "Reject a green patch when evaluator comparison proves that it repaired a plausible but different API surface.",
+      "Keep runtime-compatibility shims separate from the candidate patch and recheck the candidate hash after removing them."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-03T06:53:21Z",
+      "publicSource": {
+        "repository": "https://github.com/tornadoweb/tornado",
+        "buggyCommitSha": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+        "fixedCommitSha": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+        "license": "Apache-2.0",
+        "benchmark": "BugsInPy Tornado bug 1"
+      },
+      "experimentEvidence": {
+        "artifact": "experiences/work-queue/runs/TR-04/result.json",
+        "sourceReportCreatedAt": "2026-08-03T06:53:21Z",
+        "runnerSourceCommitSha": "c277a931248ad503c0864bdc3ace2e04336a4403",
+        "runnerSourceCommitStatus": "available: collection began from the published AM-01 checkpoint"
+      },
+      "promotionEvidence": {
+        "workflowName": "Validate Repair Lab",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": null,
+        "status": "expected-on-pull-request",
+        "runResolver": "Resolve the pull-request run for the commit containing this record at https://github.com/yao23/agent-experience-graph/actions/workflows/repair-lab.yml?query=event%3Apull_request"
+      },
+      "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "experiences/work-queue/runs/TR-04/result.json",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "correctedRegressionBeforeRepair": "1 failure with AssertionError on the obsolete handler stream",
+        "correctedRegressionAfterRepair": "1 test passed",
+        "upstreamWebSocketSuite": "46 tests passed, 1 skipped",
+        "completeHistoricalSuite": "1,146 tests passed, 50 skipped, exit code 0 in 9.481 seconds",
+        "candidatePatchSha256": "afa36076a2784cd709991c585d09afb0be997c2303e8f36cd13dc220856700a4",
+        "changedFiles": ["tornado/websocket.py"]
+      }
+    },
+    "metrics": {
+      "attempts": 2,
+      "completedCommands": 24,
+      "actualTestExecutions": 12,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "The first green patch was rejected as a false positive; the second, evaluator-informed repair passed the focused, related, and complete historical suites."
+    },
+    "limitations": [
+      "The successful second attempt was evaluator-informed because comparison occurred after the first frozen candidate targeted the wrong API surface.",
+      "Historical CPython 3.7 was unavailable; CPython 3.8.20 required a temporary cancellation compatibility shim for four unrelated timeout-cancellation logs.",
+      "This collection run is not causal evidence that AEG retrieval improves repairs."
+    ],
+    "reuse": {
+      "retrievalTags": ["thin proxy delegation", "WebSocket set_nodelay", "stale resource ownership", "TCP_NODELAY", "green test false positive"],
+      "recommendedFor": [
+        "repairing a public wrapper method after resource ownership moves behind a protocol object",
+        "testing delegation through multiple abstraction layers",
+        "rejecting a suite-green repair that targets the wrong public surface"
+      ]
+    }
   }
 ]

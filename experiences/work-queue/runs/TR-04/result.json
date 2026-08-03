@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "TR-04",
+  "category": "test-repair",
+  "outcome": "success",
+  "collectionType": "single-repair-experience",
+  "provenance": {
+    "repository": "https://github.com/tornadoweb/tornado",
+    "license": "Apache-2.0",
+    "benchmark": "BugsInPy Tornado bug 1",
+    "buggyCommitSha": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+    "fixedCommitSha": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63"
+  },
+  "failureSignature": {
+    "project": "Tornado",
+    "runtime": "CPython 3.8.20 with Python 3.7 cancellation-compatibility shim",
+    "dependencies": ["standard-library test configuration; optional pycares, pycurl, speedups, and twisted unavailable"],
+    "focusedScope": "WebSocketHandler.set_nodelay delegation",
+    "type": "AssertionError",
+    "behavior": "The handler checks an obsolete direct stream reference instead of delegating through its active WebSocket protocol."
+  },
+  "candidate": {
+    "attempts": 2,
+    "changedFiles": ["tornado/websocket.py"],
+    "candidatePatchSha256": "afa36076a2784cd709991c585d09afb0be997c2303e8f36cd13dc220856700a4",
+    "commands": 24,
+    "actualTestExecutions": 12,
+    "durationMs": null,
+    "nonCachedTokens": null
+  },
+  "verification": {
+    "adaptedRegressionBeforeRepair": "1 failure with AssertionError",
+    "adaptedRegressionAfterRepair": "1 test passed",
+    "upstreamFocused": "46 WebSocket tests passed, 1 skipped",
+    "fullSuite": "1,146 tests passed, 50 skipped, exit code 0 in 9.481 seconds",
+    "environmentNote": "A temporary four-line cancellation-only shim emulated Python 3.7 behavior on CPython 3.8 and was removed before the candidate hash was rechecked."
+  },
+  "retrieval": {
+    "query": "WebSocket client public set_nodelay method should delegate to underlying stream socket",
+    "retrievedExperienceId": null,
+    "score": null,
+    "matchedFields": [],
+    "used": [],
+    "rejected": ["No verified record exceeded the default retrieval threshold."]
+  },
+  "humanComparison": {
+    "inspectedAfterFirstCandidateHash": true,
+    "inspectedBeforeSuccessfulCandidateHash": true,
+    "rootCauseMatched": true,
+    "semanticBehaviorMatched": true,
+    "changedFilesMatched": true,
+    "textuallyIdentical": false,
+    "summary": "The corrected production repair matches the human ownership chain: handler to abstract protocol method to protocol stream. Only parameter naming differs; the published candidate omits the upstream integration test because the adapted regression remains outside the source patch."
+  },
+  "limitations": [
+    "The successful second attempt was evaluator-informed after the first candidate was rejected.",
+    "CPython 3.7 was unavailable on macOS arm64; the complete suite used isolated CPython 3.8.20 with a narrow, temporary cancellation shim.",
+    "No AEG performance claim is made from this collection run."
+  ]
+}
