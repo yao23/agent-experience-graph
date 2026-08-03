@@ -18,7 +18,7 @@ class VerifiedExperienceSemanticTest(unittest.TestCase):
 
     def test_verified_library_passes(self):
         result = VALIDATOR.validate_library(self.library)
-        self.assertEqual(result, {"status": "passed", "experienceCount": 1, "uniqueIds": 1})
+        self.assertEqual(result, {"status": "passed", "experienceCount": 2, "uniqueIds": 2})
 
     def test_duplicate_ids_fail(self):
         self.library.append(dict(self.library[0]))

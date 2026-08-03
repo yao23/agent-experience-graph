@@ -55,3 +55,16 @@ non-alternating order, inconsistent patch hashes, incorrect arm/outcome counts,
 or aggregate drift. CI promotion evidence is recorded separately in
 `experiences/verified.json`, because the experiment itself did not occur in the
 promotion workflow and a commit cannot embed the ID of its own future run.
+
+## TR-04 transfer pair
+
+A baseline-first transfer pair tested a related channel/protocol/stream
+keepalive repair with `gpt-5.6-sol` and Codex CLI `0.146.0-alpha.9.2`. Both arms
+succeeded in one edit attempt, four completed commands, and two test executions.
+They produced the identical patch SHA-256. The assisted arm added 4,288 ms and
+13,842 total non-cached tokens, so verified retrieval changed neither the repair
+path nor the outcome in this pair and regressed both measured cost dimensions.
+
+This is a single pair, not evidence of a generalized retrieval effect. The
+sanitized control metadata, detailed token reconciliation, retrieval evidence,
+and path comparison are in `results/tr-04-protocol-transfer-pair.json`.

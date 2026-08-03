@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "experimentId": "tr-04-protocol-resource-delegation-transfer-pair",
+  "sourceReportCreatedAt": "2026-08-03T07:10:37.481360+00:00",
+  "patchHashAlgorithm": "sha256",
+  "expectedPatchSha256": "d584a27f9924ce95d051861150f24ab3835eadf185a506f9b74782273fa949e0",
+  "trials": [
+    {
+      "trialId": "protocol-resource-delegation-01",
+      "taskId": "protocol-resource-delegation",
+      "executionOrder": ["baseline", "assisted"],
+      "runnerSourceCommitSha": null,
+      "model": "gpt-5.6-sol",
+      "runtime": {"codexCliVersion": "codex-cli 0.146.0-alpha.9.2", "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {
+          "verified": true,
+          "repairAttempts": 1,
+          "completedCommands": 4,
+          "actualTestExecutions": 2,
+          "nonCachedTokens": 20304,
+          "durationMs": 39308,
+          "patchSha256": "d584a27f9924ce95d051861150f24ab3835eadf185a506f9b74782273fa949e0",
+          "changedFiles": ["channel.py"],
+          "tokenUsage": {"inputTokens": 87701, "cachedInputTokens": 68352, "nonCachedInputTokens": 19349, "outputTokens": 955, "reasoningOutputTokens": 102, "totalNonCachedTokens": 20304},
+          "rootCause": "Channel.set_keepalive accessed the obsolete Channel.socket field instead of delegating to the protocol that owns the active stream."
+        },
+        "assisted": {
+          "verified": true,
+          "repairAttempts": 1,
+          "completedCommands": 4,
+          "actualTestExecutions": 2,
+          "nonCachedTokens": 34146,
+          "durationMs": 43596,
+          "patchSha256": "d584a27f9924ce95d051861150f24ab3835eadf185a506f9b74782273fa949e0",
+          "changedFiles": ["channel.py"],
+          "tokenUsage": {"inputTokens": 89372, "cachedInputTokens": 56320, "nonCachedInputTokens": 33052, "outputTokens": 1094, "reasoningOutputTokens": 96, "totalNonCachedTokens": 34146},
+          "rootCause": "Channel.set_keepalive accessed the obsolete Channel.socket field even though TcpChannelProtocol owns the active stream."
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "armCounts": {"baseline": 1, "assisted": 1},
+    "verifiedCounts": {"baseline": 1, "assisted": 1},
+    "pairedMedianAssistedMinusBaseline": {"completedCommands": 0, "actualTestExecutions": 0, "nonCachedTokens": 13842, "durationMs": 4288}
+  },
+  "control": {
+    "sharedPromptSha256": "baf1d78dcec9a244d5b92fefea02eea84f9c1d01b51a72fb6ff2f2fb4483a729",
+    "initialCommitSha": "15bfa2feef452160fb862b166e4a4b75096f6bc3",
+    "initialObjectIdsMatched": true,
+    "modelMatched": true,
+    "runtimeMatched": true,
+    "onlyIntentionalDifference": "The assisted prompt included a compact capsule from the retrieved verified experience; baseline explicitly had retrieval disabled."
+  },
+  "retrieval": {
+    "query": "repair a public wrapper control after an active resource moved behind a protocol layer",
+    "verifiedExperienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "score": 0.139,
+    "matchedFields": ["reuse.recommendedFor", "task", "reuse.retrievalTags"],
+    "delivery": "Compact verified capsule injected only into the assisted arm."
+  },
+  "pathComparison": {
+    "repairPathChanged": false,
+    "outcomeChanged": false,
+    "patchesIdentical": true,
+    "explanation": "Both arms inspected the issue, ran the failing test, inspected the same production and test files, made one edit to channel.py, and reran the same test. Their source diffs and patch SHA-256 values are identical."
+  },
+  "unavailableMetadata": [
+    "The exact runner source commit SHA is unavailable because this pair ran before the runner and fixture changes were committed."
+  ],
+  "limitations": [
+    "Both arms succeeded, so this pair shows no success-rate improvement.",
+    "The assisted arm regressed wall-clock duration by 4288 milliseconds and total non-cached token usage by 13842 tokens.",
+    "Repair attempts use completed file-change events as a one-edit-cycle proxy.",
+    "One transfer pair cannot support a generalized causal claim."
+  ]
+}

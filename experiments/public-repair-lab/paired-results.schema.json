@@ -14,7 +14,10 @@
     "trials": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/trial"}},
     "aggregate": {"$ref": "#/definitions/aggregate"},
     "unavailableMetadata": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "control": {"$ref": "#/definitions/control"},
+    "retrieval": {"$ref": "#/definitions/retrieval"},
+    "pathComparison": {"$ref": "#/definitions/pathComparison"}
   },
   "definitions": {
     "nullableSha": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{40}$"}]},
@@ -23,6 +26,18 @@
       "type": "object", "additionalProperties": false,
       "required": ["codexCliVersion", "sessionMode", "sandbox"],
       "properties": {"codexCliVersion": {"$ref": "#/definitions/nullableString"}, "sessionMode": {"const": "ephemeral"}, "sandbox": {"const": "workspace-write"}}
+    },
+    "tokenUsage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inputTokens", "cachedInputTokens", "nonCachedInputTokens", "outputTokens", "reasoningOutputTokens", "totalNonCachedTokens"],
+      "properties": {
+        "inputTokens": {"type": "integer", "minimum": 0},
+        "cachedInputTokens": {"type": "integer", "minimum": 0},
+        "nonCachedInputTokens": {"type": "integer", "minimum": 0},
+        "outputTokens": {"type": "integer", "minimum": 0},
+        "reasoningOutputTokens": {"type": "integer", "minimum": 0},
+        "totalNonCachedTokens": {"type": "integer", "minimum": 0}
+      }
     },
     "arm": {
       "type": "object", "additionalProperties": false,
@@ -33,7 +48,11 @@
         "actualTestExecutions": {"type": "integer", "minimum": 0},
         "nonCachedTokens": {"type": "integer", "minimum": 0},
         "durationMs": {"type": "integer", "minimum": 0},
-        "patchSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        "patchSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "repairAttempts": {"type": "integer", "minimum": 0},
+        "changedFiles": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "tokenUsage": {"$ref": "#/definitions/tokenUsage"},
+        "rootCause": {"type": "string", "minLength": 1}
       }
     },
     "trial": {
@@ -65,6 +84,39 @@
       "type": "object", "additionalProperties": false,
       "required": ["armCounts", "verifiedCounts", "pairedMedianAssistedMinusBaseline"],
       "properties": {"armCounts": {"$ref": "#/definitions/countPair"}, "verifiedCounts": {"$ref": "#/definitions/countPair"}, "pairedMedianAssistedMinusBaseline": {"$ref": "#/definitions/deltas"}}
+    },
+    "control": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sharedPromptSha256", "initialCommitSha", "initialObjectIdsMatched", "modelMatched", "runtimeMatched", "onlyIntentionalDifference"],
+      "properties": {
+        "sharedPromptSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "initialCommitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "initialObjectIdsMatched": {"type": "boolean"},
+        "modelMatched": {"type": "boolean"},
+        "runtimeMatched": {"type": "boolean"},
+        "onlyIntentionalDifference": {"type": "string", "minLength": 1}
+      }
+    },
+    "retrieval": {
+      "type": "object", "additionalProperties": false,
+      "required": ["query", "verifiedExperienceId", "score", "matchedFields", "delivery"],
+      "properties": {
+        "query": {"type": "string", "minLength": 1},
+        "verifiedExperienceId": {"type": "string", "minLength": 1},
+        "score": {"type": "number", "minimum": 0},
+        "matchedFields": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "delivery": {"type": "string", "minLength": 1}
+      }
+    },
+    "pathComparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repairPathChanged", "outcomeChanged", "patchesIdentical", "explanation"],
+      "properties": {
+        "repairPathChanged": {"type": "boolean"},
+        "outcomeChanged": {"type": "boolean"},
+        "patchesIdentical": {"type": "boolean"},
+        "explanation": {"type": "string", "minLength": 1}
+      }
     }
   }
 }

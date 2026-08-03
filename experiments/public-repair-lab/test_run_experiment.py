@@ -101,6 +101,13 @@ class PromptTest(unittest.TestCase):
         capsule = RUNNER.experience_prompt(task["experience"])
         self.assertLess(len(capsule), 1400)
 
+    def test_verified_capsule_comes_from_promoted_library(self):
+        task = RUNNER.TASKS["protocol-resource-delegation"]
+        capsule = RUNNER.experience_prompt(task["experience"], task["experienceId"])
+        self.assertIn("trace-2026-08-03-tr-04-tornado-nodelay", capsule)
+        self.assertIn("ownership boundary", capsule)
+        self.assertLess(len(capsule), 1800)
+
 
 if __name__ == "__main__":
     unittest.main()

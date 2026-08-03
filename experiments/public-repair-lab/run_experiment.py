@@ -2,6 +2,7 @@
 """Run isolated baseline and AEG-assisted Codex repairs."""
 
 import argparse
+import hashlib
 import json
 import re
 import shlex
@@ -15,6 +16,7 @@ from pathlib import Path
 
 
 LAB_DIR = Path(__file__).resolve().parent
+REPO_DIR = LAB_DIR.parents[1]
 RESULT_SCHEMA = LAB_DIR / "result.schema.json"
 DEFAULT_TASK = "fastapi-nested-response"
 TASKS = {
@@ -30,6 +32,15 @@ TASKS = {
         "fixture": LAB_DIR / "tasks" / "fastapi-nested-response" / "fixture",
         "experience": LAB_DIR / "tasks" / "fastapi-nested-response" / "experience.json",
         "source": LAB_DIR / "tasks" / "fastapi-nested-response" / "SOURCE.md",
+        "verification": "python3 test_bug.py",
+    },
+    "protocol-resource-delegation": {
+        "name": "Protocol-owned resource delegation transfer",
+        "fixture": LAB_DIR / "tasks" / "protocol-resource-delegation" / "fixture",
+        "experience": REPO_DIR / "experiences" / "verified.json",
+        "experienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+        "retrievalQuery": "repair a public wrapper control after an active resource moved behind a protocol layer",
+        "source": LAB_DIR / "tasks" / "protocol-resource-delegation" / "SOURCE.md",
         "verification": "python3 test_bug.py",
     },
 }
@@ -79,8 +90,22 @@ def prepare_arm(trial_dir, arm, task):
     return workspace
 
 
-def experience_prompt(path):
+def experience_prompt(path, experience_id=None):
     experience = json.loads(path.read_text(encoding="utf-8"))
+    if experience_id is not None:
+        experience = next(item for item in experience if item["id"] == experience_id)
+        steps = "\n".join(f"{index}. {item}" for index, item in enumerate(experience["lessons"][:3], 1))
+        failures = "\n".join(f"- {item}" for item in experience["limitations"][:2])
+        return f"""AEG retrieved a compact, verified recovery capsule:
+
+Verified experience: {experience['id']}
+Pattern: {experience['task']}
+Diagnostic path:
+{steps}
+Guardrails:
+{failures}
+
+Verify that the pattern matches local evidence before editing."""
     steps = "\n".join(f"{index}. {item}" for index, item in enumerate(experience["steps"][1:4], 1))
     failures = "\n".join(f"- {item}" for item in experience["failures"][:2])
     return f"""AEG retrieved a compact, verified recovery capsule:
@@ -101,7 +126,7 @@ Run `{verification_command}` before editing, make the smallest production-code c
 and run the same command afterward. Do not edit the test. Return the requested
 structured result and set aeg_experience_used accurately."""
     if arm == "assisted":
-        return shared + "\n\n" + experience_prompt(task["experience"])
+        return shared + "\n\n" + experience_prompt(task["experience"], task.get("experienceId"))
     return shared + "\n\nThis is the baseline arm. No AEG experience is available."
 
 
@@ -166,13 +191,14 @@ def summarize_events(events, verification_command):
         "commandCount": len(commands),
         "testCommandCount": count_command_invocations(commands, verification_command),
         "fileChangeEvents": file_changes,
+        "attemptCount": file_changes,
         "usage": usage,
         "nonCachedInputTokens": max(0, input_tokens - cached_tokens),
         "totalNonCachedTokens": max(0, input_tokens - cached_tokens) + output_tokens,
     }
 
 
-def execute_arm(codex, trial_dir, arm, task):
+def execute_arm(codex, trial_dir, arm, task, model):
     workspace = trial_dir / arm
     events_path = trial_dir / f"{arm}.jsonl"
     stderr_path = trial_dir / f"{arm}.stderr.log"
@@ -182,6 +208,9 @@ def execute_arm(codex, trial_dir, arm, task):
         codex,
         "exec",
         "--ephemeral",
+        "--ignore-user-config",
+        "--model",
+        model,
         "--sandbox",
         "workspace-write",
         "--json",
@@ -205,6 +234,7 @@ def execute_arm(codex, trial_dir, arm, task):
         "verification": verification,
         "events": summarize_events(events, task["verification"]),
         "changedFiles": run(["git", "diff", "--name-only"], workspace).stdout.splitlines(),
+        "patchSha256": hashlib.sha256(diff.encode("utf-8")).hexdigest(),
     }
 
 
@@ -273,7 +303,7 @@ def write_report(run_dir, report):
             verification = item.get("verification", {})
             events = item.get("events", {})
             rows.append(
-                f"| {trial['index']} | {arm} | {verification.get('passed', False)} | {item.get('durationMs', '-')} | "
+            f"| {trial['index']} | {arm} | {verification.get('passed', False)} | {events.get('attemptCount', '-')} | {item.get('durationMs', '-')} | "
                 f"{events.get('commandCount', '-')} | {events.get('testCommandCount', '-')} | "
                 f"{events.get('totalNonCachedTokens', '-')} |"
             )
@@ -285,8 +315,8 @@ Task: **{report['task']}**
 
 This is a controlled repair experiment. A positive result on one task family is not evidence of general improvement.
 
-| Trial | Arm | Verified | Duration ms | Commands | Test runs | Non-cached tokens |
-|---:|---|---:|---:|---:|---:|---:|
+| Trial | Arm | Verified | Attempts | Duration ms | Commands | Test runs | Non-cached tokens |
+|---:|---|---:|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
 ## Aggregate
@@ -306,6 +336,7 @@ def main():
     parser.add_argument("--output", help="Override the run output directory.")
     parser.add_argument("--task", choices=sorted(TASKS), default=DEFAULT_TASK, help="Public repair task to run.")
     parser.add_argument("--trials", type=int, default=1, help="Number of paired trials (1-10).")
+    parser.add_argument("--model", default="gpt-5.6-sol", help="Explicit Codex model used identically for both arms.")
     args = parser.parse_args()
     if not 1 <= args.trials <= 10:
         parser.error("--trials must be between 1 and 10")
@@ -320,10 +351,20 @@ def main():
         "task": task["name"],
         "source": str(task["source"].relative_to(LAB_DIR)),
         "createdAt": datetime.now(timezone.utc).isoformat(),
+        "model": args.model,
+        "sharedPromptSha256": hashlib.sha256(prompt_for("baseline", task).split("\n\nThis is the baseline arm.")[0].encode("utf-8")).hexdigest(),
         "trialsRequested": args.trials,
         "trials": [],
     }
     codex = shutil.which("codex")
+    if codex:
+        report["codexVersion"] = run([codex, "--version"], LAB_DIR).stdout.strip()
+    if task.get("experienceId"):
+        report["retrieval"] = {
+            "query": task["retrievalQuery"],
+            "verifiedExperienceId": task["experienceId"],
+            "delivery": "compact capsule injected only into the assisted arm",
+        }
 
     for index in range(1, args.trials + 1):
         trial_dir = run_dir / f"trial-{index:02d}"
@@ -343,7 +384,7 @@ def main():
         if args.prepare_only or not codex:
             continue
         for arm in trial["executionOrder"]:
-            trial["arms"][arm] = execute_arm(codex, trial_dir, arm, task)
+            trial["arms"][arm] = execute_arm(codex, trial_dir, arm, task, args.model)
 
     if args.prepare_only or not codex:
         report["status"] = "prepared" if args.prepare_only else "blocked-codex-not-found"

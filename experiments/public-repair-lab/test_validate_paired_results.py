@@ -11,6 +11,7 @@ SPEC = importlib.util.spec_from_file_location("aeg_paired_validator", VALIDATOR_
 VALIDATOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VALIDATOR)
 RESULTS_PATH = VALIDATOR_PATH.with_name("results") / "v0.1.3-paired-results.json"
+TRANSFER_RESULTS_PATH = VALIDATOR_PATH.with_name("results") / "tr-04-protocol-transfer-pair.json"
 
 
 class PairedResultsValidationTest(unittest.TestCase):
@@ -52,6 +53,14 @@ class PairedResultsValidationTest(unittest.TestCase):
     def test_rejects_forbidden_raw_artifact_field(self):
         self.results["trials"][0]["rawPrompt"] = "not publishable"
         self.assert_invalid("forbidden public field")
+
+    def test_validates_transfer_pair_and_detailed_token_reconciliation(self):
+        transfer = json.loads(TRANSFER_RESULTS_PATH.read_text(encoding="utf-8"))
+        aggregate = VALIDATOR.validate_results(transfer)
+        self.assertEqual(aggregate["verifiedCounts"], {"baseline": 1, "assisted": 1})
+        transfer["trials"][0]["arms"]["assisted"]["tokenUsage"]["totalNonCachedTokens"] += 1
+        with self.assertRaisesRegex(VALIDATOR.ValidationError, "total non-cached tokens do not reconcile"):
+            VALIDATOR.validate_results(transfer)
 
 
 if __name__ == "__main__":

@@ -106,6 +106,16 @@ def validate_results(results):
             require(isinstance(row.get("verified"), bool), f"{arm_path}.verified must be boolean")
             for metric in METRICS:
                 require(is_nonnegative_int(row.get(metric)), f"{arm_path}.{metric} must be a non-negative integer")
+            if "repairAttempts" in row:
+                require(is_nonnegative_int(row["repairAttempts"]), f"{arm_path}.repairAttempts must be a non-negative integer")
+            if "tokenUsage" in row:
+                usage = row["tokenUsage"]
+                require(isinstance(usage, dict), f"{arm_path}.tokenUsage must be an object")
+                for name in ("inputTokens", "cachedInputTokens", "nonCachedInputTokens", "outputTokens", "reasoningOutputTokens", "totalNonCachedTokens"):
+                    require(is_nonnegative_int(usage.get(name)), f"{arm_path}.tokenUsage.{name} must be a non-negative integer")
+                require(usage["nonCachedInputTokens"] == usage["inputTokens"] - usage["cachedInputTokens"], f"{arm_path} non-cached input tokens do not reconcile")
+                require(usage["totalNonCachedTokens"] == usage["nonCachedInputTokens"] + usage["outputTokens"], f"{arm_path} total non-cached tokens do not reconcile")
+                require(row["nonCachedTokens"] == usage["totalNonCachedTokens"], f"{arm_path} aggregate tokens do not match detailed usage")
             patch_hash = row.get("patchSha256")
             require(isinstance(patch_hash, str) and SHA256_RE.fullmatch(patch_hash), f"{arm_path}.patchSha256 must be a SHA-256 hex digest")
             all_patch_hashes.add(patch_hash)
@@ -158,8 +168,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", default=str(DEFAULT_RESULTS))
     parser.add_argument("--experiences", default=str(DEFAULT_EXPERIENCES))
+    parser.add_argument("--skip-experience", action="store_true", help="Validate a paired result that is not itself a promoted experience.")
     args = parser.parse_args()
-    aggregate = validate_files(args.results, args.experiences)
+    if args.skip_experience:
+        aggregate = validate_results(json.loads(Path(args.results).read_text(encoding="utf-8")))
+    else:
+        aggregate = validate_files(args.results, args.experiences)
     print(json.dumps({"status": "passed", "aggregate": aggregate}, indent=2))
 
 
