@@ -38,7 +38,7 @@ Update both the summary table and the task's `STATUS.md` after every phase.
 | CI-01 | Build/CI Recovery | Black | BugsInPy 1 | partial | Codex | 1 | `candidates/CI-01.json` |
 | CI-02 | Build/CI Recovery | Keras | BugsInPy 2 | queued | Codex | 0 | — |
 | CI-03 | Build/CI Recovery | Ansible | BugsInPy 5 | queued | Codex | 0 | — |
-| AM-01 | API/Dependency Migration | Sanic | BugsInPy 2 | queued | Codex | 0 | — |
+| AM-01 | API/Dependency Migration | Sanic | BugsInPy 2 | partial | Codex | 1 | `candidates/AM-01.json` |
 | AM-02 | API/Dependency Migration | Keras | BugsInPy 4 | queued | Codex | 0 | — |
 | AM-03 | API/Dependency Migration | Ansible | BugsInPy 6 | queued | Codex | 0 | — |
 

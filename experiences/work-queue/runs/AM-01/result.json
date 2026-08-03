@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "AM-01",
+  "category": "api-dependency-migration",
+  "outcome": "partial",
+  "collectionType": "single-repair-experience",
+  "provenance": {
+    "repository": "https://github.com/sanic-org/sanic",
+    "license": "MIT",
+    "benchmark": "BugsInPy Sanic bug 2",
+    "buggyCommitSha": "ba9b432993019b0af0c4827a5ed42aaa091bd17d",
+    "fixedCommitSha": "801595e24acdf8050b8d3ffa512d424147848d32"
+  },
+  "failureSignature": {
+    "project": "Sanic 19.12.0",
+    "runtime": "Python 3.9.6",
+    "dependencies": ["httptools 0.8.0", "websockets 8.1", "multidict 4.7.6", "httpx 0.9.3", "pytest 5.2.1"],
+    "focusedScope": "AsyncioServer lifecycle proxy",
+    "type": "AttributeError",
+    "behavior": "The wrapper does not expose start_serving or serve_forever even when the underlying asyncio server implements them."
+  },
+  "candidate": {
+    "attempts": 1,
+    "changedFiles": ["sanic/server.py"],
+    "candidatePatchSha256": "661f79a497a2c01d460a69b8564891aae0b7840f897cc976a9bc81371040c43e",
+    "commands": 10,
+    "actualTestExecutions": 5,
+    "durationMs": null,
+    "nonCachedTokens": null
+  },
+  "verification": {
+    "adaptedRegressionBeforeRepair": "1 error with AttributeError",
+    "adaptedRegressionAfterRepair": "1 test passed",
+    "sourceCompilation": "passed",
+    "upstreamFocused": "start-serving server-creation test passed when run alone",
+    "relatedPair": "one test passed and one failed from port reuse when run together; each focused case passed in isolation",
+    "fullSuite": "not run because historical networking and dependency behavior was not stable under the bounded modern environment"
+  },
+  "retrieval": {
+    "query": "keep a framework proxy aligned with newly added asyncio server lifecycle methods",
+    "retrievedExperienceId": null,
+    "score": null,
+    "matchedFields": [],
+    "used": [],
+    "rejected": ["No verified record exceeded the default retrieval threshold."]
+  },
+  "humanComparison": {
+    "inspectedAfterCandidateHash": true,
+    "rootCauseMatched": true,
+    "semanticBehaviorMatched": false,
+    "changedFilesMatched": false,
+    "textuallyIdentical": false,
+    "summary": "Both delegate the two Python 3.7 lifecycle methods. The human fix additionally converts a missing underlying method into an explicit NotImplementedError and adds an upstream integration test."
+  },
+  "limitations": [
+    "This is experience collection, not causal AEG evidence.",
+    "The candidate lacks the human fix's explicit compatibility error for older asyncio or uvloop servers.",
+    "The full historical suite was not run; localhost tests showed inter-test port reuse when combined."
+  ]
+}
