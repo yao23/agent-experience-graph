@@ -1,0 +1,145 @@
+[
+  {
+    "id": "trace-2026-08-03-repair-lab-ci-v0.1.3",
+    "task": "Make the AEG Public Repair Lab repeatable, trustworthy, and continuously validated",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Repair experiment telemetry before interpreting the A/B result",
+        "skills": ["evaluation-harness", "event-stream-analysis"],
+        "tools": ["python", "codex-jsonl"],
+        "outcome": "success",
+        "lessons": [
+          "Count only completed command events; started and completed lifecycle events otherwise double the metric.",
+          "Count test executions by parsing executable shell segments, not by searching for a test filename substring."
+        ]
+      },
+      {
+        "description": "Replace an overly obvious repair fixture with a harder public, licensed failure",
+        "skills": ["benchmark-design", "license-aware-fixture-design"],
+        "tools": ["BugsInPy", "FastAPI", "unittest"],
+        "outcome": "success",
+        "lessons": [
+          "A fixture should preserve the upstream failure mechanism while remaining dependency-free and objectively verifiable.",
+          "Record repository, buggy commit, fixed commit, license, and benchmark cross-reference next to the fixture."
+        ]
+      },
+      {
+        "description": "Deliver retrieved experience without adding artificial tool overhead",
+        "skills": ["experience-retrieval-design", "prompt-injection-design"],
+        "tools": ["codex-exec"],
+        "outcome": "success",
+        "lessons": [
+          "Inject a compact sanitized recovery capsule directly into the assisted prompt instead of requiring an agent to open a separate experience file.",
+          "Treat retrieved experience as guidance that must match local evidence, not as an unverified answer."
+        ]
+      },
+      {
+        "description": "Run paired trials and report both improvements and regressions",
+        "skills": ["paired-experiment-design", "cost-analysis"],
+        "tools": ["python", "codex-exec", "git"],
+        "outcome": "success",
+        "lessons": [
+          "Alternate baseline and assisted execution order to reduce simple warm-cache and first-run bias.",
+          "Require at least three paired trials before assigning an efficiency verdict.",
+          "Preserve success, commands, test runs, tokens, duration, patches, and raw events; do not hide latency regressions behind token or command wins."
+        ]
+      },
+      {
+        "description": "Continuously validate the Repair Lab and packaged extension in GitHub Actions",
+        "skills": ["github-actions", "release-validation"],
+        "tools": ["GitHub Actions", "python", "npm", "TypeScript", "VSCE"],
+        "outcome": "success",
+        "lessons": [
+          "CI should validate telemetry tests, prepare every fixture, run extension tests, compile TypeScript, and package the VSIX without launching paid agent trials.",
+          "A successful workflow run is promotion evidence for the experience, not proof that the experiment generalizes to other task families."
+        ]
+      }
+    ],
+    "skills": [
+      "evaluation-harness",
+      "benchmark-design",
+      "experience-retrieval-design",
+      "paired-experiment-design",
+      "github-actions",
+      "release-validation"
+    ],
+    "tools": [
+      "python",
+      "codex-exec",
+      "git",
+      "GitHub Actions",
+      "npm",
+      "TypeScript",
+      "VSCE"
+    ],
+    "constraints": [
+      "Do not publish raw JSONL, stderr logs, local patches, credentials, or private workspace data.",
+      "Keep agent trials isolated, ephemeral, workspace-scoped, and free of upstream repository side effects.",
+      "Do not claim general success-rate or latency improvement from one task family."
+    ],
+    "lessons": [
+      "Measurement integrity comes before optimization: incorrect event accounting can make a neutral result look favorable.",
+      "Retrieval delivery is part of system cost; avoid charging an extra tool call merely to load the recommendation.",
+      "Verified negative evidence is reusable: the five-pair sample reduced median commands and paired non-cached tokens but regressed paired wall time.",
+      "Store compact public experiences with provenance and explicit limitations so another agent can reuse the method without ingesting raw execution logs."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6",
+      "workflowRun": "https://github.com/yao23/agent-experience-graph/actions/runs/30783898884",
+      "workflowRunId": 30783898884,
+      "workflowJobId": 91593684086,
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-03T04:15:23Z"
+    },
+    "verification": {
+      "status": "passed",
+      "workflow": "Validate Repair Lab",
+      "job": "validate",
+      "successfulSteps": [
+        "Check out source",
+        "Set up Node.js",
+        "Test Repair Lab telemetry and task preparation",
+        "Install extension dependencies",
+        "Test and package extension"
+      ],
+      "localChecks": {
+        "repairLabPythonTests": "7/7 passed",
+        "extensionTests": "6/6 passed",
+        "fixturesPrepared": ["fastapi-nested-response", "pysnooper-path-output"],
+        "typescriptCompilation": "passed",
+        "vsixPackaging": "passed"
+      }
+    },
+    "metrics": {
+      "pairedTrials": 5,
+      "baselineArmsVerified": 5,
+      "assistedArmsVerified": 5,
+      "pairedMedianAssistedMinusBaseline": {
+        "completedCommands": -1,
+        "testExecutions": 0,
+        "nonCachedTokens": -732,
+        "durationMs": 18235
+      },
+      "interpretation": "Bounded tool-cycle and token improvement on one task family; no success-rate improvement and wall-clock latency regressed."
+    },
+    "reuse": {
+      "retrievalTags": [
+        "agent evaluation",
+        "A/B repair experiment",
+        "telemetry correctness",
+        "paired trials",
+        "experience injection",
+        "GitHub Actions",
+        "VS Code extension release"
+      ],
+      "recommendedFor": [
+        "building an auditable agent benchmark",
+        "repairing duplicated JSONL event metrics",
+        "adding CI for agent experiment fixtures",
+        "publishing a verified reusable experience"
+      ]
+    }
+  }
+]

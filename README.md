@@ -77,6 +77,7 @@ It is intentionally runtime-neutral:
 - `capability.json` describes the capability for launchers, registries, and importers.
 - `scripts/recommend_traces.py` ranks similar traces and recommends reusable skills/tools.
 - `references/trace_schema.md` defines the trace data contract.
+- `experiences/verified.json` stores sanitized, executed, and objectively verified shared experiences.
 - `docs/60-second-demo.html` shows the core experience-reuse product moment.
 - `experiments/public-repair-lab/` runs the first baseline-versus-AEG public bug repair experiment.
 
@@ -112,6 +113,19 @@ In plain English, this repository contains:
 - a small script that compares a new task against past tasks
 - example traces so people can try the idea quickly
 - a short demo that makes the product idea easy to explain
+
+## Reuse verified experiences
+
+The public library under `experiences/` contains compact records backed by
+execution evidence and explicit limitations. Retrieve from it directly:
+
+```bash
+python3 scripts/recommend_traces.py \
+  --traces experiences/verified.json \
+  --query '{"task":"validate a repeatable agent repair experiment in CI"}'
+```
+
+See `experiences/README.md` for promotion and redaction requirements.
 
 ## Who It Is For
 

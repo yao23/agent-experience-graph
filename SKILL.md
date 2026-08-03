@@ -46,9 +46,13 @@ Run the bundled recommender against a trace file:
 
 ```bash
 python3 scripts/recommend_traces.py \
-  --traces assets/example_traces.json \
+  --traces experiences/verified.json \
   --query query.json
 ```
+
+Use `assets/example_traces.json` for demonstrations. Prefer
+`experiences/verified.json` when recommendations should come from executed,
+publicly auditable work.
 
 Use the output as evidence, not as an order. Prefer recommendations with:
 

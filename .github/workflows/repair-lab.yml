@@ -33,6 +33,8 @@ jobs:
 
       - name: Test Repair Lab telemetry and task preparation
         run: |
+          python3 -m json.tool experiences/verified.json > /dev/null
+          python3 scripts/recommend_traces.py --traces experiences/verified.json --query '{"task":"validate a repeatable agent repair experiment in CI"}'
           python3 experiments/public-repair-lab/test_run_experiment.py
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task fastapi-nested-response --trials 3 --output /tmp/aeg-fastapi
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task pysnooper-path-output --output /tmp/aeg-pysnooper

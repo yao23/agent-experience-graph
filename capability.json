@@ -13,7 +13,7 @@
     {
       "name": "recommend",
       "description": "Rank similar traces and recommend reusable skills, tools, and lessons.",
-      "command": "python3 scripts/recommend_traces.py --traces assets/example_traces.json --query '<query-json-or-file>'"
+      "command": "python3 scripts/recommend_traces.py --traces experiences/verified.json --query '<query-json-or-file>'"
     },
     {
       "name": "append-trace",
@@ -23,7 +23,9 @@
   ],
   "data_contracts": {
     "trace_library": "references/trace_schema.md",
-    "example_traces": "assets/example_traces.json"
+    "example_traces": "assets/example_traces.json",
+    "verified_experiences": "experiences/verified.json",
+    "experience_promotion_rules": "experiences/README.md"
   },
   "adapters": {
     "codex": {
