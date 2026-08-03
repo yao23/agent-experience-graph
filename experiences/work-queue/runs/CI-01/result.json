@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "CI-01",
+  "category": "build-ci-recovery",
+  "outcome": "partial",
+  "collectionType": "single-repair-experience",
+  "provenance": {
+    "repository": "https://github.com/psf/black",
+    "license": "MIT",
+    "benchmark": "BugsInPy Black bug 1",
+    "buggyCommitSha": "26c9465a22c732ab1e17b0dec578fa3432e9b558",
+    "fixedCommitSha": "c0a7582e3d4cc8bec3b7f5a6c52b36880dcb57d7"
+  },
+  "failureSignature": {
+    "project": "Black",
+    "runtime": "Python 3.9.6",
+    "dependencies": ["click 8.1.8", "attrs 26.1.0", "pathspec 0.12.1", "typed-ast 1.5.5"],
+    "focusedScope": "reformat_many executor initialization",
+    "type": "OSError",
+    "behavior": "ProcessPoolExecutor initialization aborts before formatting is scheduled."
+  },
+  "candidate": {
+    "attempts": 1,
+    "changedFiles": ["black.py"],
+    "candidatePatchSha256": "419bfd6a1b930a4638a8ff68e6b2002697a534c5247681be46c4ea2498836840",
+    "commands": 9,
+    "actualTestExecutions": 4,
+    "durationMs": null,
+    "nonCachedTokens": null
+  },
+  "verification": {
+    "adaptedRegressionBeforeRepair": "1 error with OSError",
+    "adaptedRegressionAfterRepair": "1 test passed",
+    "syntaxCompilation": "passed",
+    "upstreamFocused": "not runnable: historical test module required unavailable/incompatible optional aiohttp test infrastructure",
+    "fullSuite": "not run because the historical dependency/test environment could not be reconstructed within the bounded task"
+  },
+  "retrieval": {
+    "query": "fall back to serial execution when CI lacks multiprocessing primitives",
+    "retrievedExperienceId": null,
+    "score": null,
+    "matchedFields": [],
+    "used": [],
+    "rejected": ["No verified record exceeded the default retrieval threshold."]
+  },
+  "humanComparison": {
+    "inspectedAfterCandidateHash": true,
+    "rootCauseMatched": true,
+    "semanticBehaviorMatched": true,
+    "changedFilesMatched": false,
+    "textuallyIdentical": false,
+    "summary": "Both catch ProcessPoolExecutor OSError and retain non-process formatting. The candidate supplies a one-worker ThreadPoolExecutor; the human fix passes None to asyncio's default executor and adds an upstream integration test."
+  },
+  "limitations": [
+    "This is experience collection, not causal AEG evidence.",
+    "The historical upstream focused module and full suite were not runnable under the bounded modern environment.",
+    "The candidate's explicit one-worker thread strategy is behaviorally aligned but not identical to the human default-executor strategy."
+  ]
+}

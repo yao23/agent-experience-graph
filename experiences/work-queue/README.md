@@ -35,7 +35,7 @@ Update both the summary table and the task's `STATUS.md` after every phase.
 | TR-02 | Test Repair | HTTPie | BugsInPy 1 | queued | Codex | 0 | — |
 | TR-03 | Test Repair | Scrapy | BugsInPy 1 | partial | Codex | 1 | `candidates/TR-03.json` |
 | TR-04 | Test Repair | Tornado | BugsInPy 1 | queued | Codex | 0 | — |
-| CI-01 | Build/CI Recovery | Black | BugsInPy 1 | queued | Codex | 0 | — |
+| CI-01 | Build/CI Recovery | Black | BugsInPy 1 | partial | Codex | 1 | `candidates/CI-01.json` |
 | CI-02 | Build/CI Recovery | Keras | BugsInPy 2 | queued | Codex | 0 | — |
 | CI-03 | Build/CI Recovery | Ansible | BugsInPy 5 | queued | Codex | 0 | — |
 | AM-01 | API/Dependency Migration | Sanic | BugsInPy 2 | queued | Codex | 0 | — |
