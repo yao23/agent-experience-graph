@@ -117,15 +117,20 @@ In plain English, this repository contains:
 ## Reuse verified experiences
 
 The public library under `experiences/` contains compact records backed by
-execution evidence and explicit limitations. Retrieve from it directly:
+execution evidence and explicit limitations. Its reuse tags and recommended-use
+phrases participate directly in explainable retrieval. Retrieve from it directly:
 
 ```bash
 python3 scripts/recommend_traces.py \
   --traces experiences/verified.json \
-  --query '{"task":"validate a repeatable agent repair experiment in CI"}'
+  --query '{"task":"repair duplicated JSONL event metrics"}'
 ```
 
-See `experiences/README.md` for promotion and redaction requirements.
+The Repair Lab's five-pair counters are published separately as a sanitized,
+machine-readable artifact whose medians are recomputed and cross-checked in CI.
+Experiment provenance is distinct from promotion-workflow provenance, and
+unavailable original-run metadata is explicitly `null`. See
+`experiences/README.md` for schema, audit, promotion, and redaction requirements.
 
 ## Who It Is For
 

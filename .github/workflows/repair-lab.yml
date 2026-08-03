@@ -3,14 +3,26 @@ name: Validate Repair Lab
 on:
   pull_request:
     paths:
+      - "experiences/**"
       - "experiments/public-repair-lab/**"
       - "integrations/vscode/**"
+      - "scripts/**"
+      - "references/trace_schema.md"
+      - "README.md"
+      - "SKILL.md"
+      - "capability.json"
       - ".github/workflows/repair-lab.yml"
   push:
     branches: [main]
     paths:
+      - "experiences/**"
       - "experiments/public-repair-lab/**"
       - "integrations/vscode/**"
+      - "scripts/**"
+      - "references/trace_schema.md"
+      - "README.md"
+      - "SKILL.md"
+      - "capability.json"
       - ".github/workflows/repair-lab.yml"
   workflow_dispatch:
 
@@ -31,11 +43,23 @@ jobs:
           cache: npm
           cache-dependency-path: integrations/vscode/package-lock.json
 
-      - name: Test Repair Lab telemetry and task preparation
+      - name: Validate public experience schemas
         run: |
-          python3 -m json.tool experiences/verified.json > /dev/null
-          python3 scripts/recommend_traces.py --traces experiences/verified.json --query '{"task":"validate a repeatable agent repair experiment in CI"}'
+          npx --yes ajv-cli@5.0.0 validate --all-errors \
+            -s experiences/verified-experience.schema.json \
+            -d experiences/verified.json
+          npx --yes ajv-cli@5.0.0 validate --all-errors \
+            -s experiments/public-repair-lab/paired-results.schema.json \
+            -d experiments/public-repair-lab/results/v0.1.3-paired-results.json
+          python3 scripts/validate_verified_experiences.py
+          python3 experiments/public-repair-lab/validate_paired_results.py
+
+      - name: Test retrieval, validation, telemetry, and task preparation
+        run: |
+          python3 scripts/test_recommend_traces.py
+          python3 scripts/test_validate_verified_experiences.py
           python3 experiments/public-repair-lab/test_run_experiment.py
+          python3 experiments/public-repair-lab/test_validate_paired_results.py
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task fastapi-nested-response --trials 3 --output /tmp/aeg-fastapi
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task pysnooper-path-output --output /tmp/aeg-pysnooper
 
@@ -47,4 +71,5 @@ jobs:
         working-directory: integrations/vscode
         run: |
           npm test
+          npm run compile
           npm run package

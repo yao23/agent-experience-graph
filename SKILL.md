@@ -61,6 +61,11 @@ Use the output as evidence, not as an order. Prefer recommendations with:
 - clear lessons or failure notes
 - skills/tools that are available in the current environment
 
+For explainability, inspect each match's `evidence` array. It identifies the
+task, subtask, reuse tag, recommended-use phrase, skill, tool, or relevant query
+constraint that contributed to the score. Verification status and numeric
+metrics do not add lexical relevance.
+
 ## Recording A Trace
 
 After finishing a task, create a compact trace with no secrets, credentials, private user data, or proprietary snippets. Keep enough detail to support future retrieval:
@@ -104,3 +109,6 @@ python3 scripts/recommend_traces.py \
 ## Trace Schema
 
 For field definitions and an example trace library, read `references/trace_schema.md` when creating new datasets, validators, or import/export adapters.
+Executed public records additionally follow
+`experiences/verified-experience.schema.json` and the semantic promotion rules
+in `experiences/README.md`.

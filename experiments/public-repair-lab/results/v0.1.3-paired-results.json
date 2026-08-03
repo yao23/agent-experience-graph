@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0.0",
+  "experimentId": "repair-lab-fastapi-v0.1.3-five-pair",
+  "sourceReportCreatedAt": "2026-08-03T00:38:20.080621+00:00",
+  "patchHashAlgorithm": "sha256",
+  "expectedPatchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b",
+  "trials": [
+    {
+      "trialId": "fastapi-nested-response-01",
+      "taskId": "fastapi-nested-response",
+      "executionOrder": ["baseline", "assisted"],
+      "runnerSourceCommitSha": null,
+      "model": null,
+      "runtime": {"codexCliVersion": null, "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {"verified": true, "completedCommands": 6, "actualTestExecutions": 2, "nonCachedTokens": 23232, "durationMs": 41928, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"},
+        "assisted": {"verified": true, "completedCommands": 4, "actualTestExecutions": 2, "nonCachedTokens": 37016, "durationMs": 60754, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"}
+      }
+    },
+    {
+      "trialId": "fastapi-nested-response-02",
+      "taskId": "fastapi-nested-response",
+      "executionOrder": ["assisted", "baseline"],
+      "runnerSourceCommitSha": null,
+      "model": null,
+      "runtime": {"codexCliVersion": null, "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {"verified": true, "completedCommands": 6, "actualTestExecutions": 2, "nonCachedTokens": 23894, "durationMs": 61510, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"},
+        "assisted": {"verified": true, "completedCommands": 4, "actualTestExecutions": 2, "nonCachedTokens": 23162, "durationMs": 55891, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"}
+      }
+    },
+    {
+      "trialId": "fastapi-nested-response-03",
+      "taskId": "fastapi-nested-response",
+      "executionOrder": ["baseline", "assisted"],
+      "runnerSourceCommitSha": null,
+      "model": null,
+      "runtime": {"codexCliVersion": null, "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {"verified": true, "completedCommands": 5, "actualTestExecutions": 2, "nonCachedTokens": 23133, "durationMs": 47826, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"},
+        "assisted": {"verified": true, "completedCommands": 4, "actualTestExecutions": 2, "nonCachedTokens": 39441, "durationMs": 66061, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"}
+      }
+    },
+    {
+      "trialId": "fastapi-nested-response-04",
+      "taskId": "fastapi-nested-response",
+      "executionOrder": ["assisted", "baseline"],
+      "runnerSourceCommitSha": null,
+      "model": null,
+      "runtime": {"codexCliVersion": null, "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {"verified": true, "completedCommands": 3, "actualTestExecutions": 2, "nonCachedTokens": 36657, "durationMs": 36394, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"},
+        "assisted": {"verified": true, "completedCommands": 3, "actualTestExecutions": 2, "nonCachedTokens": 35778, "durationMs": 60751, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"}
+      }
+    },
+    {
+      "trialId": "fastapi-nested-response-05",
+      "taskId": "fastapi-nested-response",
+      "executionOrder": ["baseline", "assisted"],
+      "runnerSourceCommitSha": null,
+      "model": null,
+      "runtime": {"codexCliVersion": null, "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {"verified": true, "completedCommands": 5, "actualTestExecutions": 2, "nonCachedTokens": 53451, "durationMs": 81583, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"},
+        "assisted": {"verified": true, "completedCommands": 4, "actualTestExecutions": 2, "nonCachedTokens": 21577, "durationMs": 45754, "patchSha256": "d006c31d75b2f8c063733257775e9f944b92cad87137145b3a90c6c95b63585b"}
+      }
+    }
+  ],
+  "aggregate": {
+    "armCounts": {"baseline": 5, "assisted": 5},
+    "verifiedCounts": {"baseline": 5, "assisted": 5},
+    "pairedMedianAssistedMinusBaseline": {"completedCommands": -1, "actualTestExecutions": 0, "nonCachedTokens": -732, "durationMs": 18235}
+  },
+  "unavailableMetadata": [
+    "The exact runner source commit SHA is unavailable because the trials ran before the runner changes were committed.",
+    "The model identifier and Codex CLI version were not emitted by the captured event stream and are unavailable."
+  ],
+  "limitations": [
+    "All ten arms succeeded, so this sample shows no success-rate improvement.",
+    "Paired median wall-clock duration regressed by 18235 milliseconds.",
+    "The five pairs cover one task family and do not support generalized success-rate or latency claims."
+  ]
+}

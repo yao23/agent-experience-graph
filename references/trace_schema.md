@@ -50,3 +50,17 @@ A trace is a sanitized summary of one agent attempt. It should be small enough f
 - Remove secrets, credentials, user data, proprietary source snippets, and raw customer content.
 - Prefer abstracted lessons over full prompts or full command output.
 - Keep enough fields to explain why a skill or tool recommendation is relevant.
+
+## Verified-experience extension
+
+`experiences/verified-experience.schema.json` extends this compact retrieval
+schema for executed, publicly auditable records. It requires structured public
+source provenance, separate experiment and promotion evidence, verification
+evidence, numeric paired aggregates, retrieval metadata, and explicit
+limitations. The base fields above remain unchanged, so verified experiences
+remain consumable by the same recommender.
+
+JSON Schema validates record shape and types. The semantic validator at
+`scripts/validate_verified_experiences.py` additionally enforces unique IDs,
+evidence consistency, regression/no-success-rate disclosures, and public-data
+redaction rules.

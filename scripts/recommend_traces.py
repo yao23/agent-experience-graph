@@ -29,6 +29,16 @@ STOPWORDS = {
     "with",
 }
 
+FIELD_WEIGHTS = {
+    "task": 0.27,
+    "subtasks": 0.28,
+    "reuse.retrievalTags": 0.15,
+    "reuse.recommendedFor": 0.18,
+    "skills": 0.035,
+    "tools": 0.035,
+    "constraints": 0.05,
+}
+
 
 def tokenize(value):
     if isinstance(value, list):
@@ -85,8 +95,32 @@ def normalize_subtasks(record):
     return normalized
 
 
+def best_phrase_match(query_phrase, candidates):
+    best_score = 0.0
+    best_phrase = ""
+    for candidate in candidates:
+        score = similarity(query_phrase, candidate)
+        if score > best_score:
+            best_score = score
+            best_phrase = str(candidate)
+    return best_score, best_phrase
+
+
+def field_evidence(field, query_phrase, trace_phrase, score):
+    return {
+        "field": field,
+        "query": str(query_phrase),
+        "trace": str(trace_phrase),
+        "similarity": round(score, 4),
+        "contribution": round(FIELD_WEIGHTS[field] * score, 4),
+    }
+
+
 def trace_score(query, trace):
     task_score = similarity(query.get("task", ""), trace.get("task", ""))
+    evidence = []
+    if task_score > 0:
+        evidence.append(field_evidence("task", query.get("task", ""), trace.get("task", ""), task_score))
     query_subtasks = normalize_subtasks(query)
     trace_subtasks = normalize_subtasks(trace)
 
@@ -104,22 +138,58 @@ def trace_score(query, trace):
         if best_trace_subtask:
             subtask_scores.append(best_score)
             matched_pairs.append((query_subtask, best_trace_subtask, best_score))
+            if best_score > 0:
+                evidence.append(
+                    field_evidence(
+                        "subtasks",
+                        q_desc,
+                        best_trace_subtask.get("description", ""),
+                        best_score,
+                    )
+                )
 
     average_subtask_score = (
         sum(subtask_scores) / len(subtask_scores) if subtask_scores else 0.0
     )
     skill_score = similarity(query.get("skills", []), trace.get("skills", []))
     tool_score = similarity(query.get("tools", []), trace.get("tools", []))
+    if skill_score > 0:
+        evidence.append(field_evidence("skills", query.get("skills", []), trace.get("skills", []), skill_score))
+    if tool_score > 0:
+        evidence.append(field_evidence("tools", query.get("tools", []), trace.get("tools", []), tool_score))
+
+    reuse = trace.get("reuse", {}) if isinstance(trace.get("reuse", {}), dict) else {}
+    query_task = query.get("task", "")
+    tag_score, matched_tag = best_phrase_match(query_task, reuse.get("retrievalTags", []))
+    recommended_score, matched_recommendation = best_phrase_match(query_task, reuse.get("recommendedFor", []))
+    if tag_score > 0:
+        evidence.append(field_evidence("reuse.retrievalTags", query_task, matched_tag, tag_score))
+    if recommended_score > 0:
+        evidence.append(field_evidence("reuse.recommendedFor", query_task, matched_recommendation, recommended_score))
+
+    constraint_scores = []
+    for query_constraint in query.get("constraints", []):
+        constraint_score, matched_constraint = best_phrase_match(query_constraint, trace.get("constraints", []))
+        if constraint_score > 0:
+            constraint_scores.append(constraint_score)
+            evidence.append(field_evidence("constraints", query_constraint, matched_constraint, constraint_score))
+    constraint_score = sum(constraint_scores) / len(constraint_scores) if constraint_scores else 0.0
     outcome = str(trace.get("outcome", "")).lower()
     outcome_weight = OUTCOME_WEIGHT.get(outcome, 0.5)
 
     raw_score = (
-        0.40 * task_score
-        + 0.45 * average_subtask_score
-        + 0.075 * skill_score
-        + 0.075 * tool_score
+        FIELD_WEIGHTS["task"] * task_score
+        + FIELD_WEIGHTS["subtasks"] * average_subtask_score
+        + FIELD_WEIGHTS["reuse.retrievalTags"] * tag_score
+        + FIELD_WEIGHTS["reuse.recommendedFor"] * recommended_score
+        + FIELD_WEIGHTS["skills"] * skill_score
+        + FIELD_WEIGHTS["tools"] * tool_score
+        + FIELD_WEIGHTS["constraints"] * constraint_score
     )
-    return raw_score * outcome_weight, matched_pairs
+    weighted_score = raw_score * outcome_weight
+    for item in evidence:
+        item["weighted_contribution"] = round(item["contribution"] * outcome_weight, 4)
+    return weighted_score, matched_pairs, evidence
 
 
 def recommend(query, traces, limit, min_score):
@@ -129,7 +199,7 @@ def recommend(query, traces, limit, min_score):
     lesson_evidence = []
 
     for trace in traces:
-        score, matched_pairs = trace_score(query, trace)
+        score, matched_pairs, evidence = trace_score(query, trace)
         if score < min_score:
             continue
         ranked.append(
@@ -138,6 +208,11 @@ def recommend(query, traces, limit, min_score):
                 "task": trace.get("task", ""),
                 "outcome": trace.get("outcome", ""),
                 "score": round(score, 4),
+                "evidence": sorted(
+                    evidence,
+                    key=lambda item: item["weighted_contribution"],
+                    reverse=True,
+                ),
                 "matched_subtasks": [
                     {
                         "query": query_subtask.get("description", ""),

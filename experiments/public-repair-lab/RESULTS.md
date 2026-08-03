@@ -28,3 +28,30 @@ task families and model/service conditions before making broader claims.
 
 Raw reports, JSONL events, stderr logs, and per-arm patches are local artifacts
 under `.aeg/repair-lab/` and are intentionally excluded from source control.
+
+## Independently recomputable evidence
+
+The sanitized counters and SHA-256 patch digests for every pair are published
+in `results/v0.1.3-paired-results.json`. It includes trial IDs, alternating
+execution order, arm outcomes, completed commands, actual test executions,
+non-cached tokens, durations, task IDs, and available runtime configuration.
+It contains no prompts, JSONL, logs, source patches, credentials, private paths,
+or workspace data.
+
+The original event stream did not expose the model identifier or Codex CLI
+version. The trials also ran before the runner changes were committed, so an
+exact runner source commit cannot be established retrospectively. Those fields
+are explicitly `null`; they are not inferred from a later commit.
+
+Recompute and cross-check the published aggregate against the verified AEG
+record with:
+
+```bash
+python3 experiments/public-repair-lab/validate_paired_results.py
+```
+
+The validator fails on missing arms, invalid metric types, duplicate trial IDs,
+non-alternating order, inconsistent patch hashes, incorrect arm/outcome counts,
+or aggregate drift. CI promotion evidence is recorded separately in
+`experiences/verified.json`, because the experiment itself did not occur in the
+promotion workflow and a commit cannot embed the ID of its own future run.

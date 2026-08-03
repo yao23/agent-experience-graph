@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/yao23/agent-experience-graph/experiences/verified-experience.schema.json",
+  "title": "AEG verified experience library",
+  "type": "array",
+  "minItems": 1,
+  "items": {"$ref": "#/definitions/experience"},
+  "definitions": {
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "stringArray": {"type": "array", "items": {"$ref": "#/definitions/nonEmptyString"}},
+    "commitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "nullableCommitSha": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/commitSha"}]},
+    "outcome": {"enum": ["success", "partial", "failure"]},
+    "subtask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "outcome"],
+      "properties": {
+        "description": {"$ref": "#/definitions/nonEmptyString"},
+        "skills": {"$ref": "#/definitions/stringArray"},
+        "tools": {"$ref": "#/definitions/stringArray"},
+        "outcome": {"$ref": "#/definitions/outcome"},
+        "lessons": {"$ref": "#/definitions/stringArray"}
+      }
+    },
+    "publicSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "buggyCommitSha", "fixedCommitSha", "license", "benchmark"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^https://"},
+        "buggyCommitSha": {"$ref": "#/definitions/commitSha"},
+        "fixedCommitSha": {"$ref": "#/definitions/commitSha"},
+        "license": {"$ref": "#/definitions/nonEmptyString"},
+        "benchmark": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "experimentEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "sourceReportCreatedAt", "runnerSourceCommitSha", "runnerSourceCommitStatus"],
+      "properties": {
+        "artifact": {"$ref": "#/definitions/nonEmptyString"},
+        "sourceReportCreatedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T"},
+        "runnerSourceCommitSha": {"$ref": "#/definitions/nullableCommitSha"},
+        "runnerSourceCommitStatus": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "promotionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflowName", "workflowFile", "validatedCommitSha", "status", "runResolver"],
+      "properties": {
+        "workflowName": {"$ref": "#/definitions/nonEmptyString"},
+        "workflowFile": {"$ref": "#/definitions/nonEmptyString"},
+        "validatedCommitSha": {"$ref": "#/definitions/nullableCommitSha"},
+        "status": {"enum": ["expected-on-pull-request", "observed-passed", "observed-failed"]},
+        "runResolver": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "sourceVersion", "recordedAt", "publicSource", "experimentEvidence", "promotionEvidence", "publication"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^https://"},
+        "sourceVersion": {"$ref": "#/definitions/nonEmptyString"},
+        "recordedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T"},
+        "publicSource": {"$ref": "#/definitions/publicSource"},
+        "experimentEvidence": {"$ref": "#/definitions/experimentEvidence"},
+        "promotionEvidence": {"$ref": "#/definitions/promotionEvidence"},
+        "publication": {
+          "type": "object", "additionalProperties": false, "required": ["pullRequest"],
+          "properties": {"pullRequest": {"type": "string", "pattern": "^https://"}}
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence", "localChecks"],
+      "properties": {
+        "status": {"enum": ["passed", "failed", "partial"]},
+        "evidence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["experimentArtifact", "experienceSchema", "semanticValidator", "pairedResultsValidator"],
+          "properties": {
+            "experimentArtifact": {"$ref": "#/definitions/nonEmptyString"},
+            "experienceSchema": {"$ref": "#/definitions/nonEmptyString"},
+            "semanticValidator": {"$ref": "#/definitions/nonEmptyString"},
+            "pairedResultsValidator": {"$ref": "#/definitions/nonEmptyString"}
+          }
+        },
+        "localChecks": {
+          "type": "object", "minProperties": 1,
+          "additionalProperties": {"anyOf": [{"type": "string"}, {"$ref": "#/definitions/stringArray"}]}
+        }
+      }
+    },
+    "deltas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completedCommands", "actualTestExecutions", "nonCachedTokens", "durationMs"],
+      "properties": {
+        "completedCommands": {"type": "number"},
+        "actualTestExecutions": {"type": "number"},
+        "nonCachedTokens": {"type": "number"},
+        "durationMs": {"type": "number"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pairedTrials", "baselineArms", "assistedArms", "baselineArmsVerified", "assistedArmsVerified", "pairedMedianAssistedMinusBaseline", "interpretation"],
+      "properties": {
+        "pairedTrials": {"type": "integer", "minimum": 1},
+        "baselineArms": {"type": "integer", "minimum": 1},
+        "assistedArms": {"type": "integer", "minimum": 1},
+        "baselineArmsVerified": {"type": "integer", "minimum": 0},
+        "assistedArmsVerified": {"type": "integer", "minimum": 0},
+        "pairedMedianAssistedMinusBaseline": {"$ref": "#/definitions/deltas"},
+        "interpretation": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "reuse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retrievalTags", "recommendedFor"],
+      "properties": {
+        "retrievalTags": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonEmptyString"}},
+        "recommendedFor": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonEmptyString"}}
+      }
+    },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "task", "outcome", "subtasks", "skills", "tools", "constraints", "lessons", "provenance", "verification", "metrics", "limitations", "reuse"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^trace-[a-z0-9][a-z0-9.-]+$"},
+        "task": {"$ref": "#/definitions/nonEmptyString"},
+        "outcome": {"$ref": "#/definitions/outcome"},
+        "subtasks": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/subtask"}},
+        "skills": {"$ref": "#/definitions/stringArray"},
+        "tools": {"$ref": "#/definitions/stringArray"},
+        "constraints": {"$ref": "#/definitions/stringArray"},
+        "lessons": {"$ref": "#/definitions/stringArray"},
+        "provenance": {"$ref": "#/definitions/provenance"},
+        "verification": {"$ref": "#/definitions/verification"},
+        "metrics": {"$ref": "#/definitions/metrics"},
+        "limitations": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonEmptyString"}},
+        "reuse": {"$ref": "#/definitions/reuse"}
+      }
+    }
+  }
+}

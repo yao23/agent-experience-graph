@@ -35,3 +35,17 @@ python3 experiments/public-repair-lab/run_experiment.py --prepare-only
 Results are written under `.aeg/repair-lab/`. Review `report.md`, `report.json`,
 all patches, and the raw JSONL streams together. See `RESULTS.md` for the checked
 v0.1.3 validation summary and its limitations.
+
+The public, sanitized five-pair artifact is
+`results/v0.1.3-paired-results.json`. Validate its schema and independently
+recompute its aggregate with:
+
+```bash
+npx --yes ajv-cli@5.0.0 validate --all-errors \
+  -s experiments/public-repair-lab/paired-results.schema.json \
+  -d experiments/public-repair-lab/results/v0.1.3-paired-results.json
+python3 experiments/public-repair-lab/validate_paired_results.py
+```
+
+Only aggregate inputs and patch hashes are public. Raw prompts, JSONL, stderr,
+complete logs, source patches, credentials, and private paths remain excluded.
