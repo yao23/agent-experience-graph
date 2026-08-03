@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "taskId": "TR-03",
+  "category": "test-repair",
+  "outcome": "partial",
+  "collectionType": "single-repair-experience",
+  "provenance": {
+    "repository": "https://github.com/scrapy/scrapy",
+    "license": "BSD-3-Clause",
+    "benchmark": "BugsInPy Scrapy bug 1",
+    "buggyCommitSha": "c57512fa669e6f6b1b766a7639206a380f0d10ce",
+    "fixedCommitSha": "9d9dea0d69709ef0f7aef67ddba1bd7bda25d273"
+  },
+  "failureSignature": {
+    "project": "Scrapy",
+    "runtime": "Python 3.9.6",
+    "dependencies": ["Twisted 25.5.0", "parsel 1.10.0", "w3lib 2.3.1"],
+    "focusedScope": "OffsiteMiddleware.get_host_regex with a null allowed_domains entry",
+    "type": "TypeError",
+    "behavior": "A null entry reaches regular-expression matching before it is filtered."
+  },
+  "candidate": {
+    "attempts": 1,
+    "changedFiles": ["scrapy/spidermiddlewares/offsite.py"],
+    "candidatePatchSha256": "96f70229d8d68ac038bfc31388869cb95edd903070f9521ead170305782a2421",
+    "commands": 12,
+    "actualTestExecutions": 3,
+    "durationMs": null,
+    "nonCachedTokens": null
+  },
+  "verification": {
+    "originalUpstreamFocused": "6 tests passed; historical null helper was not wired into setup",
+    "adaptedRegressionBeforeRepair": "1 error with TypeError",
+    "focusedAndRelatedAfterRepair": "7 tests passed",
+    "fullSuite": "not run because the benchmark Python 3.8.3 environment was unavailable and the isolated environment used current dependencies"
+  },
+  "retrieval": {
+    "query": "filter null configuration entries before regular expression validation",
+    "retrievedExperienceId": null,
+    "score": null,
+    "matchedFields": [],
+    "used": [],
+    "rejected": ["No verified record exceeded the default retrieval threshold."]
+  },
+  "humanComparison": {
+    "inspectedAfterCandidateHash": true,
+    "rootCauseMatched": true,
+    "semanticBehaviorMatched": false,
+    "changedFilesMatched": false,
+    "textuallyIdentical": false,
+    "summary": "Both strategies skip null entries before regex matching. The human fix also excludes URL-shaped entries from the final allowlist and repairs the upstream test setup; the candidate preserves the prior URL behavior."
+  },
+  "limitations": [
+    "This is experience collection, not a baseline-versus-assisted comparison.",
+    "The candidate verifies null handling but is not fully semantically equivalent to the human fix for URL-shaped entries.",
+    "The complete upstream suite was not run under the benchmark Python and dependency versions."
+  ]
+}

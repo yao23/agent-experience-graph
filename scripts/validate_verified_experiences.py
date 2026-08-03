@@ -83,21 +83,28 @@ def validate_library(library):
         require(evidence.get("experimentArtifact") == experiment.get("artifact"), f"{path} verification artifact does not match experiment provenance")
 
         metrics = experience.get("metrics", {})
-        for name in ("pairedTrials", "baselineArms", "assistedArms", "baselineArmsVerified", "assistedArmsVerified"):
-            require(isinstance(metrics.get(name), int) and not isinstance(metrics.get(name), bool), f"{path}.metrics.{name} must be an integer")
-        deltas = metrics.get("pairedMedianAssistedMinusBaseline", {})
-        for name in ("completedCommands", "actualTestExecutions", "nonCachedTokens", "durationMs"):
-            require(is_number(deltas.get(name)), f"{path}.metrics.{name} delta must be numeric")
-        require(metrics["baselineArms"] == metrics["pairedTrials"] == metrics["assistedArms"], f"{path} arm counts do not match paired trial count")
-        require(metrics["baselineArmsVerified"] <= metrics["baselineArms"], f"{path} baseline verified count exceeds arm count")
-        require(metrics["assistedArmsVerified"] <= metrics["assistedArms"], f"{path} assisted verified count exceeds arm count")
+        is_paired = "pairedTrials" in metrics
+        if is_paired:
+            for name in ("pairedTrials", "baselineArms", "assistedArms", "baselineArmsVerified", "assistedArmsVerified"):
+                require(isinstance(metrics.get(name), int) and not isinstance(metrics.get(name), bool), f"{path}.metrics.{name} must be an integer")
+            deltas = metrics.get("pairedMedianAssistedMinusBaseline", {})
+            for name in ("completedCommands", "actualTestExecutions", "nonCachedTokens", "durationMs"):
+                require(is_number(deltas.get(name)), f"{path}.metrics.{name} delta must be numeric")
+            require(metrics["baselineArms"] == metrics["pairedTrials"] == metrics["assistedArms"], f"{path} arm counts do not match paired trial count")
+            require(metrics["baselineArmsVerified"] <= metrics["baselineArms"], f"{path} baseline verified count exceeds arm count")
+            require(metrics["assistedArmsVerified"] <= metrics["assistedArms"], f"{path} assisted verified count exceeds arm count")
+        else:
+            for name in ("attempts", "completedCommands", "actualTestExecutions"):
+                require(isinstance(metrics.get(name), int) and not isinstance(metrics.get(name), bool) and metrics[name] >= 0, f"{path}.metrics.{name} must be a non-negative integer")
+            for name in ("durationMs", "nonCachedTokens"):
+                require(metrics.get(name) is None or (isinstance(metrics.get(name), int) and not isinstance(metrics.get(name), bool) and metrics[name] >= 0), f"{path}.metrics.{name} must be null or a non-negative integer")
 
         limitations = experience.get("limitations", [])
         require(isinstance(limitations, list) and limitations, f"{path}.limitations is required")
         limitation_text = " ".join(limitations).lower()
-        if deltas["durationMs"] > 0:
+        if is_paired and deltas["durationMs"] > 0:
             require("regress" in limitation_text, f"{path} must disclose the duration regression")
-        if metrics["baselineArmsVerified"] == metrics["assistedArmsVerified"]:
+        if is_paired and metrics["baselineArmsVerified"] == metrics["assistedArmsVerified"]:
             require("no success-rate improvement" in limitation_text, f"{path} must disclose no success-rate improvement")
 
         reuse = experience.get("reuse", {})

@@ -83,12 +83,13 @@
         "status": {"enum": ["passed", "failed", "partial"]},
         "evidence": {
           "type": "object", "additionalProperties": false,
-          "required": ["experimentArtifact", "experienceSchema", "semanticValidator", "pairedResultsValidator"],
+          "required": ["experimentArtifact", "experienceSchema", "semanticValidator"],
           "properties": {
             "experimentArtifact": {"$ref": "#/definitions/nonEmptyString"},
             "experienceSchema": {"$ref": "#/definitions/nonEmptyString"},
             "semanticValidator": {"$ref": "#/definitions/nonEmptyString"},
-            "pairedResultsValidator": {"$ref": "#/definitions/nonEmptyString"}
+            "pairedResultsValidator": {"$ref": "#/definitions/nonEmptyString"},
+            "resultValidator": {"$ref": "#/definitions/nonEmptyString"}
           }
         },
         "localChecks": {
@@ -108,7 +109,7 @@
         "durationMs": {"type": "number"}
       }
     },
-    "metrics": {
+    "pairedMetrics": {
       "type": "object",
       "additionalProperties": false,
       "required": ["pairedTrials", "baselineArms", "assistedArms", "baselineArmsVerified", "assistedArmsVerified", "pairedMedianAssistedMinusBaseline", "interpretation"],
@@ -121,6 +122,28 @@
         "pairedMedianAssistedMinusBaseline": {"$ref": "#/definitions/deltas"},
         "interpretation": {"$ref": "#/definitions/nonEmptyString"}
       }
+    },
+    "nullableNonnegativeInteger": {
+      "anyOf": [{"type": "null"}, {"type": "integer", "minimum": 0}]
+    },
+    "collectionMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempts", "completedCommands", "actualTestExecutions", "durationMs", "nonCachedTokens", "interpretation"],
+      "properties": {
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 3},
+        "completedCommands": {"type": "integer", "minimum": 0},
+        "actualTestExecutions": {"type": "integer", "minimum": 0},
+        "durationMs": {"$ref": "#/definitions/nullableNonnegativeInteger"},
+        "nonCachedTokens": {"$ref": "#/definitions/nullableNonnegativeInteger"},
+        "interpretation": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "metrics": {
+      "oneOf": [
+        {"$ref": "#/definitions/pairedMetrics"},
+        {"$ref": "#/definitions/collectionMetrics"}
+      ]
     },
     "reuse": {
       "type": "object",

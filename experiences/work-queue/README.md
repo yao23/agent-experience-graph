@@ -33,7 +33,7 @@ Update both the summary table and the task's `STATUS.md` after every phase.
 |---|---|---|---:|---|---|---:|---|
 | TR-01 | Test Repair | Black | BugsInPy 2 | queued | Codex | 0 | — |
 | TR-02 | Test Repair | HTTPie | BugsInPy 1 | queued | Codex | 0 | — |
-| TR-03 | Test Repair | Scrapy | BugsInPy 1 | queued | Codex | 0 | — |
+| TR-03 | Test Repair | Scrapy | BugsInPy 1 | partial | Codex | 1 | `candidates/TR-03.json` |
 | TR-04 | Test Repair | Tornado | BugsInPy 1 | queued | Codex | 0 | — |
 | CI-01 | Build/CI Recovery | Black | BugsInPy 1 | queued | Codex | 0 | — |
 | CI-02 | Build/CI Recovery | Keras | BugsInPy 2 | queued | Codex | 0 | — |

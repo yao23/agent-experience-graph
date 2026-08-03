@@ -11,6 +11,9 @@ reuse. `verified-experience.schema.json` defines this verified-experience
 extension; `scripts/validate_verified_experiences.py` enforces unique IDs,
 cross-field relationships, regression disclosures, and redaction rules that
 JSON Schema cannot express.
+The schema accepts both paired A/B metrics and bounded single-repair collection
+metrics; a single repair is experience evidence, not causal evidence of AEG
+improvement.
 
 ## Retrieve an experience
 
