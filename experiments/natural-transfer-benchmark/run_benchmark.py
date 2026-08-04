@@ -796,6 +796,11 @@ def write_json(path, value):
 
 
 def run_protocol(args, manifest):
+    if not args.prepare_only:
+        raise ProtocolError(
+            "local multi-arm execution was retired by the pre-execution isolation deviation; "
+            "use the disposable-runner coordinator after its actual-environment preflight passes"
+        )
     mirrors = parse_mapping(args.mirror, "--mirror")
     python_envs = parse_mapping(args.python_env, "--python-env") if args.python_env else {}
     missing = sorted({task["project"] for task in manifest["tasks"]} - set(mirrors))

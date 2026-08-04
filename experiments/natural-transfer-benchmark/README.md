@@ -33,11 +33,14 @@ arm contains the failing oracle but no upstream history, remote, fixed commit,
 human production patch, manifest, capsule file, other-arm artifact, or evaluator
 feedback.
 
-Each arm has a distinct workspace, event log, result directory, cache,
-bytecode directory, and temporary directory. The task prompt is fixed across
-arms. For a treatment that passes the gate, the runner appends only the five
-fields of the compact source capsule. An abstaining treatment receives exactly
-the task prompt and is recorded as an AEG abstention.
+Sibling worktrees are prohibited after the pre-execution isolation failure
+documented in `PROTOCOL-DEVIATION-846d018.md`. Each arm instead runs on a fresh
+GitHub-hosted `macos-14` arm64 VM from a sanitized, single-arm envelope. The
+agent receives no Actions/artifact credential, other-arm artifact, shared
+writable cache, full manifest, or evaluator data. The task prompt remains fixed
+across arms. For a treatment that passes the gate, the envelope includes only
+the five fields of the compact source capsule. An abstaining treatment receives
+exactly the task prompt and is recorded as an AEG abstention.
 
 Pairwise evaluation begins only after both arms finish. The human production
 diff remains controller-side and is used for deterministic changed-file, token,
@@ -68,10 +71,11 @@ python3 experiments/natural-transfer-benchmark/run_benchmark.py prepare \
   --python-env black=/path/to/black-venv
 ```
 
-Replace `prepare` with `run` to execute the frozen 30-arm protocol. The runner
-does not return a failure exit status merely because an agent fails a repair;
-repair failure is benchmark data. Protocol, blindness, or controller failures
-do return a non-zero status.
+The legacy local `run` path is fail-closed because sibling worktrees do not meet
+the isolation protocol. The frozen 30-arm protocol may be dispatched only by
+the disposable-runner coordinator after its actual-environment adversarial
+preflight passes. Repair failure is benchmark data; protocol, blindness, or
+controller failures remain infrastructure failures.
 
 ## Interpretation
 

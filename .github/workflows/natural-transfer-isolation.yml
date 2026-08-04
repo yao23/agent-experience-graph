@@ -1,0 +1,80 @@
+name: Natural Transfer Isolation Preflight
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/natural-transfer-isolation.yml"
+      - "experiments/natural-transfer-benchmark/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-canaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify frozen protocol and package four isolated canaries
+        run: |
+          python3 experiments/natural-transfer-benchmark/run_benchmark.py validate
+          python3 experiments/natural-transfer-benchmark/test_isolation_controller.py
+          mkdir -p /tmp/aeg-canaries
+          python3 experiments/natural-transfer-benchmark/isolation_controller.py package --task-id nt-01-scrapy-cookiejar-adapter --replicate 1 --arm control --output /tmp/aeg-canaries/control-a
+          python3 experiments/natural-transfer-benchmark/isolation_controller.py package --task-id nt-01-scrapy-cookiejar-adapter --replicate 1 --arm treatment --output /tmp/aeg-canaries/treatment-a
+          python3 experiments/natural-transfer-benchmark/isolation_controller.py package --task-id nt-05-black-decorator-directives --replicate 3 --arm control --output /tmp/aeg-canaries/control-b
+          python3 experiments/natural-transfer-benchmark/isolation_controller.py package --task-id nt-05-black-decorator-directives --replicate 3 --arm treatment --output /tmp/aeg-canaries/treatment-b
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isolated-canary-control-a
+          path: /tmp/aeg-canaries/control-a
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isolated-canary-treatment-a
+          path: /tmp/aeg-canaries/treatment-a
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isolated-canary-control-b
+          path: /tmp/aeg-canaries/control-b
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isolated-canary-treatment-b
+          path: /tmp/aeg-canaries/treatment-b
+          retention-days: 1
+
+  adversarial-arm-probe:
+    needs: package-canaries
+    strategy:
+      fail-fast: false
+      matrix:
+        canary: [control-a, treatment-a, control-b, treatment-b]
+    runs-on: macos-14
+    permissions:
+      actions: read
+      contents: none
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: isolated-canary-${{ matrix.canary }}
+          path: ${{ github.workspace }}/arm
+      - name: Run adversarial probe without Actions or GitHub credentials
+        shell: bash
+        run: |
+          env -i \
+            PATH="/usr/bin:/bin:/usr/sbin:/sbin" \
+            HOME="$RUNNER_TEMP/isolated-home-${{ matrix.canary }}" \
+            TMPDIR="$RUNNER_TEMP/isolated-tmp-${{ matrix.canary }}" \
+            AEG_RUNNER_TEMP_ROOT="$RUNNER_TEMP" \
+            AEG_WRITABLE_CACHE="$RUNNER_TEMP/isolated-cache-${{ matrix.canary }}" \
+            /usr/bin/python3 "$GITHUB_WORKSPACE/arm/isolation_controller.py" probe \
+              --bundle "$GITHUB_WORKSPACE/arm" \
+              --attestation "$RUNNER_TEMP/attestation-${{ matrix.canary }}.json"
+      - name: Upload attestation after the isolated process terminates
+        uses: actions/upload-artifact@v4
+        with:
+          name: isolation-attestation-${{ matrix.canary }}
+          path: ${{ runner.temp }}/attestation-${{ matrix.canary }}.json
+          retention-days: 7

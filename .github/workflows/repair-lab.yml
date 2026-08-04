@@ -13,6 +13,7 @@ on:
       - "SKILL.md"
       - "capability.json"
       - ".github/workflows/repair-lab.yml"
+      - ".github/workflows/natural-transfer-isolation.yml"
   push:
     branches: [main]
     paths:
@@ -26,6 +27,7 @@ on:
       - "SKILL.md"
       - "capability.json"
       - ".github/workflows/repair-lab.yml"
+      - ".github/workflows/natural-transfer-isolation.yml"
   workflow_dispatch:
 
 permissions:
@@ -87,6 +89,7 @@ jobs:
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task rpc-upgrade-interactive-mode --output /tmp/aeg-rpc-trap
           python3 experiments/natural-transfer-benchmark/run_benchmark.py self-test
           python3 experiments/natural-transfer-benchmark/test_run_benchmark.py
+          python3 experiments/natural-transfer-benchmark/test_isolation_controller.py
 
       - name: Install extension dependencies
         working-directory: integrations/vscode
