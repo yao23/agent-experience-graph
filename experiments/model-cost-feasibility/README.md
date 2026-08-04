@@ -37,14 +37,16 @@ absence of a repository Actions API credential.
 OpenAI publishes a 13.8 GB Metal artifact and requires at least 16 GB VRAM or
 unified memory. The isolated standard `macos-14` runner class has 7 GB RAM and
 14 GB advertised SSD, so it is below the memory requirement before any model is
-downloaded. The CI preflight measures actual RAM, free disk, Python 3.12, Xcode,
-Metal compiler availability, and temporary-disk throughput without accessing
-model or benchmark data.
+downloaded. The actual CI runner measured 7.52 GB RAM and 42.14 GB free disk.
+Python 3.12, Xcode, and the Metal compiler were available, so the runtime was
+compatible, but memory failed the 16 GB gate. Temporary-disk reads measured
+5.49 GB/s, which gives a 2.51-second best-case weight-read floor; it is not an
+end-to-end initialization estimate. No model or benchmark data was downloaded.
 
-Thirty isolated cold starts would transfer at least 414 GB of model weights.
-Initialization has a disk-read lower bound recorded by CI, but end-to-end load
-and inference time cannot be honestly estimated on a runner that cannot hold
-the model. Larger standard macOS arm64 runners documented at 14 GB also remain
+Thirty isolated cold starts would transfer at least 414 GB of model weights and
+have a purely disk-read floor of 75.36 seconds in aggregate. End-to-end load and
+inference time cannot be honestly estimated on a runner that cannot hold the
+model. Larger standard macOS arm64 runners documented at 14 GB also remain
 below the 16 GB requirement. A genuinely sufficient GPU/unified-memory runner
 would introduce separately priced compute, model-download latency, runtime
 integration, and maintainability risk; no such runner is currently attached.

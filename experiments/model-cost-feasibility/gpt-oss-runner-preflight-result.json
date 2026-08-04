@@ -1,0 +1,37 @@
+{
+  "benchmarkDataAccessed": false,
+  "evidence": {
+    "commit": "d50b7e7",
+    "workflowRun": "https://github.com/yao23/agent-experience-graph/actions/runs/30932721011"
+  },
+  "gptOss20b": {
+    "enoughDisk": true,
+    "enoughMemory": false,
+    "estimatedColdLoadFloorSeconds": 2.51,
+    "estimatedThirtyArmColdLoadFloorSeconds": 75.36,
+    "estimatedThirtyArmDownloadBytes": 414000000000,
+    "feasibleOnThisRunner": false,
+    "initializationAndInferenceEstimate": "not measurable because the runner fails capacity gates; model download prohibited",
+    "officialMetalDownloadBytes": 13800000000,
+    "officialMinimumMemoryBytes": 16000000000,
+    "requiredWorkingDiskBytes": 29600000000,
+    "runtimeCompatible": true
+  },
+  "modelDataDownloaded": false,
+  "runner": {
+    "diskFreeBytes": 42138021888,
+    "diskProbe": {
+      "probeBytes": 268435456,
+      "readBytesPerSecond": 5493859233,
+      "readSeconds": 0.0489,
+      "writeBytesPerSecond": 2511588655,
+      "writeSeconds": 0.1069
+    },
+    "machine": "arm64",
+    "memoryBytes": 7516192768,
+    "metalCompilerAvailable": true,
+    "python": "3.12.10",
+    "system": "Darwin",
+    "xcodeAvailable": true
+  }
+}
