@@ -9,17 +9,20 @@ upstream Git histories before any arm was run.
 The source and transfer bugs are non-identical members of these failure
 families:
 
-1. Tornado WebSocket request/connection lifecycle ownership.
+1. Scrapy CookieJar adapter compatibility on Python 3.
 2. Scrapy redirect `Location` normalization.
-3. Scrapy HTML form-action URL resolution.
+3. Scrapy browser-like HTML form-control translation.
 4. FastAPI/Pydantic request-field classification.
 5. Black comment/directive attachment around decorators.
 
 `manifest.json` is the pre-registration. It fixes the five pairs, prompts,
 capsules, retrieval scores and thresholds, one abstention, three randomized arm
 orders per task, budgets, contamination controls, measurements, evaluation
-rules, and the positive-result criterion. Upstream evidence links and controller
-hashes make the selection independently auditable.
+rules, and the positive-result criterion. `environment-lock.json` freezes the
+CPython runtime, platform, and complete package set after a modern parser was
+found to mask one candidate oracle during pre-execution preparation; that pair
+was replaced and no arm had run. Upstream evidence links and controller hashes
+make the selection independently auditable.
 
 ## Blindness and isolation
 
@@ -57,11 +60,9 @@ upstream mirrors:
 ```sh
 python3 experiments/natural-transfer-benchmark/run_benchmark.py prepare \
   --output /tmp/aeg-natural-transfer-prepare \
-  --mirror tornado=/path/to/tornado \
   --mirror scrapy=/path/to/scrapy \
   --mirror fastapi=/path/to/fastapi \
   --mirror black=/path/to/black \
-  --python-env tornado=/path/to/tornado-venv \
   --python-env scrapy=/path/to/scrapy-venv \
   --python-env fastapi=/path/to/fastapi-venv \
   --python-env black=/path/to/black-venv

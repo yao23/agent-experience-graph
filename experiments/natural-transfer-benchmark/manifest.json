@@ -2,7 +2,10 @@
   "schemaVersion": "1.0.0",
   "benchmarkId": "aeg-natural-transfer-v1",
   "status": "frozen-before-execution",
-  "frozenAt": "2026-08-03T22:58:38-07:00",
+  "freezeRevision": 2,
+  "frozenAt": "2026-08-04T02:15:24-07:00",
+  "supersedesFreezeCommit": "dac84b2b0e26dc7d45abfb0e118e9bdca1921d8e",
+  "preExecutionAmendment": "Before any control or treatment arm ran, environment preparation showed that a modern parser masked the original Scrapy form-action oracle and that Tornado's human test required a loopback socket unavailable inside the agent sandbox. Revision 2 replaces those two transfers with later natural Scrapy image-submit-control and CookieJar-adapter bugs, freezes the complete runtime/package environment, and adds the missing Black human test data. No arm output informed these changes.",
   "hypothesis": "Across naturally occurring later bugs in the same failure family, gated retrieval of a concise earlier experience will improve correctness or reduce repair effort on multiple tasks without materially increasing regressions, patch complexity, or non-cached token cost.",
   "selectionPolicy": {
     "corpus": "BugsInPy plus the corresponding upstream Git histories",
@@ -20,6 +23,7 @@
     "arms": ["control", "treatment"],
     "randomizationSeed": "aeg-natural-transfer-v1-2026-08-03",
     "model": "gpt-5.6-sol",
+    "environmentLock": "environment-lock.json",
     "codexMode": ["exec", "--ephemeral", "--ignore-user-config", "--sandbox", "workspace-write", "--json"],
     "perArmTimeoutSeconds": 900,
     "tokenBudget": "same platform-enforced Codex turn limit; no arm-specific override",
@@ -42,7 +46,7 @@
   "contaminationControls": [
     "Every arm starts from a separate directory copied from the same hashed seed tree.",
     "The seed has a new one-commit Git history, so the human fixed commit and upstream history are absent.",
-    "Only regression test files are taken from the transfer fixed commit; the production tree is the buggy commit.",
+      "Upstream regression test files are taken from the transfer fixed commit; the production tree is always the buggy commit.",
     "The manifest, source capsule, human patch, evaluator rules, other-arm workspace, logs, patches, and summaries are never copied into an arm.",
     "Each arm receives distinct cache, bytecode, temporary, event-log, and result directories.",
     "Codex runs ephemerally with user configuration ignored and is instructed to work only inside its repository.",
@@ -82,42 +86,43 @@
   },
   "tasks": [
     {
-      "id": "nt-01-tornado-websocket-lifecycle",
-      "project": "tornado",
-      "repository": "https://github.com/tornadoweb/tornado.git",
-      "failureFamily": "WebSocket handler methods using RequestHandler-lifetime state after connection ownership moved to the WebSocket protocol",
+      "id": "nt-01-scrapy-cookiejar-adapter",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "Scrapy-to-stdlib CookieJar adapters implementing only part of the Python 3 request/header protocol",
       "source": {
-        "bugId": "BugsInPy tornado-10",
-        "buggyCommit": "ecd8968c5135b810cd607b5902dda2cd32122b39",
-        "fixedCommit": "5931d913b4ea250891a0b582f1f8b2901b868c79",
-        "fixedAt": "2017-04-15T14:03:02-04:00",
-        "patchSha256": "e9432fcb28f07464bc813cc9c263abc38cb6f55a6e0b1fbb768afae12d50d333",
-        "evidenceUrl": "https://github.com/tornadoweb/tornado/commit/5931d913b4ea250891a0b582f1f8b2901b868c79"
+        "bugId": "BugsInPy scrapy-31",
+        "buggyCommit": "5f02ef82e8560242eb34b336f385addfdef3211d",
+        "fixedCommit": "dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2",
+        "fixedAt": "2015-08-03T10:53:40-03:00",
+        "patchSha256": "2689fa8fc194e3a88fbe5e13d81e0f612c479a600b61d25a752e8988169efbee",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2"
       },
       "transfer": {
-        "bugId": "BugsInPy tornado-1",
-        "buggyCommit": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
-        "fixedCommit": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
-        "fixedAt": "2019-03-10T12:57:19-04:00",
-        "testFiles": ["tornado/test/websocket_test.py"],
-        "focusedCommand": "python -m unittest -q tornado.test.websocket_test.WebSocketTest.test_nodelay",
-        "regressionCommand": "python -m unittest -q tornado.test.websocket_test.WebSocketTest",
-        "humanPatchSha256": "7488c814d5d1855da7fac12c1d59e8be97ea5403a5c1997d176578ebbf10b475",
-        "expectedSeedTreeSha256": "d43f602e1dab4a9edc8d5f68bef4cf83acf29bd651dacfb9d40c3ce42099db45",
-        "evidenceUrl": "https://github.com/tornadoweb/tornado/commit/4677c54cc18bbfbdf0f4dadf11610fab6203fd63"
+        "bugId": "BugsInPy scrapy-19",
+        "buggyCommit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
+        "fixedCommit": "1f743996ff00a7b728d59b93d0967e1eb50072f0",
+        "fixedAt": "2016-02-07T14:19:27+09:00",
+        "testFiles": ["tests/test_http_cookies.py"],
+        "focusedCommand": "python -m unittest -q tests.test_http_cookies.WrappedRequestTest.test_get_full_url tests.test_http_cookies.WrappedRequestTest.test_get_host tests.test_http_cookies.WrappedRequestTest.test_get_type tests.test_http_cookies.WrappedRequestTest.test_get_origin_req_host",
+        "regressionCommand": "python -m unittest -q tests.test_http_cookies.WrappedRequestTest",
+        "initialFailurePattern": "AttributeError|full_url|origin_req_host",
+        "humanPatchSha256": "4f3b7346ebaf5343c9e10756558a470976c055fe0d73b338578133c938df58ca",
+        "expectedSeedTreeSha256": "4ff9f3f952240be5a715de9949329b146207900e1b8736d964681a4ac70ed932",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/1f743996ff00a7b728d59b93d0967e1eb50072f0"
       },
-      "taskPrompt": "A regression in Tornado 6.0 causes WebSocketHandler.set_nodelay() to fail after a connection has upgraded, although the public method worked before the refactor. Reproduce the failure with the focused test, repair the production code with the smallest maintainable change, and run both focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "taskPrompt": "On Python 3, Scrapy cookie processing fails because the standard-library cookie jar expects request attributes that are present on native urllib request objects. Reproduce the focused failures, restore the adapter contract with the smallest maintainable production change, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
       "experience": {
-        "applicableContext": "A WebSocket handler operation fails because HTTP request completion and WebSocket connection lifetime no longer share the same state owner.",
-        "failedApproach": "Running generic RequestHandler cleanup at finish time cleared handler state while an upgraded WebSocket connection still needed it.",
-        "recoveryPrinciple": "Trace the public handler method to the component that owns the live upgraded connection; place connection-lifetime behavior behind that protocol boundary and delay HTTP-lifetime cleanup where necessary.",
-        "validatedOutcome": "A WebSocket handler could render during message handling and cycle cleanup still occurred after the actual connection closed.",
-        "uncertaintyAndApplicability": "Use only when local evidence shows a request/connection lifetime split. Do not assume the prior cleanup method or file layout is unchanged."
+        "applicableContext": "A Scrapy request/response adapter sits at the boundary to the standard-library CookieJar and translates both protocol members and header values.",
+        "failedApproach": "Using strict default text conversion inside the adapter let one non-UTF-8 header abort cookie parsing, even though the surrounding request was otherwise valid.",
+        "recoveryPrinciple": "Treat the adapter as an explicit versioned protocol boundary: enumerate the consumer's required members, implement them on the adapter, and make byte/text conversion tolerant without mutating the underlying request model.",
+        "validatedOutcome": "Cookie parsing survived non-UTF-8 header bytes while ordinary CookieJar behavior remained intact.",
+        "uncertaintyAndApplicability": "The source covered conversion and the transfer may concern missing protocol members. Confirm the Python 3 CookieJar call surface locally; do not patch the standard library or the core Request class."
       },
-      "gate": {"relevance": 0.84, "expectedUtility": 0.68, "decision": "inject", "rationale": "Same upgraded-connection ownership boundary, but a different public operation and later refactor."},
+      "gate": {"relevance": 0.88, "expectedUtility": 0.75, "decision": "inject", "rationale": "Both bugs occur in the same CookieJar adapter contract, with the later bug exercising missing Python 3 members rather than header decoding."},
       "knownFailurePaths": [
-        {"label": "repair only a client connector or dialer surface", "pattern": "WebSocketClientConnection|websocket_connect|client.{0,40}set_nodelay"},
-        {"label": "restore a stale RequestHandler stream field instead of following live protocol ownership", "pattern": "self\\.stream\\.set_nodelay|restore.{0,40}stream"}
+        {"label": "patch or monkeypatch the standard-library CookieJar", "pattern": "http\\.cookiejar|cookielib.{0,40}(patch|setattr|monkey)"},
+        {"label": "add compatibility properties to the core Scrapy Request model", "pattern": "scrapy/http/request/__init__\\.py|class Request.{0,80}(full_url|origin_req_host)"}
       ],
       "orders": [["treatment", "control"], ["treatment", "control"], ["treatment", "control"]]
     },
@@ -142,6 +147,7 @@
         "testFiles": ["tests/test_downloadermiddleware_redirect.py"],
         "focusedCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_redirect_302_relative",
         "regressionCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest",
+        "initialFailurePattern": "www\\.example\\.com/i8n\\.example2\\.com",
         "humanPatchSha256": "0176cf6437822a350f09280f99bd805e9e1299d02310fd2b864e78b6e3583c1e",
         "expectedSeedTreeSha256": "cfa17b9d5bd1691cfec3a771799c75be6e5cba14a6e0f6d4fba652a997585413",
         "evidenceUrl": "https://github.com/scrapy/scrapy/commit/66cbceeb0a9104fc0fa238898e38d0d9ce9cbcf6"
@@ -162,42 +168,43 @@
       "orders": [["treatment", "control"], ["control", "treatment"], ["control", "treatment"]]
     },
     {
-      "id": "nt-03-scrapy-form-action-resolution",
+      "id": "nt-03-scrapy-form-controls",
       "project": "scrapy",
       "repository": "https://github.com/scrapy/scrapy.git",
-      "failureFamily": "HTML form action references resolved without preserving browser-like document-base and attribute normalization semantics",
+      "failureFamily": "HTML form elements translated through library conveniences without explicitly preserving browser submission semantics",
       "source": {
-        "bugId": "BugsInPy scrapy-25",
-        "buggyCommit": "57f87b95d4d705f8afdd8fb9f7551033a7d88ee2",
-        "fixedCommit": "9548691fdd47077a53f85daace091ef4af599cb9",
-        "fixedAt": "2015-11-10T21:33:24+05:00",
-        "patchSha256": "281b122df2ac0b7de177b2955c4d00f43af3bae57e2fb4482597ebd95b33468a",
-        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/9548691fdd47077a53f85daace091ef4af599cb9"
-      },
-      "transfer": {
         "bugId": "BugsInPy scrapy-7",
         "buggyCommit": "e1ceaf3b5fa29326f032c4ed3f50943384b9e63d",
         "fixedCommit": "074caf434e255bc96f106e57e3e288028f372485",
         "fixedAt": "2017-02-16T02:13:39+05:00",
-        "testFiles": ["tests/test_http_request.py"],
-        "focusedCommand": "python -m unittest -q tests.test_http_request.FormRequestTest.test_spaces_in_action",
-        "regressionCommand": "python -m unittest -q tests.test_http_request.FormRequestTest",
-        "humanPatchSha256": "4254149a1a5d634f48a0b0a0a50e4c4f47f23d9089d623e084710757eb1fc0c8",
-        "expectedSeedTreeSha256": "9617fcda806e67975e2c284f591ea2f8ea3be70ed399d16ad26da3b6e4769c9e",
+        "patchSha256": "4254149a1a5d634f48a0b0a0a50e4c4f47f23d9089d623e084710757eb1fc0c8",
         "evidenceUrl": "https://github.com/scrapy/scrapy/commit/074caf434e255bc96f106e57e3e288028f372485"
       },
-      "taskPrompt": "FormRequest.from_response() produces the wrong request URL when a form action contains HTML whitespace. Reproduce the focused test, match browser-like form submission behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
-      "experience": {
-        "applicableContext": "A form action is a document-relative reference whose meaning depends on the parser-derived base URL.",
-        "failedApproach": "Reading a convenient action/base property directly skipped part of HTML document-base resolution and produced the wrong target.",
-        "recoveryPrinciple": "Separate HTML attribute normalization from RFC-style reference resolution, and resolve the normalized action against the parser-derived document base.",
-        "validatedOutcome": "Relative actions honored the document base element while forms without a special base retained existing behavior.",
-        "uncertaintyAndApplicability": "Use for HTML form URL construction. Attribute whitespace rules and a missing action are distinct cases and must be verified locally."
+      "transfer": {
+        "bugId": "BugsInPy scrapy-38",
+        "buggyCommit": "6cc6bbb5fc5c102271829a554772effb0444023c",
+        "fixedCommit": "6c3970e6722191b642fd99c6c1bfed0d93010cab",
+        "fixedAt": "2018-03-21T16:32:12-03:00",
+        "testFiles": ["tests/test_http_request.py"],
+        "focusedCommand": "python -m unittest -q tests.test_http_request.FormRequestTest.test_from_response_clickdata_does_not_ignore_image",
+        "regressionCommand": "python -m unittest -q tests.test_http_request.FormRequestTest",
+        "initialFailurePattern": "i2.*i2v",
+        "humanPatchSha256": "c10ad6fe80493a450c97ee2028fa86ec8598b369d909188f3d057a6b98e2aa08",
+        "expectedSeedTreeSha256": "293397c37bafcc2e88bd24b0300a278a02b8b12642004f7a4f63eb83c55ff972",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/6c3970e6722191b642fd99c6c1bfed0d93010cab"
       },
-      "gate": {"relevance": 0.92, "expectedUtility": 0.76, "decision": "inject", "rationale": "Same form-action resolution pipeline and invariant, with a later non-identical attribute-normalization defect."},
+      "taskPrompt": "FormRequest.from_response() ignores an image-type submit control when constructing submitted form data. Reproduce the focused test, match browser-like form submission behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "FormRequest converts parsed HTML form attributes into browser-like submission behavior, but parser convenience properties do not necessarily implement every HTML rule.",
+        "failedApproach": "Reading a convenient parsed action property directly delegated browser semantics to the parser and mishandled HTML whitespace at the submission boundary.",
+        "recoveryPrinciple": "At the FormRequest translation boundary, identify the specific HTML submission rule, inspect raw element attributes, and encode that rule explicitly before applying generic URL or data helpers.",
+        "validatedOutcome": "Whitespace in form actions was normalized according to HTML rules while document-base and missing-action behavior remained valid.",
+        "uncertaintyAndApplicability": "The source covered action URLs. Other controls may share the explicit-browser-semantics principle but use a different helper; do not assume the source repair location transfers."
+      },
+      "gate": {"relevance": 0.74, "expectedUtility": 0.58, "decision": "inject", "rationale": "Both defects are in FormRequest's HTML-to-submission translation, but they concern different element semantics and helpers; relevance is only narrowly above threshold."},
       "knownFailurePaths": [
         {"label": "patch the generic Request constructor", "pattern": "scrapy/http/request/__init__\\.py|class Request"},
-        {"label": "apply unrestricted string.strip without checking HTML whitespace semantics", "pattern": "action\\.strip\\(\\)|strip\\(action\\)"}
+        {"label": "special-case image controls after form data is already encoded", "pattern": "_urlencode|urlencode|request\\.body.{0,30}image"}
       ],
       "orders": [["control", "treatment"], ["treatment", "control"], ["control", "treatment"]]
     },
@@ -222,6 +229,7 @@
         "testFiles": ["tests/test_forms_from_non_typing_sequences.py"],
         "focusedCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py",
         "regressionCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py tests/test_union_body.py tests/test_union_inherited_body.py",
+        "initialFailurePattern": "422 == 200",
         "humanPatchSha256": "b9a1d34ba803751762f2728a2d7a8d3b5917431bd92eff944272c527ea177123",
         "expectedSeedTreeSha256": "8501bcee5b91ce7bfc6f53a3a67d576df2ee4ece6d2e55aa588a981bbd8285da",
         "evidenceUrl": "https://github.com/fastapi/fastapi/commit/874d24181e779ebc6e1c52afb7d6598f863fd6a8"
@@ -259,11 +267,12 @@
         "buggyCommit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
         "fixedCommit": "892eddacd215d685e136686b7f629ade70adca83",
         "fixedAt": "2020-05-08T14:37:17+02:00",
-        "testFiles": ["tests/test_black.py"],
+        "testFiles": ["tests/test_black.py", "tests/data/fmtonoff4.py"],
         "focusedCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff4",
-        "regressionCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff4 tests.test_black.BlackTestCase.test_comment_in_decorator",
+        "regressionCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff tests.test_black.BlackTestCase.test_fmtonoff2 tests.test_black.BlackTestCase.test_fmtonoff3 tests.test_black.BlackTestCase.test_fmtonoff4",
+        "initialFailurePattern": "AssertionError|Actual tree",
         "humanPatchSha256": "7c7e98d68837366d0b76f98be563113a1117201d6af0662bc10193bbe4f14c12",
-        "expectedSeedTreeSha256": "073fecd20681a0400752508030e7d9d0aece9fee42182dcb0dabc15a572439e8",
+        "expectedSeedTreeSha256": "efe027440ca682969aa7240b9f1fc17355369a1dc7b86cabf65d68e838abcfab",
         "evidenceUrl": "https://github.com/psf/black/commit/892eddacd215d685e136686b7f629ade70adca83"
       },
       "taskPrompt": "Black mishandles a '# fmt: on' boundary adjacent to decorators, causing code that should resume formatting to remain ignored or be grouped incorrectly. Reproduce the focused regression, preserve other fmt on/off and decorator behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",

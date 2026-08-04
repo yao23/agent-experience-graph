@@ -100,6 +100,8 @@ def validate_manifest(manifest):
         errors.append("exactly three replicates per arm are required")
     if manifest.get("protocol", {}).get("arms") != list(ARMS):
         errors.append("arms must be control then treatment")
+    if not manifest.get("protocol", {}).get("environmentLock"):
+        errors.append("a frozen environment lock is required")
     frozen_orders = [order for task in tasks for order in task.get("orders", [])]
     if frozen_orders != expected_orders(manifest):
         errors.append("stored arm orders do not match the frozen randomization seed")
@@ -135,6 +137,13 @@ def validate_manifest(manifest):
             errors.append(f"{label}: invalid replicate arm order")
         if not transfer.get("testFiles") or not transfer.get("focusedCommand") or not transfer.get("regressionCommand"):
             errors.append(f"{label}: transfer oracle is incomplete")
+        if not transfer.get("initialFailurePattern"):
+            errors.append(f"{label}: initial failure signature is missing")
+        else:
+            try:
+                re.compile(transfer["initialFailurePattern"], re.IGNORECASE | re.DOTALL)
+            except re.error as error:
+                errors.append(f"{label}: invalid initial failure regex: {error}")
         for failure in task.get("knownFailurePaths", []):
             if not failure.get("label") or not failure.get("pattern"):
                 errors.append(f"{label}: known failure detector is incomplete")
@@ -277,6 +286,54 @@ def parse_mapping(values, label):
     return output
 
 
+def load_environment_lock(manifest, manifest_path):
+    path = Path(manifest_path).resolve().parent / manifest["protocol"]["environmentLock"]
+    if not path.is_file():
+        raise ProtocolError(f"environment lock not found: {path}")
+    with path.open(encoding="utf-8") as handle:
+        lock = json.load(handle)
+    expected_projects = {task["project"] for task in manifest["tasks"]}
+    if set(lock.get("environments", {})) != expected_projects:
+        raise ProtocolError("environment lock projects do not match the manifest")
+    return lock
+
+
+def environment_snapshot(python_env):
+    python = python_env / "bin" / "python"
+    pip = python_env / "bin" / "pip"
+    runtime = command(
+        [
+            str(python),
+            "-c",
+            "import json,platform,sys; print(json.dumps({'implementation': platform.python_implementation(), 'version': platform.python_version(), 'sysPlatform': sys.platform, 'machine': platform.machine()}))",
+        ]
+    )
+    if runtime.returncode:
+        raise ProtocolError(runtime.stderr)
+    frozen = command([str(pip), "freeze", "--all"])
+    if frozen.returncode:
+        raise ProtocolError(frozen.stderr)
+    packages = []
+    for line in frozen.stdout.splitlines():
+        normalized = re.sub(r"^(fastapi|black)\s+@\s+.+$", r"\1@frozen-seed", line.strip())
+        if normalized:
+            packages.append(normalized)
+    return {"runtime": json.loads(runtime.stdout), "packages": sorted(packages)}
+
+
+def verify_environment(project, python_env, lock):
+    actual = environment_snapshot(python_env)
+    expected = {"runtime": lock["runtime"], "packages": sorted(lock["environments"][project])}
+    if actual != expected:
+        missing = sorted(set(expected["packages"]) - set(actual["packages"]))
+        unexpected = sorted(set(actual["packages"]) - set(expected["packages"]))
+        raise ProtocolError(
+            f"{project}: environment differs from frozen lock; missing={missing}, unexpected={unexpected}, "
+            f"runtime={actual['runtime']}"
+        )
+    return {**actual, "sha256": canonical_sha256(actual)}
+
+
 def prepare_seed(manifest, task, mirror, seeds_root, check_oracle=True, env=None):
     seed = seeds_root / task["id"]
     copy_commit_tree(mirror, task["transfer"]["buggyCommit"], seed)
@@ -284,6 +341,13 @@ def prepare_seed(manifest, task, mirror, seeds_root, check_oracle=True, env=None
         target = seed / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(git_file(mirror, task["transfer"]["fixedCommit"], relative))
+    for fixture in task["transfer"].get("fixtureFiles", []):
+        source = HERE / fixture["source"]
+        target = seed / fixture["destination"]
+        if not source.is_file():
+            raise ProtocolError(f"missing frozen fixture: {source}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
     init_seed_git(seed)
     assert_blind_workspace(manifest, task, seed)
     seed_hash = tree_sha256(seed)
@@ -295,6 +359,9 @@ def prepare_seed(manifest, task, mirror, seeds_root, check_oracle=True, env=None
         initial = execute_test(task["transfer"]["focusedCommand"], seed, env, timeout=300)
         if initial["passed"]:
             raise ProtocolError(f"{task['id']}: buggy seed unexpectedly passes focused regression")
+        failure_output = initial["stdout"] + "\n" + initial["stderr"]
+        if not re.search(task["transfer"]["initialFailurePattern"], failure_output, re.IGNORECASE | re.DOTALL):
+            raise ProtocolError(f"{task['id']}: focused test failed for an unregistered reason")
     return {"path": str(seed), "treeSha256": seed_hash, "initialFocused": initial}
 
 
@@ -494,7 +561,10 @@ def human_production_diff(task, mirror):
 
 def evaluate_patch(task, workspace, seed, patch, env, human_diff, snapshot=False):
     stats = diff_stats(patch)
-    test_changed = any(path in set(task["transfer"]["testFiles"]) for path in stats["filesChanged"])
+    protected_tests = set(task["transfer"]["testFiles"]) | {
+        fixture["destination"] for fixture in task["transfer"].get("fixtureFiles", [])
+    }
+    test_changed = any(path in protected_tests for path in stats["filesChanged"])
     target = workspace
     temporary = None
     if snapshot:
@@ -506,7 +576,8 @@ def evaluate_patch(task, workspace, seed, patch, env, human_diff, snapshot=False
             shutil.rmtree(temporary)
             return {"applicable": False, "focused": {"passed": False}, "testChanged": test_changed}
     focused = execute_test(task["transfer"]["focusedCommand"], target, env)
-    regression = execute_test(task["transfer"]["regressionCommand"], target, env) if focused["passed"] else {"passed": False, "skipped": True}
+    controller_regression = task["transfer"].get("controllerRegressionCommand", task["transfer"]["regressionCommand"])
+    regression = execute_test(controller_regression, target, env) if focused["passed"] else {"passed": False, "skipped": True}
     changed_python = [path for path in stats["filesChanged"] if path.endswith(".py") and (target / path).exists()]
     syntax = {"passed": True, "files": changed_python}
     if changed_python:
@@ -730,6 +801,15 @@ def run_protocol(args, manifest):
     missing = sorted({task["project"] for task in manifest["tasks"]} - set(mirrors))
     if missing:
         raise ProtocolError(f"missing mirrors: {', '.join(missing)}")
+    projects = {task["project"] for task in manifest["tasks"]}
+    if (not args.prepare_only or not args.skip_initial_oracle) and projects - set(python_envs):
+        raise ProtocolError(f"missing frozen Python environments: {', '.join(sorted(projects - set(python_envs)))}")
+    environment_lock = load_environment_lock(manifest, args.manifest)
+    environment_evidence = {
+        project: verify_environment(project, python_envs[project], environment_lock)
+        for project in sorted(python_envs)
+        if project in projects
+    }
     codex = Path(args.codex or shutil.which("codex") or "")
     if not codex.exists():
         raise ProtocolError("Codex executable not found")
@@ -742,6 +822,7 @@ def run_protocol(args, manifest):
     for directory in (controller, seeds, arms_root, states):
         directory.mkdir()
     write_json(controller / "manifest.snapshot.json", manifest)
+    write_json(controller / "environment.json", environment_evidence)
     preparation = {}
     for task in manifest["tasks"]:
         project = task["project"]

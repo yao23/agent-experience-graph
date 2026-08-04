@@ -32,6 +32,8 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(result["tasks"], 5)
         self.assertEqual(result["injected"], 4)
         self.assertEqual(result["abstained"], 1)
+        lock = runner.load_environment_lock(self.manifest, runner.DEFAULT_MANIFEST)
+        self.assertEqual(set(lock["environments"]), {"scrapy", "fastapi", "black"})
 
     def test_randomized_orders_are_reproducible(self):
         stored = [order for task in self.manifest["tasks"] for order in task["orders"]]
@@ -84,6 +86,8 @@ class ManifestTests(unittest.TestCase):
             task["transfer"]["buggyCommit"] = buggy
             task["transfer"]["fixedCommit"] = fixed
             task["transfer"]["testFiles"] = ["test_bug.py"]
+            task["transfer"].pop("fixtureFiles", None)
+            task["transfer"].pop("controllerRegressionCommand", None)
             task["transfer"].pop("expectedSeedTreeSha256", None)
             seeds = root / "seeds"
             seeds.mkdir()
