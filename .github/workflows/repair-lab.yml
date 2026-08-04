@@ -5,6 +5,7 @@ on:
     paths:
       - "experiences/**"
       - "experiments/public-repair-lab/**"
+      - "experiments/natural-transfer-benchmark/**"
       - "integrations/vscode/**"
       - "scripts/**"
       - "references/trace_schema.md"
@@ -17,6 +18,7 @@ on:
     paths:
       - "experiences/**"
       - "experiments/public-repair-lab/**"
+      - "experiments/natural-transfer-benchmark/**"
       - "integrations/vscode/**"
       - "scripts/**"
       - "references/trace_schema.md"
@@ -68,6 +70,10 @@ jobs:
           python3 -m json.tool \
             experiments/public-repair-lab/experiments/tr-04-failed-path-prevention-manifest.json \
             >/dev/null
+          python3 -m json.tool \
+            experiments/natural-transfer-benchmark/manifest.json \
+            >/dev/null
+          python3 experiments/natural-transfer-benchmark/run_benchmark.py validate
 
       - name: Test retrieval, validation, telemetry, and task preparation
         run: |
@@ -79,6 +85,8 @@ jobs:
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task pysnooper-path-output --output /tmp/aeg-pysnooper
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task protocol-resource-delegation --output /tmp/aeg-protocol-transfer
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task rpc-upgrade-interactive-mode --output /tmp/aeg-rpc-trap
+          python3 experiments/natural-transfer-benchmark/run_benchmark.py self-test
+          python3 experiments/natural-transfer-benchmark/test_run_benchmark.py
 
       - name: Install extension dependencies
         working-directory: integrations/vscode

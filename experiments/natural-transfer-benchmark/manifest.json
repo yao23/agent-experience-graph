@@ -1,0 +1,285 @@
+{
+  "schemaVersion": "1.0.0",
+  "benchmarkId": "aeg-natural-transfer-v1",
+  "status": "frozen-before-execution",
+  "frozenAt": "2026-08-03T22:58:38-07:00",
+  "hypothesis": "Across naturally occurring later bugs in the same failure family, gated retrieval of a concise earlier experience will improve correctness or reduce repair effort on multiple tasks without materially increasing regressions, patch complexity, or non-cached token cost.",
+  "selectionPolicy": {
+    "corpus": "BugsInPy plus the corresponding upstream Git histories",
+    "rules": [
+      "Both bugs were independently reported and repaired upstream.",
+      "The source fixed commit predates the transfer fixed commit.",
+      "The pair shares a root-cause family but not the same symptom or patch.",
+      "The transfer regression test and human production patch are available to the controller for blind evaluation.",
+      "No outcome from an AEG benchmark arm was used to select or score a pair."
+    ],
+    "excludedEvidence": "No control or treatment arm output was observed before this manifest was frozen."
+  },
+  "protocol": {
+    "replicatesPerArm": 3,
+    "arms": ["control", "treatment"],
+    "randomizationSeed": "aeg-natural-transfer-v1-2026-08-03",
+    "model": "gpt-5.6-sol",
+    "codexMode": ["exec", "--ephemeral", "--ignore-user-config", "--sandbox", "workspace-write", "--json"],
+    "perArmTimeoutSeconds": 900,
+    "tokenBudget": "same platform-enforced Codex turn limit; no arm-specific override",
+    "taskPromptPolicy": "The task prompt is byte-identical across arms. Retrieval is delivered as a separate context block only after the frozen gate decision.",
+    "executionPolicy": "Complete both isolated arms in the frozen order before running comparative evaluation or exposing evaluator feedback.",
+    "positiveResultRule": "Treatment must improve correctness or reduce repair effort on at least two injected tasks, while not materially increasing regressions, patch complexity, or median non-cached token cost. Wall-clock time alone never qualifies.",
+    "materiality": {
+      "effortReductionFraction": 0.2,
+      "tokenCostIncreaseFraction": 0.15,
+      "patchComplexityIncreaseFraction": 0.25
+    }
+  },
+  "retrievalGate": {
+    "method": "pre-registered expert scores based only on source and transfer issue symptoms, dates, and failure-family evidence",
+    "relevanceThreshold": 0.72,
+    "expectedUtilityThreshold": 0.55,
+    "decisionRule": "inject iff relevance >= 0.72 and expectedUtility >= 0.55; otherwise abstain",
+    "abstentionMeaning": "An abstention is a successful AEG retrieval decision and is analyzed separately, never counted as a repair failure."
+  },
+  "contaminationControls": [
+    "Every arm starts from a separate directory copied from the same hashed seed tree.",
+    "The seed has a new one-commit Git history, so the human fixed commit and upstream history are absent.",
+    "Only regression test files are taken from the transfer fixed commit; the production tree is the buggy commit.",
+    "The manifest, source capsule, human patch, evaluator rules, other-arm workspace, logs, patches, and summaries are never copied into an arm.",
+    "Each arm receives distinct cache, bytecode, temporary, event-log, and result directories.",
+    "Codex runs ephemerally with user configuration ignored and is instructed to work only inside its repository.",
+    "Comparative evaluation runs only after both arms in a replicate terminate.",
+    "The runner rejects a workspace containing a fixed commit ID, capsule text, controller filename, or a remote Git URL."
+  ],
+  "measurements": [
+    "passAt1",
+    "finalSuccess",
+    "attempts",
+    "knownFailurePaths",
+    "commands",
+    "testExecutions",
+    "filesInspected",
+    "durationMs",
+    "nonCachedInputTokens",
+    "nonCachedTotalTokens",
+    "patchAddedLines",
+    "patchDeletedLines",
+    "filesChanged",
+    "humanPatchSemanticSimilarity",
+    "focusedRegressionResult",
+    "broaderRegressionResult",
+    "maintainabilityChecks",
+    "retrievalEffect"
+  ],
+  "evaluationRules": {
+    "passAt1": "The first captured production-code patch snapshot passes the focused transfer regression test without changing a test file.",
+    "finalSuccess": "The final patch passes focused and broader regression commands and does not change a test file.",
+    "attempt": "A distinct production patch snapshot emitted by a Codex file-change event.",
+    "semanticSimilarity": "Weighted deterministic score: changed-file Jaccard 0.50, normalized added/deleted token Jaccard 0.30, and changed-symbol Jaccard 0.20. It is descriptive and never overrides tests.",
+    "maintainability": "No test edits, Python syntax compilation succeeds for changed Python files, no generated/binary files, and patch churn is no more than 2.5 times the human production patch unless independently justified.",
+    "helped": "Treatment improves pass@1/final success, or preserves correctness while reducing at least two of attempts, commands, tests, or non-cached tokens by at least 20%, with no material regression or complexity increase.",
+    "negativeTransfer": "Treatment reduces correctness, introduces a regression, or materially increases at least two effort measures without a correctness gain.",
+    "noEffect": "Neither helped nor negative-transfer criteria are met.",
+    "aggregate": "Report task-level rates and medians first, then macro medians across the five tasks; do not pool repeats as independent tasks."
+  },
+  "tasks": [
+    {
+      "id": "nt-01-tornado-websocket-lifecycle",
+      "project": "tornado",
+      "repository": "https://github.com/tornadoweb/tornado.git",
+      "failureFamily": "WebSocket handler methods using RequestHandler-lifetime state after connection ownership moved to the WebSocket protocol",
+      "source": {
+        "bugId": "BugsInPy tornado-10",
+        "buggyCommit": "ecd8968c5135b810cd607b5902dda2cd32122b39",
+        "fixedCommit": "5931d913b4ea250891a0b582f1f8b2901b868c79",
+        "fixedAt": "2017-04-15T14:03:02-04:00",
+        "patchSha256": "e9432fcb28f07464bc813cc9c263abc38cb6f55a6e0b1fbb768afae12d50d333",
+        "evidenceUrl": "https://github.com/tornadoweb/tornado/commit/5931d913b4ea250891a0b582f1f8b2901b868c79"
+      },
+      "transfer": {
+        "bugId": "BugsInPy tornado-1",
+        "buggyCommit": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+        "fixedCommit": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+        "fixedAt": "2019-03-10T12:57:19-04:00",
+        "testFiles": ["tornado/test/websocket_test.py"],
+        "focusedCommand": "python -m unittest -q tornado.test.websocket_test.WebSocketTest.test_nodelay",
+        "regressionCommand": "python -m unittest -q tornado.test.websocket_test.WebSocketTest",
+        "humanPatchSha256": "7488c814d5d1855da7fac12c1d59e8be97ea5403a5c1997d176578ebbf10b475",
+        "expectedSeedTreeSha256": "d43f602e1dab4a9edc8d5f68bef4cf83acf29bd651dacfb9d40c3ce42099db45",
+        "evidenceUrl": "https://github.com/tornadoweb/tornado/commit/4677c54cc18bbfbdf0f4dadf11610fab6203fd63"
+      },
+      "taskPrompt": "A regression in Tornado 6.0 causes WebSocketHandler.set_nodelay() to fail after a connection has upgraded, although the public method worked before the refactor. Reproduce the failure with the focused test, repair the production code with the smallest maintainable change, and run both focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A WebSocket handler operation fails because HTTP request completion and WebSocket connection lifetime no longer share the same state owner.",
+        "failedApproach": "Running generic RequestHandler cleanup at finish time cleared handler state while an upgraded WebSocket connection still needed it.",
+        "recoveryPrinciple": "Trace the public handler method to the component that owns the live upgraded connection; place connection-lifetime behavior behind that protocol boundary and delay HTTP-lifetime cleanup where necessary.",
+        "validatedOutcome": "A WebSocket handler could render during message handling and cycle cleanup still occurred after the actual connection closed.",
+        "uncertaintyAndApplicability": "Use only when local evidence shows a request/connection lifetime split. Do not assume the prior cleanup method or file layout is unchanged."
+      },
+      "gate": {"relevance": 0.84, "expectedUtility": 0.68, "decision": "inject", "rationale": "Same upgraded-connection ownership boundary, but a different public operation and later refactor."},
+      "knownFailurePaths": [
+        {"label": "repair only a client connector or dialer surface", "pattern": "WebSocketClientConnection|websocket_connect|client.{0,40}set_nodelay"},
+        {"label": "restore a stale RequestHandler stream field instead of following live protocol ownership", "pattern": "self\\.stream\\.set_nodelay|restore.{0,40}stream"}
+      ],
+      "orders": [["treatment", "control"], ["treatment", "control"], ["treatment", "control"]]
+    },
+    {
+      "id": "nt-02-scrapy-location-normalization",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "Redirect Location values normalized with generic text/URL operations that alter raw header semantics",
+      "source": {
+        "bugId": "BugsInPy scrapy-10",
+        "buggyCommit": "6cc83c041eac36e7688dbd9c4c55487a43b622e0",
+        "fixedCommit": "db408528928b2d15043593032913fe40d6eb6783",
+        "fixedAt": "2016-10-19T23:26:12-03:00",
+        "patchSha256": "44457f377a33896693e553899f1f5e9e822dd4f444e4d21b7058a53412afa064",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/db408528928b2d15043593032913fe40d6eb6783"
+      },
+      "transfer": {
+        "bugId": "BugsInPy scrapy-3",
+        "buggyCommit": "be2e910dd06ba4904e7b10eb5a7e3251e8dab099",
+        "fixedCommit": "66cbceeb0a9104fc0fa238898e38d0d9ce9cbcf6",
+        "fixedAt": "2019-10-30T09:09:12+01:00",
+        "testFiles": ["tests/test_downloadermiddleware_redirect.py"],
+        "focusedCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_redirect_302_relative",
+        "regressionCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest",
+        "humanPatchSha256": "0176cf6437822a350f09280f99bd805e9e1299d02310fd2b864e78b6e3583c1e",
+        "expectedSeedTreeSha256": "cfa17b9d5bd1691cfec3a771799c75be6e5cba14a6e0f6d4fba652a997585413",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/66cbceeb0a9104fc0fa238898e38d0d9ce9cbcf6"
+      },
+      "taskPrompt": "Scrapy resolves an HTTP redirect incorrectly when a Location header begins with three slashes. Reproduce the failing focused test, preserve valid redirect behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A redirect target arrives as raw HTTP header bytes and becomes corrupted during conversion before URL resolution.",
+        "failedApproach": "Guessing a text encoding and then applying ordinary URL joining changed the original Location bytes and produced a different target.",
+        "recoveryPrinciple": "Normalize the raw Location exactly once with an HTTP/IRI-aware boundary helper, then reason explicitly about reference form before joining it to the request URL.",
+        "validatedOutcome": "Non-ASCII Location bytes were percent-encoded without inventing an encoding and existing redirect tests remained valid.",
+        "uncertaintyAndApplicability": "Applicable to redirect-reference parsing, not arbitrary response bodies. Scheme-relative and abnormal-slash references may need an explicit classification step beyond byte normalization."
+      },
+      "gate": {"relevance": 0.9, "expectedUtility": 0.73, "decision": "inject", "rationale": "Both failures occur at the same raw Location-to-reference normalization boundary but cover different malformed inputs."},
+      "knownFailurePaths": [
+        {"label": "change the general Request URL parser", "pattern": "scrapy/(http/request|utils/url)\\.py|class Request"},
+        {"label": "strip slashes without preserving redirect reference semantics", "pattern": "[lr]?strip\\([^)]*['\"]/[']?"}
+      ],
+      "orders": [["treatment", "control"], ["control", "treatment"], ["control", "treatment"]]
+    },
+    {
+      "id": "nt-03-scrapy-form-action-resolution",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "HTML form action references resolved without preserving browser-like document-base and attribute normalization semantics",
+      "source": {
+        "bugId": "BugsInPy scrapy-25",
+        "buggyCommit": "57f87b95d4d705f8afdd8fb9f7551033a7d88ee2",
+        "fixedCommit": "9548691fdd47077a53f85daace091ef4af599cb9",
+        "fixedAt": "2015-11-10T21:33:24+05:00",
+        "patchSha256": "281b122df2ac0b7de177b2955c4d00f43af3bae57e2fb4482597ebd95b33468a",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/9548691fdd47077a53f85daace091ef4af599cb9"
+      },
+      "transfer": {
+        "bugId": "BugsInPy scrapy-7",
+        "buggyCommit": "e1ceaf3b5fa29326f032c4ed3f50943384b9e63d",
+        "fixedCommit": "074caf434e255bc96f106e57e3e288028f372485",
+        "fixedAt": "2017-02-16T02:13:39+05:00",
+        "testFiles": ["tests/test_http_request.py"],
+        "focusedCommand": "python -m unittest -q tests.test_http_request.FormRequestTest.test_spaces_in_action",
+        "regressionCommand": "python -m unittest -q tests.test_http_request.FormRequestTest",
+        "humanPatchSha256": "4254149a1a5d634f48a0b0a0a50e4c4f47f23d9089d623e084710757eb1fc0c8",
+        "expectedSeedTreeSha256": "9617fcda806e67975e2c284f591ea2f8ea3be70ed399d16ad26da3b6e4769c9e",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/074caf434e255bc96f106e57e3e288028f372485"
+      },
+      "taskPrompt": "FormRequest.from_response() produces the wrong request URL when a form action contains HTML whitespace. Reproduce the focused test, match browser-like form submission behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A form action is a document-relative reference whose meaning depends on the parser-derived base URL.",
+        "failedApproach": "Reading a convenient action/base property directly skipped part of HTML document-base resolution and produced the wrong target.",
+        "recoveryPrinciple": "Separate HTML attribute normalization from RFC-style reference resolution, and resolve the normalized action against the parser-derived document base.",
+        "validatedOutcome": "Relative actions honored the document base element while forms without a special base retained existing behavior.",
+        "uncertaintyAndApplicability": "Use for HTML form URL construction. Attribute whitespace rules and a missing action are distinct cases and must be verified locally."
+      },
+      "gate": {"relevance": 0.92, "expectedUtility": 0.76, "decision": "inject", "rationale": "Same form-action resolution pipeline and invariant, with a later non-identical attribute-normalization defect."},
+      "knownFailurePaths": [
+        {"label": "patch the generic Request constructor", "pattern": "scrapy/http/request/__init__\\.py|class Request"},
+        {"label": "apply unrestricted string.strip without checking HTML whitespace semantics", "pattern": "action\\.strip\\(\\)|strip\\(action\\)"}
+      ],
+      "orders": [["control", "treatment"], ["treatment", "control"], ["control", "treatment"]]
+    },
+    {
+      "id": "nt-04-fastapi-field-classification",
+      "project": "fastapi",
+      "repository": "https://github.com/fastapi/fastapi.git",
+      "failureFamily": "Pydantic request-field classification based on one metadata representation while equivalent type information exists elsewhere",
+      "source": {
+        "bugId": "BugsInPy fastapi-11",
+        "buggyCommit": "bf229ad5d830eb5320f966d51a55e590e8d57008",
+        "fixedCommit": "06eb4219345a77d23484528c9d164eb8d2097fec",
+        "fixedAt": "2019-08-07T13:55:33-05:00",
+        "patchSha256": "5a6b1fb92c52a895b22b0e1431c74e568c3844407a11626afaa39d8a9b328457",
+        "evidenceUrl": "https://github.com/fastapi/fastapi/commit/06eb4219345a77d23484528c9d164eb8d2097fec"
+      },
+      "transfer": {
+        "bugId": "BugsInPy fastapi-6",
+        "buggyCommit": "5db99a27cf640864b4793807811848698c5ff4a2",
+        "fixedCommit": "874d24181e779ebc6e1c52afb7d6598f863fd6a8",
+        "fixedAt": "2020-01-17T12:45:55+01:00",
+        "testFiles": ["tests/test_forms_from_non_typing_sequences.py"],
+        "focusedCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py",
+        "regressionCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py tests/test_union_body.py tests/test_union_inherited_body.py",
+        "humanPatchSha256": "b9a1d34ba803751762f2728a2d7a8d3b5917431bd92eff944272c527ea177123",
+        "expectedSeedTreeSha256": "8501bcee5b91ce7bfc6f53a3a67d576df2ee4ece6d2e55aa588a981bbd8285da",
+        "evidenceUrl": "https://github.com/fastapi/fastapi/commit/874d24181e779ebc6e1c52afb7d6598f863fd6a8"
+      },
+      "taskPrompt": "FastAPI form parameters declared with built-in list, set, or tuple classes do not receive all submitted values. Reproduce the focused regression, preserve existing typing-based sequence behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "Request extraction classifies a Pydantic field as scalar or sequence using metadata that can encode equivalent annotations in different shapes.",
+        "failedApproach": "Looking only at the top-level field shape treated composite or alternative representations as scalar and selected the wrong extraction operation.",
+        "recoveryPrinciple": "At the extraction boundary, inspect all relevant Pydantic representations—shape, concrete type, and sub-fields—and preserve the existing scalar/sequence invariant.",
+        "validatedOutcome": "Union body fields were classified through their nested sub-fields without weakening scalar handling for existing request parameters.",
+        "uncertaintyAndApplicability": "Pydantic metadata differs by version and parameter source. Confirm which representation is populated before extending the predicate."
+      },
+      "gate": {"relevance": 0.86, "expectedUtility": 0.71, "decision": "inject", "rationale": "Same field-classification blind spot, but the transfer concerns concrete collection classes during form extraction rather than Union bodies."},
+      "knownFailurePaths": [
+        {"label": "change multipart parsing globally", "pattern": "multipart|formparsers|starlette/.{0,30}form"},
+        {"label": "special-case only list while leaving equivalent sequence classes broken", "pattern": "field\\.type_.{0,12}(==| is )list|field\\.type_ in \\(list,?\\)"}
+      ],
+      "orders": [["control", "treatment"], ["control", "treatment"], ["treatment", "control"]]
+    },
+    {
+      "id": "nt-05-black-decorator-directives",
+      "project": "black",
+      "repository": "https://github.com/psf/black.git",
+      "failureFamily": "Formatter comments/directives near decorators interpreted by linear adjacency instead of syntax-tree attachment and indentation",
+      "source": {
+        "bugId": "BugsInPy black-19",
+        "buggyCommit": "337a4199f90ca48a19cf26511e0cec330b13bd4e",
+        "fixedCommit": "29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c",
+        "fixedAt": "2018-04-24T09:38:12-07:00",
+        "patchSha256": "5d24a124b2f5193904072cd37b22ee4628cde1db5c9374d0226e5aaa8c1ffacb",
+        "evidenceUrl": "https://github.com/psf/black/commit/29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c"
+      },
+      "transfer": {
+        "bugId": "BugsInPy black-2",
+        "buggyCommit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
+        "fixedCommit": "892eddacd215d685e136686b7f629ade70adca83",
+        "fixedAt": "2020-05-08T14:37:17+02:00",
+        "testFiles": ["tests/test_black.py"],
+        "focusedCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff4",
+        "regressionCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff4 tests.test_black.BlackTestCase.test_comment_in_decorator",
+        "humanPatchSha256": "7c7e98d68837366d0b76f98be563113a1117201d6af0662bc10193bbe4f14c12",
+        "expectedSeedTreeSha256": "073fecd20681a0400752508030e7d9d0aece9fee42182dcb0dabc15a572439e8",
+        "evidenceUrl": "https://github.com/psf/black/commit/892eddacd215d685e136686b7f629ade70adca83"
+      },
+      "taskPrompt": "Black mishandles a '# fmt: on' boundary adjacent to decorators, causing code that should resume formatting to remain ignored or be grouped incorrectly. Reproduce the focused regression, preserve other fmt on/off and decorator behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A formatter decides spacing or ignored regions for comments located between or beside decorators.",
+        "failedApproach": "Treating the previous comment as an ordinary line broke the decorator group because syntactic attachment mattered more than raw adjacency.",
+        "recoveryPrinciple": "Classify a comment/directive using its syntax-tree container, indentation column, and decorator attachment before changing formatting state.",
+        "validatedOutcome": "Comments between decorators stayed attached to the decorator group without introducing blank lines elsewhere.",
+        "uncertaintyAndApplicability": "The source covered spacing, while a fmt directive may be owned by a different traversal. Retrieve only if the same attachment invariant is useful; do not assume the same function is correct."
+      },
+      "gate": {"relevance": 0.69, "expectedUtility": 0.58, "decision": "abstain", "rationale": "The structural invariant is related, but the source spacing tracker and transfer ignored-node traversal are different enough to fall below the relevance threshold."},
+      "knownFailurePaths": [
+        {"label": "change general decorator spacing", "pattern": "EmptyLineTracker|previous_line\\.is_comment"},
+        {"label": "treat fmt directives as flat text without column or tree ownership", "pattern": "line\\.strip.{0,30}fmt: on|['\"]# fmt: on['\"] in"}
+      ],
+      "orders": [["control", "treatment"], ["treatment", "control"], ["control", "treatment"]]
+    }
+  ]
+}

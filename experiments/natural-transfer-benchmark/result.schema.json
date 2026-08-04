@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "first_repair_location", "proposed_approach", "aeg_experience_used"],
+  "properties": {
+    "summary": {"type": "string"},
+    "first_repair_location": {"type": "string"},
+    "proposed_approach": {"type": "string"},
+    "aeg_experience_used": {"type": "boolean"}
+  }
+}
