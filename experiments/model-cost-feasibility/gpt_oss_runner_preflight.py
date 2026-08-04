@@ -67,8 +67,8 @@ def main():
     enough_disk = disk.free >= MIN_DISK_BYTES
     cold_load_floor = MODEL_DOWNLOAD_BYTES / throughput["readBytesPerSecond"]
     result = {
-        "benchmarkDataAccessed": false,
-        "modelDataDownloaded": false,
+        "benchmarkDataAccessed": False,
+        "modelDataDownloaded": False,
         "runner": {
             "system": platform.system(),
             "machine": platform.machine(),
