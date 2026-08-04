@@ -59,6 +59,9 @@ jobs:
           python3 experiments/public-repair-lab/validate_paired_results.py \
             --results experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json \
             --skip-experience
+          python3 -m json.tool \
+            experiments/public-repair-lab/experiments/tr-04-failed-path-prevention-manifest.json \
+            >/dev/null
 
       - name: Test retrieval, validation, telemetry, and task preparation
         run: |
@@ -69,6 +72,7 @@ jobs:
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task fastapi-nested-response --trials 3 --output /tmp/aeg-fastapi
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task pysnooper-path-output --output /tmp/aeg-pysnooper
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task protocol-resource-delegation --output /tmp/aeg-protocol-transfer
+          python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task rpc-upgrade-interactive-mode --output /tmp/aeg-rpc-trap
 
       - name: Install extension dependencies
         working-directory: integrations/vscode

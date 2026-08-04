@@ -45,6 +45,17 @@ class EventSummaryTest(unittest.TestCase):
             0,
         )
 
+    def test_records_pre_edit_message_first_repair_path_and_inspected_files(self):
+        events = [
+            {"type": "item.completed", "item": {"type": "agent_message", "text": "first approach"}},
+            {"type": "item.completed", "item": {"type": "command_execution", "command": "sed -n '1,200p' rpc.py"}},
+            {"type": "item.completed", "item": {"type": "file_change", "changes": [{"path": "/tmp/arm/rpc.py", "kind": "update"}]}},
+        ]
+        summary = RUNNER.summarize_events(events, "python3 test_bug.py", ["ISSUE.md", "rpc.py", "test_bug.py"])
+        self.assertEqual(summary["preEditAgentMessages"], ["first approach"])
+        self.assertEqual(summary["firstRepairPaths"], ["rpc.py"])
+        self.assertEqual(summary["filesInspected"], ["rpc.py"])
+
 
 class AggregateTest(unittest.TestCase):
     def make_trial(self, baseline, assisted):
@@ -107,6 +118,14 @@ class PromptTest(unittest.TestCase):
         self.assertIn("trace-2026-08-03-tr-04-tornado-nodelay", capsule)
         self.assertIn("ownership boundary", capsule)
         self.assertLess(len(capsule), 1800)
+
+    def test_failure_aware_capsule_is_concise_and_structured(self):
+        task = RUNNER.TASKS["rpc-upgrade-interactive-mode"]
+        capsule = RUNNER.experience_prompt(task["experience"], task["experienceId"])
+        self.assertIn("Known failed approach:", capsule)
+        self.assertIn("Recovery:", capsule)
+        self.assertIn("Validated outcome:", capsule)
+        self.assertLess(len(capsule), 1400)
 
 
 if __name__ == "__main__":

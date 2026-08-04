@@ -8,7 +8,9 @@ Version 0.1.3 compares fresh Codex sessions against identical public-bug fixture
 The default task is a dependency-free reproduction of FastAPI's nested
 response-model data leak (BugsInPy `fastapi` bug 5). The original PySnooper
 path-output task remains selectable. A protocol-resource-delegation transfer
-task exercises the verified TR-04 experience. Both arms must run the same focused test.
+task exercises the verified TR-04 experience. The pre-registered
+`rpc-upgrade-interactive-mode` task tests whether failed-path retrieval prevents
+the rejected client-side repair. All arms must run the same focused test.
 The runner captures JSONL agent events, duration, token usage, completed commands,
 actual test invocations, changed files, patches, and objective verification.
 
@@ -23,6 +25,7 @@ python3 experiments/public-repair-lab/run_experiment.py
 python3 experiments/public-repair-lab/run_experiment.py --trials 5
 python3 experiments/public-repair-lab/run_experiment.py --task pysnooper-path-output
 python3 experiments/public-repair-lab/run_experiment.py --task protocol-resource-delegation --model gpt-5.6-sol
+python3 experiments/public-repair-lab/run_experiment.py --task rpc-upgrade-interactive-mode --model gpt-5.6-sol
 ```
 
 The command requires `codex` on `PATH`. It uses ephemeral sessions and a

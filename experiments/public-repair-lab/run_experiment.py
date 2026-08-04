@@ -43,6 +43,21 @@ TASKS = {
         "source": LAB_DIR / "tasks" / "protocol-resource-delegation" / "SOURCE.md",
         "verification": "python3 test_bug.py",
     },
+    "rpc-upgrade-interactive-mode": {
+        "name": "RPC upgrade interactive-mode delegation trap",
+        "fixture": LAB_DIR / "tasks" / "rpc-upgrade-interactive-mode" / "fixture",
+        "experience": LAB_DIR / "tasks" / "rpc-upgrade-interactive-mode" / "experience.json",
+        "experienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+        "retrievalQuery": "avoid repairing the wrong client-side surface when a public low-latency control broke after protocol stream ownership migration",
+        "source": LAB_DIR / "tasks" / "rpc-upgrade-interactive-mode" / "SOURCE.md",
+        "verification": "python3 test_bug.py",
+        "fixedPrompt": """Read ISSUE.md and repair the bug. Work only in this repository.
+Run `python3 test_bug.py` before editing. Before the first edit, report the first
+production location you intend to change and your proposed approach in the
+structured result fields. Make the smallest production-code change and run the
+same test command afterward. Do not edit the test. Set aeg_experience_used
+accurately.""",
+    },
 }
 
 
@@ -92,6 +107,16 @@ def prepare_arm(trial_dir, arm, task):
 
 def experience_prompt(path, experience_id=None):
     experience = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(experience, dict) and "failedApproach" in experience:
+        return f"""AEG retrieved one concise, verified experience:
+
+Experience ID: {experience['id']}
+Relevant context: {experience['context']}
+Known failed approach: {experience['failedApproach']}
+Recovery: {experience['recovery']}
+Validated outcome: {experience['validatedOutcome']}
+
+Use this only if local evidence matches. Do not assume file or class names transfer."""
     if experience_id is not None:
         experience = next(item for item in experience if item["id"] == experience_id)
         steps = "\n".join(f"{index}. {item}" for index, item in enumerate(experience["lessons"][:3], 1))
@@ -121,7 +146,7 @@ Verify that the pattern matches local evidence before editing."""
 
 def prompt_for(arm, task):
     verification_command = task["verification"]
-    shared = f"""Read ISSUE.md and repair the bug. Work only in this repository.
+    shared = task.get("fixedPrompt") or f"""Read ISSUE.md and repair the bug. Work only in this repository.
 Run `{verification_command}` before editing, make the smallest production-code change,
 and run the same command afterward. Do not edit the test. Return the requested
 structured result and set aeg_experience_used accurately."""
@@ -169,20 +194,34 @@ def count_command_invocations(commands, expected_command):
     return count
 
 
-def summarize_events(events, verification_command):
+def summarize_events(events, verification_command, known_files=()):
     commands = []
     usage = {}
     file_changes = 0
+    attempt_paths = []
+    pre_edit_messages = []
+    files_inspected = set()
     for event in events:
         if event.get("type") == "turn.completed":
             usage = event.get("usage", usage)
         if event.get("type") != "item.completed":
             continue
         item = event.get("item") or {}
+        if item.get("type") == "agent_message" and file_changes == 0 and item.get("text"):
+            pre_edit_messages.append(item["text"])
         if item.get("type") == "command_execution" and item.get("command"):
             commands.append(item["command"])
+            if re.search(r"(?:^|\s)(?:cat|sed|head|tail|rg)(?:\s|$)", shell_body(item["command"])):
+                for path in known_files:
+                    if path in item["command"]:
+                        files_inspected.add(path)
         if item.get("type") == "file_change":
             file_changes += 1
+            attempt_paths.append([
+                Path(change.get("path", "")).name
+                for change in item.get("changes", [])
+                if change.get("path")
+            ])
     input_tokens = usage.get("input_tokens", 0)
     cached_tokens = usage.get("cached_input_tokens", 0)
     output_tokens = usage.get("output_tokens", 0)
@@ -192,6 +231,10 @@ def summarize_events(events, verification_command):
         "testCommandCount": count_command_invocations(commands, verification_command),
         "fileChangeEvents": file_changes,
         "attemptCount": file_changes,
+        "attemptPaths": attempt_paths,
+        "firstRepairPaths": attempt_paths[0] if attempt_paths else [],
+        "filesInspected": sorted(files_inspected),
+        "preEditAgentMessages": pre_edit_messages,
         "usage": usage,
         "nonCachedInputTokens": max(0, input_tokens - cached_tokens),
         "totalNonCachedTokens": max(0, input_tokens - cached_tokens) + output_tokens,
@@ -220,8 +263,35 @@ def execute_arm(codex, trial_dir, arm, task, model):
         str(last_message),
         prompt_for(arm, task),
     ]
+    attempt_snapshots = []
     with events_path.open("w", encoding="utf-8") as stdout, stderr_path.open("w", encoding="utf-8") as stderr:
-        completed = subprocess.run(command, cwd=workspace, stdout=stdout, stderr=stderr, timeout=900, check=False)
+        completed = subprocess.Popen(
+            command,
+            cwd=workspace,
+            stdout=subprocess.PIPE,
+            stderr=stderr,
+            text=True,
+            bufsize=1,
+        )
+        assert completed.stdout is not None
+        for line in completed.stdout:
+            stdout.write(line)
+            stdout.flush()
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            item = event.get("item") or {}
+            if event.get("type") == "item.completed" and item.get("type") == "file_change":
+                snapshot = run(["git", "diff", "--", "."], workspace).stdout
+                snapshot_index = len(attempt_snapshots) + 1
+                (trial_dir / f"{arm}.attempt-{snapshot_index}.patch").write_text(snapshot, encoding="utf-8")
+                attempt_snapshots.append({
+                    "index": snapshot_index,
+                    "changedFiles": run(["git", "diff", "--name-only"], workspace).stdout.splitlines(),
+                    "patchSha256": hashlib.sha256(snapshot.encode("utf-8")).hexdigest(),
+                })
+        completed.wait(timeout=900)
     duration_ms = round((time.monotonic() - started) * 1000)
     verification = verify(workspace, task["verification"])
     diff = run(["git", "diff", "--", "."], workspace).stdout
@@ -232,7 +302,12 @@ def execute_arm(codex, trial_dir, arm, task, model):
         "codexExitCode": completed.returncode,
         "durationMs": duration_ms,
         "verification": verification,
-        "events": summarize_events(events, task["verification"]),
+        "events": summarize_events(
+            events,
+            task["verification"],
+            [str(path.relative_to(task["fixture"])) for path in task["fixture"].rglob("*") if path.is_file()],
+        ),
+        "attemptSnapshots": attempt_snapshots,
         "changedFiles": run(["git", "diff", "--name-only"], workspace).stdout.splitlines(),
         "patchSha256": hashlib.sha256(diff.encode("utf-8")).hexdigest(),
     }
@@ -359,10 +434,10 @@ def main():
     codex = shutil.which("codex")
     if codex:
         report["codexVersion"] = run([codex, "--version"], LAB_DIR).stdout.strip()
-    if task.get("experienceId"):
+    if task.get("retrievalQuery"):
         report["retrieval"] = {
             "query": task["retrievalQuery"],
-            "verifiedExperienceId": task["experienceId"],
+            "verifiedExperienceId": task.get("experienceId"),
             "delivery": "compact capsule injected only into the assisted arm",
         }
 

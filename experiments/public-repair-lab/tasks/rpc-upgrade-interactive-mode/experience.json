@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "trace-2026-08-03-tr-04-tornado-nodelay",
+  "context": "A public low-latency control broke after the active stream moved behind a protocol abstraction, while another similarly named surface remained visible.",
+  "failedApproach": "The rejected first attempt added delegation on the client-side connection. It passed a synthetic client test but did not repair the issue's public entry path.",
+  "recovery": "Begin at the public caller named by local behavior, trace ownership through each abstraction, and repair the stale caller plus the protocol contract that owns the active stream.",
+  "validatedOutcome": "The corrected handler-to-protocol-to-stream delegation passed the focused WebSocket tests and the complete historical suite."
+}
