@@ -62,6 +62,18 @@ class PairedResultsValidationTest(unittest.TestCase):
         with self.assertRaisesRegex(VALIDATOR.ValidationError, "total non-cached tokens do not reconcile"):
             VALIDATOR.validate_results(transfer)
 
+    def test_allows_pre_registered_semantically_equivalent_patches(self):
+        transfer = json.loads(TRANSFER_RESULTS_PATH.read_text(encoding="utf-8"))
+        transfer["allowSemanticallyEquivalentPatches"] = True
+        transfer["trials"][0]["arms"]["assisted"]["patchSha256"] = "0" * 64
+        VALIDATOR.validate_results(transfer)
+
+    def test_rejects_incorrect_pre_registered_positive_classification(self):
+        result = json.loads((VALIDATOR_PATH.with_name("results") / "tr-04-failed-path-prevention-pair.json").read_text(encoding="utf-8"))
+        result["interpretation"]["preRegisteredPositive"] = True
+        with self.assertRaisesRegex(VALIDATOR.ValidationError, "positive classification"):
+            VALIDATOR.validate_results(result)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -77,6 +77,7 @@ def validate_results(results):
     seen_ids = set()
     task_ids = set()
     all_patch_hashes = set()
+    allow_semantic_patches = results.get("allowSemanticallyEquivalentPatches", False)
     for index, trial in enumerate(trials):
         path = f"trials[{index}]"
         require(isinstance(trial, dict), f"{path} must be an object")
@@ -119,12 +120,26 @@ def validate_results(results):
             patch_hash = row.get("patchSha256")
             require(isinstance(patch_hash, str) and SHA256_RE.fullmatch(patch_hash), f"{arm_path}.patchSha256 must be a SHA-256 hex digest")
             all_patch_hashes.add(patch_hash)
-            require(patch_hash == expected_hash, f"{arm_path}.patchSha256 is inconsistent with expectedPatchSha256")
+            if not allow_semantic_patches:
+                require(patch_hash == expected_hash, f"{arm_path}.patchSha256 is inconsistent with expectedPatchSha256")
 
     require(len(task_ids) == 1, "all pairs must use the same task ID")
-    require(len(all_patch_hashes) == 1, "verified arms must have consistent patch hashes")
+    if not allow_semantic_patches:
+        require(len(all_patch_hashes) == 1, "verified arms must have consistent patch hashes")
     recomputed = recompute_aggregate(results)
     require(results.get("aggregate") == recomputed, f"published aggregate does not match recomputation: {recomputed}")
+    interpretation = results.get("interpretation")
+    if interpretation is not None and len(trials) == 1:
+        baseline = trials[0]["arms"]["baseline"]
+        assisted = trials[0]["arms"]["assisted"]
+        measured_positive = assisted["verified"] and (
+            not baseline["verified"]
+            or assisted.get("repairAttempts", 0) < baseline.get("repairAttempts", 0)
+            or assisted["completedCommands"] < baseline["completedCommands"]
+            or assisted["actualTestExecutions"] < baseline["actualTestExecutions"]
+            or assisted["nonCachedTokens"] < baseline["nonCachedTokens"]
+        )
+        require(interpretation.get("preRegisteredPositive") == measured_positive, "published pre-registered positive classification does not match arm metrics")
     return recomputed
 
 

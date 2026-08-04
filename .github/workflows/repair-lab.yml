@@ -54,10 +54,16 @@ jobs:
           npx --yes ajv-cli@5.0.0 validate --all-errors \
             -s experiments/public-repair-lab/paired-results.schema.json \
             -d experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json
+          npx --yes ajv-cli@5.0.0 validate --all-errors \
+            -s experiments/public-repair-lab/paired-results.schema.json \
+            -d experiments/public-repair-lab/results/tr-04-failed-path-prevention-pair.json
           python3 scripts/validate_verified_experiences.py
           python3 experiments/public-repair-lab/validate_paired_results.py
           python3 experiments/public-repair-lab/validate_paired_results.py \
             --results experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json \
+            --skip-experience
+          python3 experiments/public-repair-lab/validate_paired_results.py \
+            --results experiments/public-repair-lab/results/tr-04-failed-path-prevention-pair.json \
             --skip-experience
           python3 -m json.tool \
             experiments/public-repair-lab/experiments/tr-04-failed-path-prevention-manifest.json \

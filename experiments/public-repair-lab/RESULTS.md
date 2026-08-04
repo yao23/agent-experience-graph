@@ -68,3 +68,18 @@ path nor the outcome in this pair and regressed both measured cost dimensions.
 This is a single pair, not evidence of a generalized retrieval effect. The
 sanitized control metadata, detailed token reconciliation, retrieval evidence,
 and path comparison are in `results/tr-04-protocol-transfer-pair.json`.
+
+## Pre-registered TR-04 failed-path prevention pair
+
+The manifest was published at commit `851ed4b36d1bb5be225709af5e43811743d227a9`
+before either arm ran. Neither arm entered the registered client-side trap.
+Control repaired handler initialization; treatment selected the canonical
+protocol-contract recovery. Both succeeded in one attempt with two test runs
+and inspected the same three files.
+
+Treatment used one additional command and 944 additional total non-cached
+tokens, while completing 7,292 ms faster. The pre-registered positive rule did
+not count wall time alone: treatment had to prevent a control failure or reduce
+attempts, commands, tests, or tokens without reducing correctness. The measured
+result is therefore not positive. Sanitized evidence is in
+`results/tr-04-failed-path-prevention-pair.json`.

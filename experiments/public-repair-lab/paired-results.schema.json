@@ -18,6 +18,9 @@
     "control": {"$ref": "#/definitions/control"},
     "retrieval": {"$ref": "#/definitions/retrieval"},
     "pathComparison": {"$ref": "#/definitions/pathComparison"}
+    ,"allowSemanticallyEquivalentPatches": {"type": "boolean"}
+    ,"preRegistration": {"$ref": "#/definitions/preRegistration"}
+    ,"interpretation": {"$ref": "#/definitions/interpretation"}
   },
   "definitions": {
     "nullableSha": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{40}$"}]},
@@ -53,6 +56,11 @@
         "changedFiles": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "tokenUsage": {"$ref": "#/definitions/tokenUsage"},
         "rootCause": {"type": "string", "minLength": 1}
+        ,"filesInspected": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        ,"firstRepairLocation": {"type": "string", "minLength": 1}
+        ,"firstProposedApproach": {"type": "string", "minLength": 1}
+        ,"knownTrapEntered": {"type": "boolean"}
+        ,"canonicalPatchEquivalence": {"enum": ["exact", "semantic", "behaviorally-correct-alternative", "none"]}
       }
     },
     "trial": {
@@ -116,6 +124,26 @@
         "outcomeChanged": {"type": "boolean"},
         "patchesIdentical": {"type": "boolean"},
         "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "preRegistration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["manifest", "commitSha", "publishedBeforeExecution", "thresholdUnchanged", "taskUnchanged"],
+      "properties": {
+        "manifest": {"type": "string", "minLength": 1},
+        "commitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "publishedBeforeExecution": {"type": "boolean"},
+        "thresholdUnchanged": {"type": "boolean"},
+        "taskUnchanged": {"type": "boolean"}
+      }
+    },
+    "interpretation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["preRegisteredPositive", "classification", "rationale"],
+      "properties": {
+        "preRegisteredPositive": {"type": "boolean"},
+        "classification": {"enum": ["positive", "not-positive", "inconclusive"]},
+        "rationale": {"type": "string", "minLength": 1}
       }
     }
   }
