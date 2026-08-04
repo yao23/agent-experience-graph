@@ -14,6 +14,8 @@ on:
       - "capability.json"
       - ".github/workflows/repair-lab.yml"
       - ".github/workflows/natural-transfer-isolation.yml"
+      - ".github/workflows/model-cost-feasibility.yml"
+      - "experiments/model-cost-feasibility/**"
   push:
     branches: [main]
     paths:
@@ -28,6 +30,8 @@ on:
       - "capability.json"
       - ".github/workflows/repair-lab.yml"
       - ".github/workflows/natural-transfer-isolation.yml"
+      - ".github/workflows/model-cost-feasibility.yml"
+      - "experiments/model-cost-feasibility/**"
   workflow_dispatch:
 
 permissions:

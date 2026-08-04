@@ -1,0 +1,25 @@
+{
+  "authorization": "not-authorized-for-benchmark-execution",
+  "benchmarkArmsExecuted": 0,
+  "candidateModel": "gpt-5.4-mini-2026-03-17",
+  "candidateReasoningEffort": "medium",
+  "inheritsFrozenDesignFrom": {
+    "commit": "846d018a26d7464f4de85537e5c54fb98a09af31",
+    "environmentLockRawSha256": "283db19eeb172038b8993514ae4a08a173a8c1f22bfaebdd5bf3c9d5a5e77251",
+    "manifestCanonicalSha256": "b71849d24db06fdba886c25e6145480dce62bde9a775adcbbe00d98f9f61aac3",
+    "manifestRawSha256": "46a78815b1a69f39c69a3a468ac977cc71668603ac4e856c307a7208330b95c1"
+  },
+  "protocolId": "aeg-natural-transfer-v1-gpt-5.4-mini-feasibility",
+  "status": "preregistered-model-specific-candidate-before-execution",
+  "unchangedByReference": [
+    "all five task pairs",
+    "source experiences",
+    "prompts and treatment payloads",
+    "retrieval and abstention thresholds",
+    "randomized arm order",
+    "evaluation criteria",
+    "budgets",
+    "frozen dependency versions",
+    "isolation and contamination controls"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "actualBilling": "not observable: authenticated ChatGPT session, not an API-key request",
+  "apiEquivalentCostUsd": 0.01507965,
+  "cachedInputTokens": 60672,
+  "commands": 6,
+  "estimatedThirtyArmApiCostUsd": {
+    "fiveTimesSmokeCentral": 2.2619475,
+    "oneTimesSmokeFloor": 0.4523895,
+    "tenTimesSmokeSensitivity": 4.523895
+  },
+  "inputTokens": 69845,
+  "model": "gpt-5.4-mini",
+  "nonCachedInputTokens": 9173,
+  "outputTokens": 811,
+  "pricingUsdPerMillionTokens": {
+    "cachedInput": 0.075,
+    "input": 0.75,
+    "output": 4.5
+  },
+  "promptSha256": "90e4f04c996db60525f4dad8b178a543b2be4b0df79de885bdbd1928ce909001",
+  "reasoningOutputTokens": 90,
+  "result": "success",
+  "smokeTask": "synthetic two-test Python clamp repair; no benchmark data",
+  "tests": {
+    "finalPassed": 2,
+    "firstCommandUnavailable": "python",
+    "retryCommand": "python3 -m unittest -v"
+  },
+  "workspaceApiKeyPresent": false,
+  "wallTimeSeconds": 20.735971083
+}
