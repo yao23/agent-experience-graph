@@ -11,7 +11,7 @@ This demo is intentionally lightweight. It is not meant to prove the final archi
 
 ## Demo Script
 
-Install AEG v0.1.3, open the repository in VS Code, and run **AEG: Open
+Install AEG v0.1.4, open the repository in VS Code, and run **AEG: Open
 Verified Experience Challenge**.
 
 Say:
