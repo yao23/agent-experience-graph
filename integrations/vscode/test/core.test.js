@@ -59,6 +59,16 @@ const bundledLibrary = () => loadVerifiedExperienceLibrary(
   fs.readFileSync(path.resolve(__dirname, '..', 'verified-experiences', 'verified.json'), 'utf8')
 );
 
+test('packages the original 256px Marketplace icon', () => {
+  const extensionRoot = path.resolve(__dirname, '..');
+  const manifest = JSON.parse(fs.readFileSync(path.join(extensionRoot, 'package.json'), 'utf8'));
+  assert.equal(manifest.icon, 'images/icon.png');
+  const icon = fs.readFileSync(path.join(extensionRoot, manifest.icon));
+  assert.deepEqual([...icon.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(icon.readUInt32BE(16), 256);
+  assert.equal(icon.readUInt32BE(20), 256);
+});
+
 test('loads only the bundled verified library', () => {
   const loaded = bundledLibrary();
   assert.deepEqual(loaded.malformed, []);
