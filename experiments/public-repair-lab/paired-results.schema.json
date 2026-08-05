@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/yao23/agent-experience-graph/experiments/public-repair-lab/paired-results.schema.json",
+  "title": "AEG sanitized paired Repair Lab results",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "experimentId", "sourceReportCreatedAt", "patchHashAlgorithm", "expectedPatchSha256", "trials", "aggregate", "unavailableMetadata", "limitations"],
+  "properties": {
+    "schemaVersion": {"const": "1.0.0"},
+    "experimentId": {"type": "string", "minLength": 1},
+    "sourceReportCreatedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T"},
+    "patchHashAlgorithm": {"const": "sha256"},
+    "expectedPatchSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "trials": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/trial"}},
+    "aggregate": {"$ref": "#/definitions/aggregate"},
+    "unavailableMetadata": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "control": {"$ref": "#/definitions/control"},
+    "retrieval": {"$ref": "#/definitions/retrieval"},
+    "pathComparison": {"$ref": "#/definitions/pathComparison"}
+    ,"allowSemanticallyEquivalentPatches": {"type": "boolean"}
+    ,"preRegistration": {"$ref": "#/definitions/preRegistration"}
+    ,"interpretation": {"$ref": "#/definitions/interpretation"}
+  },
+  "definitions": {
+    "nullableSha": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-f0-9]{40}$"}]},
+    "nullableString": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["codexCliVersion", "sessionMode", "sandbox"],
+      "properties": {"codexCliVersion": {"$ref": "#/definitions/nullableString"}, "sessionMode": {"const": "ephemeral"}, "sandbox": {"const": "workspace-write"}}
+    },
+    "tokenUsage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inputTokens", "cachedInputTokens", "nonCachedInputTokens", "outputTokens", "reasoningOutputTokens", "totalNonCachedTokens"],
+      "properties": {
+        "inputTokens": {"type": "integer", "minimum": 0},
+        "cachedInputTokens": {"type": "integer", "minimum": 0},
+        "nonCachedInputTokens": {"type": "integer", "minimum": 0},
+        "outputTokens": {"type": "integer", "minimum": 0},
+        "reasoningOutputTokens": {"type": "integer", "minimum": 0},
+        "totalNonCachedTokens": {"type": "integer", "minimum": 0}
+      }
+    },
+    "arm": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verified", "completedCommands", "actualTestExecutions", "nonCachedTokens", "durationMs", "patchSha256"],
+      "properties": {
+        "verified": {"type": "boolean"},
+        "completedCommands": {"type": "integer", "minimum": 0},
+        "actualTestExecutions": {"type": "integer", "minimum": 0},
+        "nonCachedTokens": {"type": "integer", "minimum": 0},
+        "durationMs": {"type": "integer", "minimum": 0},
+        "patchSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "repairAttempts": {"type": "integer", "minimum": 0},
+        "changedFiles": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "tokenUsage": {"$ref": "#/definitions/tokenUsage"},
+        "rootCause": {"type": "string", "minLength": 1}
+        ,"filesInspected": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        ,"firstRepairLocation": {"type": "string", "minLength": 1}
+        ,"firstProposedApproach": {"type": "string", "minLength": 1}
+        ,"knownTrapEntered": {"type": "boolean"}
+        ,"canonicalPatchEquivalence": {"enum": ["exact", "semantic", "behaviorally-correct-alternative", "none"]}
+      }
+    },
+    "trial": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trialId", "taskId", "executionOrder", "runnerSourceCommitSha", "model", "runtime", "arms"],
+      "properties": {
+        "trialId": {"type": "string", "minLength": 1},
+        "taskId": {"type": "string", "minLength": 1},
+        "executionOrder": {"type": "array", "items": {"enum": ["baseline", "assisted"]}, "minItems": 2, "maxItems": 2},
+        "runnerSourceCommitSha": {"$ref": "#/definitions/nullableSha"},
+        "model": {"$ref": "#/definitions/nullableString"},
+        "runtime": {"$ref": "#/definitions/runtime"},
+        "arms": {
+          "type": "object", "additionalProperties": false, "required": ["baseline", "assisted"],
+          "properties": {"baseline": {"$ref": "#/definitions/arm"}, "assisted": {"$ref": "#/definitions/arm"}}
+        }
+      }
+    },
+    "countPair": {
+      "type": "object", "additionalProperties": false, "required": ["baseline", "assisted"],
+      "properties": {"baseline": {"type": "integer", "minimum": 0}, "assisted": {"type": "integer", "minimum": 0}}
+    },
+    "deltas": {
+      "type": "object", "additionalProperties": false,
+      "required": ["completedCommands", "actualTestExecutions", "nonCachedTokens", "durationMs"],
+      "properties": {"completedCommands": {"type": "number"}, "actualTestExecutions": {"type": "number"}, "nonCachedTokens": {"type": "number"}, "durationMs": {"type": "number"}}
+    },
+    "aggregate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["armCounts", "verifiedCounts", "pairedMedianAssistedMinusBaseline"],
+      "properties": {"armCounts": {"$ref": "#/definitions/countPair"}, "verifiedCounts": {"$ref": "#/definitions/countPair"}, "pairedMedianAssistedMinusBaseline": {"$ref": "#/definitions/deltas"}}
+    },
+    "control": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sharedPromptSha256", "initialCommitSha", "initialObjectIdsMatched", "modelMatched", "runtimeMatched", "onlyIntentionalDifference"],
+      "properties": {
+        "sharedPromptSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "initialCommitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "initialObjectIdsMatched": {"type": "boolean"},
+        "modelMatched": {"type": "boolean"},
+        "runtimeMatched": {"type": "boolean"},
+        "onlyIntentionalDifference": {"type": "string", "minLength": 1}
+      }
+    },
+    "retrieval": {
+      "type": "object", "additionalProperties": false,
+      "required": ["query", "verifiedExperienceId", "score", "matchedFields", "delivery"],
+      "properties": {
+        "query": {"type": "string", "minLength": 1},
+        "verifiedExperienceId": {"type": "string", "minLength": 1},
+        "score": {"type": "number", "minimum": 0},
+        "matchedFields": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "delivery": {"type": "string", "minLength": 1}
+      }
+    },
+    "pathComparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repairPathChanged", "outcomeChanged", "patchesIdentical", "explanation"],
+      "properties": {
+        "repairPathChanged": {"type": "boolean"},
+        "outcomeChanged": {"type": "boolean"},
+        "patchesIdentical": {"type": "boolean"},
+        "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "preRegistration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["manifest", "commitSha", "publishedBeforeExecution", "thresholdUnchanged", "taskUnchanged"],
+      "properties": {
+        "manifest": {"type": "string", "minLength": 1},
+        "commitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "publishedBeforeExecution": {"type": "boolean"},
+        "thresholdUnchanged": {"type": "boolean"},
+        "taskUnchanged": {"type": "boolean"}
+      }
+    },
+    "interpretation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["preRegisteredPositive", "classification", "rationale"],
+      "properties": {
+        "preRegisteredPositive": {"type": "boolean"},
+        "classification": {"enum": ["positive", "not-positive", "inconclusive"]},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 ---
 name: agent-experience-graph
 description: Use when an agent should learn from prior task-solving traces, recommend tools or skills for a new decomposed task, record reusable execution experience, or compare current subtasks with solved tasks from other agents.
-version: 0.1.2
+version: 0.1.3
 metadata:
   short-description: Learn tools and skills from prior agent traces
   openclaw:
@@ -46,9 +46,13 @@ Run the bundled recommender against a trace file:
 
 ```bash
 python3 scripts/recommend_traces.py \
-  --traces assets/example_traces.json \
+  --traces experiences/verified.json \
   --query query.json
 ```
+
+Use `assets/example_traces.json` for demonstrations. Prefer
+`experiences/verified.json` when recommendations should come from executed,
+publicly auditable work.
 
 Use the output as evidence, not as an order. Prefer recommendations with:
 
@@ -56,6 +60,11 @@ Use the output as evidence, not as an order. Prefer recommendations with:
 - matched subtasks, not only matched task titles
 - clear lessons or failure notes
 - skills/tools that are available in the current environment
+
+For explainability, inspect each match's `evidence` array. It identifies the
+task, subtask, reuse tag, recommended-use phrase, skill, tool, or relevant query
+constraint that contributed to the score. Verification status and numeric
+metrics do not add lexical relevance.
 
 ## Recording A Trace
 
@@ -100,3 +109,6 @@ python3 scripts/recommend_traces.py \
 ## Trace Schema
 
 For field definitions and an example trace library, read `references/trace_schema.md` when creating new datasets, validators, or import/export adapters.
+Executed public records additionally follow
+`experiences/verified-experience.schema.json` and the semantic promotion rules
+in `experiences/README.md`.

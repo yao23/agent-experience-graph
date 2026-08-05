@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0.0",
+  "experimentId": "tr-04-failed-path-prevention-01",
+  "sourceReportCreatedAt": "2026-08-04T04:39:47.964402+00:00",
+  "patchHashAlgorithm": "sha256",
+  "expectedPatchSha256": "c16417a050e0b000c9adacac95863d62c21429b436a9f3e2077201ff70229fab",
+  "allowSemanticallyEquivalentPatches": true,
+  "preRegistration": {
+    "manifest": "experiments/public-repair-lab/experiments/tr-04-failed-path-prevention-manifest.json",
+    "commitSha": "851ed4b36d1bb5be225709af5e43811743d227a9",
+    "publishedBeforeExecution": true,
+    "thresholdUnchanged": true,
+    "taskUnchanged": true
+  },
+  "trials": [
+    {
+      "trialId": "rpc-upgrade-interactive-mode-01",
+      "taskId": "rpc-upgrade-interactive-mode",
+      "executionOrder": ["baseline", "assisted"],
+      "runnerSourceCommitSha": "851ed4b36d1bb5be225709af5e43811743d227a9",
+      "model": "gpt-5.6-sol",
+      "runtime": {"codexCliVersion": "codex-cli 0.146.0-alpha.9.2", "sessionMode": "ephemeral", "sandbox": "workspace-write"},
+      "arms": {
+        "baseline": {
+          "verified": true,
+          "repairAttempts": 1,
+          "completedCommands": 3,
+          "actualTestExecutions": 2,
+          "nonCachedTokens": 19238,
+          "durationMs": 41734,
+          "patchSha256": "79a46f6366ec35a3488351d3c91e273f0b5d6ac7b85a65d1d1542bd03405f6ea",
+          "changedFiles": ["rpc.py"],
+          "filesInspected": ["ISSUE.md", "rpc.py", "test_bug.py"],
+          "firstRepairLocation": "rpc.py: _UpgradeHandler.__init__",
+          "firstProposedApproach": "Initialize the handler stream reference from the accepted upgraded protocol stream, preserving the existing handler delegation.",
+          "knownTrapEntered": false,
+          "canonicalPatchEquivalence": "behaviorally-correct-alternative",
+          "tokenUsage": {"inputTokens": 73444, "cachedInputTokens": 55296, "nonCachedInputTokens": 18148, "outputTokens": 1090, "reasoningOutputTokens": 87, "totalNonCachedTokens": 19238},
+          "rootCause": "The handler retained a null stream reference even though the accepted protocol owned the active upgraded stream."
+        },
+        "assisted": {
+          "verified": true,
+          "repairAttempts": 1,
+          "completedCommands": 4,
+          "actualTestExecutions": 2,
+          "nonCachedTokens": 20182,
+          "durationMs": 34442,
+          "patchSha256": "d434d282df4df9a11b25925b1a490004e9af3b57710e7fa9c8f1e1482eb593cc",
+          "changedFiles": ["rpc.py"],
+          "filesInspected": ["ISSUE.md", "rpc.py", "test_bug.py"],
+          "firstRepairLocation": "rpc.py: UpgradeProtocol",
+          "firstProposedApproach": "Add interactive mode to the protocol contract, delegate it through FramedUpgradeProtocol to its stream, and update the stale handler caller while leaving the client-side control unchanged.",
+          "knownTrapEntered": false,
+          "canonicalPatchEquivalence": "semantic",
+          "tokenUsage": {"inputTokens": 89402, "cachedInputTokens": 70400, "nonCachedInputTokens": 19002, "outputTokens": 1180, "reasoningOutputTokens": 178, "totalNonCachedTokens": 20182},
+          "rootCause": "The handler called a stale direct stream field after ownership moved behind UpgradeProtocol."
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "armCounts": {"baseline": 1, "assisted": 1},
+    "verifiedCounts": {"baseline": 1, "assisted": 1},
+    "pairedMedianAssistedMinusBaseline": {"completedCommands": 1, "actualTestExecutions": 0, "nonCachedTokens": 944, "durationMs": -7292}
+  },
+  "control": {
+    "sharedPromptSha256": "0753442b491e0662eddf11f44b7201282ab06b020b42a4351aedc380b8eb1c2c",
+    "initialCommitSha": "f9846bfced213fcba8957cefe5efd2a3b57b8837",
+    "initialObjectIdsMatched": true,
+    "modelMatched": true,
+    "runtimeMatched": true,
+    "onlyIntentionalDifference": "The treatment received the pre-registered concise TR-04 failure-aware capsule; control received no AEG experience."
+  },
+  "retrieval": {
+    "query": "avoid repairing the wrong client-side surface when a public low-latency control broke after protocol stream ownership migration",
+    "verifiedExperienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "score": 0.1008,
+    "matchedFields": ["task", "reuse.recommendedFor", "reuse.retrievalTags"],
+    "delivery": "Only context, failed approach, recovery, and validated outcome were injected into treatment."
+  },
+  "pathComparison": {
+    "repairPathChanged": true,
+    "outcomeChanged": false,
+    "patchesIdentical": false,
+    "explanation": "Control repaired handler initialization with one line. Treatment used the pre-registered canonical protocol-contract path. Neither changed RpcClientConnection or entered the known trap; both passed in one attempt."
+  },
+  "interpretation": {
+    "preRegisteredPositive": false,
+    "classification": "not-positive",
+    "rationale": "Treatment did not prevent a control failure and did not reduce attempts, commands, tests, or total non-cached tokens. Its lower duration was not sufficient under the frozen positive-result rule."
+  },
+  "unavailableMetadata": [],
+  "limitations": [
+    "Control independently avoided the known client-side trap, so this pair does not show AEG preventing a control failure.",
+    "Treatment used one more command and 944 more total non-cached tokens; attempts and test executions were unchanged.",
+    "Treatment completed 7292 milliseconds faster, but wall time alone was not a pre-registered positive-result efficiency metric.",
+    "The patches are behaviorally correct but architecturally different; neither exactly matches the canonical patch hash because of implementation choice or method ordering.",
+    "One pre-registered pair cannot establish a generalized failed-path-prevention effect."
+  ]
+}

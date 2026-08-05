@@ -13,17 +13,27 @@
     {
       "name": "recommend",
       "description": "Rank similar traces and recommend reusable skills, tools, and lessons.",
-      "command": "python3 scripts/recommend_traces.py --traces assets/example_traces.json --query '<query-json-or-file>'"
+      "command": "python3 scripts/recommend_traces.py --traces experiences/verified.json --query '<query-json-or-file>'"
     },
     {
       "name": "append-trace",
       "description": "Append or replace a sanitized trace in a JSON trace library.",
       "command": "python3 scripts/recommend_traces.py --traces traces.json --append-trace '<trace-json-or-file>'"
+    },
+    {
+      "name": "validate-verified",
+      "description": "Run semantic validation for the verified library and recompute its paired Repair Lab evidence.",
+      "command": "python3 scripts/validate_verified_experiences.py && python3 experiments/public-repair-lab/validate_paired_results.py"
     }
   ],
   "data_contracts": {
     "trace_library": "references/trace_schema.md",
-    "example_traces": "assets/example_traces.json"
+    "example_traces": "assets/example_traces.json",
+    "verified_experiences": "experiences/verified.json",
+    "verified_experience_schema": "experiences/verified-experience.schema.json",
+    "paired_results": "experiments/public-repair-lab/results/v0.1.3-paired-results.json",
+    "paired_results_schema": "experiments/public-repair-lab/paired-results.schema.json",
+    "experience_promotion_rules": "experiences/README.md"
   },
   "adapters": {
     "codex": {

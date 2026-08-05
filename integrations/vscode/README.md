@@ -1,27 +1,53 @@
 # Agent Experience Graph for VS Code
 
-AEG v0.1.2 preserves the Playwright diagnosis workflow and adds one auditable
-public repair experiment that measures baseline Codex against AEG-assisted Codex.
+Retrieve verified debugging experience before your coding agent starts from
+scratch.
 
-The extension is an early, local-first implementation of the Agent Experience Graph:
+AEG v0.1.3 is a local-first developer preview:
 
-**Failure context → Recovery skill → Execution steps → Verified outcome**
+**Task or error → Explainable verified match → Guarded recovery capsule → Local rating**
 
-## What is new in v0.1.2
+## What is new in v0.1.3
 
-- **AEG: Run Public Repair Lab** launches two isolated repairs of one real,
-  MIT-licensed PySnooper bug.
+- **AEG: Try a Verified Experience** searches the bundled, validated public
+  library. Candidate and malformed records are not eligible.
+- Each card shows why it matched, the validated outcome, reusable lessons,
+  recommended use cases, constraints, limitations, and public provenance.
+- **Copy capsule** produces concise context for a coding agent with an explicit
+  instruction to inspect the local code and run focused and regression tests.
+- Helpful, partially helpful, irrelevant, and harmful ratings stay in
+  `.aeg/verified-experience-feedback.json`; task text and ratings are not
+  uploaded.
+- **AEG: Open Verified Experience Challenge** opens a bundled synthetic
+  transfer task so a new user can see the full product loop immediately.
+- **AEG: Run Public Repair Lab** launches isolated repairs of a real,
+  MIT-licensed FastAPI nested response-model bug by default.
 - The baseline and assisted arms receive identical issue text, code, and tests;
-  only the assisted arm receives a sanitized AEG recovery experience.
-- Objective verification and JSONL telemetry capture duration, commands, test
-  runs, token usage, changed files, and patches under `.aeg/repair-lab/`.
+  only the assisted arm receives a compact retrieved recovery capsule.
+- Repeated paired trials alternate execution order. Corrected telemetry captures
+  duration, completed commands, actual test runs, token usage, changed files, and
+  patches under `.aeg/repair-lab/`.
 - The runner uses `codex exec --ephemeral --sandbox workspace-write`; it never
   pushes code or contacts the upstream project.
-- The experiment is explicitly an instrumentation trial, not a statistical
-  performance claim.
+- Verdicts require at least three trials and remain specific to the selected task.
 
 Run it from the AEG sidebar or command palette. The local `codex` executable
 must be available on `PATH`.
+
+## First verified-experience retrieval
+
+1. Open a project in VS Code.
+2. Select an error or describe a task with **AEG: Try a Verified Experience**.
+3. Choose a match and inspect **Why this matched** and its limitations.
+4. Copy the compact capsule into the coding-agent session before it begins the
+   repair.
+5. Validate the result locally, then record whether retrieval was helpful.
+
+For an immediate demo, run **AEG: Open Verified Experience Challenge**. This is
+a synthetic, non-identical transfer fixture. Its prior A/B pair produced the
+same successful patch in both arms; retrieval changed neither repair path nor
+outcome and increased token usage and wall time. It demonstrates the workflow,
+not an AEG benefit claim.
 
 ## Playwright diagnosis (from v0.1.1)
 
@@ -70,7 +96,8 @@ Use **AEG: Show Playwright Experiences** to inspect prior receipts.
 
 ## Privacy
 
-Version 0.1.2 does not upload code, logs, artifacts, or experience receipts.
+Version 0.1.3 does not upload code, task descriptions, recovery capsules, logs,
+artifacts, ratings, or experience receipts.
 
 - Receipts are local by default.
 - Common authorization headers, passwords, tokens, API keys, and credential-bearing URLs are redacted from captured failure signatures.
@@ -102,9 +129,21 @@ Open the extension directory in VS Code and press `F5` to launch an Extension De
 
 ## Current limitations
 
+- The verified public library contains only two records and supports no claim
+  of general coverage.
+- Verified means the recorded outcome was objectively checked; it does not mean
+  AEG retrieval caused an improvement.
+- Retrieval is deterministic lexical ranking, not embedding-based semantic
+  search. No match above the threshold means AEG abstains.
+- The bundled transfer challenge is synthetic and is not cross-project
+  validation. Its prior controlled pair found no correctness or efficiency
+  benefit.
 - Playbook ranking is deterministic keyword/signature matching, not semantic retrieval.
 - AEG cannot read arbitrary integrated-terminal output; use a selection, clipboard, file, or Playwright artifact.
 - Test outcome verification is user-confirmed in this release.
 - Token counts are estimates based on captured text length.
 
-These constraints keep the first data loop understandable and auditable while AEG validates the Playwright failure-diagnosis wedge.
+These constraints keep the first data loop understandable and auditable while
+AEG recruits 5–10 seed users to test whether verified experience is useful on
+their real debugging tasks. Please report a concrete retrieval outcome through
+the repository issue tracker.

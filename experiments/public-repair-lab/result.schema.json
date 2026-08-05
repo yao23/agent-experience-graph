@@ -4,6 +4,8 @@
   "properties": {
     "summary": {"type": "string"},
     "root_cause": {"type": "string"},
+    "first_repair_location": {"type": "string"},
+    "first_proposed_approach": {"type": "string"},
     "files_changed": {"type": "array", "items": {"type": "string"}},
     "verification_command": {"type": "string"},
     "verification_passed": {"type": "boolean"},
@@ -12,6 +14,8 @@
   "required": [
     "summary",
     "root_cause",
+    "first_repair_location",
+    "first_proposed_approach",
     "files_changed",
     "verification_command",
     "verification_passed",

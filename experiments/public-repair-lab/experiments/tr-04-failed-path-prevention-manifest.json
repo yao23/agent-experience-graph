@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "experimentId": "tr-04-failed-path-prevention-01",
+  "status": "pre-registered",
+  "hypothesis": "A concise verified experience that explicitly preserves TR-04's rejected client-side repair will cause the treatment to avoid that trap, while control may initially modify or propose modifying the tempting client-side surface.",
+  "expectedTransferMechanism": "Failure-aware retrieval should redirect diagnosis from a similarly named surface to tracing the task's actual public caller through the current resource-ownership chain.",
+  "knownFailureTrap": {
+    "surface": "RpcClientConnection.set_interactive in fixture/rpc.py",
+    "entryDefinition": "The arm enters the trap if its first proposed production repair or first captured edit changes RpcClientConnection.set_interactive or adds client-side delegation there.",
+    "whyPlausible": "It is the first similarly named control in the production file, its comment references the pre-upgrade behavior, and its assignment does not reach the active stream."
+  },
+  "fixedTaskPrompt": "Read ISSUE.md and repair the bug. Work only in this repository.\nRun `python3 test_bug.py` before editing. Before the first edit, report the first\nproduction location you intend to change and your proposed approach in the\nstructured result fields. Make the smallest production-code change and run the\nsame test command afterward. Do not edit the test. Set aeg_experience_used\naccurately.",
+  "fixedTaskPromptSha256": "0753442b491e0662eddf11f44b7201282ab06b020b42a4351aedc380b8eb1c2c",
+  "retrieval": {
+    "query": "avoid repairing the wrong client-side surface when a public low-latency control broke after protocol stream ownership migration",
+    "threshold": 0.05,
+    "preRegistrationScore": 0.1008,
+    "verifiedExperienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "rationale": "0.05 is the repository's existing default acceptance threshold. The frozen natural query scores 0.1008 before execution, so treatment eligibility is decided without observing either arm.",
+    "capsuleSha256": "8bd1ca2e6ba7584711ba137b7a96839d2ef7758c76bc844d5b62c1968bffe092",
+    "allowedFields": ["context", "failedApproach", "recovery", "validatedOutcome"]
+  },
+  "successCriteria": {
+    "taskSuccess": "python3 test_bug.py exits 0 after repair, the test is unchanged, and production behavior reaches the active stream.",
+    "correctnessGuard": "Changes to the client-side trap alone do not count as success. Any passing patch must preserve existing abstraction boundaries and alter production code only.",
+    "positiveResult": "Treatment avoids a control failure or materially reduces attempts, completed commands, test executions, or total non-cached tokens without reducing correctness.",
+    "neutralOrNegative": "If both arms are equally correct with no material efficiency win, or treatment regresses correctness/cost, the result is not positive."
+  },
+  "canonicalRepair": {
+    "patchSha256": "c16417a050e0b000c9adacac95863d62c21429b436a9f3e2077201ff70229fab",
+    "semanticContract": "The gateway's accepted-connection control delegates through the upgrade protocol contract to its active stream; RpcClientConnection.set_interactive and the test remain unchanged.",
+    "use": "Exact hash equality is measured but not required if an alternative patch satisfies the same behavior and abstraction contract."
+  },
+  "measurements": [
+    "task success",
+    "first proposed repair location and approach from pre-edit structured messages",
+    "known trap entry from pre-edit proposal and captured first-edit snapshot",
+    "completed file-change attempts",
+    "completed commands",
+    "actual test executions",
+    "unique files inspected through explicit inspection commands",
+    "wall-clock duration",
+    "input, cached-input, non-cached-input, output, reasoning-output, and total non-cached tokens",
+    "final changed files, patch SHA-256, cross-arm equivalence, and semantic equivalence to the pre-registered success contract"
+  ],
+  "armOrder": ["control-retrieval-disabled", "treatment-verified-retrieval-enabled"],
+  "contaminationControls": [
+    "Both arms are copied from the same committed fixture and initialized as separate Git repositories with identical object IDs.",
+    "Each arm uses a fresh ephemeral Codex session, --ignore-user-config, workspace-write sandbox, and explicit gpt-5.6-sol model.",
+    "The fixed task prompt, verification command, result schema, tools, runner, and environment are identical; the only intentional difference is the treatment capsule.",
+    "Control completes before treatment begins. No control events, messages, summaries, diffs, tests, logs, or evaluator feedback are copied into the treatment workspace or prompt.",
+    "Raw arm artifacts are stored in separate temporary directories and are never committed.",
+    "No task, threshold, prompt, capsule, outcome rule, or measurement may be changed after this manifest commit.",
+    "Opaque provider-side prompt caching cannot be disabled; non-cached token measurements are therefore the pre-registered cost comparison."
+  ],
+  "fixtureHashes": {
+    "ISSUE.md": "a591494ed0d7deb88f0aeb9f27b5c4eadcd83c2516d9d3377a6cf3839bfdfd6f",
+    "rpc.py": "cff47921ce5ecc68cff2b79392460915f438c8a3f9bc09272615ab80ca6373d2",
+    "test_bug.py": "a0aae5ad02d6c35ae2aea3bd547415551600e8df6d26b2561d9c13765df2b10a"
+  },
+  "model": "gpt-5.6-sol",
+  "codexCliVersion": "codex-cli 0.146.0-alpha.9.2",
+  "verificationCommand": "python3 test_bug.py",
+  "trials": 1,
+  "publication": {
+    "pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6",
+    "manifestCommitSha": null,
+    "manifestCommitResolution": "Use the commit that first adds this manifest; it is published before either arm executes."
+  }
+}

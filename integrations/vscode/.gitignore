@@ -1,4 +1,5 @@
 out/
 repair-lab/
+verified-experiences/
 node_modules/
 *.vsix

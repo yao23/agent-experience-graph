@@ -10,6 +10,17 @@ import {
   rankPlaybooks,
   redactSensitiveText
 } from './core';
+import {
+  ExperienceFeedback,
+  ExperienceRating,
+  VerifiedExperienceMatch,
+  appendExperienceFeedback,
+  generateRecoveryCapsule,
+  loadVerifiedExperienceLibrary,
+  rankVerifiedExperiences
+} from './verifiedExperience';
+
+const VERIFIED_EXPERIENCE_DEMO = 'Keepalive control fails after active stream ownership moved behind a protocol object; repair the public wrapper so it delegates through the protocol without using its stale socket field.';
 
 interface SkillRecord {
   id: string;
@@ -67,6 +78,18 @@ class PlaywrightViewProvider implements vscode.TreeDataProvider<AegTreeItem> {
     const count = await countExperienceReceipts();
     return [
       new AegTreeItem(
+        'Try a verified experience',
+        'task → match → recovery capsule',
+        'library',
+        {command: 'aeg.tryVerifiedExperience', title: 'Try verified experience'}
+      ),
+      new AegTreeItem(
+        'Open the transfer challenge',
+        'bundled zero-cold-start demo',
+        'lightbulb-autofix',
+        {command: 'aeg.openVerifiedExperienceDemo', title: 'Open challenge'}
+      ),
+      new AegTreeItem(
         'Diagnose Playwright failure',
         'selection, artifact, file, or clipboard',
         'debug-alt',
@@ -102,9 +125,9 @@ class PlaywrightViewProvider implements vscode.TreeDataProvider<AegTreeItem> {
 
 export function activate(context: vscode.ExtensionContext): void {
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  status.text = '$(debug-alt) AEG Playwright';
-  status.command = 'aeg.diagnosePlaywrightFailure';
-  status.tooltip = 'Diagnose a Playwright failure and record the outcome locally';
+  status.text = '$(library) AEG Experience';
+  status.command = 'aeg.tryVerifiedExperience';
+  status.tooltip = 'Retrieve verified debugging experience before starting from scratch';
   status.show();
 
   const viewProvider = new PlaywrightViewProvider();
@@ -134,6 +157,14 @@ export function activate(context: vscode.ExtensionContext): void {
     tree,
     watcher,
     vscode.commands.registerCommand(
+      'aeg.tryVerifiedExperience',
+      () => tryVerifiedExperience(context.extensionUri)
+    ),
+    vscode.commands.registerCommand(
+      'aeg.openVerifiedExperienceDemo',
+      () => tryVerifiedExperience(context.extensionUri, VERIFIED_EXPERIENCE_DEMO)
+    ),
+    vscode.commands.registerCommand(
       'aeg.diagnosePlaywrightFailure',
       (uri?: vscode.Uri) => diagnosePlaywrightFailure(viewProvider, uri)
     ),
@@ -153,6 +184,163 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(): void {
   // All resources are registered through the extension context.
+}
+
+async function tryVerifiedExperience(extensionUri: vscode.Uri, presetTask?: string): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  const selectedText = editor && !editor.selection.isEmpty
+    ? redactSensitiveText(editor.document.getText(editor.selection), 1_000)
+    : '';
+  const task = presetTask ?? await vscode.window.showInputBox({
+    title: 'AEG: Try a Verified Experience',
+    prompt: 'Describe the task, error, or issue. AEG ranks only bundled verified records; it does not upload this text.',
+    value: selectedText,
+    placeHolder: 'A protocol wrapper still uses a stale socket after stream ownership moved'
+  });
+  if (!task?.trim()) return;
+
+  const libraryUri = vscode.Uri.joinPath(extensionUri, 'verified-experiences', 'verified.json');
+  let raw: string;
+  try {
+    raw = Buffer.from(await vscode.workspace.fs.readFile(libraryUri)).toString('utf8');
+  } catch {
+    void vscode.window.showErrorMessage('The bundled verified-experience library is missing. Reinstall AEG v0.1.3.');
+    return;
+  }
+
+  const library = loadVerifiedExperienceLibrary(raw);
+  if (library.malformed.length) {
+    void vscode.window.showWarningMessage(`AEG excluded ${library.malformed.length} malformed verified-experience record(s).`);
+  }
+  const matches = rankVerifiedExperiences(task, library.experiences);
+  if (!matches.length) {
+    void vscode.window.showInformationMessage('AEG found no verified experience above the retrieval threshold. No candidate or fallback guidance was injected.');
+    return;
+  }
+
+  const picked = await vscode.window.showQuickPick(
+    matches.map(match => ({
+      label: match.experience.task,
+      description: `${Math.round(match.score * 100)}% weighted match · ${match.experience.verification.status}`,
+      detail: match.evidence.length
+        ? `Why: ${match.evidence.slice(0, 2).map(item => `${item.field} matched “${item.experiencePhrase}”`).join('; ')}`
+        : 'No lexical evidence',
+      match
+    })),
+    {
+      title: 'Verified experience matches',
+      placeHolder: 'Choose a verified record to inspect before your coding agent starts',
+      matchOnDescription: true,
+      matchOnDetail: true
+    }
+  );
+  if (!picked) return;
+  await showVerifiedExperiencePanel(task, picked.match);
+}
+
+async function showVerifiedExperiencePanel(task: string, match: VerifiedExperienceMatch): Promise<void> {
+  const panel = vscode.window.createWebviewPanel(
+    'aegVerifiedExperience',
+    'AEG: Verified Experience',
+    vscode.ViewColumn.Beside,
+    {enableScripts: true}
+  );
+  const capsule = generateRecoveryCapsule(match);
+  panel.webview.html = verifiedExperienceHtml(match, capsule, panel.webview);
+  panel.webview.onDidReceiveMessage(async message => {
+    if (message?.command === 'copy') {
+      await vscode.env.clipboard.writeText(capsule);
+      void vscode.window.showInformationMessage('Verified-experience recovery capsule copied. Validate it against the local repository before applying changes.');
+      return;
+    }
+    if (message?.command === 'rate' && isExperienceRating(message.rating)) {
+      const saved = await writeVerifiedExperienceFeedback(task, match, message.rating);
+      if (saved) void vscode.window.showInformationMessage(`AEG recorded “${message.rating}” feedback locally.`);
+    }
+  });
+}
+
+function isExperienceRating(value: unknown): value is ExperienceRating {
+  return value === 'helpful' || value === 'partially-helpful' || value === 'irrelevant' || value === 'harmful';
+}
+
+async function writeVerifiedExperienceFeedback(
+  task: string,
+  match: VerifiedExperienceMatch,
+  rating: ExperienceRating
+): Promise<boolean> {
+  const root = workspaceRoot();
+  if (!root) {
+    void vscode.window.showWarningMessage('Open a workspace folder to save local AEG feedback.');
+    return false;
+  }
+  const configured = vscode.workspace.getConfiguration('aeg').get<string>(
+    'verifiedExperienceFeedbackFile',
+    '.aeg/verified-experience-feedback.json'
+  );
+  const uri = vscode.Uri.joinPath(root, ...configured.split('/'));
+  const parent = vscode.Uri.joinPath(uri, '..');
+  await vscode.workspace.fs.createDirectory(parent);
+  let raw = '';
+  try {
+    raw = Buffer.from(await vscode.workspace.fs.readFile(uri)).toString('utf8');
+  } catch {
+    // A missing file is the expected first-use state.
+  }
+  const feedback: ExperienceFeedback = {
+    schemaVersion: '1.0.0',
+    recordedAt: new Date().toISOString(),
+    experienceId: match.experience.id,
+    taskSummary: redactSensitiveText(task, 500),
+    rating,
+    retrievalScore: match.score,
+    localOnly: true
+  };
+  await vscode.workspace.fs.writeFile(
+    uri,
+    Buffer.from(JSON.stringify(appendExperienceFeedback(raw, feedback), null, 2), 'utf8')
+  );
+  return true;
+}
+
+function verifiedExperienceHtml(
+  match: VerifiedExperienceMatch,
+  capsule: string,
+  webview: vscode.Webview
+): string {
+  const nonce = `${Date.now()}`;
+  const experience = match.experience;
+  const source = experience.provenance.publicSource;
+  const list = (items: string[]) => items.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+  const evidence = match.evidence.map(item => `<tr><td>${escapeHtml(item.field)}</td><td>${escapeHtml(item.queryPhrase)}</td><td>${escapeHtml(item.experiencePhrase)}</td><td>${item.lexicalScore.toFixed(3)}</td><td>${item.weightedContribution.toFixed(3)}</td></tr>`).join('');
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{padding:28px;max-width:920px;margin:auto;font:14px/1.55 var(--vscode-font-family);color:var(--vscode-foreground)}
+.badge{display:inline-block;padding:4px 9px;border-radius:999px;background:var(--vscode-badge-background);color:var(--vscode-badge-foreground)}
+.card,.guardrail{margin:18px 0;padding:18px;border:1px solid var(--vscode-widget-border);border-radius:10px;background:var(--vscode-editor-background)}
+.guardrail{border-left:4px solid var(--vscode-editorWarning-foreground)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px} h1{line-height:1.15} h2{margin-top:26px} li{margin:6px 0}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid var(--vscode-widget-border)}
+pre{white-space:pre-wrap;padding:14px;background:var(--vscode-textCodeBlock-background);overflow:auto}
+button{margin:6px 8px 0 0;padding:8px 12px;color:var(--vscode-button-foreground);background:var(--vscode-button-background);border:0;border-radius:4px;cursor:pointer}
+button.secondary{color:var(--vscode-button-secondaryForeground);background:var(--vscode-button-secondaryBackground)}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<span class="badge">${Math.round(match.score * 100)}% weighted match · verification ${escapeHtml(experience.verification.status)}</span>
+<h1>${escapeHtml(experience.task)}</h1>
+<div class="guardrail"><strong>Guidance, not a guaranteed answer.</strong> Inspect the local code, reproduce the failure, and validate any repair with focused and regression tests.</div>
+<div class="grid"><section class="card"><h2>Reusable lessons</h2><ul>${list(experience.lessons)}</ul></section><section class="card"><h2>Recommended use cases</h2><ul>${list(experience.reuse.recommendedFor)}</ul></section></div>
+<div class="grid"><section class="card"><h2>Constraints</h2><ul>${list(experience.constraints)}</ul></section><section class="card"><h2>Limitations</h2><ul>${list(experience.limitations)}</ul></section></div>
+<h2>Why this matched</h2><table><thead><tr><th>Field</th><th>Task phrase</th><th>Experience phrase</th><th>Lexical</th><th>Weighted</th></tr></thead><tbody>${evidence}</tbody></table>
+<h2>Provenance and outcome</h2><p>Outcome: <strong>${escapeHtml(experience.outcome)}</strong>. Public source: ${escapeHtml(source.repository)} · ${escapeHtml(source.license)} · ${escapeHtml(source.benchmark)}. Experiment artifact: <code>${escapeHtml(experience.provenance.experimentEvidence.artifact)}</code>.</p>
+<h2>Compact recovery capsule</h2><pre>${escapeHtml(capsule)}</pre><p><button data-command="copy">Copy capsule</button></p>
+<h2>Was this useful?</h2><p><button data-rating="helpful">Helpful</button><button class="secondary" data-rating="partially-helpful">Partially helpful</button><button class="secondary" data-rating="irrelevant">Irrelevant</button><button class="secondary" data-rating="harmful">Harmful</button></p>
+<p><small>Ratings are written only to this workspace under <code>.aeg/</code>. AEG v0.1.3 does not upload task text, code, capsules, or ratings.</small></p>
+<script nonce="${nonce}">const vscode=acquireVsCodeApi();document.querySelector('[data-command]').addEventListener('click',()=>vscode.postMessage({command:'copy'}));document.querySelectorAll('[data-rating]').forEach(button=>button.addEventListener('click',()=>vscode.postMessage({command:'rate',rating:button.dataset.rating})));</script>
+</body></html>`;
 }
 
 async function diagnosePlaywrightFailure(
@@ -458,7 +646,7 @@ function recoveryHtml(
   <h2>Verify the outcome</h2>
   <p>After trying the playbook and re-running the test, record the objective result.</p>
   <p><button data-outcome="resolved">Test passed</button><button class="secondary" data-outcome="unresolved">Still failing</button></p>
-  <p><small>Local only: AEG v0.1.2 does not upload code, logs, or experience receipts.</small></p>
+  <p><small>Local only: AEG v0.1.3 does not upload code, logs, or experience receipts.</small></p>
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     document.querySelectorAll('[data-command]').forEach(button => button.addEventListener('click', () => vscode.postMessage({command: button.dataset.command})));
@@ -546,12 +734,25 @@ async function showExperiences(): Promise<void> {
 async function openGettingStarted(): Promise<void> {
   const document = await vscode.workspace.openTextDocument({
     language: 'markdown',
-    content: `# AEG Playwright Diagnosis & Public Repair Lab
+    content: `# AEG Verified Experience, Playwright Diagnosis & Public Repair Lab
 
-AEG v0.1.2 turns a Playwright failure into a local, reusable experience receipt
-and adds an auditable public repair experiment.
+AEG v0.1.3 retrieves verified debugging experience before your coding agent
+starts from scratch. It also preserves the Playwright diagnosis workflow and
+repeatable public repair experiments.
 
-## Start
+## Try a verified experience
+
+1. Run **AEG: Try a Verified Experience** or select error text first.
+2. Describe the task and choose a verified match.
+3. Inspect the weighted match evidence, outcome, constraints, limitations, and provenance.
+4. Copy the guarded capsule before the coding agent begins.
+5. Validate the repair locally and rate the retrieval.
+
+For a zero-cold-start demo, run **AEG: Open Verified Experience Challenge**.
+The bundled challenge is synthetic; its prior controlled pair found the same
+successful patch in both arms and higher assisted token and wall-time cost.
+
+## Diagnose Playwright
 
 1. Run **AEG: Diagnose Playwright Failure** or click **AEG Playwright** in the status bar.
 2. Use selected error text, the latest Playwright artifact, the active file, or your clipboard.
@@ -563,14 +764,17 @@ and adds an auditable public repair experiment.
 
 Intent, Context, Steps, Skills, Artifacts, Failures, Recovery, Outcome, and Cost.
 
-Receipts are stored under \`.aeg/experiences\`. This release does not upload code, logs, or receipts.
+Receipts are stored under \`.aeg/experiences\`; verified-experience ratings use
+\`.aeg/verified-experience-feedback.json\`. This release does not upload task
+text, code, logs, capsules, ratings, or receipts.
 
-## Public Repair Lab (v0.1.2)
+## Public Repair Lab (v0.1.3)
 
-Run **AEG: Run Public Repair Lab** to compare two isolated Codex repairs of the same
-MIT-licensed PySnooper bug: a baseline run and an AEG-assisted run. The runner keeps
-patches local and writes machine-readable events, verification results, cost metrics,
-and a comparison report under \`.aeg/repair-lab\`.
+Run **AEG: Run Public Repair Lab** to compare isolated Codex repairs of the same
+MIT-licensed FastAPI nested response-model bug: a baseline run and an AEG-assisted
+run with a compact retrieved recovery capsule. The runner keeps patches local and
+writes machine-readable events, verification results, corrected cost metrics, and
+a comparison report under \`.aeg/repair-lab\`.
 `
   });
   await vscode.window.showTextDocument(document, {preview: true});

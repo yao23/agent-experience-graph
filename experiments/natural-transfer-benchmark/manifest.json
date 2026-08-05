@@ -1,0 +1,294 @@
+{
+  "schemaVersion": "1.0.0",
+  "benchmarkId": "aeg-natural-transfer-v1",
+  "status": "frozen-before-execution",
+  "freezeRevision": 2,
+  "frozenAt": "2026-08-04T02:15:24-07:00",
+  "supersedesFreezeCommit": "dac84b2b0e26dc7d45abfb0e118e9bdca1921d8e",
+  "preExecutionAmendment": "Before any control or treatment arm ran, environment preparation showed that a modern parser masked the original Scrapy form-action oracle and that Tornado's human test required a loopback socket unavailable inside the agent sandbox. Revision 2 replaces those two transfers with later natural Scrapy image-submit-control and CookieJar-adapter bugs, freezes the complete runtime/package environment, and adds the missing Black human test data. No arm output informed these changes.",
+  "hypothesis": "Across naturally occurring later bugs in the same failure family, gated retrieval of a concise earlier experience will improve correctness or reduce repair effort on multiple tasks without materially increasing regressions, patch complexity, or non-cached token cost.",
+  "selectionPolicy": {
+    "corpus": "BugsInPy plus the corresponding upstream Git histories",
+    "rules": [
+      "Both bugs were independently reported and repaired upstream.",
+      "The source fixed commit predates the transfer fixed commit.",
+      "The pair shares a root-cause family but not the same symptom or patch.",
+      "The transfer regression test and human production patch are available to the controller for blind evaluation.",
+      "No outcome from an AEG benchmark arm was used to select or score a pair."
+    ],
+    "excludedEvidence": "No control or treatment arm output was observed before this manifest was frozen."
+  },
+  "protocol": {
+    "replicatesPerArm": 3,
+    "arms": ["control", "treatment"],
+    "randomizationSeed": "aeg-natural-transfer-v1-2026-08-03",
+    "model": "gpt-5.6-sol",
+    "environmentLock": "environment-lock.json",
+    "codexMode": ["exec", "--ephemeral", "--ignore-user-config", "--sandbox", "workspace-write", "--json"],
+    "perArmTimeoutSeconds": 900,
+    "tokenBudget": "same platform-enforced Codex turn limit; no arm-specific override",
+    "taskPromptPolicy": "The task prompt is byte-identical across arms. Retrieval is delivered as a separate context block only after the frozen gate decision.",
+    "executionPolicy": "Complete both isolated arms in the frozen order before running comparative evaluation or exposing evaluator feedback.",
+    "positiveResultRule": "Treatment must improve correctness or reduce repair effort on at least two injected tasks, while not materially increasing regressions, patch complexity, or median non-cached token cost. Wall-clock time alone never qualifies.",
+    "materiality": {
+      "effortReductionFraction": 0.2,
+      "tokenCostIncreaseFraction": 0.15,
+      "patchComplexityIncreaseFraction": 0.25
+    }
+  },
+  "retrievalGate": {
+    "method": "pre-registered expert scores based only on source and transfer issue symptoms, dates, and failure-family evidence",
+    "relevanceThreshold": 0.72,
+    "expectedUtilityThreshold": 0.55,
+    "decisionRule": "inject iff relevance >= 0.72 and expectedUtility >= 0.55; otherwise abstain",
+    "abstentionMeaning": "An abstention is a successful AEG retrieval decision and is analyzed separately, never counted as a repair failure."
+  },
+  "contaminationControls": [
+    "Every arm starts from a separate directory copied from the same hashed seed tree.",
+    "The seed has a new one-commit Git history, so the human fixed commit and upstream history are absent.",
+      "Upstream regression test files are taken from the transfer fixed commit; the production tree is always the buggy commit.",
+    "The manifest, source capsule, human patch, evaluator rules, other-arm workspace, logs, patches, and summaries are never copied into an arm.",
+    "Each arm receives distinct cache, bytecode, temporary, event-log, and result directories.",
+    "Codex runs ephemerally with user configuration ignored and is instructed to work only inside its repository.",
+    "Comparative evaluation runs only after both arms in a replicate terminate.",
+    "The runner rejects a workspace containing a fixed commit ID, capsule text, controller filename, or a remote Git URL."
+  ],
+  "measurements": [
+    "passAt1",
+    "finalSuccess",
+    "attempts",
+    "knownFailurePaths",
+    "commands",
+    "testExecutions",
+    "filesInspected",
+    "durationMs",
+    "nonCachedInputTokens",
+    "nonCachedTotalTokens",
+    "patchAddedLines",
+    "patchDeletedLines",
+    "filesChanged",
+    "humanPatchSemanticSimilarity",
+    "focusedRegressionResult",
+    "broaderRegressionResult",
+    "maintainabilityChecks",
+    "retrievalEffect"
+  ],
+  "evaluationRules": {
+    "passAt1": "The first captured production-code patch snapshot passes the focused transfer regression test without changing a test file.",
+    "finalSuccess": "The final patch passes focused and broader regression commands and does not change a test file.",
+    "attempt": "A distinct production patch snapshot emitted by a Codex file-change event.",
+    "semanticSimilarity": "Weighted deterministic score: changed-file Jaccard 0.50, normalized added/deleted token Jaccard 0.30, and changed-symbol Jaccard 0.20. It is descriptive and never overrides tests.",
+    "maintainability": "No test edits, Python syntax compilation succeeds for changed Python files, no generated/binary files, and patch churn is no more than 2.5 times the human production patch unless independently justified.",
+    "helped": "Treatment improves pass@1/final success, or preserves correctness while reducing at least two of attempts, commands, tests, or non-cached tokens by at least 20%, with no material regression or complexity increase.",
+    "negativeTransfer": "Treatment reduces correctness, introduces a regression, or materially increases at least two effort measures without a correctness gain.",
+    "noEffect": "Neither helped nor negative-transfer criteria are met.",
+    "aggregate": "Report task-level rates and medians first, then macro medians across the five tasks; do not pool repeats as independent tasks."
+  },
+  "tasks": [
+    {
+      "id": "nt-01-scrapy-cookiejar-adapter",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "Scrapy-to-stdlib CookieJar adapters implementing only part of the Python 3 request/header protocol",
+      "source": {
+        "bugId": "BugsInPy scrapy-31",
+        "buggyCommit": "5f02ef82e8560242eb34b336f385addfdef3211d",
+        "fixedCommit": "dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2",
+        "fixedAt": "2015-08-03T10:53:40-03:00",
+        "patchSha256": "2689fa8fc194e3a88fbe5e13d81e0f612c479a600b61d25a752e8988169efbee",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2"
+      },
+      "transfer": {
+        "bugId": "BugsInPy scrapy-19",
+        "buggyCommit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
+        "fixedCommit": "1f743996ff00a7b728d59b93d0967e1eb50072f0",
+        "fixedAt": "2016-02-07T14:19:27+09:00",
+        "testFiles": ["tests/test_http_cookies.py"],
+        "focusedCommand": "python -m unittest -q tests.test_http_cookies.WrappedRequestTest.test_get_full_url tests.test_http_cookies.WrappedRequestTest.test_get_host tests.test_http_cookies.WrappedRequestTest.test_get_type tests.test_http_cookies.WrappedRequestTest.test_get_origin_req_host",
+        "regressionCommand": "python -m unittest -q tests.test_http_cookies.WrappedRequestTest",
+        "initialFailurePattern": "AttributeError|full_url|origin_req_host",
+        "humanPatchSha256": "4f3b7346ebaf5343c9e10756558a470976c055fe0d73b338578133c938df58ca",
+        "expectedSeedTreeSha256": "4ff9f3f952240be5a715de9949329b146207900e1b8736d964681a4ac70ed932",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/1f743996ff00a7b728d59b93d0967e1eb50072f0"
+      },
+      "taskPrompt": "On Python 3, Scrapy cookie processing fails because the standard-library cookie jar expects request attributes that are present on native urllib request objects. Reproduce the focused failures, restore the adapter contract with the smallest maintainable production change, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A Scrapy request/response adapter sits at the boundary to the standard-library CookieJar and translates both protocol members and header values.",
+        "failedApproach": "Using strict default text conversion inside the adapter let one non-UTF-8 header abort cookie parsing, even though the surrounding request was otherwise valid.",
+        "recoveryPrinciple": "Treat the adapter as an explicit versioned protocol boundary: enumerate the consumer's required members, implement them on the adapter, and make byte/text conversion tolerant without mutating the underlying request model.",
+        "validatedOutcome": "Cookie parsing survived non-UTF-8 header bytes while ordinary CookieJar behavior remained intact.",
+        "uncertaintyAndApplicability": "The source covered conversion and the transfer may concern missing protocol members. Confirm the Python 3 CookieJar call surface locally; do not patch the standard library or the core Request class."
+      },
+      "gate": {"relevance": 0.88, "expectedUtility": 0.75, "decision": "inject", "rationale": "Both bugs occur in the same CookieJar adapter contract, with the later bug exercising missing Python 3 members rather than header decoding."},
+      "knownFailurePaths": [
+        {"label": "patch or monkeypatch the standard-library CookieJar", "pattern": "http\\.cookiejar|cookielib.{0,40}(patch|setattr|monkey)"},
+        {"label": "add compatibility properties to the core Scrapy Request model", "pattern": "scrapy/http/request/__init__\\.py|class Request.{0,80}(full_url|origin_req_host)"}
+      ],
+      "orders": [["treatment", "control"], ["treatment", "control"], ["treatment", "control"]]
+    },
+    {
+      "id": "nt-02-scrapy-location-normalization",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "Redirect Location values normalized with generic text/URL operations that alter raw header semantics",
+      "source": {
+        "bugId": "BugsInPy scrapy-10",
+        "buggyCommit": "6cc83c041eac36e7688dbd9c4c55487a43b622e0",
+        "fixedCommit": "db408528928b2d15043593032913fe40d6eb6783",
+        "fixedAt": "2016-10-19T23:26:12-03:00",
+        "patchSha256": "44457f377a33896693e553899f1f5e9e822dd4f444e4d21b7058a53412afa064",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/db408528928b2d15043593032913fe40d6eb6783"
+      },
+      "transfer": {
+        "bugId": "BugsInPy scrapy-3",
+        "buggyCommit": "be2e910dd06ba4904e7b10eb5a7e3251e8dab099",
+        "fixedCommit": "66cbceeb0a9104fc0fa238898e38d0d9ce9cbcf6",
+        "fixedAt": "2019-10-30T09:09:12+01:00",
+        "testFiles": ["tests/test_downloadermiddleware_redirect.py"],
+        "focusedCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_redirect_302_relative",
+        "regressionCommand": "python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest",
+        "initialFailurePattern": "www\\.example\\.com/i8n\\.example2\\.com",
+        "humanPatchSha256": "0176cf6437822a350f09280f99bd805e9e1299d02310fd2b864e78b6e3583c1e",
+        "expectedSeedTreeSha256": "cfa17b9d5bd1691cfec3a771799c75be6e5cba14a6e0f6d4fba652a997585413",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/66cbceeb0a9104fc0fa238898e38d0d9ce9cbcf6"
+      },
+      "taskPrompt": "Scrapy resolves an HTTP redirect incorrectly when a Location header begins with three slashes. Reproduce the failing focused test, preserve valid redirect behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A redirect target arrives as raw HTTP header bytes and becomes corrupted during conversion before URL resolution.",
+        "failedApproach": "Guessing a text encoding and then applying ordinary URL joining changed the original Location bytes and produced a different target.",
+        "recoveryPrinciple": "Normalize the raw Location exactly once with an HTTP/IRI-aware boundary helper, then reason explicitly about reference form before joining it to the request URL.",
+        "validatedOutcome": "Non-ASCII Location bytes were percent-encoded without inventing an encoding and existing redirect tests remained valid.",
+        "uncertaintyAndApplicability": "Applicable to redirect-reference parsing, not arbitrary response bodies. Scheme-relative and abnormal-slash references may need an explicit classification step beyond byte normalization."
+      },
+      "gate": {"relevance": 0.9, "expectedUtility": 0.73, "decision": "inject", "rationale": "Both failures occur at the same raw Location-to-reference normalization boundary but cover different malformed inputs."},
+      "knownFailurePaths": [
+        {"label": "change the general Request URL parser", "pattern": "scrapy/(http/request|utils/url)\\.py|class Request"},
+        {"label": "strip slashes without preserving redirect reference semantics", "pattern": "[lr]?strip\\([^)]*['\"]/[']?"}
+      ],
+      "orders": [["treatment", "control"], ["control", "treatment"], ["control", "treatment"]]
+    },
+    {
+      "id": "nt-03-scrapy-form-controls",
+      "project": "scrapy",
+      "repository": "https://github.com/scrapy/scrapy.git",
+      "failureFamily": "HTML form elements translated through library conveniences without explicitly preserving browser submission semantics",
+      "source": {
+        "bugId": "BugsInPy scrapy-7",
+        "buggyCommit": "e1ceaf3b5fa29326f032c4ed3f50943384b9e63d",
+        "fixedCommit": "074caf434e255bc96f106e57e3e288028f372485",
+        "fixedAt": "2017-02-16T02:13:39+05:00",
+        "patchSha256": "4254149a1a5d634f48a0b0a0a50e4c4f47f23d9089d623e084710757eb1fc0c8",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/074caf434e255bc96f106e57e3e288028f372485"
+      },
+      "transfer": {
+        "bugId": "BugsInPy scrapy-38",
+        "buggyCommit": "6cc6bbb5fc5c102271829a554772effb0444023c",
+        "fixedCommit": "6c3970e6722191b642fd99c6c1bfed0d93010cab",
+        "fixedAt": "2018-03-21T16:32:12-03:00",
+        "testFiles": ["tests/test_http_request.py"],
+        "focusedCommand": "python -m unittest -q tests.test_http_request.FormRequestTest.test_from_response_clickdata_does_not_ignore_image",
+        "regressionCommand": "python -m unittest -q tests.test_http_request.FormRequestTest",
+        "initialFailurePattern": "i2.*i2v",
+        "humanPatchSha256": "c10ad6fe80493a450c97ee2028fa86ec8598b369d909188f3d057a6b98e2aa08",
+        "expectedSeedTreeSha256": "293397c37bafcc2e88bd24b0300a278a02b8b12642004f7a4f63eb83c55ff972",
+        "evidenceUrl": "https://github.com/scrapy/scrapy/commit/6c3970e6722191b642fd99c6c1bfed0d93010cab"
+      },
+      "taskPrompt": "FormRequest.from_response() ignores an image-type submit control when constructing submitted form data. Reproduce the focused test, match browser-like form submission behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "FormRequest converts parsed HTML form attributes into browser-like submission behavior, but parser convenience properties do not necessarily implement every HTML rule.",
+        "failedApproach": "Reading a convenient parsed action property directly delegated browser semantics to the parser and mishandled HTML whitespace at the submission boundary.",
+        "recoveryPrinciple": "At the FormRequest translation boundary, identify the specific HTML submission rule, inspect raw element attributes, and encode that rule explicitly before applying generic URL or data helpers.",
+        "validatedOutcome": "Whitespace in form actions was normalized according to HTML rules while document-base and missing-action behavior remained valid.",
+        "uncertaintyAndApplicability": "The source covered action URLs. Other controls may share the explicit-browser-semantics principle but use a different helper; do not assume the source repair location transfers."
+      },
+      "gate": {"relevance": 0.74, "expectedUtility": 0.58, "decision": "inject", "rationale": "Both defects are in FormRequest's HTML-to-submission translation, but they concern different element semantics and helpers; relevance is only narrowly above threshold."},
+      "knownFailurePaths": [
+        {"label": "patch the generic Request constructor", "pattern": "scrapy/http/request/__init__\\.py|class Request"},
+        {"label": "special-case image controls after form data is already encoded", "pattern": "_urlencode|urlencode|request\\.body.{0,30}image"}
+      ],
+      "orders": [["control", "treatment"], ["treatment", "control"], ["control", "treatment"]]
+    },
+    {
+      "id": "nt-04-fastapi-field-classification",
+      "project": "fastapi",
+      "repository": "https://github.com/fastapi/fastapi.git",
+      "failureFamily": "Pydantic request-field classification based on one metadata representation while equivalent type information exists elsewhere",
+      "source": {
+        "bugId": "BugsInPy fastapi-11",
+        "buggyCommit": "bf229ad5d830eb5320f966d51a55e590e8d57008",
+        "fixedCommit": "06eb4219345a77d23484528c9d164eb8d2097fec",
+        "fixedAt": "2019-08-07T13:55:33-05:00",
+        "patchSha256": "5a6b1fb92c52a895b22b0e1431c74e568c3844407a11626afaa39d8a9b328457",
+        "evidenceUrl": "https://github.com/fastapi/fastapi/commit/06eb4219345a77d23484528c9d164eb8d2097fec"
+      },
+      "transfer": {
+        "bugId": "BugsInPy fastapi-6",
+        "buggyCommit": "5db99a27cf640864b4793807811848698c5ff4a2",
+        "fixedCommit": "874d24181e779ebc6e1c52afb7d6598f863fd6a8",
+        "fixedAt": "2020-01-17T12:45:55+01:00",
+        "testFiles": ["tests/test_forms_from_non_typing_sequences.py"],
+        "focusedCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py",
+        "regressionCommand": "pytest -q tests/test_forms_from_non_typing_sequences.py tests/test_union_body.py tests/test_union_inherited_body.py",
+        "initialFailurePattern": "422 == 200",
+        "humanPatchSha256": "b9a1d34ba803751762f2728a2d7a8d3b5917431bd92eff944272c527ea177123",
+        "expectedSeedTreeSha256": "8501bcee5b91ce7bfc6f53a3a67d576df2ee4ece6d2e55aa588a981bbd8285da",
+        "evidenceUrl": "https://github.com/fastapi/fastapi/commit/874d24181e779ebc6e1c52afb7d6598f863fd6a8"
+      },
+      "taskPrompt": "FastAPI form parameters declared with built-in list, set, or tuple classes do not receive all submitted values. Reproduce the focused regression, preserve existing typing-based sequence behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "Request extraction classifies a Pydantic field as scalar or sequence using metadata that can encode equivalent annotations in different shapes.",
+        "failedApproach": "Looking only at the top-level field shape treated composite or alternative representations as scalar and selected the wrong extraction operation.",
+        "recoveryPrinciple": "At the extraction boundary, inspect all relevant Pydantic representations—shape, concrete type, and sub-fields—and preserve the existing scalar/sequence invariant.",
+        "validatedOutcome": "Union body fields were classified through their nested sub-fields without weakening scalar handling for existing request parameters.",
+        "uncertaintyAndApplicability": "Pydantic metadata differs by version and parameter source. Confirm which representation is populated before extending the predicate."
+      },
+      "gate": {"relevance": 0.86, "expectedUtility": 0.71, "decision": "inject", "rationale": "Same field-classification blind spot, but the transfer concerns concrete collection classes during form extraction rather than Union bodies."},
+      "knownFailurePaths": [
+        {"label": "change multipart parsing globally", "pattern": "multipart|formparsers|starlette/.{0,30}form"},
+        {"label": "special-case only list while leaving equivalent sequence classes broken", "pattern": "field\\.type_.{0,12}(==| is )list|field\\.type_ in \\(list,?\\)"}
+      ],
+      "orders": [["control", "treatment"], ["control", "treatment"], ["treatment", "control"]]
+    },
+    {
+      "id": "nt-05-black-decorator-directives",
+      "project": "black",
+      "repository": "https://github.com/psf/black.git",
+      "failureFamily": "Formatter comments/directives near decorators interpreted by linear adjacency instead of syntax-tree attachment and indentation",
+      "source": {
+        "bugId": "BugsInPy black-19",
+        "buggyCommit": "337a4199f90ca48a19cf26511e0cec330b13bd4e",
+        "fixedCommit": "29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c",
+        "fixedAt": "2018-04-24T09:38:12-07:00",
+        "patchSha256": "5d24a124b2f5193904072cd37b22ee4628cde1db5c9374d0226e5aaa8c1ffacb",
+        "evidenceUrl": "https://github.com/psf/black/commit/29e97d1d4a7717f1bd0ca35cacf2f2ce6d815b0c"
+      },
+      "transfer": {
+        "bugId": "BugsInPy black-2",
+        "buggyCommit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
+        "fixedCommit": "892eddacd215d685e136686b7f629ade70adca83",
+        "fixedAt": "2020-05-08T14:37:17+02:00",
+        "testFiles": ["tests/test_black.py", "tests/data/fmtonoff4.py"],
+        "focusedCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff4",
+        "regressionCommand": "python -m unittest -q tests.test_black.BlackTestCase.test_fmtonoff tests.test_black.BlackTestCase.test_fmtonoff2 tests.test_black.BlackTestCase.test_fmtonoff3 tests.test_black.BlackTestCase.test_fmtonoff4",
+        "initialFailurePattern": "AssertionError|Actual tree",
+        "humanPatchSha256": "7c7e98d68837366d0b76f98be563113a1117201d6af0662bc10193bbe4f14c12",
+        "expectedSeedTreeSha256": "efe027440ca682969aa7240b9f1fc17355369a1dc7b86cabf65d68e838abcfab",
+        "evidenceUrl": "https://github.com/psf/black/commit/892eddacd215d685e136686b7f629ade70adca83"
+      },
+      "taskPrompt": "Black mishandles a '# fmt: on' boundary adjacent to decorators, causing code that should resume formatting to remain ignored or be grouped incorrectly. Reproduce the focused regression, preserve other fmt on/off and decorator behavior, make the smallest maintainable production repair, and run focused and broader tests. Do not modify tests or inspect anything outside this repository.",
+      "experience": {
+        "applicableContext": "A formatter decides spacing or ignored regions for comments located between or beside decorators.",
+        "failedApproach": "Treating the previous comment as an ordinary line broke the decorator group because syntactic attachment mattered more than raw adjacency.",
+        "recoveryPrinciple": "Classify a comment/directive using its syntax-tree container, indentation column, and decorator attachment before changing formatting state.",
+        "validatedOutcome": "Comments between decorators stayed attached to the decorator group without introducing blank lines elsewhere.",
+        "uncertaintyAndApplicability": "The source covered spacing, while a fmt directive may be owned by a different traversal. Retrieve only if the same attachment invariant is useful; do not assume the same function is correct."
+      },
+      "gate": {"relevance": 0.69, "expectedUtility": 0.58, "decision": "abstain", "rationale": "The structural invariant is related, but the source spacing tracker and transfer ignored-node traversal are different enough to fall below the relevance threshold."},
+      "knownFailurePaths": [
+        {"label": "change general decorator spacing", "pattern": "EmptyLineTracker|previous_line\\.is_comment"},
+        {"label": "treat fmt directives as flat text without column or tree ownership", "pattern": "line\\.strip.{0,30}fmt: on|['\"]# fmt: on['\"] in"}
+      ],
+      "orders": [["control", "treatment"], ["treatment", "control"], ["control", "treatment"]]
+    }
+  ]
+}

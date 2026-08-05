@@ -1,0 +1,30 @@
+name: Model Cost Feasibility
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/model-cost-feasibility.yml"
+      - "experiments/model-cost-feasibility/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gpt-oss-runner-preflight:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Measure capacity without model or benchmark downloads
+        run: |
+          python3 experiments/model-cost-feasibility/gpt_oss_runner_preflight.py \
+            --output "$RUNNER_TEMP/gpt-oss-runner-preflight.json"
+      - name: Upload infrastructure-only evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpt-oss-runner-preflight
+          path: ${{ runner.temp }}/gpt-oss-runner-preflight.json
+          retention-days: 7

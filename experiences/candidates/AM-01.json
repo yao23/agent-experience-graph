@@ -1,0 +1,98 @@
+[
+  {
+    "id": "trace-2026-08-03-am-01-sanic-asyncio-parity",
+    "task": "Restore Sanic AsyncioServer parity with Python 3.7 lifecycle methods",
+    "outcome": "partial",
+    "subtasks": [
+      {
+        "description": "Prove wrapper methods are absent while the underlying server supports them",
+        "skills": ["api-contract-audit", "dependency-boundary-testing"],
+        "tools": ["python", "unittest"],
+        "outcome": "success",
+        "lessons": ["Test wrapper behavior against a minimal capability-bearing stub before involving network lifecycle complexity."]
+      },
+      {
+        "description": "Delegate new lifecycle methods through the existing proxy",
+        "skills": ["api-parity-repair", "minimal-repair"],
+        "tools": ["python", "asyncio", "pytest"],
+        "outcome": "partial",
+        "lessons": ["Direct delegation restores the supported contract, but compatibility behavior for older underlying implementations must be specified separately."]
+      }
+    ],
+    "skills": ["api-contract-audit", "dependency-boundary-testing", "api-parity-repair", "minimal-repair"],
+    "tools": ["python", "asyncio", "unittest", "pytest", "git", "BugsInPy"],
+    "constraints": [
+      "The benchmark Python 3.8.3 environment was unavailable; verification used Python 3.9.6 with uvloop and ujson disabled.",
+      "The evaluator fixed commit was inspected only after the candidate source patch was hashed.",
+      "No raw logs, prompts, or source patches are published."
+    ],
+    "lessons": [
+      "Wrapper APIs need explicit parity checks whenever a wrapped dependency gains public methods.",
+      "A stub isolates delegation correctness from network binding and event-loop integration failures.",
+      "Delegation and compatibility error translation are separate contract decisions; verify both before claiming semantic equivalence."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-03T06:30:46Z",
+      "publicSource": {
+        "repository": "https://github.com/sanic-org/sanic",
+        "buggyCommitSha": "ba9b432993019b0af0c4827a5ed42aaa091bd17d",
+        "fixedCommitSha": "801595e24acdf8050b8d3ffa512d424147848d32",
+        "license": "MIT",
+        "benchmark": "BugsInPy Sanic bug 2"
+      },
+      "experimentEvidence": {
+        "artifact": "experiences/work-queue/runs/AM-01/result.json",
+        "sourceReportCreatedAt": "2026-08-03T06:30:46Z",
+        "runnerSourceCommitSha": "1e008957e4d4e53716de6acb1ed9ef4b00d35193",
+        "runnerSourceCommitStatus": "available: collection began after the CI-01 checkpoint"
+      },
+      "promotionEvidence": {
+        "workflowName": "Validate Repair Lab",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": null,
+        "status": "expected-on-pull-request",
+        "runResolver": "Resolve the pull-request run for the commit containing this candidate at https://github.com/yao23/agent-experience-graph/actions/workflows/repair-lab.yml?query=event%3Apull_request"
+      },
+      "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"}
+    },
+    "verification": {
+      "status": "partial",
+      "evidence": {
+        "experimentArtifact": "experiences/work-queue/runs/AM-01/result.json",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "adaptedRegressionBeforeRepair": "AttributeError reproduced",
+        "adaptedRegressionAfterRepair": "1 test passed",
+        "upstreamFocused": "1 test passed in isolation",
+        "sourceCompilation": "passed",
+        "candidatePatchSha256": "661f79a497a2c01d460a69b8564891aae0b7840f897cc976a9bc81371040c43e",
+        "changedFiles": ["sanic/server.py"]
+      }
+    },
+    "metrics": {
+      "attempts": 1,
+      "completedCommands": 10,
+      "actualTestExecutions": 5,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "A single wrapper-delegation repair passed focused checks; no causal AEG comparison was run."
+    },
+    "limitations": [
+      "The candidate does not translate missing underlying lifecycle methods into NotImplementedError as the human fix does.",
+      "The full historical suite was not run and combined localhost tests encountered port reuse.",
+      "No baseline-versus-assisted comparison was run, so no AEG improvement is claimed."
+    ],
+    "reuse": {
+      "retrievalTags": ["wrapper API parity", "asyncio server", "start_serving", "serve_forever", "dependency migration"],
+      "recommendedFor": [
+        "adding newly introduced dependency methods to a framework proxy",
+        "testing asynchronous wrapper delegation without binding a network socket",
+        "auditing compatibility behavior when an underlying API may be absent"
+      ]
+    }
+  }
+]

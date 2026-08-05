@@ -1,19 +1,31 @@
 # AEG Public Repair Lab
 
-Version 0.1.2 starts with one real, reproducible public bug rather than a broad
-crawler. The experiment compares two fresh Codex sessions against identical code:
+Version 0.1.3 compares fresh Codex sessions against identical public-bug fixtures:
 
 - **baseline** receives the issue, buggy code, and regression test;
-- **assisted** receives the same inputs plus one sanitized AEG experience.
+- **assisted** receives the same inputs plus a compact, sanitized AEG recovery capsule.
 
-Both arms must run the same focused test. The runner captures JSONL agent events,
-duration, token usage, commands, test invocations, changed files, patches, and
-objective post-run verification.
+The default task is a dependency-free reproduction of FastAPI's nested
+response-model data leak (BugsInPy `fastapi` bug 5). The original PySnooper
+path-output task remains selectable. A protocol-resource-delegation transfer
+task exercises the verified TR-04 experience. The pre-registered
+`rpc-upgrade-interactive-mode` task tests whether failed-path retrieval prevents
+the rejected client-side repair. All arms must run the same focused test.
+The runner captures JSONL agent events, duration, token usage, completed commands,
+actual test invocations, changed files, patches, and objective verification.
+
+Repeated trials alternate arm order. Verdicts use paired medians and require at
+least three trials. Results must still be read as evidence about the selected
+task family, not as a general claim about coding-agent performance.
 
 ## Run
 
 ```bash
 python3 experiments/public-repair-lab/run_experiment.py
+python3 experiments/public-repair-lab/run_experiment.py --trials 5
+python3 experiments/public-repair-lab/run_experiment.py --task pysnooper-path-output
+python3 experiments/public-repair-lab/run_experiment.py --task protocol-resource-delegation --model gpt-5.6-sol
+python3 experiments/public-repair-lab/run_experiment.py --task rpc-upgrade-interactive-mode --model gpt-5.6-sol
 ```
 
 The command requires `codex` on `PATH`. It uses ephemeral sessions and a
@@ -26,5 +38,30 @@ python3 experiments/public-repair-lab/run_experiment.py --prepare-only
 ```
 
 Results are written under `.aeg/repair-lab/`. Review `report.md`, `report.json`,
-the two patches, and the raw JSONL streams together. One task validates the
-instrumentation; it does not establish that AEG improves repair performance.
+all patches, and the raw JSONL streams together. See `RESULTS.md` for the checked
+v0.1.3 validation summary and its limitations.
+
+The public, sanitized five-pair artifact is
+`results/v0.1.3-paired-results.json`. Validate its schema and independently
+recompute its aggregate with:
+
+```bash
+npx --yes ajv-cli@5.0.0 validate --all-errors \
+  -s experiments/public-repair-lab/paired-results.schema.json \
+  -d experiments/public-repair-lab/results/v0.1.3-paired-results.json
+python3 experiments/public-repair-lab/validate_paired_results.py
+```
+
+The sanitized single-pair TR-04 transfer artifact is
+`results/tr-04-protocol-transfer-pair.json`. Validate it with the same schema
+and recompute its metrics without requiring a separate promoted-experience
+record:
+
+```bash
+python3 experiments/public-repair-lab/validate_paired_results.py \
+  --results experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json \
+  --skip-experience
+```
+
+Only aggregate inputs and patch hashes are public. Raw prompts, JSONL, stderr,
+complete logs, source patches, credentials, and private paths remain excluded.

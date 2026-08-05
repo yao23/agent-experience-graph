@@ -7,6 +7,14 @@ const {
   rankPlaybooks,
   redactSensitiveText
 } = require('../out/core');
+const {
+  appendExperienceFeedback,
+  generateRecoveryCapsule,
+  loadVerifiedExperienceLibrary,
+  rankVerifiedExperiences
+} = require('../out/verifiedExperience');
+const fs = require('node:fs');
+const path = require('node:path');
 
 test('ranks timeout recovery for a Playwright timeout', () => {
   const ranked = rankPlaybooks(
@@ -45,4 +53,74 @@ test('normalizes changing numbers in a failure signature', () => {
 test('estimates non-zero tokens', () => {
   assert.equal(estimateTokens('abcd'), 1);
   assert.equal(estimateTokens('abcdefgh'), 2);
+});
+
+const bundledLibrary = () => loadVerifiedExperienceLibrary(
+  fs.readFileSync(path.resolve(__dirname, '..', 'verified-experiences', 'verified.json'), 'utf8')
+);
+
+test('loads only the bundled verified library', () => {
+  const loaded = bundledLibrary();
+  assert.deepEqual(loaded.malformed, []);
+  assert.equal(loaded.experiences.length, 2);
+  assert.ok(loaded.experiences.every(experience => experience.verification.status === 'passed'));
+  assert.ok(loaded.experiences.every(experience => !experience.id.includes('am-01')));
+});
+
+test('ranks verified experiences with explainable weighted evidence', () => {
+  const matches = rankVerifiedExperiences(
+    'A public wrapper control still uses stale resource ownership instead of delegating through its protocol',
+    bundledLibrary().experiences
+  );
+  assert.equal(matches[0].experience.id, 'trace-2026-08-03-tr-04-tornado-nodelay');
+  assert.ok(matches[0].score >= 0.05);
+  assert.ok(matches[0].evidence.some(item => item.field === 'reuse.recommendedFor'));
+  assert.ok(matches[0].evidence.every(item => item.queryPhrase && item.experiencePhrase && item.lexicalScore > 0));
+});
+
+test('bundled zero-cold-start challenge retrieves TR-04 above its frozen threshold', () => {
+  const challenge = JSON.parse(fs.readFileSync(
+    path.resolve(__dirname, '..', '..', '..', 'experiments', 'verified-experience-challenge', 'challenge.json'),
+    'utf8'
+  ));
+  const matches = rankVerifiedExperiences(
+    challenge.taskPrompt,
+    bundledLibrary().experiences,
+    challenge.retrievalThreshold
+  );
+  assert.equal(matches[0].experience.id, challenge.expectedVerifiedExperienceId);
+  assert.ok(matches[0].score >= challenge.retrievalThreshold);
+  assert.equal(challenge.classification, 'synthetic-transfer-demo');
+  assert.equal(challenge.priorResult.outcomeChanged, false);
+  assert.equal(challenge.priorResult.repairPathChanged, false);
+});
+
+test('generates a compact guarded recovery capsule', () => {
+  const match = rankVerifiedExperiences('repair stale resource ownership behind a protocol', bundledLibrary().experiences)[0];
+  const capsule = generateRecoveryCapsule(match);
+  assert.match(capsule, /GUIDANCE, NOT A GUARANTEED ANSWER/);
+  assert.match(capsule, /validate any repair with focused and regression tests/);
+  assert.ok(capsule.length < 4000);
+});
+
+test('handles malformed libraries and no-match queries', () => {
+  assert.deepEqual(loadVerifiedExperienceLibrary('{broken'), {experiences: [], malformed: ['library is not valid JSON']});
+  const malformed = loadVerifiedExperienceLibrary('[{"id":"candidate-only"}]');
+  assert.equal(malformed.experiences.length, 0);
+  assert.equal(malformed.malformed.length, 1);
+  assert.deepEqual(rankVerifiedExperiences('optimize watercolor pigment drying schedule', bundledLibrary().experiences), []);
+});
+
+test('appends local usefulness feedback and recovers from malformed feedback', () => {
+  const feedback = {
+    schemaVersion: '1.0.0',
+    recordedAt: '2026-08-04T00:00:00Z',
+    experienceId: 'trace-test',
+    taskSummary: 'test task',
+    rating: 'helpful',
+    retrievalScore: 0.12,
+    localOnly: true
+  };
+  assert.deepEqual(appendExperienceFeedback('', feedback), [feedback]);
+  assert.deepEqual(appendExperienceFeedback('{broken', feedback), [feedback]);
 });
