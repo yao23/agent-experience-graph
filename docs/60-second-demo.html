@@ -115,15 +115,15 @@
   <main class="app">
     <section class="hero">
       <div class="eyebrow">Agent Experience Graph</div>
-      <h1>Agents should not start from zero every time.</h1>
-      <p class="subtitle">A 60-second demo of reusable execution knowledge: retrieve similar traces, recommend a workflow, and avoid known failure paths before the next agent runs.</p>
+      <h1>Retrieve verified debugging experience before starting from scratch.</h1>
+      <p class="subtitle">A transparent v0.1.3 demo: rank only verified records, explain the match, preserve limitations, and copy guarded context before the coding agent runs.</p>
 
       <div class="task-card">
         <div class="label">Current task</div>
-        <div class="task">Build a documentation ingestion pipeline for an agent coding assistant</div>
+        <div class="task">Repair a public wrapper after active resource ownership moved behind a protocol layer</div>
       </div>
 
-      <button id="runBtn">Run Experience Lookup</button>
+      <button id="runBtn">Try a Verified Experience</button>
       <button id="resetBtn" class="secondary">Reset Demo</button>
     </section>
 
@@ -133,37 +133,37 @@
         <span class="pill" id="stagePill">Demo mode</span>
       </div>
       <div class="timeline" id="timeline"></div>
-      <div class="footer-note">Narrative: current task → retrieve prior execution traces → recommend workflow/tools/guardrails → reduce retries and token waste.</div>
+      <div class="footer-note">This synthetic transfer demo shows the product loop. Its prior controlled pair found no repair-path or outcome improvement.</div>
     </section>
   </main>
 
   <script>
     const steps = [
       {
-        title: "1. Embed current task",
-        body: "The system converts the new task into an experience query, including goal, subtasks, expected output, and constraints."
+        title: "1. Accept a local task",
+        body: "AEG uses the task or selected error locally. Version 0.1.3 does not upload task text, code, capsules, or ratings."
       },
       {
-        title: "2. Search Experience Graph",
-        body: "14 similar executions found. Top match: Build RAG pipeline for API documentation ingestion. Similarity: 94%."
+        title: "2. Search the verified-only library",
+        body: "Top match: TR-04 Tornado WebSocket set_nodelay. Candidate and malformed records are ineligible; below-threshold retrieval abstains."
       },
       {
-        title: "3. Retrieve proven workflow",
-        body: "Successful trace found with reusable tool chain and validation pattern.",
-        workflow: ["Firecrawl", "Markdown", "Chunk", "Embed", "Vector DB", "Validate"]
+        title: "3. Explain why it matched",
+        body: "AEG exposes contributing task, retrieval-tag, and recommended-use phrases with lexical and weighted scores.",
+        workflow: ["Task", "Verified match", "Evidence", "Capsule", "Validate"]
       },
       {
-        title: "4. Surface failure warnings",
-        body: "Avoid PDF Parser X: previous traces show high retry rate and malformed section metadata.",
+        title: "4. Preserve failed approaches",
+        body: "The source repair first modified the wrong client-side surface. The card keeps that failure and the recovery principle visible.",
         warning: true
       },
       {
-        title: "5. Apply execution guardrails",
-        body: "Recommended constraints: timeout limit, validation before indexing, retry cap, and human review before irreversible writes."
+        title: "5. Copy guarded context",
+        body: "The compact capsule is guidance, not a guaranteed answer. It requires local inspection, reproduction, focused tests, and regression tests."
       },
       {
-        title: "6. Improve next execution",
-        body: "The next agent starts with collective execution experience instead of an empty slate.",
+        title: "6. Report the measured result",
+        body: "In the prior one-pair transfer, both arms succeeded with the same path and patch. Retrieval added 13,842 non-cached tokens and 4,288 ms.",
         metrics: true
       }
     ];
@@ -182,7 +182,7 @@
         html += '<div class="workflow">' + step.workflow.map((n, i) => `<span class="node">${n}</span>${i < step.workflow.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('') + '</div>';
       }
       if (step.metrics) {
-        html += `<div class="grid"><div class="metric"><div class="num">↓37%</div><div class="cap">estimated token cost</div></div><div class="metric"><div class="num">↓52%</div><div class="cap">retry probability</div></div></div>`;
+        html += `<div class="grid"><div class="metric"><div class="num">No change</div><div class="cap">repair path or outcome</div></div><div class="metric"><div class="num">+13,842</div><div class="cap">assisted non-cached tokens</div></div></div>`;
       }
       el.innerHTML = html;
       return el;
@@ -198,7 +198,7 @@
     function runDemo() {
       reset();
       runBtn.disabled = true;
-      stageTitle.textContent = 'Looking up reusable execution knowledge';
+      stageTitle.textContent = 'Ranking verified experience';
       stagePill.textContent = 'Running';
       steps.forEach((step, i) => {
         setTimeout(() => {
@@ -206,8 +206,8 @@
           timeline.appendChild(el);
           requestAnimationFrame(() => el.classList.add('visible'));
           if (i === steps.length - 1) {
-            stageTitle.textContent = 'Workflow recommended';
-            stagePill.textContent = 'Experience reused';
+            stageTitle.textContent = 'Guarded capsule ready';
+            stagePill.textContent = 'Validate locally';
             runBtn.disabled = false;
           }
         }, 650 * i);
