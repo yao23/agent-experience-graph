@@ -48,4 +48,3 @@ and took 4,288 ms longer. See
 This challenge therefore demonstrates discoverability, verified-only
 retrieval, provenance, explainability, guardrails, and local feedback. It does
 not demonstrate that retrieval improved repair correctness or efficiency.
-

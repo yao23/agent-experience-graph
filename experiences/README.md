@@ -15,6 +15,23 @@ The schema accepts both paired A/B metrics and bounded single-repair collection
 metrics; a single repair is experience evidence, not causal evidence of AEG
 improvement.
 
+## Evidence labels
+
+- **Candidate** records are sanitized but remain outside `verified.json` until
+  their outcome and provenance satisfy promotion validation.
+- **Verified experience** means the recorded repair or experiment has an
+  objective, reproducible outcome. It does not by itself mean AEG caused an
+  improvement.
+- **Replay evidence** reproduces the source task and confirms that the lesson
+  still describes a valid repair.
+- **Cross-task reuse evidence** evaluates a non-identical transfer task. It may
+  be positive, neutral, or negative.
+- **Cross-project evidence** requires a transfer into a different public
+  project; AEG v0.1.3 does not yet have this evidence.
+- **Causal AEG evidence** requires a controlled comparison where retrieval is
+  the intentional difference. The current bounded comparisons did not improve
+  correctness and must not be presented as generalized benefit.
+
 ## Retrieve an experience
 
 ```bash
@@ -39,9 +56,10 @@ python3 experiments/public-repair-lab/validate_paired_results.py
 ```
 
 Experiment evidence and promotion evidence are separate. Experiment evidence
-points to sanitized, recomputable trial data. Promotion evidence identifies the
-workflow and how to resolve the run for the commit containing the record; it
-does not hard-code a workflow run that validated an older commit.
+points to sanitized, recomputable trial data. Promotion evidence identifies an
+observed workflow run and its exact validated commit. That commit must contain
+the promoted record; later wording or product changes do not rewrite the
+historical promotion event.
 
 ## Promotion requirements
 

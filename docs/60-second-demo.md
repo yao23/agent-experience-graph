@@ -4,39 +4,46 @@
 
 Show one memorable moment:
 
-> An agent starts a task, retrieves experience from previous agents, and changes its execution plan.
+> A developer gives AEG a debugging task and retrieves a verified, explainable
+> recovery capsule before the coding agent starts from scratch.
 
 This demo is intentionally lightweight. It is not meant to prove the final architecture. It is meant to make the product abstraction easy to understand in a short meeting.
 
 ## Demo Script
 
-Open `docs/60-second-demo.html` in a browser.
+Install AEG v0.1.3, open the repository in VS Code, and run **AEG: Open
+Verified Experience Challenge**.
 
 Say:
 
-> Suppose I am building a documentation ingestion pipeline for an agent coding assistant.
->
-> Today, an agent would usually start from scratch: search docs, try a parser, retry failures, adjust chunking, and eventually discover a workable pipeline.
->
-> Agent Experience Graph changes the starting point. Before execution, it searches prior execution traces — not just documents — and finds similar workflows, tool choices, validation patterns, and known failures.
+> This public wrapper still uses a stale resource after ownership moved behind a
+> protocol layer. Before the coding agent starts, AEG searches only its bundled
+> verified records.
 
-Click **Run Experience Lookup**.
+Select the TR-04 result and point to **Why this matched**.
 
 Then say:
 
-> Here it finds a similar RAG/API documentation ingestion workflow. It recommends a proven tool chain, warns about a parser that previously caused retry loops, and adds guardrails such as timeout limits and validation before indexing.
->
-> The goal is not to replace the model. The goal is to help the model start with collective execution experience instead of an empty slate.
+> AEG exposes the exact fields and weighted lexical evidence behind the match.
+> The experience records the original failed client-side approach, the recovery
+> principle, constraints, limitations, and public provenance.
 
-When the metrics appear:
+Click **Copy capsule**.
 
-> In the real version, these metrics would be computed from observed traces: token cost, retries, latency, success rate, and validation outcomes. Every execution can make future agents more reliable.
+> The capsule is guidance, not an answer guarantee. It tells the agent to inspect
+> the local code, reproduce the failure, and validate the patch.
+
+Point to the rating buttons:
+
+> After validation, the developer records whether the experience was helpful,
+> partially helpful, irrelevant, or harmful. That feedback stays in `.aeg/`.
 
 ## Core Message
 
-Today's agents share foundation models, but they do not share execution experience.
-
-Agent Experience Graph explores whether execution traces — workflows, tool choices, failure modes, validation signals, and constraints — can become reusable assets for agent developers.
+AEG helps coding agents retrieve verified debugging experience instead of
+solving every problem from scratch. The current evidence is deliberately
+narrow: the prior pair for this synthetic challenge found the same successful
+repair in both arms and higher assisted token and wall-time cost.
 
 ## Questions to Ask
 

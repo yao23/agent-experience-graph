@@ -104,9 +104,9 @@
       "promotionEvidence": {
         "workflowName": "Validate Repair Lab",
         "workflowFile": ".github/workflows/repair-lab.yml",
-        "validatedCommitSha": null,
-        "status": "expected-on-pull-request",
-        "runResolver": "Resolve the pull-request run for the commit containing this record at https://github.com/yao23/agent-experience-graph/actions/workflows/repair-lab.yml?query=event%3Apull_request"
+        "validatedCommitSha": "dca38fe9db4d463c5bb16f155dc033f8895e1439",
+        "status": "observed-passed",
+        "runResolver": "https://github.com/yao23/agent-experience-graph/actions/runs/30932880306"
       },
       "publication": {
         "pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"
@@ -222,9 +222,9 @@
       "promotionEvidence": {
         "workflowName": "Validate Repair Lab",
         "workflowFile": ".github/workflows/repair-lab.yml",
-        "validatedCommitSha": null,
-        "status": "expected-on-pull-request",
-        "runResolver": "Resolve the pull-request run for the commit containing this record at https://github.com/yao23/agent-experience-graph/actions/workflows/repair-lab.yml?query=event%3Apull_request"
+        "validatedCommitSha": "dca38fe9db4d463c5bb16f155dc033f8895e1439",
+        "status": "observed-passed",
+        "runResolver": "https://github.com/yao23/agent-experience-graph/actions/runs/30932880306"
       },
       "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"}
     },

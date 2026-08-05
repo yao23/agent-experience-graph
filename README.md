@@ -1,6 +1,13 @@
 # Agent Experience Graph
 
-Agent Experience Graph helps AI agents learn from how other agents solved similar problems.
+Agent Experience Graph helps coding agents retrieve verified debugging
+experience instead of solving every problem from scratch.
+
+The v0.1.3 developer preview turns a task or error into an explainable match
+from a small verified-only public library, then produces a compact recovery
+capsule for the coding agent. The capsule preserves lessons, failed approaches,
+constraints, limitations, and public provenance. It is guidance to validate,
+not a guaranteed answer.
 
 Think of it like a shared memory of successful work patterns. When an agent starts a new task, it can look at previous tasks, see which parts were similar, and learn which tools, skills, and approaches helped before.
 
@@ -21,21 +28,48 @@ Open the investor- and partner-friendly living pitch:
 
 The pitch covers the vision, problem, architecture, initial product, early progress, business model, roadmap, founder, and current ask.
 
+## Try a Verified Experience in VS Code
+
+Install [AEG from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph),
+then use this three-step quick start:
+
+1. Run **AEG: Try a Verified Experience** and describe a task or select an error.
+2. Inspect why a verified record matched, then copy its guarded capsule before
+   the coding agent begins.
+3. Validate the repair and rate the retrieval locally.
+
+For zero-cold-start onboarding, run **AEG: Open Verified Experience
+Challenge**. It uses a bundled synthetic transfer fixture and openly reports
+that its prior controlled pair found no repair-path or outcome improvement and
+higher assisted token and wall-time cost. See
+[`experiments/verified-experience-challenge/`](experiments/verified-experience-challenge/).
+
+### Example verified experience card
+
+> **Restore Tornado WebSocket TCP_NODELAY delegation** · outcome: success ·
+> verification: passed
+>
+> **Reusable lesson:** When resource ownership moves behind an abstraction,
+> public controls must follow the ownership chain instead of retaining a stale
+> direct reference.
+>
+> **Recommended for:** repairing a public wrapper after resource ownership
+> moves behind a protocol object; testing delegation through multiple layers.
+>
+> **Constraint:** the first suite-green candidate changed the wrong client-side
+> surface and was rejected; the successful second attempt was evaluator-informed.
+>
+> **Limitation:** this source repair is verified, but it is not causal evidence
+> that AEG retrieval improves repairs.
+>
+> **Provenance:** Apache-2.0 Tornado, BugsInPy bug 1; public SHAs and full
+> validation evidence are recorded in `experiences/verified.json`.
+
 ## 60-Second Demo
 
-Open the lightweight demo in a browser:
-
-```bash
-open docs/60-second-demo.html
-```
-
-The demo shows the core product moment:
-
-1. A new agent task starts.
-2. Agent Experience Graph searches previous execution traces.
-3. It retrieves a similar successful workflow.
-4. It recommends tools, skills, guardrails, and failure warnings.
-5. The next agent begins with reusable execution knowledge instead of an empty slate.
+Run **AEG: Open Verified Experience Challenge** from the VS Code command
+palette. The demo shows task entry, verified-only retrieval, weighted match
+evidence, a compact guarded capsule, and local usefulness feedback.
 
 Use [`docs/60-second-demo.md`](docs/60-second-demo.md) for a short meeting talk track.
 
@@ -78,7 +112,10 @@ It is intentionally runtime-neutral:
 - `scripts/recommend_traces.py` ranks similar traces and recommends reusable skills/tools.
 - `references/trace_schema.md` defines the trace data contract.
 - `experiences/verified.json` stores sanitized, executed, and objectively verified shared experiences.
-- `docs/60-second-demo.html` shows the core experience-reuse product moment.
+- `integrations/vscode/` exposes the verified-experience challenge and the
+  existing Playwright workflow.
+- `experiments/verified-experience-challenge/` supplies a transparent bundled
+  transfer demo.
 - `experiments/public-repair-lab/` runs the first baseline-versus-AEG public bug repair experiment.
 
 ## Public Repair Lab (v0.1.3)
@@ -146,6 +183,11 @@ This project may be useful for:
 
 Agent Experience Graph is designed around sanitized traces, not raw logs.
 
+The v0.1.3 extension bundles its public verified library and performs retrieval
+locally. It does not upload task text, code, logs, recovery capsules, receipts,
+or usefulness ratings. Local ratings are stored under `.aeg/`; review or ignore
+that directory before committing it.
+
 That means shared traces should not contain:
 
 - passwords, tokens, or credentials
@@ -162,9 +204,17 @@ Instead, traces should capture the reusable lesson:
 
 ```bash
 python3 scripts/recommend_traces.py \
-  --traces assets/example_traces.json \
-  --query '{"task":"Build markdown API docs ingestion","subtasks":[{"description":"parse markdown into sections"},{"description":"evaluate endpoint metadata extraction"}]}'
+  --traces experiences/verified.json \
+  --query '{"task":"repair a public wrapper after resource ownership moved behind a protocol"}'
 ```
+
+The public verified library currently contains two records. Existing evidence
+supports verified source repairs and bounded controlled comparisons, not broad
+coverage, cross-project transfer, or a generalized correctness/efficiency
+benefit. AEG is seeking 5–10 seed users willing to report concrete helpful,
+neutral, irrelevant, or harmful retrieval outcomes on real debugging tasks.
+Bring a public GitHub issue or failing test and see whether AEG finds a reusable
+verified lesson.
 
 ## Install
 

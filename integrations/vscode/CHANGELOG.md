@@ -2,6 +2,15 @@
 
 ## 0.1.3
 
+- Add **AEG: Try a Verified Experience**, backed only by the bundled validated
+  public library.
+- Show a compact experience card with reusable lessons, recommended contexts,
+  constraints, limitations, provenance, verification status, and weighted
+  match evidence.
+- Generate a guidance-only recovery capsule for the coding agent and keep
+  usefulness ratings local under `.aeg/`.
+- Add a bundled TR-04 synthetic transfer challenge and disclose its prior
+  neutral outcome and token/latency regressions.
 - Add a harder MIT-licensed FastAPI nested response-model leak as the default Repair Lab task.
 - Preserve the PySnooper task as an explicit `--task pysnooper-path-output` option.
 - Inject a compact retrieved recovery capsule directly into the assisted prompt instead of charging an extra file-read command.
