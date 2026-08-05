@@ -8,7 +8,11 @@ const {
   redactSensitiveText
 } = require('../out/core');
 const {
+  SUPPLEMENTAL_EVIDENCE_CONTRIBUTION_CAP,
+  VERIFIED_EXPERIENCE_FIELD_WEIGHT,
+  VERIFIED_EXPERIENCE_RETRIEVAL_THRESHOLD,
   appendExperienceFeedback,
+  describeBelowThresholdMatch,
   generateRecoveryCapsule,
   loadVerifiedExperienceLibrary,
   rankVerifiedExperiences
@@ -73,8 +77,15 @@ test('loads only the bundled verified library', () => {
   const loaded = bundledLibrary();
   assert.deepEqual(loaded.malformed, []);
   assert.equal(loaded.experiences.length, 2);
+  assert.deepEqual(
+    loaded.experiences.map(experience => experience.id).sort(),
+    ['trace-2026-08-03-repair-lab-ci-v0.1.3', 'trace-2026-08-03-tr-04-tornado-nodelay']
+  );
   assert.ok(loaded.experiences.every(experience => experience.verification.status === 'passed'));
-  assert.ok(loaded.experiences.every(experience => !experience.id.includes('am-01')));
+  assert.deepEqual(
+    JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'verified-experiences', 'verified.json'), 'utf8')),
+    JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', '..', '..', 'experiences', 'verified.json'), 'utf8'))
+  );
 });
 
 test('ranks verified experiences with explainable weighted evidence', () => {
@@ -86,6 +97,112 @@ test('ranks verified experiences with explainable weighted evidence', () => {
   assert.ok(matches[0].score >= 0.05);
   assert.ok(matches[0].evidence.some(item => item.field === 'reuse.recommendedFor'));
   assert.ok(matches[0].evidence.every(item => item.queryPhrase && item.experiencePhrase && item.lexicalScore > 0));
+  assert.ok(matches[0].evidence.every(item => item.queryPhrase !== 'A public wrapper control still uses stale resource ownership instead of delegating through its protocol'));
+});
+
+const verificationQueries = [
+  {
+    task: 'A public wrapper method still references an old stream after ownership moved behind a protocol object. Trace the delegation path and restore the API behavior.',
+    expectedId: 'trace-2026-08-03-tr-04-tornado-nodelay'
+  },
+  {
+    task: 'The complete test suite passes, but the repair may target the wrong API surface. Add a focused contract test beginning at the public caller.',
+    expectedId: 'trace-2026-08-03-tr-04-tornado-nodelay'
+  },
+  {
+    task: 'Our agent telemetry counts both command-started and command-completed events, causing duplicated command metrics in JSONL results.',
+    expectedId: 'trace-2026-08-03-repair-lab-ci-v0.1.3'
+  },
+  {
+    task: 'Design a repeatable A/B benchmark comparing a baseline coding agent with an experience-assisted agent while reporting both improvements and regressions.',
+    expectedId: 'trace-2026-08-03-repair-lab-ci-v0.1.3'
+  }
+];
+
+test('retrieves the expected verified experience for all four applicable verification queries', () => {
+  const experiences = bundledLibrary().experiences;
+  for (const scenario of verificationQueries) {
+    const matches = rankVerifiedExperiences(scenario.task, experiences);
+    assert.equal(matches[0]?.experience.id, scenario.expectedId, scenario.task);
+    assert.ok(matches[0].score >= VERIFIED_EXPERIENCE_RETRIEVAL_THRESHOLD);
+  }
+});
+
+test('abstains at score zero for the unrelated website navigation query', () => {
+  const task = 'Change the website navigation background from white to blue and increase the logo size.';
+  assert.deepEqual(rankVerifiedExperiences(task, bundledLibrary().experiences), []);
+  assert.ok(rankVerifiedExperiences(task, bundledLibrary().experiences, 0).every(match => match.score === 0));
+});
+
+test('produces deterministic rankings and evidence for repeated executions', () => {
+  const experiences = bundledLibrary().experiences;
+  for (const scenario of verificationQueries) {
+    const expected = rankVerifiedExperiences(scenario.task, experiences, 0);
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      assert.deepEqual(rankVerifiedExperiences(scenario.task, experiences, 0), expected);
+    }
+  }
+});
+
+test('uses only the single best capped lesson or subtask contribution', () => {
+  assert.deepEqual(VERIFIED_EXPERIENCE_FIELD_WEIGHT, {
+    task: 0.27,
+    'reuse.retrievalTags': 0.15,
+    'reuse.recommendedFor': 0.18,
+    lessons: 0.1,
+    'subtasks.description': 0.08,
+    'subtasks.lessons': 0.12
+  });
+  assert.equal(SUPPLEMENTAL_EVIDENCE_CONTRIBUTION_CAP, 0.03);
+  const experiences = bundledLibrary().experiences;
+  const scenario = verificationQueries[1];
+  const original = rankVerifiedExperiences(scenario.task, experiences, 0)[0];
+  const duplicated = structuredClone(experiences);
+  const target = duplicated.find(experience => experience.id === scenario.expectedId);
+  target.lessons = Array(100).fill(target.lessons).flat();
+  target.subtasks = Array(100).fill(target.subtasks).flat();
+  const repeated = rankVerifiedExperiences(scenario.task, duplicated, 0)[0];
+  assert.equal(repeated.score, original.score);
+  const supplemental = repeated.evidence.filter(item => item.field === 'lessons' || item.field.startsWith('subtasks.'));
+  assert.equal(supplemental.length, 1);
+  assert.ok(supplemental[0].weightedContribution <= SUPPLEMENTAL_EVIDENCE_CONTRIBUTION_CAP);
+});
+
+test('generic repair vocabulary cannot cross the retrieval threshold by itself', () => {
+  const experiences = bundledLibrary().experiences;
+  const queries = [
+    'test failure agent repair verification',
+    'test the agent',
+    'repair the failure',
+    'run verification'
+  ];
+  for (const task of queries) {
+    assert.deepEqual(rankVerifiedExperiences(task, experiences), [], task);
+  }
+});
+
+test('unrelated technical queries reliably abstain', () => {
+  const experiences = bundledLibrary().experiences;
+  const queries = [
+    'Change CSS navigation colors from white to blue.',
+    'Optimize a PostgreSQL database index for a slow multi-column query.',
+    'Implement mobile authentication with biometric login and refresh tokens.',
+    'Resize uploaded images while preserving aspect ratio and EXIF orientation.'
+  ];
+  for (const task of queries) {
+    assert.deepEqual(rankVerifiedExperiences(task, experiences), [], task);
+  }
+});
+
+test('describes a nonzero near-match without recommending it', () => {
+  const task = 'Document public provenance for an example.';
+  const nearMatch = rankVerifiedExperiences(task, bundledLibrary().experiences, Number.EPSILON, 1)[0];
+  assert.ok(nearMatch.score > 0 && nearMatch.score < VERIFIED_EXPERIENCE_RETRIEVAL_THRESHOLD);
+  const description = describeBelowThresholdMatch(nearMatch);
+  assert.match(description, /Best verified record:/);
+  assert.match(description, /score \d\.\d{4}; threshold 0\.0500/);
+  assert.match(description, /Strongest evidence:/);
+  assert.match(description, /Below retrieval threshold—not recommended/);
 });
 
 test('bundled zero-cold-start challenge retrieves TR-04 above its frozen threshold', () => {
