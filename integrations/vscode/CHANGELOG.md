@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.5
+
+- Rank verified experiences against top-level lessons, subtask descriptions,
+  and subtask lessons using one capped best-match contribution.
+- Show actual overlapping query terms in match explanations and disclose
+  nonzero near-matches when AEG abstains below the unchanged threshold.
+- Add regression and adversarial coverage for retrieval correctness and
+  unrelated-query abstention.
+
 ## 0.1.4
 
 - Restore the original 256×256 Agent Experience Graph Marketplace icon from

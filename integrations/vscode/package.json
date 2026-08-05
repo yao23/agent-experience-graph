@@ -2,7 +2,7 @@
   "name": "agent-experience-graph",
   "displayName": "Agent Experience Graph",
   "description": "Retrieve verified debugging experience before your coding agent starts from scratch, with local-only feedback and auditable evidence.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "AgentExperienceGraph",
   "icon": "images/icon.png",
   "license": "MIT-0",
