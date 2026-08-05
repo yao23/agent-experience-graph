@@ -3,11 +3,15 @@
 Retrieve verified debugging experience before your coding agent starts from
 scratch.
 
-AEG v0.1.3 is a local-first developer preview:
+AEG v0.1.4 is a local-first developer preview:
 
 **Task or error → Explainable verified match → Guarded recovery capsule → Local rating**
 
-## What is new in v0.1.3
+## What is new in v0.1.4
+
+- Restore the original AEG Marketplace icon and package it explicitly.
+
+## Verified-experience workflow introduced in v0.1.3
 
 - **AEG: Try a Verified Experience** searches the bundled, validated public
   library. Candidate and malformed records are not eligible.
@@ -96,7 +100,7 @@ Use **AEG: Show Playwright Experiences** to inspect prior receipts.
 
 ## Privacy
 
-Version 0.1.3 does not upload code, task descriptions, recovery capsules, logs,
+Version 0.1.4 does not upload code, task descriptions, recovery capsules, logs,
 artifacts, ratings, or experience receipts.
 
 - Receipts are local by default.

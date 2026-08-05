@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4
+
+- Restore the original 256×256 Agent Experience Graph Marketplace icon from
+  the public v0.1.0 VSIX.
+- Declare and package the icon explicitly so future releases cannot silently
+  fall back to VS Code's generic extension placeholder.
+
 ## 0.1.3
 
 - Add **AEG: Try a Verified Experience**, backed only by the bundled validated

@@ -204,7 +204,7 @@ async function tryVerifiedExperience(extensionUri: vscode.Uri, presetTask?: stri
   try {
     raw = Buffer.from(await vscode.workspace.fs.readFile(libraryUri)).toString('utf8');
   } catch {
-    void vscode.window.showErrorMessage('The bundled verified-experience library is missing. Reinstall AEG v0.1.3.');
+    void vscode.window.showErrorMessage('The bundled verified-experience library is missing. Reinstall AEG v0.1.4.');
     return;
   }
 
@@ -338,7 +338,7 @@ button.secondary{color:var(--vscode-button-secondaryForeground);background:var(-
 <h2>Provenance and outcome</h2><p>Outcome: <strong>${escapeHtml(experience.outcome)}</strong>. Public source: ${escapeHtml(source.repository)} · ${escapeHtml(source.license)} · ${escapeHtml(source.benchmark)}. Experiment artifact: <code>${escapeHtml(experience.provenance.experimentEvidence.artifact)}</code>.</p>
 <h2>Compact recovery capsule</h2><pre>${escapeHtml(capsule)}</pre><p><button data-command="copy">Copy capsule</button></p>
 <h2>Was this useful?</h2><p><button data-rating="helpful">Helpful</button><button class="secondary" data-rating="partially-helpful">Partially helpful</button><button class="secondary" data-rating="irrelevant">Irrelevant</button><button class="secondary" data-rating="harmful">Harmful</button></p>
-<p><small>Ratings are written only to this workspace under <code>.aeg/</code>. AEG v0.1.3 does not upload task text, code, capsules, or ratings.</small></p>
+<p><small>Ratings are written only to this workspace under <code>.aeg/</code>. AEG v0.1.4 does not upload task text, code, capsules, or ratings.</small></p>
 <script nonce="${nonce}">const vscode=acquireVsCodeApi();document.querySelector('[data-command]').addEventListener('click',()=>vscode.postMessage({command:'copy'}));document.querySelectorAll('[data-rating]').forEach(button=>button.addEventListener('click',()=>vscode.postMessage({command:'rate',rating:button.dataset.rating})));</script>
 </body></html>`;
 }
@@ -646,7 +646,7 @@ function recoveryHtml(
   <h2>Verify the outcome</h2>
   <p>After trying the playbook and re-running the test, record the objective result.</p>
   <p><button data-outcome="resolved">Test passed</button><button class="secondary" data-outcome="unresolved">Still failing</button></p>
-  <p><small>Local only: AEG v0.1.3 does not upload code, logs, or experience receipts.</small></p>
+  <p><small>Local only: AEG v0.1.4 does not upload code, logs, or experience receipts.</small></p>
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     document.querySelectorAll('[data-command]').forEach(button => button.addEventListener('click', () => vscode.postMessage({command: button.dataset.command})));
@@ -736,7 +736,7 @@ async function openGettingStarted(): Promise<void> {
     language: 'markdown',
     content: `# AEG Verified Experience, Playwright Diagnosis & Public Repair Lab
 
-AEG v0.1.3 retrieves verified debugging experience before your coding agent
+AEG v0.1.4 retrieves verified debugging experience before your coding agent
 starts from scratch. It also preserves the Playwright diagnosis workflow and
 repeatable public repair experiments.
 

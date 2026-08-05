@@ -3,7 +3,7 @@
 Agent Experience Graph helps coding agents retrieve verified debugging
 experience instead of solving every problem from scratch.
 
-The v0.1.3 developer preview turns a task or error into an explainable match
+The v0.1.4 developer preview turns a task or error into an explainable match
 from a small verified-only public library, then produces a compact recovery
 capsule for the coding agent. The capsule preserves lessons, failed approaches,
 constraints, limitations, and public provenance. It is guidance to validate,
@@ -183,7 +183,7 @@ This project may be useful for:
 
 Agent Experience Graph is designed around sanitized traces, not raw logs.
 
-The v0.1.3 extension bundles its public verified library and performs retrieval
+The v0.1.4 extension bundles its public verified library and performs retrieval
 locally. It does not upload task text, code, logs, recovery capsules, receipts,
 or usefulness ratings. Local ratings are stored under `.aeg/`; review or ignore
 that directory before committing it.
