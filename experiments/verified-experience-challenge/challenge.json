@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "verified-experience-challenge-tr-04-transfer",
+  "classification": "synthetic-transfer-demo",
+  "taskPrompt": "Keepalive control fails after active stream ownership moved behind a protocol object; repair the public wrapper so it delegates through the protocol without using its stale socket field.",
+  "fixture": "experiments/public-repair-lab/tasks/protocol-resource-delegation/fixture",
+  "objectiveTest": "python3 test_bug.py",
+  "expectedVerifiedExperienceId": "trace-2026-08-03-tr-04-tornado-nodelay",
+  "retrievalThreshold": 0.05,
+  "priorEvidence": "experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json",
+  "priorResult": {
+    "outcomeChanged": false,
+    "repairPathChanged": false,
+    "patchesIdentical": true,
+    "assistedMinusBaseline": {
+      "completedCommands": 0,
+      "actualTestExecutions": 0,
+      "nonCachedTokens": 13842,
+      "durationMs": 4288
+    }
+  },
+  "claimsExcluded": [
+    "cross-project validation",
+    "correctness improvement",
+    "efficiency improvement",
+    "generalized causal benefit"
+  ]
+}
