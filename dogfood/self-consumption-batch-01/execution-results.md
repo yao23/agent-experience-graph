@@ -125,3 +125,46 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Limitations:** historical catalog revisions can change future URL responses; schema commit fields use disclosed content-digest prefixes because the source is not VCS; one day/first 100 only; late retrieval; no raw rows retained.
 - **External approval needed:** publishing output, calling any write API, contacting USGS, or promoting the experience.
 - **Next recommendation:** snapshot the response under an explicitly permitted data-fixture policy or add ETag/Last-Modified capture, then repeat on pagination boundaries.
+
+## Category 07 — AEG self-maintenance
+
+- **Start/end:** 2026-08-06T12:17:00Z / 2026-08-06T15:05:14Z. The 30-minute wall-clock target was exceeded; file and 20-command bounds held.
+- **Selected target:** AEG at pre-fix `e7ab21fead7af45050003a312bae4cca60b2a7d8`, MIT-0; canonical verified-evidence path resolution.
+- **Task/selection:** harden the semantic validator so promoted evidence cannot name missing, absolute, or repository-escaping files. Selected over ambiguous version alignment and already-green README links because it reproduced a real two-file false positive without release overlap.
+- **Manifest/shortlist:** `manifests/07-aeg-self-maintenance.json` SHA-256 `e54c11fb08acee076aa877ba81b569a2bf9e02ca9f9900dad81706fd43eb1554`; three candidates have per-dimension 1–5 scores in `evidence/07-candidate-shortlist.md`.
+- **AEG retrieval:** queried before repair; abstained at 0.05. Diagnostic scores: Repair Lab 0.0171 from generic validation/CI overlap; TR-04 0.0049. No capsule or execution effect.
+- **Reproduction:** changed both provenance and verification in memory to `experiences/missing-result.json`; the old `validate_library` returned `passed` because it checked string equality but not existence.
+- **Hypothesis/repair:** add a separate canonical-library evidence-file pass, reject absolute/`..` paths, and require five known evidence fields to resolve to regular files. Keep portable `--library` candidate validation free of AEG-repository layout assumptions.
+- **Failures/recovery:** bare `python -m unittest discover` reported zero tests; switched to the explicit CI-listed test commands. No production failure or unrelated edit occurred.
+- **Changed AEG files:** `scripts/validate_verified_experiences.py`, `scripts/test_validate_verified_experiences.py`; fixed commit `e001b094ab3373747ff756e104985741fb1880e4`; 36 insertions/1 deletion; patch SHA-256 `1f40ec46d7746c77f6d3851e23866c8c812bc047842b937fc0c4342b0de8fc96`.
+- **Validation:** 6 focused semantic tests; 42 CI-listed Python tests; canonical semantic audit; paired-results aggregate; natural-transfer validation; AJV schema; 20 extension tests including source/bundle equality—all passed. Extension `npm audit` reported 0 vulnerabilities.
+- **Metrics:** 1 attempt; 16 completed commands; 62 unit tests; elapsed/token meter `null`.
+- **Privacy/license:** public MIT-0 AEG data only; no promoted record, schema, version, release file, private data, credential, or external write.
+- **Classification:** **verified internal maintenance repair**, internal operational value only—not cross-project or PMF evidence.
+- **Candidate experience:** `candidates/07-aeg-self-maintenance.json`, schema/semantic validation passed and unpromoted.
+- **Limitations:** existence does not prove evidence truth/freshness; automatic resolution is canonical-library-only; wall-clock bound exceeded; hosted CI and review absent.
+- **External approval needed:** push/PR, merge/cherry-pick into another branch, release, or experience promotion.
+- **Next recommendation:** extend the canonical audit with optional content hashes and evidence-type-specific validators, preserving candidate portability.
+
+## Batch summary
+
+| Category | Target | Result | AEG retrieval | Objective evidence | External value | Next action |
+| -------- | ------ | ------ | ------------- | ------------------ | -------------- | ----------- |
+| 01 CI rescue | Mistral #490 historical v2.3.2 | Verified historical replay | Correct abstention; best 0.0373 | 2 focused, 18 module, 463 full-suite passes; lint/format pass | Reusable Python 3.14 event-loop lesson; no current upstream need | Search later with strict freshness and host-fidelity gates |
+| 02 migration | Pine #122 checkout v4→v6 | Partial historical replay | Correct abstention; best 0.0143 | 3 old refs before, 0 after; 3 YAML files parse | Reusable completeness oracle; hosted runtime untested | Prefer open compiler/test-backed migration |
+| 03 test gap | AEG protocol delegation transfer fixture | Verified controlled transfer | TR-04 reused at 0.101 | Legacy green; regression fail→pass; compile pass | Mechanism-level transfer only | Test an independently discovered public boundary |
+| 04 docs | Pendulum PR #920 | Verified docs replay | Correct abstention; best 0.0217 | 3/5 outputs before, 5/5 after; diff check pass | Confirms existing PR and catches whitespace; no duplicate write | Automate isolated fenced-example execution |
+| 05 MCP | Filesystem server 2026.7.10 | Partial compatibility | Correct abstention; best 0.005, queried late | Handshake, 14-tool discovery, read success, outside-root denial | Scoped compatibility plus missing packaged-license evidence | Retest Roots/graceful shutdown; report license only if approved |
+| 06 data | USGS fixed-window earthquake ETL | Verified bounded pipeline | Correct abstention; best 0.0139, queried late | Explosion rejected; 100 rows; repeat SHA-256 identical | Deterministic public-domain data-quality pattern | Capture HTTP revision metadata and test pagination |
+| 07 maintenance | AEG evidence-file validation | Verified internal repair | Correct abstention; best 0.0171 | False pass reproduced; 62 tests plus schema/result validation pass | Canonical provenance reliability only | Review local commit; consider evidence hashes later |
+
+- **Status:** 5 completed verified categories, 2 partial categories, 0 blocked, 0 skipped, 0 failed. All seven pilots produced schema/semantic-valid candidate files; 5 have passed verification and 2 are intentionally partial.
+- **Retrieval:** 6 correct abstentions; 1 reused experience (TR-04 in Category 03); 0 misleading above-threshold retrievals. Category 03 documented a qualitative repair-path effect, but no baseline arm supports a causal efficiency claim. Categories 05 and 06 queried too late, a procedural defect preserved as negative evidence.
+- **Aggregate bounded metrics:** 113 completed commands and 608 reported test/oracle executions across candidate records; batch wall time 8h16m43s. Counts mix unit-test cases and focused oracle executions and should not be treated as a normalized performance metric. Reliable token/cost data were unavailable, so total tokens/cost are `null`.
+- **Strongest reusable lesson:** pair a positive oracle with a deliberately failing boundary check, and verify the actual owned artifact/path—not merely agreement between metadata fields or a green legacy suite.
+- **Most promising repeated family:** deterministic contract and compatibility validation (public wrapper delegation, executable examples, protocol permissions, schema/data invariants) because it transfers cleanly and yields cheap before/after evidence.
+- **AEG product friction:** the verified library is still sparse and abstained in 6/7 categories; retrieval-before-execution is manual enough to be missed; capsule-size accounting is not built in; the verified-experience schema assumes VCS repair commits and PR URLs, which fits compatibility cards and non-VCS data poorly.
+- **AEG change proposed and implemented locally:** canonical promoted evidence paths must be repository-relative and resolve to files (`e001b09`). No version, release, schema, or promoted-library change was made.
+- **External actions awaiting approval:** push/open an AEG PR for the batch and validator repair; optionally comment on Pendulum #920 about validation/whitespace; optionally report the MCP package's missing LICENSE file; publish none of the candidates or data without review. Pine/Pendulum/fixture/data patches remain local under `/tmp`.
+- **Recommended Batch 02:** do not start automatically. First add an automated `freeze → retrieve → execute` harness with query/capsule metrics, then run fewer fresh public candidates whose default commits still fail and whose contribution paths have no active repair PR. Prioritize independently discovered contract-test gaps and compiler-backed API migrations.
+- **Evidence level:** the batch supports technical feasibility and limited external usefulness through reproducible public checks. It does **not** establish maintainer acceptance, generalized effectiveness, causal AEG performance improvement, or product-market fit.

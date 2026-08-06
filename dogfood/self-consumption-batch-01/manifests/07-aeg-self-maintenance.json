@@ -1,0 +1,14 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-07-EVIDENCE-PATH-VALIDATION",
+  "frozenAt": "2026-08-06T14:05:00Z",
+  "repository": "https://github.com/yao23/agent-experience-graph",
+  "preFixCommit": "e7ab21fead7af45050003a312bae4cca60b2a7d8",
+  "fixedCommit": "e001b094ab3373747ff756e104985741fb1880e4",
+  "license": "MIT-0",
+  "invariant": "Every repository-relative file named by promoted verification evidence must resolve to a regular file inside the AEG repository.",
+  "preFixOracle": "Mutate a verified record so provenance and verification consistently name experiences/missing-result.json; validate_library incorrectly returns passed.",
+  "postFixOracle": "validate_evidence_files rejects missing, absolute, or parent-traversing evidence paths; the default verified-library CLI invokes it.",
+  "allowedScope": {"expectedFiles": ["scripts/validate_verified_experiences.py", "scripts/test_validate_verified_experiences.py"], "constraint": "Do not change verified.json, schemas, versions, release files, or product claims."},
+  "successCriteria": ["The focused missing-file regression fails under the old validator and passes with the repair.", "All current verified evidence files resolve.", "All CI-listed Python and extension tests pass.", "JSON Schema and semantic validators pass.", "No promoted record or release artifact changes."],
+  "externalConstraints": ["No push, PR, release, or verified-experience promotion.", "Keep the candidate internal-only and make no PMF claim."]
+}
