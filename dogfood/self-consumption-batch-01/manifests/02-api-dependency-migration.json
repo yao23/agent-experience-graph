@@ -1,0 +1,40 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-02-PINE-NODE24-HISTORICAL",
+  "frozenAt": "2026-08-06T06:52:00Z",
+  "sourceRepository": "https://github.com/batonogov/pine.git",
+  "license": "MIT",
+  "preFixCommit": "455c7f386544e3b008e6286abd2a80e3647a4366",
+  "upstreamFixedCommit": "5b373564a72575bba8fa1b9aded17fa9d02ac2aa",
+  "issueProvenance": {
+    "url": "https://github.com/batonogov/pine/issues/122",
+    "stateAtSelection": "closed",
+    "reportedOldContract": "actions/checkout@v4 uses the deprecated Node.js 20 action runtime",
+    "reportedNewContract": "actions/checkout@v6 uses the Node.js 24 action runtime"
+  },
+  "protocolClassification": {
+    "blindness": "not preserved",
+    "deviation": "This is a historical replay selected after the upstream fix and issue resolution were visible.",
+    "allowedInterpretation": "Dependency-migration verification and reusable method only; no independent diagnosis, upstream need, or causal AEG benefit."
+  },
+  "environment": {
+    "host": "macOS arm64",
+    "checkout": "/tmp/aeg-batch01-cat02-pine",
+    "secrets": "none"
+  },
+  "preFixOracle": "Scan every .github/workflows/*.yml file and fail when actions/checkout@v4 remains; expected three matches.",
+  "postFixOracle": "Require zero actions/checkout@v4 references, exactly three actions/checkout@v6 references, parse every workflow as YAML, and pass git diff --check.",
+  "successCriteria": [
+    "The frozen pre-fix revision fails the focused compatibility scan with three v4 references.",
+    "The exact upstream migration changes only the intended checkout references in two workflow files.",
+    "All three workflows remain syntactically parseable and the patch passes whitespace validation."
+  ],
+  "allowedScope": {
+    "expectedFiles": [".github/workflows/ci.yml", ".github/workflows/release.yml"],
+    "constraint": "Change only actions/checkout v4 to v6; do not alter jobs, permissions, runner images, application code, or lockfiles."
+  },
+  "externalConstraints": [
+    "Do not push, comment, open a pull request, or trigger upstream workflows.",
+    "Do not claim end-to-end hosted Actions execution from local static validation.",
+    "Do not promote the candidate without review."
+  ]
+}

@@ -27,3 +27,26 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **External approval needed:** any comment/contact, fork/push/PR, workflow trigger, or candidate promotion.
 - **Pilot 02 decision:** not executed tonight. Every shortlisted target failed at least one strict freshness/fidelity/contribution gate; see `evidence/01-freshness-shortlist.md`.
 - **Next recommendation:** run a fresh search later and require the frozen current commit to fail before dependency installation. Prefer Python runtime/API drift with a host-faithful oracle.
+
+## Category 02 — API/dependency migration
+
+- **Start/end:** 2026-08-06T06:50:39Z / 2026-08-06T06:55:16Z.
+- **Selected target:** `batonogov/pine` issue [#122](https://github.com/batonogov/pine/issues/122), historical `actions/checkout` v4→v6 migration.
+- **Repository/source and license:** https://github.com/batonogov/pine, MIT.
+- **Source/fixed commits:** frozen parent `455c7f386544e3b008e6286abd2a80e3647a4366`; upstream fix `5b373564a72575bba8fa1b9aded17fa9d02ac2aa`; local replay `f7beda8840c6d045dae7ed53a614cecfefb36aef`.
+- **Why selected:** exact three-reference dependency edge, public deprecation evidence, permissive license, small patch, deterministic frozen parent, and a focused local completeness oracle. It is explicitly non-blind and historical.
+- **Shortlist:** two candidates inspected deeply; five search results considered; top three and rejection reasons are in `evidence/02-candidate-shortlist.md`. OHWR failed freshness because current main was already migrated; local-gpss had an open duplicate PR.
+- **Frozen manifest:** `manifests/02-api-dependency-migration.json`; SHA-256 `06772c61f8db63d6241283bdfdc5045ac4f9af397e616264b2bd4c96616e1e9c`.
+- **AEG query:** upgrade the GitHub Actions checkout dependency from the Node 20 runtime to a Node-24-compatible major version across YAML workflows, verify every reference, and preserve workflow behavior.
+- **Retrieval:** abstained at threshold 0.05; diagnostic best match was the Repair Lab record at 0.0143 through a generic `GitHub Actions` tag; TR-04 scored 0.0; selected capsule 0 characters / 0 tokens.
+- **Retrieval effect:** none. The below-threshold CI-process overlap did not change candidate selection, diagnosis, patch, or verification.
+- **Reproduction:** on the frozen parent, the focused scan found three `actions/checkout@v4` references and exited 1 as expected.
+- **Repair:** replayed the exact upstream three-line v4→v6 migration in `.github/workflows/ci.yml` and `.github/workflows/release.yml`; 3 insertions/3 deletions; patch SHA-256 `46d93659be6a3676aea21ff56febc780d77a36125821559ee1a9773f277e4a3c`.
+- **Validation:** zero v4 and exactly three v6 references; all three workflows parsed as YAML; `git diff --check` passed. Candidate schema/semantic validation passed.
+- **Metrics:** 2 bounded candidate attempts; 15 completed commands; 2 focused oracle executions; elapsed/token usage `null` where no reliable meter exists.
+- **Privacy/license:** public MIT source and public issue metadata only; no secrets, private data, proprietary material, or external writes.
+- **Classification:** **partial verified historical replay**. Local configuration checks pass, but no hosted Actions run was triggered, so Node 24 runner execution is not claimed.
+- **Candidate experience:** `candidates/02-api-dependency-migration.json`, valid but unpromoted.
+- **Limitations:** known repair; closed issue; no blind diagnosis; local YAML/reference checks do not exercise action download or hosted runners; no new maintainer acceptance.
+- **External approval needed:** any upstream contact, push/PR, workflow trigger, or promotion into `experiences/verified.json`.
+- **Next recommendation:** prefer an open, still-reproducible runtime/API edge with a local compiler or unit-test oracle; reject default branches that already contain the migration before setup.

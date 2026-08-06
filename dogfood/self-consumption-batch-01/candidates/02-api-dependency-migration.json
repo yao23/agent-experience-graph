@@ -1,0 +1,121 @@
+[
+  {
+    "id": "trace-2026-08-06-pine-checkout-node24-migration",
+    "task": "Migrate Pine workflows from actions/checkout v4 on Node.js 20 to v6 on Node.js 24",
+    "outcome": "partial",
+    "subtasks": [
+      {
+        "description": "Freeze a permissively licensed historical dependency edge and its exact upstream repair",
+        "skills": ["license-aware-candidate-triage", "provenance-freezing"],
+        "tools": ["GitHub", "git", "SHA-256"],
+        "outcome": "success",
+        "lessons": ["Closed issues can support objective historical migration replays, but cannot be presented as current contribution opportunities."]
+      },
+      {
+        "description": "Query AEG before execution and audit the below-threshold ranking",
+        "skills": ["experience-retrieval-audit"],
+        "tools": ["agent-experience-graph recommender", "python"],
+        "outcome": "success",
+        "lessons": ["A generic GitHub Actions overlap scored only 0.0143, so AEG correctly withheld a migration capsule."]
+      },
+      {
+        "description": "Reproduce and repair the Node 20 action reference at the frozen parent commit",
+        "skills": ["dependency-major-migration", "bounded-historical-replay"],
+        "tools": ["git", "python"],
+        "outcome": "success",
+        "lessons": ["Enumerate every pinned action reference before changing a major version so a migration is complete rather than sample-based."]
+      },
+      {
+        "description": "Validate reference counts, YAML syntax, patch scope, and whitespace",
+        "skills": ["focused-configuration-testing"],
+        "tools": ["python", "Ruby YAML", "git"],
+        "outcome": "partial",
+        "lessons": ["Static workflow validation is a useful local oracle, but it does not replace a hosted GitHub Actions run."]
+      }
+    ],
+    "skills": ["license-aware-candidate-triage", "provenance-freezing", "experience-retrieval-audit", "dependency-major-migration", "focused-configuration-testing"],
+    "tools": ["GitHub", "git", "python", "Ruby YAML", "SHA-256"],
+    "constraints": [
+      "Use only public MIT-licensed source and public issue metadata.",
+      "Do not push, comment, open a pull request, or trigger upstream workflows.",
+      "Limit the patch to three action references in two workflow files.",
+      "Do not claim hosted runner compatibility from local static checks."
+    ],
+    "lessons": [
+      "Freeze the parent of the known migration commit to make a historical dependency replay deterministic.",
+      "Count old and new action references across the complete workflow set; a green YAML parse alone cannot detect an incomplete runtime migration.",
+      "AEG correctly abstained because its verified records contained CI process experience but no Node-runtime or action-major migration rule.",
+      "Separate local configuration proof from end-to-end hosted runner evidence and maintainer acceptance."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T06:55:00Z",
+      "publicSource": {
+        "repository": "https://github.com/batonogov/pine",
+        "buggyCommitSha": "455c7f386544e3b008e6286abd2a80e3647a4366",
+        "fixedCommitSha": "5b373564a72575bba8fa1b9aded17fa9d02ac2aa",
+        "license": "MIT",
+        "benchmark": "GitHub issue batonogov/pine#122; non-blind historical dependency-migration replay"
+      },
+      "experimentEvidence": {
+        "artifact": "dogfood/self-consumption-batch-01/execution-results.md",
+        "sourceReportCreatedAt": "2026-08-06T06:55:00Z",
+        "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8",
+        "runnerSourceCommitStatus": "available: isolated AEG worktree used for retrieval and recording"
+      },
+      "promotionEvidence": {
+        "workflowName": "No promotion workflow run",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": null,
+        "status": "expected-on-pull-request",
+        "runResolver": "Candidate is intentionally unpromoted and requires review before any verified-library change."
+      },
+      "publication": {"pullRequest": "https://github.com/batonogov/pine/issues/122"}
+    },
+    "verification": {
+      "status": "partial",
+      "evidence": {
+        "experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "preFixFocused": "failed as expected: three actions/checkout@v4 references; exit 1",
+        "postFixFocused": "zero v4 references and exactly three v6 references; exit 0",
+        "workflowSyntax": "Ruby YAML parsed all three workflow files; exit 0",
+        "diffCheck": "git diff --check passed",
+        "changedFiles": [".github/workflows/ci.yml", ".github/workflows/release.yml"],
+        "patchSize": "3 insertions, 3 deletions",
+        "candidatePatchSha256": "46d93659be6a3676aea21ff56febc780d77a36125821559ee1a9773f277e4a3c",
+        "taskManifestSha256": "06772c61f8db63d6241283bdfdc5045ac4f9af397e616264b2bd4c96616e1e9c",
+        "priorAEGExperienceUsed": "no; recommender abstained",
+        "aegBestDiagnosticScore": "0.0143; below 0.05 threshold",
+        "upstreamAcceptance": "already accepted historically in upstream commit 5b37356; no new contribution was attempted"
+      }
+    },
+    "metrics": {
+      "attempts": 2,
+      "completedCommands": 15,
+      "actualTestExecutions": 2,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "Two bounded candidates were inspected deeply and one historical migration was replayed. Local static checks passed, but no hosted Actions run occurred, so the outcome is partial."
+    },
+    "limitations": [
+      "The repair was known in advance and replayed from a closed issue, so diagnosis and patch discovery were not blind.",
+      "No GitHub-hosted Actions workflow was triggered; action download and Node 24 runner behavior remain unobserved in this replay.",
+      "The focused oracle treats the issue's three checkout references as the complete migration edge; it does not audit unrelated third-party actions.",
+      "The schema-required publication.pullRequest URL points to the source issue because this local candidate has no pull request.",
+      "No causal retrieval benefit or new maintainer acceptance is claimed."
+    ],
+    "reuse": {
+      "retrievalTags": ["GitHub Actions Node.js 24", "actions/checkout v4 to v6", "dependency major migration", "workflow YAML validation", "historical migration replay", "AEG abstention"],
+      "recommendedFor": [
+        "migrating a finite set of GitHub Action references to a new embedded runtime",
+        "building a local completeness oracle for workflow dependency-major updates",
+        "recording historical dependency replays without overstating hosted CI evidence"
+      ]
+    }
+  }
+]
