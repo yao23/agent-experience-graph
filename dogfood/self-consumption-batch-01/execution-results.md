@@ -71,3 +71,20 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Limitations:** synthetic transfer target; no baseline arm; legacy test added only in `/tmp`; no fresh upstream or maintainer acceptance evidence.
 - **External approval needed:** any repository patch beyond these batch artifacts, upstream contact, or experience promotion.
 - **Next recommendation:** repeat on an independently discovered public wrapper/proxy issue frozen before its fix is inspected, retaining the same terminal delegate-call oracle.
+
+## Category 04 — Documentation example doctor
+
+- **Start/end:** 2026-08-06T06:58:03Z / 2026-08-06T09:28:00Z. The 45-minute wall-clock target was exceeded; command and file bounds were respected.
+- **Selected target:** Pendulum open PR [#920](https://github.com/python-pendulum/pendulum/pull/920), fluent timezone-helper example in `docs/docs/fluent_helpers.md`; MIT.
+- **Frozen source:** current main `5ad098bc7b74d660679f0606673728042b9d4aca`; PR commit `0e32103a99d623c3fb4482fafb3d659f3b650708`; non-blind and duplicate-work constrained.
+- **Why selected:** current main still reproduces, one docs file, five deterministic credential-free outputs, existing PR provides public defect evidence but forbids a competing contribution.
+- **Manifest/shortlist:** `manifests/04-documentation-example-doctor.json` SHA-256 `215250a8f30582a4c053093318a417bfd259ab99854cd2130fcac2531f209a36`; three scored in `evidence/04-candidate-shortlist.md`.
+- **AEG retrieval:** abstained at 0.05; diagnostic scores Repair Lab 0.0217 and TR-04 0.0112; no capsule and no repair-path effect.
+- **Reproduction:** running the five operations in documented order showed state leakage from repeated `dt` reassignment; only 3/5 displayed outputs matched runtime values.
+- **Repair:** start every transformation from `dt0`; retain the PR's DST explanation but shorten it to remove trailing whitespace. One docs file, 7 insertions/6 deletions; patch SHA-256 `3eeb3f4bd7f7a6cc18c9303bcb2cedb0f936c70f92d6810e8f392da006b4d3c5`.
+- **Validation:** 5/5 runtime values matched; `git diff --check` passed; candidate semantic validation passed. Complete library tests were not run because production code did not change.
+- **Metrics:** 1 attempt; 14 commands; 2 before/after executable-example checks; elapsed/token meter `null`.
+- **Classification:** **verified documentation-only historical/current replay**, with existing open PR and no duplicate external write.
+- **Limitations:** repair disclosed by PR; wall-clock budget exceeded; dependencies downloaded publicly; no maintainer acceptance; no docs-site build.
+- **External approval needed:** any comment on PR #920, push, competing PR, or experience promotion.
+- **Next recommendation:** add an automated extractor that executes fenced Python examples in isolated scopes and compares normalized displayed outputs.

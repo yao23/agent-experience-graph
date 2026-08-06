@@ -1,0 +1,44 @@
+[
+  {
+    "id": "trace-2026-08-06-pendulum-fluent-doc-example",
+    "task": "Execute and repair Pendulum's fluent timezone helper documentation example",
+    "outcome": "success",
+    "subtasks": [
+      {"description": "Freeze a one-file MIT-licensed docs example with an existing open repair", "skills": ["documentation-candidate-triage", "duplicate-work-detection"], "tools": ["GitHub", "git"], "outcome": "success", "lessons": ["An existing PR can still be locally verified for evidence, but it rules out a competing contribution."]},
+      {"description": "Query AEG for executable-example and state-isolation experience", "skills": ["experience-retrieval-audit"], "tools": ["agent-experience-graph recommender"], "outcome": "success", "lessons": ["The best score was 0.0217, so generic evaluation advice was correctly withheld."]},
+      {"description": "Execute the documented operations and compare every result", "skills": ["executable-documentation-testing", "state-leak-diagnosis"], "tools": ["uv", "python"], "outcome": "success", "lessons": ["Fluent examples that reassign one variable can silently make later snippets depend on presentation order."]},
+      {"description": "Replay and refine the documentation-only repair", "skills": ["minimal-doc-repair", "diff-audit"], "tools": ["git", "apply_patch"], "outcome": "success", "lessons": ["Validate the proposed documentation patch itself; the open PR's explanatory line contained trailing whitespace."]}
+    ],
+    "skills": ["documentation-candidate-triage", "duplicate-work-detection", "experience-retrieval-audit", "executable-documentation-testing", "state-leak-diagnosis", "minimal-doc-repair"],
+    "tools": ["GitHub", "git", "uv", "python", "apply_patch", "SHA-256"],
+    "constraints": ["Use public MIT source only.", "Keep the repair to one documentation file.", "Do not change library behavior or open a duplicate PR.", "Do not access credentials or external services."],
+    "lessons": ["Execute documentation in its displayed order and compare each value, not merely whether the snippet exits zero.", "Give independent fluent transformations a named immutable baseline so presentation order cannot leak state.", "AEG correctly abstained because neither verified record covered documentation examples or timezone state.", "A locally improved open-PR patch is verification evidence, not maintainer acceptance or authorization to publish."],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T09:28:00Z",
+      "publicSource": {"repository": "https://github.com/python-pendulum/pendulum", "buggyCommitSha": "5ad098bc7b74d660679f0606673728042b9d4aca", "fixedCommitSha": "0e32103a99d623c3fb4482fafb3d659f3b650708", "license": "MIT", "benchmark": "Pendulum pull request #920; non-blind executable documentation replay"},
+      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T09:28:00Z", "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "runnerSourceCommitStatus": "available: isolated AEG worktree used for retrieval and recording"},
+      "promotionEvidence": {"workflowName": "No promotion workflow run", "workflowFile": ".github/workflows/repair-lab.yml", "validatedCommitSha": null, "status": "expected-on-pull-request", "runResolver": "Local candidate is intentionally unpromoted."},
+      "publication": {"pullRequest": "https://github.com/python-pendulum/pendulum/pull/920"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {"experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md", "experienceSchema": "experiences/verified-experience.schema.json", "semanticValidator": "scripts/validate_verified_experiences.py"},
+      "localChecks": {
+        "preFixExecution": "document order produced 3/5 matching values; the third and fifth documented outputs were stale-state mismatches",
+        "postFixExecution": "5/5 runtime values matched documented outputs",
+        "diffCheck": "passed after removing trailing whitespace from the open PR's comment",
+        "changedFiles": ["docs/docs/fluent_helpers.md"],
+        "patchSize": "7 insertions, 6 deletions",
+        "candidatePatchSha256": "3eeb3f4bd7f7a6cc18c9303bcb2cedb0f936c70f92d6810e8f392da006b4d3c5",
+        "taskManifestSha256": "215250a8f30582a4c053093318a417bfd259ab99854cd2130fcac2531f209a36",
+        "priorAEGExperienceUsed": "no; recommender abstained at threshold 0.05",
+        "upstreamStatus": "existing PR #920 remains open; no duplicate write was made"
+      }
+    },
+    "metrics": {"attempts": 1, "completedCommands": 14, "actualTestExecutions": 2, "durationMs": null, "nonCachedTokens": null, "interpretation": "One example was executed before and after. The output oracle fully passed; no causal AEG effect or upstream acceptance is claimed."},
+    "limitations": ["The open PR disclosed the repair, so diagnosis was non-blind.", "Only the five-value example oracle and diff hygiene were checked; the complete Pendulum test suite was not run because production code did not change.", "The source checkout built local Pendulum 3.1.0 and downloaded public dependencies through uv.", "The category's 45-minute wall-clock budget was exceeded, although the bounded command and file limits were respected.", "No upstream comment, push, or maintainer acceptance occurred."],
+    "reuse": {"retrievalTags": ["executable documentation", "fluent API state leak", "timezone example", "independent baseline variable", "documentation output oracle", "duplicate PR detection"], "recommendedFor": ["testing ordered documentation examples whose variables are reassigned", "repairing fluent API examples so each transformation begins from the same state", "validating an existing docs PR without creating duplicate upstream work"]}
+  }
+]
