@@ -1,0 +1,17 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-05-MCP-FILESYSTEM-2026.7.10",
+  "frozenAt": "2026-08-06T11:05:00Z",
+  "sourceRepository": "https://github.com/modelcontextprotocol/servers",
+  "sourceCommit": "9a96ea6e5913736f92b88345bf51caeaaa8e719f",
+  "package": "@modelcontextprotocol/server-filesystem@2026.7.10",
+  "packageIntegrity": "sha512-Mmjg4anFBD5OzbPnGJOA0jPPN8645ERhQk38HQLpSenx1ox9bfdPkmAzUnNjeQtqQGFLtKe13J20RtLBmUKMZA==",
+  "license": "Repository license transition: new code Apache-2.0; package declares SEE LICENSE IN LICENSE but omits the referenced file",
+  "transport": "stdio JSON-RPC",
+  "protocolVersion": "2025-11-25",
+  "allowedRoot": "/tmp/aeg-batch01-cat05-mcp",
+  "safeTask": "read_text_file for hello.txt",
+  "invalidTask": "read_text_file for /etc/hosts, which must be denied as outside the allowed root",
+  "successCriteria": ["Initialize and negotiate protocol 2025-11-25.", "Discover stable tool schemas.", "Read the in-root probe file without writing.", "Reject the out-of-root path with isError true.", "Terminate the bounded subprocess and leave the probe unchanged."],
+  "permissionEnvelope": "One disposable /tmp root; no Roots capability, credentials, network tools, or write-tool invocation.",
+  "externalConstraints": ["Do not invoke any discovered write/destructive tool.", "Do not expose home or repository roots.", "Do not publish or contact maintainers without approval."]
+}

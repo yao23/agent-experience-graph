@@ -88,3 +88,22 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Limitations:** repair disclosed by PR; wall-clock budget exceeded; dependencies downloaded publicly; no maintainer acceptance; no docs-site build.
 - **External approval needed:** any comment on PR #920, push, competing PR, or experience promotion.
 - **Next recommendation:** add an automated extractor that executes fenced Python examples in isolated scopes and compares normalized displayed outputs.
+
+## Category 05 — Agent skill/MCP compatibility
+
+- **Start/end:** 2026-08-06T09:28:00Z / 2026-08-06T11:43:08Z. The 30-minute wall-clock target was exceeded; the 20-command bound was respected.
+- **Selected target:** `@modelcontextprotocol/server-filesystem@2026.7.10`, source commit `9a96ea6e5913736f92b88345bf51caeaaa8e719f`; npm integrity frozen; repository licensing transitions new code to Apache-2.0.
+- **Permission envelope:** stdio only; single disposable `/tmp/aeg-batch01-cat05-mcp` root; no Roots capability, credentials, external data, or write-tool calls.
+- **Manifest/shortlist:** `manifests/05-agent-skill-mcp-compatibility.json` SHA-256 `198e053c0c5b53ffe2376c360c7648c3c872187c571d73ff0e88cc398b4027cb`; three candidates scored in `evidence/05-candidate-shortlist.md`.
+- **AEG retrieval:** procedure deviation—the query ran after execution. It abstained (best diagnostic TR-04 0.005; Repair Lab 0.0), and necessarily had no effect.
+- **Startup/recovery:** initial npm use collided with the restricted user cache; redirected npm cache to `/tmp`, then initialized protocol `2025-11-25`. Server identified as `secure-filesystem-server` 0.2.0.
+- **Discovery:** 14 tools with JSON schemas and annotations; both read and destructive capabilities were visible. This card covers only the invoked read-only surface.
+- **Safe task:** `read_text_file` returned the exact probe text; output SHA-256 `6efb5ec7fab84c0d31fa8f720cc8b99e05a3e63eca6cca4bb91eb7081729ce78`.
+- **Failure contract:** the same tool on `/etc/hosts` returned `isError: true` and explicitly denied the path outside the two normalized forms of the allowed `/tmp` root.
+- **Termination:** SIGINT bounded the subprocess; exit 1 reflects the signal. Graceful zero-exit protocol shutdown was not demonstrated.
+- **Distribution defect:** installed package `package.json` SHA-256 `6b2c11d4d348cace9c652636d602713c377ba59d868e013de69f3a9046d61244` declares `SEE LICENSE IN LICENSE`, but no LICENSE file ships in the package. Public repository licensing is explicit but transitional.
+- **Metrics:** 2 attempts; 17 commands; 2 tool invocations; 14 tools discovered; elapsed/token meter `null`.
+- **Classification:** **partial scoped compatibility**—handshake, discovery, read, and confinement pass; packaged licensing and graceful shutdown remain incomplete.
+- **Limitations:** late retrieval; destructive tools untested; npm transitive `glob@10.5.0` warning not investigated; no Roots-capable client, Windows, dynamic roots, or media/write tests.
+- **External approval needed:** registry publication, maintainer contact, issue/PR, destructive/write-tool testing outside the disposable root, or experience promotion.
+- **Next recommendation:** retest with a tiny client that sends Roots and a documented shutdown sequence, and separately report the missing packaged LICENSE file if authorized.
