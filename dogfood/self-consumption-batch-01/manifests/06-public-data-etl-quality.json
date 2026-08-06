@@ -1,0 +1,14 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-06-USGS-EARTHQUAKE-ETL",
+  "frozenAt": "2026-08-06T12:05:00Z",
+  "source": "USGS FDSN Event Web Service 1, API 2.7.0",
+  "sourceUrl": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2025-01-01T00:00:00Z&endtime=2025-01-02T00:00:00Z&limit=100&orderby=time-asc",
+  "repairedSourceUrl": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2025-01-01T00:00:00Z&endtime=2025-01-02T00:00:00Z&limit=100&orderby=time-asc&eventtype=earthquake",
+  "licenseTerms": "USGS-produced data are U.S. public domain; acknowledge U.S. Geological Survey",
+  "sampleBound": {"maximumRecords": 100, "maximumBytes": 1000000, "window": "2025-01-01T00:00:00Z/2025-01-02T00:00:00Z"},
+  "qualityDefects": ["The bounded query metadata omits documented metadata.count; consumers must count features.", "The unfiltered first 100 contain one explosion among 99 earthquakes."],
+  "outputFields": ["depth_km", "event_id", "latitude", "longitude", "magnitude", "place", "status", "time_utc"],
+  "successCriteria": ["Reject a non-earthquake feature.", "Produce 1..100 unique rows with required values and three coordinates.", "Normalize epoch milliseconds to ISO-8601 UTC Z timestamps.", "Sort by time_utc then event_id.", "Two runs from the frozen filtered response are byte-identical."],
+  "retention": "Raw responses, pipeline, and normalized outputs remain only under /tmp; the AEG repository retains hashes and aggregate evidence, not event rows.",
+  "externalConstraints": ["No personal/sensitive data or API writes.", "Do not retain more than 100 records or 1 MB.", "Do not publish output without review and attribution."]
+}

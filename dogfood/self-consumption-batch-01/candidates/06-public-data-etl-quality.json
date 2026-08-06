@@ -1,0 +1,44 @@
+[
+  {
+    "id": "trace-2026-08-06-usgs-earthquake-bounded-etl",
+    "task": "Normalize a bounded USGS GeoJSON sample while rejecting non-earthquake events and unstable metadata assumptions",
+    "outcome": "success",
+    "subtasks": [
+      {"description": "Freeze an attributed public-domain API window and 100-record/1-MB bound", "skills": ["public-data-source-triage", "bounded-ingestion"], "tools": ["USGS FDSN API", "curl", "SHA-256"], "outcome": "success", "lessons": ["A fixed query window still needs a response digest because historical catalogs can be revised."]},
+      {"description": "Profile schema, missingness, uniqueness, type mix, and order before transformation", "skills": ["data-quality-profiling"], "tools": ["python", "GeoJSON"], "outcome": "success", "lessons": ["Do not infer an earthquake-only dataset from the service name; the unfiltered sample included an explosion."]},
+      {"description": "Normalize a filtered sample with explicit UTC and stable serialization", "skills": ["deterministic-etl", "schema-validation"], "tools": ["python", "json"], "outcome": "success", "lessons": ["Count the feature array directly when query metadata omits count, and sort with an ID tiebreaker."]},
+      {"description": "Verify negative-path rejection and byte-identical repeat output", "skills": ["quality-oracle-design", "repeatability-testing"], "tools": ["python", "cmp", "SHA-256"], "outcome": "success", "lessons": ["A useful ETL oracle includes one input that must fail, not only happy-path row counts."]}
+    ],
+    "skills": ["public-data-source-triage", "bounded-ingestion", "data-quality-profiling", "deterministic-etl", "schema-validation", "quality-oracle-design"],
+    "tools": ["USGS FDSN API", "curl", "python", "GeoJSON", "json", "cmp", "SHA-256"],
+    "constraints": ["Use at most 100 records and 1 MB.", "Retain raw and normalized rows only in /tmp.", "Use no personal, sensitive, credentialed, or write API.", "Credit U.S. Geological Survey and do not imply endorsement."],
+    "lessons": ["Validate actual response shape rather than assuming every documented summary-feed metadata field appears in query results.", "Use eventtype at the API boundary and revalidate each row so type contamination fails loudly.", "Normalize timestamps to explicit UTC and serialize sorted keys with a stable row order before hashing.", "AEG correctly abstained, but the query occurred after execution and could not influence this pilot."],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T12:17:00Z",
+      "publicSource": {"repository": "https://earthquake.usgs.gov/fdsnws/event/1/", "buggyCommitSha": "7b3936ba66feda8f0f7f1ca89d8021debf028495", "fixedCommitSha": "852da5c39927ffae37d347d71c543f586c970699", "license": "U.S. public domain; credit U.S. Geological Survey", "benchmark": "Fixed-window USGS response content digests (first 40 SHA-256 hex characters used in commit-shaped schema fields; not VCS commits)"},
+      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T12:17:00Z", "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "runnerSourceCommitStatus": "available: isolated AEG worktree used for recording"},
+      "promotionEvidence": {"workflowName": "No promotion workflow run", "workflowFile": ".github/workflows/repair-lab.yml", "validatedCommitSha": null, "status": "expected-on-pull-request", "runResolver": "Data-quality candidate is intentionally unpromoted."},
+      "publication": {"pullRequest": "https://earthquake.usgs.gov/fdsnws/event/1/"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {"experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md", "experienceSchema": "experiences/verified-experience.schema.json", "semanticValidator": "scripts/validate_verified_experiences.py"},
+      "localChecks": {
+        "unfilteredInput": "71,841 bytes; 100 features; 99 earthquake and 1 explosion; 0 duplicate IDs; metadata.count absent",
+        "missingness": "core mag/place/time/updated complete; optional tz missing 100, felt/cdi 95, mmi/alert 99, nst/dmin/gap 15",
+        "negativeOracle": "unfiltered ETL rejected event ak0251nkqz1 as non-earthquake; exit 1",
+        "filteredInput": "71,862 bytes; SHA-256 852da5c39927ffae37d347d71c543f586c97069954b56a06985f3aff52348657",
+        "normalizedOutput": "100 rows, 25,871 bytes, unique IDs, all UTC Z timestamps",
+        "repeatability": "two runs byte-identical; SHA-256 170e98907baefe2559e88d0298973f3553e69788bd94dd19d84faec6be175459",
+        "pipelineSha256": "3a0b727b5ec7c1689ea42a11b37c925943b449a4e262877e23bc76675b2726d0",
+        "taskManifestSha256": "4cc7a29b412c3283867bdb9afbf1ddee5677de60fd4d928771c5aeea1b28fa76",
+        "priorAEGExperienceUsed": "no; recommender abstained and was queried late"
+      }
+    },
+    "metrics": {"attempts": 1, "completedCommands": 12, "actualTestExecutions": 3, "durationMs": null, "nonCachedTokens": null, "interpretation": "One bounded pipeline exposed and rejected a real type-mix defect, then produced byte-identical validated output from the filtered response."},
+    "limitations": ["The AEG query ran after execution and had no possible effect.", "USGS can revise historical events, so URL-level future reproducibility is not guaranteed; digests freeze this run's bytes.", "The experience schema requires commit-shaped fields; this non-VCS source uses disclosed 40-character prefixes of response SHA-256 digests.", "Place strings and coordinates are public event metadata but were not retained in the repository.", "The 30-minute wall-clock target was exceeded although record, byte, command, and file bounds were respected.", "Only one UTC day and the first 100 ascending events were evaluated."],
+    "reuse": {"retrievalTags": ["USGS GeoJSON ETL", "mixed event types", "metadata count absent", "epoch milliseconds to UTC", "stable JSON serialization", "bounded public data"], "recommendedFor": ["ingesting a small fixed-window FDSN GeoJSON response", "rejecting non-earthquake events in an earthquake-specific downstream table", "producing deterministic normalized JSON with content-digest evidence and no raw-row retention"]}
+  }
+]

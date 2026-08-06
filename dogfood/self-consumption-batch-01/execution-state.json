@@ -1,16 +1,16 @@
 {
   "batchId": "aeg-self-consumption-batch-01",
   "startedAt": "2026-08-06T06:48:31Z",
-  "updatedAt": "2026-08-06T11:43:08Z",
+  "updatedAt": "2026-08-06T12:17:00Z",
   "status": "running",
-  "currentCategory": "06",
+  "currentCategory": "07",
   "projects": [
     {"id":"01","file":"01-open-source-ci-rescue.md","status":"completed","startedAt":"2026-08-06T06:48:31Z","completedAt":"2026-08-06T06:50:39Z","selectedTarget":"mistralai/client-python issue #490 historical v2.3.2 replay","result":"verified local historical replay; AEG correctly abstained; no fresh Pilot 02","artifactPaths":["manifests/01-open-source-ci-rescue.json","candidates/01-open-source-ci-rescue.json","evidence/01-freshness-shortlist.md"],"blockers":[]},
     {"id":"02","file":"02-api-dependency-migration.md","status":"completed","startedAt":"2026-08-06T06:50:39Z","completedAt":"2026-08-06T06:55:16Z","selectedTarget":"batonogov/pine issue #122 historical actions/checkout v4 to v6 replay","result":"partial verified historical replay; local reference/YAML checks pass; hosted Actions untested; AEG abstained","artifactPaths":["manifests/02-api-dependency-migration.json","candidates/02-api-dependency-migration.json","evidence/02-candidate-shortlist.md"],"blockers":[]},
     {"id":"03","file":"03-regression-test-gap.md","status":"completed","startedAt":"2026-08-06T06:55:16Z","completedAt":"2026-08-06T06:58:03Z","selectedTarget":"AEG protocol-resource-delegation controlled transfer fixture related to Tornado BugsInPy bug 1","result":"verified controlled transfer; TR-04 score 0.101 informed the three-hop repair; no baseline arm","artifactPaths":["manifests/03-regression-test-gap.json","candidates/03-regression-test-gap.json","evidence/03-candidate-shortlist.md"],"blockers":[]},
     {"id":"04","file":"04-documentation-example-doctor.md","status":"completed","startedAt":"2026-08-06T06:58:03Z","completedAt":"2026-08-06T09:28:00Z","selectedTarget":"python-pendulum/pendulum PR #920 fluent helper documentation example","result":"verified documentation-only replay; 3/5 before and 5/5 after; AEG abstained; existing PR prevents contribution","artifactPaths":["manifests/04-documentation-example-doctor.json","candidates/04-documentation-example-doctor.json","evidence/04-candidate-shortlist.md"],"blockers":["45-minute wall-clock target exceeded"]},
     {"id":"05","file":"05-agent-skill-mcp-compatibility.md","status":"completed","startedAt":"2026-08-06T09:28:00Z","completedAt":"2026-08-06T11:43:08Z","selectedTarget":"@modelcontextprotocol/server-filesystem@2026.7.10 scoped to one disposable /tmp root","result":"partial scoped compatibility; handshake/discovery/read/denial pass; package LICENSE missing; retrieval queried late","artifactPaths":["manifests/05-agent-skill-mcp-compatibility.json","candidates/05-agent-skill-mcp-compatibility.json","evidence/05-candidate-shortlist.md"],"blockers":["30-minute wall-clock target exceeded","installed package omits declared LICENSE file"]},
-    {"id":"06","file":"06-public-data-etl-quality.md","status":"running","startedAt":"2026-08-06T11:43:08Z","completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
-    {"id":"07","file":"07-aeg-self-maintenance.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]}
+    {"id":"06","file":"06-public-data-etl-quality.md","status":"completed","startedAt":"2026-08-06T11:43:08Z","completedAt":"2026-08-06T12:17:00Z","selectedTarget":"USGS FDSN fixed-window 100-record earthquake GeoJSON ETL","result":"verified bounded ETL; rejected one explosion, handled missing metadata.count, produced repeatable 100-row output; retrieval queried late","artifactPaths":["manifests/06-public-data-etl-quality.json","candidates/06-public-data-etl-quality.json","evidence/06-candidate-shortlist.md"],"blockers":["30-minute wall-clock target exceeded by approximately four minutes"]},
+    {"id":"07","file":"07-aeg-self-maintenance.md","status":"running","startedAt":"2026-08-06T12:17:00Z","completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]}
   ]
 }

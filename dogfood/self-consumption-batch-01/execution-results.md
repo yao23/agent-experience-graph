@@ -107,3 +107,21 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Limitations:** late retrieval; destructive tools untested; npm transitive `glob@10.5.0` warning not investigated; no Roots-capable client, Windows, dynamic roots, or media/write tests.
 - **External approval needed:** registry publication, maintainer contact, issue/PR, destructive/write-tool testing outside the disposable root, or experience promotion.
 - **Next recommendation:** retest with a tiny client that sends Roots and a documented shutdown sequence, and separately report the missing packaged LICENSE file if authorized.
+
+## Category 06 — Public-data ETL/quality
+
+- **Start/end:** 2026-08-06T11:43:08Z / 2026-08-06T12:17:00Z. The 30-minute wall-clock target was exceeded by roughly four minutes; all data/command bounds held.
+- **Selected source:** USGS FDSN Event Web Service API 2.7.0, fixed 2025-01-01 UTC day, ascending time, limit 100. USGS-produced data are U.S. public domain; credit U.S. Geological Survey.
+- **Bounds/retention:** raw 71–72 KB; 100 records; raw, pipeline, and output remain only in `/tmp`; repository stores aggregates and hashes.
+- **Manifest/shortlist:** `manifests/06-public-data-etl-quality.json` SHA-256 `4cc7a29b412c3283867bdb9afbf1ddee5677de60fd4d928771c5aeea1b28fa76`; three candidates in `evidence/06-candidate-shortlist.md`.
+- **AEG retrieval:** procedure deviation—query ran after execution; abstained at 0.05 (Repair Lab 0.0139; TR-04 0.0055), so no effect.
+- **Quality defects:** query metadata omitted documented `metadata.count`; direct feature count was required. Unfiltered first 100 contained 99 earthquakes and one explosion (`ak0251nkqz1`).
+- **Profile:** zero duplicate IDs; core magnitude/place/time/updated complete; optional fields frequently null (`tz` 100, `felt/cdi` 95, `mmi/alert` 99, `nst/dmin/gap` 15); all geometries had three coordinates and times were ascending.
+- **Repair:** add `eventtype=earthquake` at the API boundary; validate every row; count features; normalize epoch milliseconds to UTC `Z`; select eight fields; sort by `(time_utc,event_id)`; stable sorted-key JSON.
+- **Validation:** unfiltered input failed loudly on the explosion; filtered 100-row input passed; output 25,871 bytes, unique IDs, all UTC; two executions byte-identical at SHA-256 `170e98907baefe2559e88d0298973f3553e69788bd94dd19d84faec6be175459`.
+- **Source/pipeline hashes:** unfiltered `7b3936...c9995`; filtered `852da5...8657`; pipeline `3a0b72...26d0` (full hashes in candidate).
+- **Metrics:** 1 attempt; 12 commands; 3 ETL oracle runs; 100 rows; token/runtime meter `null`.
+- **Classification:** **verified bounded ETL/quality repair** on frozen response bytes.
+- **Limitations:** historical catalog revisions can change future URL responses; schema commit fields use disclosed content-digest prefixes because the source is not VCS; one day/first 100 only; late retrieval; no raw rows retained.
+- **External approval needed:** publishing output, calling any write API, contacting USGS, or promoting the experience.
+- **Next recommendation:** snapshot the response under an explicitly permitted data-fixture policy or add ETag/Last-Modified capture, then repeat on pagination boundaries.
