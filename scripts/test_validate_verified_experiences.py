@@ -19,6 +19,15 @@ class VerifiedExperienceSemanticTest(unittest.TestCase):
     def test_verified_library_passes(self):
         result = VALIDATOR.validate_library(self.library)
         self.assertEqual(result, {"status": "passed", "experienceCount": 2, "uniqueIds": 2})
+        VALIDATOR.validate_evidence_files(self.library)
+
+    def test_missing_evidence_file_fails(self):
+        missing = "experiences/missing-result.json"
+        self.library[1]["provenance"]["experimentEvidence"]["artifact"] = missing
+        self.library[1]["verification"]["evidence"]["experimentArtifact"] = missing
+        VALIDATOR.validate_library(self.library)
+        with self.assertRaisesRegex(VALIDATOR.ValidationError, "does not resolve to a file"):
+            VALIDATOR.validate_evidence_files(self.library)
 
     def test_duplicate_ids_fail(self):
         self.library.append(dict(self.library[0]))
