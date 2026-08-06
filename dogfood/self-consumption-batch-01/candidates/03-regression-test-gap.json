@@ -1,0 +1,120 @@
+[
+  {
+    "id": "trace-2026-08-06-channel-keepalive-delegation-transfer",
+    "task": "Repair a public Channel keepalive control after stream ownership moved behind a protocol",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Freeze the dependency-free transfer fixture and its Tornado-derived public contract",
+        "skills": ["contract-freezing", "license-aware-fixture-use"],
+        "tools": ["git", "SHA-256"],
+        "outcome": "success",
+        "lessons": ["A transfer fixture must disclose both its own license and the provenance of the public failure shape it preserves."]
+      },
+      {
+        "description": "Retrieve TR-04 and apply its public-entry-point ownership-tracing rule",
+        "skills": ["experience-retrieval", "contract-testing"],
+        "tools": ["agent-experience-graph recommender"],
+        "outcome": "success",
+        "lessons": ["The 0.101 TR-04 match was specific enough to select the correct three-layer repair path before editing."]
+      },
+      {
+        "description": "Demonstrate the false-green gap and repair the correct delegation boundary",
+        "skills": ["delegation-repair", "green-suite-gap-analysis"],
+        "tools": ["python", "unittest", "apply_patch"],
+        "outcome": "success",
+        "lessons": ["A legacy protocol-send test can remain green while an untested public control still dereferences stale ownership."]
+      },
+      {
+        "description": "Verify focused regression, legacy behavior, and Python compilation",
+        "skills": ["narrow-to-related-verification"],
+        "tools": ["unittest", "compileall"],
+        "outcome": "success",
+        "lessons": ["Assert the terminal stream call and retain a related legacy test so both the new contract and existing protocol behavior are visible."]
+      }
+    ],
+    "skills": ["contract-testing", "license-aware-fixture-use", "experience-retrieval", "delegation-repair", "green-suite-gap-analysis", "narrow-to-related-verification"],
+    "tools": ["agent-experience-graph recommender", "python", "unittest", "compileall", "apply_patch", "SHA-256"],
+    "constraints": [
+      "Use the public MIT-0 transfer fixture and its disclosed Apache-2.0 Tornado provenance only.",
+      "Do not edit or weaken the regression test.",
+      "Keep the production repair to channel.py and preserve the protocol ownership boundary.",
+      "Do not present controlled transfer evidence as a fresh upstream contribution."
+    ],
+    "lessons": [
+      "Start at the named public control and trace each ownership hop; do not patch a plausible sibling surface merely because existing tests stay green.",
+      "The retrieved TR-04 experience transferred directly across domains from TCP_NODELAY to keepalive because the abstraction topology matched.",
+      "A focused terminal-call assertion exposes delegation gaps that broad legacy tests can miss.",
+      "Controlled fixtures support mechanism-level transfer claims, not broad real-world effectiveness or maintainer acceptance."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T06:57:00Z",
+      "publicSource": {
+        "repository": "https://github.com/tornadoweb/tornado",
+        "buggyCommitSha": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+        "fixedCommitSha": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+        "license": "Apache-2.0",
+        "benchmark": "AEG dependency-free transfer fixture derived from the abstraction shape of BugsInPy Tornado bug 1"
+      },
+      "experimentEvidence": {
+        "artifact": "dogfood/self-consumption-batch-01/execution-results.md",
+        "sourceReportCreatedAt": "2026-08-06T06:57:00Z",
+        "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8",
+        "runnerSourceCommitStatus": "available: source fixture and verified TR-04 record are frozen at this AEG commit"
+      },
+      "promotionEvidence": {
+        "workflowName": "No promotion workflow run",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": null,
+        "status": "expected-on-pull-request",
+        "runResolver": "Local candidate is intentionally unpromoted and requires review."
+      },
+      "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "legacyBeforeRepair": "test_send_reaches_stream passed; 1 test, exit 0",
+        "regressionBeforeRepair": "test_public_control_delegates_through_protocol failed with AssertionError at Channel.socket; 1 test, exit 1",
+        "postRepair": "focused regression and legacy test both passed; 2 tests, exit 0",
+        "compile": "channel.py and both tests compiled with a /tmp pycache prefix; exit 0",
+        "boundaryHops": "Channel.set_keepalive -> ChannelProtocol.set_keepalive -> TcpChannelProtocol.stream.set_keepalive",
+        "changedFiles": ["channel.py"],
+        "candidatePatchSha256": "9f7d1e3dced1de789f7e83df08d8e53464978b1555152770f88532212a556fc1",
+        "taskManifestSha256": "40f3a92f0fd201d1a0ce3783386ae73d4705b5051addfcacf3d4a75b7f28b863",
+        "priorAEGExperienceUsed": "yes: trace-2026-08-03-tr-04-tornado-nodelay at score 0.101",
+        "retrievalChangedRepairPath": "yes: selected the public-control-to-protocol-to-stream ownership chain before editing and avoided a direct stream shortcut"
+      }
+    },
+    "metrics": {
+      "attempts": 1,
+      "completedCommands": 8,
+      "actualTestExecutions": 4,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "One controlled transfer attempt succeeded. Retrieval matched the exact abstraction topology and informed the repair path; no unassisted control arm was run, so causal efficiency improvement is not measured."
+    },
+    "limitations": [
+      "The selected target is a dependency-free AEG transfer fixture, not a fresh checkout of an external project.",
+      "The fixture was explicitly designed from TR-04's abstraction shape, so a high retrieval match is expected and does not establish broad generalization.",
+      "No baseline arm was run; the claimed retrieval effect is a documented decision-path change, not a controlled causal performance estimate.",
+      "The added legacy test exists only in the isolated /tmp execution harness and is not proposed as a repository change.",
+      "No upstream acceptance or external contribution is involved."
+    ],
+    "reuse": {
+      "retrievalTags": ["public wrapper delegation", "protocol owns stream", "green suite false positive", "missing contract test", "terminal delegate assertion", "cross-domain experience transfer"],
+      "recommendedFor": [
+        "testing a public control after resource ownership moves behind a protocol object",
+        "designing a regression that distinguishes legacy green coverage from the missing public contract",
+        "evaluating topology-level transfer from a verified delegation repair"
+      ]
+    }
+  }
+]

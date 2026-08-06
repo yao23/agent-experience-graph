@@ -50,3 +50,24 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Limitations:** known repair; closed issue; no blind diagnosis; local YAML/reference checks do not exercise action download or hosted runners; no new maintainer acceptance.
 - **External approval needed:** any upstream contact, push/PR, workflow trigger, or promotion into `experiences/verified.json`.
 - **Next recommendation:** prefer an open, still-reproducible runtime/API edge with a local compiler or unit-test oracle; reject default branches that already contain the migration before setup.
+
+## Category 03 — Regression-test gap
+
+- **Start/end:** 2026-08-06T06:55:16Z / 2026-08-06T06:58:03Z.
+- **Selected target:** AEG's MIT-0 `protocol-resource-delegation` dependency-free transfer fixture, copied to `/tmp`; related public source is Apache-2.0 Tornado BugsInPy bug 1.
+- **Why selected:** it preserves the verified TR-04 topology—public wrapper → protocol → active stream—while changing domains from TCP_NODELAY to channel keepalive, giving a deterministic test of experience transfer. This is controlled fixture value, not a fresh upstream contribution.
+- **Shortlist:** three scored; historical Tornado replay rejected as duplicate, current OpenClaw issue rejected as risky/unbounded. See `evidence/03-candidate-shortlist.md`.
+- **Frozen manifest:** `manifests/03-regression-test-gap.json`; SHA-256 `40f3a92f0fd201d1a0ce3783386ae73d4705b5051addfcacf3d4a75b7f28b863`.
+- **AEG query:** repair a green-suite false positive where public `Channel.set_keepalive` reaches a stale direct socket after ownership moved behind a protocol; assert delegation to the active stream.
+- **Retrieval:** TR-04 selected at 0.101 (>0.05) through task similarity 0.0556, `recommendedFor` similarity 0.0309, and `green test false positive` tag 0.0145. Repair Lab scored 0.0193 diagnostically. Four TR-04 lessons and four skills were returned; no separate hidden capsule was used.
+- **Retrieval effect:** yes, qualitatively. Before editing, the retrieved ownership rule selected `Channel.set_keepalive → ChannelProtocol.set_keepalive → stream.set_keepalive` and ruled out restoring a stale direct socket. No unassisted control arm ran, so no causal time/token gain is claimed.
+- **False-green proof:** a legacy protocol-send test passed; the focused public-control test then failed with `AssertionError` at the obsolete `Channel.socket` access.
+- **Repair:** one production file; route the public method through an abstract protocol method implemented by `TcpChannelProtocol`; patch SHA-256 `9f7d1e3dced1de789f7e83df08d8e53464978b1555152770f88532212a556fc1`.
+- **Validation:** regression failed before/passed after; legacy test remained green; 2 post-repair tests passed; all three Python files compiled with pycache redirected to `/tmp`; candidate semantic validation passed.
+- **Metrics:** 1 attempt; 8 completed commands; 4 test executions; three ownership hops; elapsed/token usage `null`.
+- **Privacy/license:** original MIT-0 fixture plus disclosed Apache-2.0 public provenance; no credentials, private data, proprietary snippets, or external writes.
+- **Classification:** **verified controlled transfer**. Strong mechanism-level relevance, but expected high similarity because the fixture was designed from TR-04.
+- **Candidate experience:** `candidates/03-regression-test-gap.json`, valid but unpromoted.
+- **Limitations:** synthetic transfer target; no baseline arm; legacy test added only in `/tmp`; no fresh upstream or maintainer acceptance evidence.
+- **External approval needed:** any repository patch beyond these batch artifacts, upstream contact, or experience promotion.
+- **Next recommendation:** repeat on an independently discovered public wrapper/proxy issue frozen before its fix is inspected, retaining the same terminal delegate-call oracle.
