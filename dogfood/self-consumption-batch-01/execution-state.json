@@ -1,12 +1,12 @@
 {
   "batchId": "aeg-self-consumption-batch-01",
   "startedAt": "2026-08-06T06:48:31Z",
-  "updatedAt": "2026-08-06T06:48:31Z",
+  "updatedAt": "2026-08-06T06:50:39Z",
   "status": "running",
-  "currentCategory": "01",
+  "currentCategory": "02",
   "projects": [
-    {"id":"01","file":"01-open-source-ci-rescue.md","status":"running","startedAt":"2026-08-06T06:48:31Z","completedAt":null,"selectedTarget":"mistralai/client-python issue #490 historical v2.3.2 replay","result":null,"artifactPaths":[],"blockers":[]},
-    {"id":"02","file":"02-api-dependency-migration.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"01","file":"01-open-source-ci-rescue.md","status":"completed","startedAt":"2026-08-06T06:48:31Z","completedAt":"2026-08-06T06:50:39Z","selectedTarget":"mistralai/client-python issue #490 historical v2.3.2 replay","result":"verified local historical replay; AEG correctly abstained; no fresh Pilot 02","artifactPaths":["manifests/01-open-source-ci-rescue.json","candidates/01-open-source-ci-rescue.json","evidence/01-freshness-shortlist.md"],"blockers":[]},
+    {"id":"02","file":"02-api-dependency-migration.md","status":"running","startedAt":"2026-08-06T06:50:39Z","completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
     {"id":"03","file":"03-regression-test-gap.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
     {"id":"04","file":"04-documentation-example-doctor.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
     {"id":"05","file":"05-agent-skill-mcp-compatibility.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},

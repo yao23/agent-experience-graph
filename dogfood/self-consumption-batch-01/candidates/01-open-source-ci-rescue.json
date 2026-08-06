@@ -1,0 +1,167 @@
+[
+  {
+    "id": "trace-2026-08-05-pilot-01-mistral-python314-event-loop",
+    "task": "Repair two Mistral Python client OpenTelemetry tests whose implicit event-loop lifecycle fails on Python 3.14",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Discover and freeze a public CI or test-infrastructure failure without disturbing existing AEG work",
+        "skills": ["license-aware-candidate-triage", "provenance-freezing"],
+        "tools": ["GitHub public API", "git", "SHA-256"],
+        "outcome": "partial",
+        "lessons": [
+          "An open issue can be stale even when it reports exact failing tests; verify that the frozen commit still contains the failing state before dependency setup.",
+          "When the default branch is already fixed, a reported affected release can provide objective historical replay evidence, but it must be classified as non-blind if the fix was already observed."
+        ]
+      },
+      {
+        "description": "Query the verified AEG library before solving and preserve below-threshold evidence",
+        "skills": ["experience-retrieval-audit"],
+        "tools": ["agent-experience-graph recommender", "python"],
+        "outcome": "success",
+        "lessons": [
+          "The best verified record scored 0.0373 against a 0.05 threshold and concerned repair-lab telemetry, so abstention was more useful than injecting generic repair context.",
+          "Run a zero-threshold diagnostic only to audit abstention; do not reinterpret below-threshold records as recommendations."
+        ]
+      },
+      {
+        "description": "Reproduce the two event-loop failures on the issue-reported v2.3.2 release under Python 3.14",
+        "skills": ["python-runtime-compatibility", "focused-regression-reproduction"],
+        "tools": ["uv", "CPython 3.14.4", "pytest"],
+        "outcome": "success",
+        "lessons": [
+          "Use the exact named node IDs and runtime version so a removed ambient runtime behavior is distinguished from unrelated suite failures."
+        ]
+      },
+      {
+        "description": "Replace obsolete implicit event-loop acquisition with an explicit lifecycle at two test call sites",
+        "skills": ["minimal-repair", "asyncio-lifecycle-compatibility"],
+        "tools": ["apply_patch", "git"],
+        "outcome": "success",
+        "lessons": [
+          "For synchronous tests that execute one coroutine, asyncio.run provides an explicit create-run-close lifecycle and remains compatible with older supported Python versions.",
+          "Keep the repair in test infrastructure when product behavior is already correct; do not add a runtime compatibility shim to production code."
+        ]
+      },
+      {
+        "description": "Verify focused tests, the containing module, full suite, and one-file lint and format checks",
+        "skills": ["narrow-to-broad-verification"],
+        "tools": ["pytest", "ruff", "uv"],
+        "outcome": "success",
+        "lessons": [
+          "Install declared optional extras when broad collection fails on an optional integration, then rerun rather than misclassifying the collection error as a patch regression.",
+          "Preserve skipped external-integration tests and future-runtime deprecation warnings as limitations even when the relevant suite is green."
+        ]
+      }
+    ],
+    "skills": [
+      "license-aware-candidate-triage",
+      "provenance-freezing",
+      "experience-retrieval-audit",
+      "python-runtime-compatibility",
+      "minimal-repair",
+      "narrow-to-broad-verification"
+    ],
+    "tools": ["GitHub public API", "git", "python", "uv", "pytest", "ruff", "apply_patch"],
+    "constraints": [
+      "Use only public Apache-2.0 source and public issue metadata.",
+      "Do not access credentials, paid services, private data, or proprietary repositories.",
+      "Do not push, comment, open a pull request, or trigger upstream workflows.",
+      "Keep external-project changes separate from existing AEG branches and working trees.",
+      "Do not claim independent diagnosis or causal AEG benefit because the historical repair was non-blind."
+    ],
+    "lessons": [
+      "Verify issue freshness at the exact frozen commit before installing dependencies; stale reports otherwise consume the pilot budget without a reproducible pre-fix state.",
+      "For Python runtime removals, replay on the reported affected release and exact new runtime gives a strong before/after oracle.",
+      "AEG correctly abstained because its verified library had no asyncio or Python runtime-upgrade experience; generic verification overlap remained below threshold.",
+      "A successful historical replay is repair evidence, not evidence of upstream need, maintainer acceptance, independent patch discovery, or causal retrieval benefit."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T06:15:00Z",
+      "publicSource": {
+        "repository": "https://github.com/mistralai/client-python",
+        "buggyCommitSha": "fe8a50340395fc2e427975e5bb01a79505973f05",
+        "fixedCommitSha": "e43224d23184802c74fe6095970a060a44042411",
+        "license": "Apache-2.0",
+        "benchmark": "GitHub issue mistralai/client-python#490; non-blind historical reconstruction of reported v2.3.2 failure"
+      },
+      "experimentEvidence": {
+        "artifact": "aeg-ci-rescue-pilot-01/review-package.md",
+        "sourceReportCreatedAt": "2026-08-06T06:15:00Z",
+        "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8",
+        "runnerSourceCommitStatus": "available: isolated AEG default-branch checkout used for retrieval"
+      },
+      "promotionEvidence": {
+        "workflowName": "No promotion workflow run",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": null,
+        "status": "expected-on-pull-request",
+        "runResolver": "Candidate is intentionally unpromoted; review local evidence before any AEG pull request or verified.json change."
+      },
+      "publication": {
+        "pullRequest": "https://github.com/mistralai/client-python/issues/490"
+      }
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "aeg-ci-rescue-pilot-01/review-package.md",
+        "experienceSchema": "aeg-ci-rescue-pilot-01/aeg-query-source/experiences/verified-experience.schema.json",
+        "semanticValidator": "aeg-ci-rescue-pilot-01/aeg-query-source/scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "preFixFocused": "2 failed on CPython 3.14.4 with the reported RuntimeError; exit 1",
+        "postFixFocused": "2 passed; exit 0",
+        "relatedModule": "18 passed; exit 0",
+        "fullSuite": "463 passed, 46 skipped integration tests; exit 0 after installing declared gcp extra",
+        "ruffLint": "passed",
+        "ruffFormat": "passed",
+        "changedFiles": ["src/mistralai/extra/tests/test_otel_tracing.py"],
+        "candidatePatchSha256": "a3485a995c3db7cb2fe557a6346e3a7b8fb8fd16286393a72ad7b5e708fa866d",
+        "taskManifestSha256": "a3090c653161531677df0673e634529dcacc29bf720b95148bd9b34afc413200",
+        "priorAEGExperienceUsed": "no; recommender abstained",
+        "retrievalChangedRepairPath": "no",
+        "aegAbstainedCorrectly": "yes",
+        "upstreamAcceptance": "not requested and not pending; repository guide says direct PRs are not accepted",
+        "publicationFieldNote": "The schema-required publication.pullRequest URL points to the public source issue; no PR exists."
+      }
+    },
+    "metrics": {
+      "attempts": 3,
+      "completedCommands": 31,
+      "actualTestExecutions": 533,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "Three bounded candidate attempts produced one objectively verified historical repair. No controlled baseline-versus-assisted model comparison was run, so no causal AEG improvement is claimed."
+    },
+    "limitations": [
+      "Blindness was not preserved: the issue body disclosed the suggested edit, and the default branch's already-fixed call sites were observed before the historical manifest was frozen.",
+      "The repair targets historical v2.3.2; current main already contains equivalent asyncio.run usage, so there is no remaining upstream code change to contribute.",
+      "GitHub Actions logs were not retrieved because local gh authentication was expired; objective local reproduction replaced log-based claims.",
+      "The full suite skips 46 tests that require external Azure or GCP services.",
+      "pytest-asyncio 0.23.8 emits 11523 Python 3.16 deprecation warnings during the full Python 3.14 suite; these are separate from issue #490.",
+      "The schema requires a publication.pullRequest URL even for an unpromoted local candidate; this record uses the source issue URL and discloses that no PR exists.",
+      "Upstream maintainer acceptance is absent and distinct from local verification."
+    ],
+    "reuse": {
+      "retrievalTags": [
+        "Python 3.14",
+        "asyncio get_event_loop RuntimeError",
+        "explicit event loop lifecycle",
+        "pytest runtime compatibility",
+        "stale issue detection",
+        "historical repair replay",
+        "AEG correct abstention"
+      ],
+      "recommendedFor": [
+        "repairing synchronous tests that call get_event_loop().run_until_complete on Python 3.14",
+        "verifying Python runtime-removal regressions with exact versioned node IDs",
+        "detecting stale public issues before CI rescue setup",
+        "recording non-blind historical repair evidence without claiming retrieval benefit"
+      ]
+    }
+  }
+]
+
