@@ -1,0 +1,16 @@
+{
+  "batchId": "aeg-self-consumption-batch-01",
+  "startedAt": "2026-08-06T06:48:31Z",
+  "updatedAt": "2026-08-06T06:48:31Z",
+  "status": "running",
+  "currentCategory": "01",
+  "projects": [
+    {"id":"01","file":"01-open-source-ci-rescue.md","status":"running","startedAt":"2026-08-06T06:48:31Z","completedAt":null,"selectedTarget":"mistralai/client-python issue #490 historical v2.3.2 replay","result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"02","file":"02-api-dependency-migration.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"03","file":"03-regression-test-gap.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"04","file":"04-documentation-example-doctor.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"05","file":"05-agent-skill-mcp-compatibility.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"06","file":"06-public-data-etl-quality.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]},
+    {"id":"07","file":"07-aeg-self-maintenance.md","status":"pending","startedAt":null,"completedAt":null,"selectedTarget":null,"result":null,"artifactPaths":[],"blockers":[]}
+  ]
+}
