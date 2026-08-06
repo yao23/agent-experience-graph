@@ -34,11 +34,13 @@
         "repeatability": "two runs byte-identical; SHA-256 170e98907baefe2559e88d0298973f3553e69788bd94dd19d84faec6be175459",
         "pipelineSha256": "3a0b727b5ec7c1689ea42a11b37c925943b449a4e262877e23bc76675b2726d0",
         "taskManifestSha256": "4cc7a29b412c3283867bdb9afbf1ddee5677de60fd4d928771c5aeea1b28fa76",
-        "priorAEGExperienceUsed": "no; recommender abstained and was queried late"
+        "priorAEGExperienceUsed": "no; recommender abstained and was queried late",
+        "retrievalTimingValidity": "invalid/procedurally contaminated: AEG was queried only after execution completed",
+        "retrievalEffectEvidence": "invalid: no execution-path or efficiency effect may be inferred from a post-execution query; the passed ETL outcome remains independently recorded"
       }
     },
     "metrics": {"attempts": 1, "completedCommands": 12, "actualTestExecutions": 3, "durationMs": null, "nonCachedTokens": null, "interpretation": "One bounded pipeline exposed and rejected a real type-mix defect, then produced byte-identical validated output from the filtered response."},
-    "limitations": ["The AEG query ran after execution and had no possible effect.", "USGS can revise historical events, so URL-level future reproducibility is not guaranteed; digests freeze this run's bytes.", "The experience schema requires commit-shaped fields; this non-VCS source uses disclosed 40-character prefixes of response SHA-256 digests.", "Place strings and coordinates are public event metadata but were not retained in the repository.", "The 30-minute wall-clock target was exceeded although record, byte, command, and file bounds were respected.", "Only one UTC day and the first 100 ascending events were evaluated."],
+    "limitations": ["The AEG query ran after execution. Retrieval-effect evidence is invalid/procedurally contaminated and the task was not rerun to manufacture favorable evidence.", "USGS can revise historical events, so URL-level future reproducibility is not guaranteed; digests freeze this run's bytes.", "The experience schema requires commit-shaped fields; this non-VCS source uses disclosed 40-character prefixes of response SHA-256 digests.", "Place strings and coordinates are public event metadata but were not retained in the repository.", "The 30-minute wall-clock target was exceeded although record, byte, command, and file bounds were respected.", "Only one UTC day and the first 100 ascending events were evaluated."],
     "reuse": {"retrievalTags": ["USGS GeoJSON ETL", "mixed event types", "metadata count absent", "epoch milliseconds to UTC", "stable JSON serialization", "bounded public data"], "recommendedFor": ["ingesting a small fixed-window FDSN GeoJSON response", "rejecting non-earthquake events in an earthquake-specific downstream table", "producing deterministic normalized JSON with content-digest evidence and no raw-row retention"]}
   }
 ]

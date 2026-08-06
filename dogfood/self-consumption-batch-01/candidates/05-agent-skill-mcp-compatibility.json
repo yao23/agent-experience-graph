@@ -35,11 +35,13 @@
         "invalidCall": "read_text_file(/etc/hosts) returned isError true and named the two normalized allowed-root paths",
         "termination": "bounded subprocess stopped with SIGINT; exit 1 from signal, not a protocol error",
         "taskManifestSha256": "198e053c0c5b53ffe2376c360c7648c3c872187c571d73ff0e88cc398b4027cb",
-        "priorAEGExperienceUsed": "no; recommender abstained and was queried late"
+        "priorAEGExperienceUsed": "no; recommender abstained and was queried late",
+        "retrievalTimingValidity": "invalid/procedurally contaminated: AEG was queried only after execution completed",
+        "retrievalEffectEvidence": "invalid: no execution-path or efficiency effect may be inferred from a post-execution query; the partial compatibility outcome remains independently recorded"
       }
     },
     "metrics": {"attempts": 2, "completedCommands": 17, "actualTestExecutions": 2, "durationMs": null, "nonCachedTokens": null, "interpretation": "The stdio/read-only surface and confinement passed. Distribution licensing and graceful zero-exit shutdown were not fully verified, so the card is partial."},
-    "limitations": ["The AEG query occurred after the live probe, a procedure deviation; retrieval therefore had no possible effect.", "The package exposed destructive tools that were discovered but intentionally not invoked.", "The installed npm package omitted the LICENSE file named by package.json; repository licensing is undergoing a transition.", "The server was terminated with SIGINT and exited 1; a zero-exit protocol shutdown was not observed.", "npx emitted a deprecation/security-support warning for transitive glob@10.5.0; no vulnerability analysis was performed.", "No Windows, Roots-capable client, dynamic-root, media-file, or write-tool behavior was tested."],
+    "limitations": ["The AEG query occurred after the live probe. Retrieval-effect evidence is invalid/procedurally contaminated and the task was not rerun to manufacture favorable evidence.", "The package exposed destructive tools that were discovered but intentionally not invoked.", "The installed npm package omitted the LICENSE file named by package.json; repository licensing is undergoing a transition.", "The server was terminated with SIGINT and exited 1; a zero-exit protocol shutdown was not observed.", "npx emitted a deprecation/security-support warning for transitive glob@10.5.0; no vulnerability analysis was performed.", "No Windows, Roots-capable client, dynamic-root, media-file, or write-tool behavior was tested."],
     "reuse": {"retrievalTags": ["MCP stdio handshake", "tools/list schema", "filesystem allowed root", "readOnlyHint", "out-of-root denial", "missing packaged license"], "recommendedFor": ["creating a scoped MCP compatibility card with one disposable filesystem root", "verifying safe discovery and read-only invocation without exercising destructive tools", "auditing package manifest and license-file consistency before recommending an MCP server"]}
   }
 ]
