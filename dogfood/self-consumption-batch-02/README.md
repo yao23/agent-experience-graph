@@ -86,3 +86,7 @@ Stop the task immediately if blindness cannot be preserved; the defect is no lon
 ## Recording rules
 
 `selection-ledger.md` and `execution-results.md` are append-only. Raw repositories, patches, full logs, raw conversations, personal paths, and credentials remain outside this repository. Store sanitized manifests, aggregate evidence, candidates, state, and the final decision only. Record product defects separately rather than adapting the experiment around them.
+
+## Final status
+
+Selection exhausted the 24-candidate cap with one qualified task and 23 rejections. The one task was locally repaired and verified after a valid pre-diagnosis AEG query correctly abstained. No prior experience was reused, no external write occurred, and zero candidates are promotion-ready. See `batch-02-decision.md` and `execution-results.md` for the bounded conclusions.

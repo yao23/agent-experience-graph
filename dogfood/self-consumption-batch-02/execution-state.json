@@ -3,8 +3,8 @@
   "preregisteredAt": "2026-08-07T16:08:00Z",
   "preregistrationCommit": "1e72f8f9840bccfb9ad5a73c4dd608a966258a31",
   "preregistrationCommitStatus": "available locally: frozen protocol committed before candidate selection",
-  "status": "executing",
-  "phase": "category 01 diagnosis and repair",
+  "status": "complete",
+  "phase": "final evidence recorded; external actions awaiting approval",
   "selectedTaskLimit": 3,
   "screeningCandidateLimit": 24,
   "screened": 24,
@@ -18,7 +18,12 @@
       "preFixCommit": "00e592cea702e0b2caa0dee42489fdb1c22cd845",
       "oracleSha256": "7c33b75bba6eade9e6981cda8d0232717072481a3078a82c3887d6266138b815",
       "retrieval": "correct abstention at 0.05; best diagnostic-only score 0.0179",
-      "status": "selected; frozen oracle fails; valid pre-diagnosis retrieval complete"
+      "retrievalEffect": "none",
+      "outcome": "success",
+      "promotionClass": "locally verified awaiting external evidence",
+      "localRepairCommit": "506c3d88f9e6553c8b3e1bb9231b6d55dd5e85ef",
+      "patchSha256": "a52c73c2a4591b635f7d67577678224b971a1661e4bd6c98a32e37cee815ec84",
+      "status": "locally verified; no external write or acceptance"
     }
   ]
 }
