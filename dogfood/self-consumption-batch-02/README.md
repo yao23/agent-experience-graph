@@ -113,6 +113,12 @@ Every surface is fail-closed: before acceptance, record the exact query, API or 
 The deterministic implementation is `selection_gate.py`. The regression `fixtures/fork-only-linked-repair.json` plus `test_selection_gate.py` proves that a repair living only in a fork rejects the task even when `upstreamActivePullRequests` is empty. Reproduce the corrected evidence validation with:
 
 ```text
+npx --yes ajv-cli@5.0.0 validate --all-errors -s experiences/verified-experience.schema.json -d dogfood/self-consumption-batch-02/candidates/category-01-click-progressbar.json
+python3 scripts/validate_verified_experiences.py --library dogfood/self-consumption-batch-02/candidates/category-01-click-progressbar.json
 python3 dogfood/self-consumption-batch-02/validate_evidence.py --base-ref origin/main
 python3 dogfood/self-consumption-batch-02/test_selection_gate.py
+python3 -m unittest scripts/test_recommend_traces.py scripts/test_validate_verified_experiences.py
+git diff --check origin/main HEAD
 ```
+
+`.github/workflows/batch-02-evidence.yml` runs these checks on GitHub without model or agent execution whenever the corrected evidence package or workflow changes.
