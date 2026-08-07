@@ -1,0 +1,109 @@
+{
+  "fixtureId": "fork-only-linked-repair-rejects-with-no-active-upstream-pr",
+  "acceptanceCandidateAt": "2026-08-07T16:15:42Z",
+  "upstreamActivePullRequests": [],
+  "searches": [
+    {
+      "kind": "issue_timeline",
+      "queriedAt": "2026-08-07T16:10:00Z",
+      "query": "REST and GraphQL timeline items for upstream issue 3571",
+      "urls": ["https://api.github.com/repos/pallets/click/issues/3571/timeline"],
+      "results": []
+    },
+    {
+      "kind": "issue_development_links",
+      "queriedAt": "2026-08-07T16:10:01Z",
+      "query": "development links and connected pull requests for upstream issue 3571",
+      "urls": ["https://github.com/pallets/click/issues/3571"],
+      "results": []
+    },
+    {
+      "kind": "cross_referenced_prs",
+      "queriedAt": "2026-08-07T16:10:02Z",
+      "query": "cross-referenced pull requests in the issue timeline",
+      "urls": ["https://api.github.com/repos/pallets/click/issues/3571/timeline"],
+      "results": []
+    },
+    {
+      "kind": "upstream_prs_all_states",
+      "queriedAt": "2026-08-07T16:10:03Z",
+      "query": "3571 repo:pallets/click is:pr",
+      "urls": ["https://github.com/search?q=3571+repo%3Apallets%2Fclick+is%3Apr&type=pullrequests"],
+      "results": []
+    },
+    {
+      "kind": "fork_prs",
+      "queriedAt": "2026-08-07T16:10:04Z",
+      "query": "update_min_steps show_pos is:pr",
+      "urls": ["https://github.com/search?q=update_min_steps+show_pos+is%3Apr&type=pullrequests"],
+      "results": [
+        {
+          "url": "https://github.com/sijie-Z/click/pull/1",
+          "createdAt": "2026-06-11T13:00:45Z",
+          "state": "OPEN",
+          "location": "fork",
+          "public": true,
+          "discloses": {
+            "rootCause": true,
+            "repair": true,
+            "tests": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "linked_commits",
+      "queriedAt": "2026-08-07T16:10:05Z",
+      "query": "linked commits and issue-number commit search",
+      "urls": ["https://github.com/pallets/click/commits/main"],
+      "results": []
+    },
+    {
+      "kind": "exact_issue_reference_global",
+      "queriedAt": "2026-08-07T16:10:06Z",
+      "query": "pallets/click#3571 is:pr",
+      "urls": ["https://github.com/search?q=pallets%2Fclick%233571+is%3Apr&type=pullrequests"],
+      "results": []
+    },
+    {
+      "kind": "defect_wording_repository",
+      "queriedAt": "2026-08-07T16:10:07Z",
+      "query": "update_min_steps show_pos repo:pallets/click",
+      "urls": ["https://github.com/search?q=update_min_steps+show_pos+repo%3Apallets%2Fclick&type=pullrequests"],
+      "results": []
+    },
+    {
+      "kind": "defect_wording_global",
+      "queriedAt": "2026-08-07T16:10:08Z",
+      "query": "update_min_steps show_pos 14/20",
+      "urls": ["https://github.com/search?q=update_min_steps+show_pos+14%2F20&type=pullrequests"],
+      "results": []
+    },
+    {
+      "kind": "public_patch_search",
+      "queriedAt": "2026-08-07T16:10:09Z",
+      "query": "_completed_intervals make_step finish language:Python",
+      "urls": ["https://github.com/search?q=_completed_intervals+make_step+finish+language%3APython&type=code"],
+      "results": []
+    },
+    {
+      "kind": "default_branch_recent_changes",
+      "queriedAt": "2026-08-07T16:10:10Z",
+      "query": "recent main commits touching progress-bar implementation and tests",
+      "urls": ["https://github.com/pallets/click/commits/main"],
+      "results": []
+    },
+    {
+      "kind": "contributor_branches",
+      "queriedAt": "2026-08-07T16:10:11Z",
+      "query": "issue-referenced contributor branches and fork heads",
+      "urls": ["https://github.com/pallets/click/issues/3571"],
+      "results": []
+    }
+  ],
+  "expected": {
+    "eligible": false,
+    "reason": "public_prior_repair",
+    "repairUrl": "https://github.com/sijie-Z/click/pull/1"
+  }
+}

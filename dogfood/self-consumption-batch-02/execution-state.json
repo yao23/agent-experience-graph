@@ -3,13 +3,23 @@
   "preregisteredAt": "2026-08-07T16:08:00Z",
   "preregistrationCommit": "1e72f8f9840bccfb9ad5a73c4dd608a966258a31",
   "preregistrationCommitStatus": "available locally: frozen protocol committed before candidate selection",
-  "status": "complete",
-  "phase": "final evidence recorded; external actions awaiting approval",
+  "status": "corrected-complete",
+  "phase": "post-batch freshness correction recorded; no external action available",
   "selectedTaskLimit": 3,
   "screeningCandidateLimit": 24,
   "screened": 24,
-  "accepted": 1,
-  "rejected": 23,
+  "accepted": 0,
+  "rejected": 24,
+  "initiallyAccepted": 1,
+  "initiallyRejected": 23,
+  "qualifiedUnderPreregisteredGates": 0,
+  "incorrectlyAcceptedDuringInitialScreening": 1,
+  "freshEligibleExecutions": 0,
+  "independentLocalReproductions": 1,
+  "correctAegAbstentions": 1,
+  "correctAegAbstentionScope": "valid only as calibration against the frozen verified library; excluded from fresh eligible retrieval-effect evidence",
+  "promotionReady": 0,
+  "historicalNonBlind": 0,
   "projects": [
     {
       "category": "01",
@@ -20,10 +30,21 @@
       "retrieval": "correct abstention at 0.05; best diagnostic-only score 0.0179",
       "retrievalEffect": "none",
       "outcome": "success",
-      "promotionClass": "locally verified awaiting external evidence",
+      "promotionClass": "independent local reproduction, invalid for fresh-task qualification",
+      "agentLevelBlindness": "preserved on the available execution record",
+      "freshTaskQualification": false,
+      "contributionAvailable": false,
+      "priorPublicRepairEvidence": [
+        "https://github.com/sijie-Z/click/pull/1",
+        "https://github.com/pallets/click/pull/3596",
+        "https://github.com/pallets/click/pull/3632",
+        "https://github.com/yoda77777/click/pull/1",
+        "https://github.com/pallets/click/pull/3679",
+        "https://github.com/uesugitorachiyo/click/pull/1"
+      ],
       "localRepairCommit": "506c3d88f9e6553c8b3e1bb9231b6d55dd5e85ef",
       "patchSha256": "a52c73c2a4591b635f7d67577678224b971a1661e4bd6c98a32e37cee815ec84",
-      "status": "locally verified; no external write or acceptance"
+      "status": "technically reproduced locally; initial selection acceptance superseded; invalid as a fresh task and not actionable externally"
     }
   ]
 }

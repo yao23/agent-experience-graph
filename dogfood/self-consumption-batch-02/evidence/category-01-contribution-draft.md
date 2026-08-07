@@ -25,3 +25,7 @@ Closes #3571.
 Patch SHA-256: `a52c73c2a4591b635f7d67577678224b971a1661e4bd6c98a32e37cee815ec84`.
 
 The local reconstructed commit is `506c3d88f9e6553c8b3e1bb9231b6d55dd5e85ef`; it is not an upstream Click commit and has not been pushed.
+
+## Post-Batch-02 superseding correction
+
+Do not submit this draft. Public fork and upstream PRs containing the same root cause, repair direction, and tests predated Batch 02. This text is retained only as historical evidence of the independently produced local proposal; it is not an actionable external contribution.

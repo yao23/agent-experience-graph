@@ -90,3 +90,29 @@ Stop the task immediately if blindness cannot be preserved; the defect is no lon
 ## Final status
 
 Selection exhausted the 24-candidate cap with one qualified task and 23 rejections. The one task was locally repaired and verified after a valid pre-diagnosis AEG query correctly abstained. No prior experience was reused, no external write occurred, and zero candidates are promotion-ready. See `batch-02-decision.md` and `execution-results.md` for the bounded conclusions.
+
+## Post-batch discovery-protocol correction
+
+This section supersedes the selection guidance for future work; it does not rewrite the frozen preregistration or make the Click execution retroactively non-blind. The original “no active correct PR” check was insufficient because it omitted closed, draft, rejected, converted, and fork-local repairs.
+
+Before accepting any future public task, run and preserve all of these discovery surfaces:
+
+1. issue REST and GraphQL timeline events plus visible development links;
+2. cross-referenced and connected PRs;
+3. upstream PRs in every state, including open, closed, merged, draft, converted, and rejected;
+4. PRs whose base repository is a fork, not only PRs targeting upstream;
+5. linked commits and commit-message searches;
+6. exact bare and fully qualified issue-number searches across GitHub;
+7. repository-scoped and global searches for distinctive defect wording;
+8. public code and patch searches for the proposed oracle, test shape, state names, and repair operations;
+9. recent default-branch commits touching the relevant implementation and tests; and
+10. contributor branches and fork heads referenced by the issue or search results.
+
+Every surface is fail-closed: before acceptance, record the exact query, API or page URLs, UTC query timestamp, result URLs, creation timestamps, states, and whether each result discloses root cause, repair, or tests. A missing, malformed, or post-acceptance search rejects the candidate. Any public pre-acceptance repair disclosure rejects fresh-task qualification even when upstream has no active PR. Discovery of a repair during selection does not prove that a later executor saw it; it means the task must not be executed as a fresh blind sample.
+
+The deterministic implementation is `selection_gate.py`. The regression `fixtures/fork-only-linked-repair.json` plus `test_selection_gate.py` proves that a repair living only in a fork rejects the task even when `upstreamActivePullRequests` is empty. Reproduce the corrected evidence validation with:
+
+```text
+python3 dogfood/self-consumption-batch-02/validate_evidence.py --base-ref origin/main
+python3 dogfood/self-consumption-batch-02/test_selection_gate.py
+```

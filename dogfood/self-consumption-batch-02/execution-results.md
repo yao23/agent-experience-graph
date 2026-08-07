@@ -17,3 +17,17 @@ Append-only. No task had been selected, queried, diagnosed, or executed when thi
 - **Outcome:** success. **Promotion class:** locally verified awaiting external evidence.
 - **External value:** contribution-ready local repair and regression for a current public defect. External value is plausible but unconfirmed until maintainer review or acceptance.
 - **Approval boundary:** pushing to a fork, opening or commenting on an upstream PR/issue, or promoting this candidate requires explicit user approval.
+
+## Post-Batch-02 superseding correction — 2026-08-07T20:50:28Z
+
+The original execution outcome remains a technically verified local repair, but its freshness, external-value, and promotion classification are superseded. Public prior repairs existed before selection and materially match the Batch 02 repair. The selection process missed them because it searched only open upstream PRs.
+
+- **Corrected eligibility:** not eligible under the preregistered freshness and contribution gates.
+- **Agent-level blindness:** preserved on the available execution record; none of the prior PRs, commits, tests, or patches were inspected before the local repair completed.
+- **Patch independence:** independently reproduced in process, but not novel. It uses the same accumulator flush/reset and substantially the same TTY regression as public work dating from June 2026.
+- **Contribution availability:** unavailable. The patch duplicates prior public work and is not an actionable new external contribution.
+- **Retrieval scope:** the 0.05 AEG abstention remains correctly described relative to the frozen verified library and query, but the task is excluded from fresh eligible retrieval-effect evidence. It provides no affirmative evidence of retrieval benefit.
+- **Corrected classification:** **independent local reproduction, invalid for fresh-task qualification**. Not promotion-ready.
+- **Corrected totals:** 24 screened; 0 qualified; 1 incorrectly accepted; 0 fresh eligible executions; 1 independent local reproduction; 1 scoped correct AEG abstention; 0 promotion-ready.
+
+The earlier “locally verified awaiting external evidence” and “contribution-ready” statements must not be used. See `evidence/category-01-post-audit.md`.

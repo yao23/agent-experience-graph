@@ -101,5 +101,17 @@
     "repairPath": false,
     "patch": false,
     "reason": "Correct abstention supplies calibration evidence only; no below-threshold item will be reused."
+  },
+  "postBatchCorrection": {
+    "recordedAt": "2026-08-07T20:50:28Z",
+    "originalRetrievalClassificationRetained": "correct abstention",
+    "scope": "The abstention remains correct only relative to the frozen verified library and exact query. It is not evidence from an eligible fresh task.",
+    "freshTaskQualification": false,
+    "retrievalBenefitEvidence": false,
+    "agentLevelBlindness": "preserved on the available execution record; prior public repairs were not inspected until post-batch audit",
+    "publicFreshness": "failed: multiple materially equivalent public repairs predated selection",
+    "contributionAvailability": "failed: the local patch duplicates prior public work and is not an actionable external contribution",
+    "correctedClassification": "independent local reproduction, invalid for fresh-task qualification",
+    "auditArtifact": "dogfood/self-consumption-batch-02/evidence/category-01-post-audit.md"
   }
 }

@@ -31,6 +31,13 @@
         "tools": ["pytest", "ruff", "git"],
         "outcome": "success",
         "lessons": ["Force the TTY path in the project regression because Click intentionally skips positional updates for non-TTY output."]
+      },
+      {
+        "description": "Post-batch audit public repair history and supersede the initial freshness decision",
+        "skills": ["selection-gate-audit", "provenance-correction"],
+        "tools": ["GitHub issue timeline", "GitHub global search", "GitHub pull request metadata"],
+        "outcome": "partial",
+        "lessons": ["An empty active-upstream-PR result cannot establish task freshness; closed upstream and fork-local patches must be searched before acceptance."]
       }
     ],
     "skills": ["freshness-audit", "black-box-contract-testing", "experience-retrieval-audit", "state-machine-repair", "regression-test-design", "narrow-to-broad-verification"],
@@ -39,13 +46,15 @@
       "Preserve blindness until the pre-diagnosis AEG query completes.",
       "Do not weaken update_min_steps batching during ordinary iteration.",
       "Keep the repair and regression within Click's documented contribution path and per-task budget.",
-      "Do not push, open a pull request, comment upstream, or represent local verification as maintainer acceptance."
+      "Do not push, open a pull request, comment upstream, or represent local verification as maintainer acceptance.",
+      "Do not treat an active-upstream-only PR search as evidence that no prior public repair or contribution exists."
     ],
     "lessons": [
       "A completion transition must flush residual state that is intentionally held below an intermediate update threshold.",
       "A black-box TTY buffer can reproduce terminal-state defects deterministically without timing delays.",
       "A correct retrieval abstention prevents unrelated low-similarity experience from steering a fresh repair.",
-      "A passing local upstream suite supports contribution readiness but does not supply external acceptance or promotion evidence."
+      "A passing local upstream suite supports technical correctness but does not establish freshness, novelty, contribution availability, or promotion evidence.",
+      "Agent-level blindness and public-task freshness are separate: an independently produced patch can still be invalid for a fresh-task experiment when prior public repairs existed."
     ],
     "provenance": {
       "repository": "https://github.com/yao23/agent-experience-graph",
@@ -56,7 +65,7 @@
         "buggyCommitSha": "00e592cea702e0b2caa0dee42489fdb1c22cd845",
         "fixedCommitSha": "506c3d88f9e6553c8b3e1bb9231b6d55dd5e85ef",
         "license": "BSD-3-Clause",
-        "benchmark": "Fresh public Click issue 3571; fixed SHA is a local reconstructed commit based directly on the frozen default-branch SHA, not an upstream commit"
+        "benchmark": "Click issue 3571 was initially but incorrectly accepted as fresh; the fixed SHA is an independent local reconstructed commit materially matching public repairs that predated selection"
       },
       "experimentEvidence": {
         "artifact": "dogfood/self-consumption-batch-02/execution-results.md",
@@ -69,7 +78,7 @@
         "workflowFile": ".github/workflows/repair-lab.yml",
         "validatedCommitSha": null,
         "status": "expected-on-pull-request",
-        "runResolver": "Candidate remains local and unpromoted; promotion requires external acceptance, review, and explicit user approval."
+        "runResolver": "Candidate is invalid for fresh-task qualification and must not be promoted; no promotion workflow was or should be requested from this evidence."
       },
       "publication": {
         "pullRequest": "https://github.com/pallets/click/issues/3571"
@@ -93,7 +102,13 @@
         "candidatePatchSha256": "a52c73c2a4591b635f7d67577678224b971a1661e4bd6c98a32e37cee815ec84",
         "taskManifestSha256": "1e05993c26aa4198e954c839ac06fe99666300b45d50a0ea44e7261787d9ef31",
         "priorAEGExperienceUsed": "no; correct abstention at threshold 0.05",
-        "retrievalChangedExecution": "no; the below-threshold diagnostic matches were not reused"
+        "retrievalChangedExecution": "no; the below-threshold diagnostic matches were not reused",
+        "postBatchCorrectedClassification": "independent local reproduction, invalid for fresh-task qualification",
+        "agentLevelBlindness": "preserved on the available execution record; prior public repair material was first inspected during the post-batch audit",
+        "publicFreshness": "failed: materially equivalent fork and closed upstream repairs predated selection",
+        "contributionAvailability": "failed: the local patch duplicates prior public work and is not an actionable external contribution",
+        "patchIndependence": "supported as process independence but not novelty; the production repair and TTY test materially match prior public patches",
+        "postBatchAudit": "dogfood/self-consumption-batch-02/evidence/category-01-post-audit.md"
       }
     },
     "metrics": {
@@ -102,7 +117,7 @@
       "actualTestExecutions": 6,
       "durationMs": 1157000,
       "nonCachedTokens": null,
-      "interpretation": "One fresh blind task was locally verified. Retrieval supplied calibration through a correct abstention, not repair assistance; no baseline or paid arm ran."
+      "interpretation": "One technically successful independent local reproduction was completed, but zero tasks qualified as fresh under the preregistered gates. Retrieval supplied scoped calibration through an abstention, not repair assistance; no baseline or paid arm ran."
     },
     "limitations": [
       "The repair exists only in an isolated local checkout; no external pull request, maintainer review, or upstream acceptance exists.",
@@ -110,14 +125,18 @@
       "The fixed commit SHA identifies a local reconstructed commit and is not part of Click's upstream history.",
       "The first project-format regression attempt omitted the required TTY condition and failed; the corrected test covers the same TTY path as the frozen oracle.",
       "The AEG query correctly abstained and did not change diagnosis, commands, test design, repair path, or patch, so this task provides no positive retrieval-usefulness evidence.",
-      "A single selected task cannot establish generalized effectiveness, causal efficiency, or product-market fit."
+      "A single selected task cannot establish generalized effectiveness, causal efficiency, or product-market fit.",
+      "Post-batch audit found public prior repair evidence predating selection, including sijie-Z/click#1 and closed upstream pallets/click#3596; the screening process failed to discover it.",
+      "The original locally verified awaiting external evidence classification is superseded by independent local reproduction, invalid for fresh-task qualification.",
+      "The patch is not an actionable external contribution and provides no affirmative evidence of AEG retrieval benefit."
     ],
     "reuse": {
-      "retrievalTags": ["batched progress update", "residual state flush", "terminal completion", "TTY regression oracle", "correct retrieval abstention", "fresh public defect"],
+      "retrievalTags": ["batched progress update", "residual state flush", "terminal completion", "TTY regression oracle", "scoped correct retrieval abstention", "independent local reproduction", "invalid fresh-task qualification"],
       "recommendedFor": [
         "repairing a terminal or UI state machine that batches intermediate updates but must display an exact final state",
         "designing deterministic tests for TTY-only progress output without sleep-based timing",
-        "auditing whether a completion transition commits residual work below a batching threshold"
+        "auditing whether a completion transition commits residual work below a batching threshold",
+        "rejecting a supposedly fresh task when fork-local or closed public repairs predate selection"
       ]
     }
   }

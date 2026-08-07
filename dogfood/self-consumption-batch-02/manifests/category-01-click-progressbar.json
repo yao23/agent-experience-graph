@@ -60,5 +60,16 @@
   },
   "retrieval": {
     "status": "not yet queried at manifest freeze"
+  },
+  "postBatchCorrection": {
+    "recordedAt": "2026-08-07T20:50:28Z",
+    "initialAcceptanceSuperseded": true,
+    "eligibleUnderPreregisteredGates": false,
+    "reason": "Public fork and closed upstream repair evidence predated selection but was missed by the open-upstream-only search.",
+    "agentLevelBlindness": "preserved on the available execution record",
+    "patchIndependence": "independently produced without inspecting prior repair material, but materially equivalent and not novel",
+    "contributionAvailability": false,
+    "correctedClassification": "independent local reproduction, invalid for fresh-task qualification",
+    "auditArtifact": "dogfood/self-consumption-batch-02/evidence/category-01-post-audit.md"
   }
 }
