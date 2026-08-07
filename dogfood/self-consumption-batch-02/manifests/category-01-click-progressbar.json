@@ -1,0 +1,64 @@
+{
+  "batchId": "aeg-self-consumption-batch-02",
+  "category": "01",
+  "family": "fresh public contract/regression-test gap",
+  "frozenAt": "2026-08-07T16:15:42Z",
+  "repository": "https://github.com/pallets/click",
+  "defaultBranch": "main",
+  "preFixCommit": "00e592cea702e0b2caa0dee42489fdb1c22cd845",
+  "task": {
+    "issue": "https://github.com/pallets/click/issues/3571",
+    "issueState": "OPEN",
+    "issueUpdatedAt": "2026-08-01T03:15:06Z",
+    "contract": "A completed 20-item progress bar using show_pos=True and update_min_steps=7 must render the final position as 20/20 rather than 14/20.",
+    "activeCorrectPullRequest": null,
+    "activePullRequestSearch": "No open pull request matching 3571 was returned on 2026-08-07."
+  },
+  "license": {
+    "spdx": "BSD-3-Clause",
+    "file": "LICENSE.txt",
+    "verifiedAtCommit": "00e592cea702e0b2caa0dee42489fdb1c22cd845"
+  },
+  "contributionPath": {
+    "file": "docs/contributing.md",
+    "status": "documented"
+  },
+  "blindness": {
+    "status": "preserved before retrieval",
+    "inspectedBeforeRetrieval": [
+      "public issue statement and reproduction",
+      "issue state and open-PR search metadata",
+      "LICENSE.txt",
+      "docs/contributing.md",
+      "pyproject.toml dependency and test configuration",
+      "black-box oracle output"
+    ],
+    "notInspectedBeforeRetrieval": [
+      "repair-oriented implementation source",
+      "issue comments",
+      "pull-request diffs",
+      "repair commits",
+      "repair-oriented tests or discussions"
+    ]
+  },
+  "oracle": {
+    "kind": "deterministic black-box public API",
+    "fileOutsideRepository": "aeg-batch02-click-3571-oracle.py",
+    "sha256": "7c33b75bba6eade9e6981cda8d0232717072481a3078a82c3887d6266138b815",
+    "command": "PYTHONPATH=src python3.11 aeg-batch02-click-3571-oracle.py",
+    "expectedPreFixExit": 1,
+    "observedPreFixExit": 1,
+    "failureSignal": "completed progress bar did not render its final position; captured terminal output ended at 14/20",
+    "environment": "CPython 3.11; isolated shallow checkout; no credentials or hosted services"
+  },
+  "limits": {
+    "executionMinutes": 90,
+    "shellCommandsAfterSelection": 30,
+    "changedSourceAndTestFiles": 4,
+    "isolatedCheckouts": 1,
+    "singleTestCommandMinutes": 20
+  },
+  "retrieval": {
+    "status": "not yet queried at manifest freeze"
+  }
+}

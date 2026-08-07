@@ -3,12 +3,21 @@
   "preregisteredAt": "2026-08-07T16:08:00Z",
   "preregistrationCommit": "1e72f8f9840bccfb9ad5a73c4dd608a966258a31",
   "preregistrationCommitStatus": "available locally: frozen protocol committed before candidate selection",
-  "status": "selecting",
-  "phase": "selection",
+  "status": "retrieving",
+  "phase": "pre-execution retrieval",
   "selectedTaskLimit": 3,
   "screeningCandidateLimit": 24,
-  "screened": 0,
-  "accepted": 0,
-  "rejected": 0,
-  "projects": []
+  "screened": 24,
+  "accepted": 1,
+  "rejected": 23,
+  "projects": [
+    {
+      "category": "01",
+      "repository": "pallets/click",
+      "issue": 3571,
+      "preFixCommit": "00e592cea702e0b2caa0dee42489fdb1c22cd845",
+      "oracleSha256": "7c33b75bba6eade9e6981cda8d0232717072481a3078a82c3887d6266138b815",
+      "status": "selected; frozen oracle fails; awaiting pre-diagnosis AEG query"
+    }
+  ]
 }
