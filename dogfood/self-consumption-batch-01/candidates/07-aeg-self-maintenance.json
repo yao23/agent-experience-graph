@@ -17,8 +17,8 @@
       "repository": "https://github.com/yao23/agent-experience-graph",
       "sourceVersion": "0.1.5 development branch",
       "recordedAt": "2026-08-06T14:19:00Z",
-      "publicSource": {"repository": "https://github.com/yao23/agent-experience-graph", "buggyCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "fixedCommitSha": "e001b094ab3373747ff756e104985741fb1880e4", "license": "MIT-0", "benchmark": "AEG self-maintenance regression: canonical verified evidence path resolution"},
-      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T14:19:00Z", "runnerSourceCommitSha": "e001b094ab3373747ff756e104985741fb1880e4", "runnerSourceCommitStatus": "available: repair committed on isolated batch branch before candidate recording"},
+      "publicSource": {"repository": "https://github.com/yao23/agent-experience-graph", "buggyCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "fixedCommitSha": "ab0362955a755ab0353422b6044e5d9d08b6713a", "license": "MIT-0", "benchmark": "AEG self-maintenance regression: original local repair commit SHA unavailable; fixedCommitSha names the equivalent reconstructed commit merged through PR #13"},
+      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T14:19:00Z", "runnerSourceCommitSha": null, "runnerSourceCommitStatus": "unavailable: the original local repair commit identity cannot be resolved; equivalent reconstructed commit ab0362955a755ab0353422b6044e5d9d08b6713a has stable patch ID b3572af4a74e94805d5da12036c42c7d6327038b"},
       "promotionEvidence": {"workflowName": "No promotion workflow run", "workflowFile": ".github/workflows/repair-lab.yml", "validatedCommitSha": null, "status": "expected-on-pull-request", "runResolver": "Internal candidate remains local and unpromoted."},
       "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph"}
     },
@@ -36,13 +36,16 @@
         "changedFiles": ["scripts/validate_verified_experiences.py", "scripts/test_validate_verified_experiences.py"],
         "patchSize": "36 insertions, 1 deletion",
         "candidatePatchSha256": "1f40ec46d7746c77f6d3851e23866c8c812bc047842b937fc0c4342b0de8fc96",
-        "taskManifestSha256": "e54c11fb08acee076aa877ba81b569a2bf9e02ca9f9900dad81706fd43eb1554",
+        "equivalentReconstructedCommitSha": "ab0362955a755ab0353422b6044e5d9d08b6713a",
+        "stablePatchId": "b3572af4a74e94805d5da12036c42c7d6327038b",
+        "commitIdentityQualification": "The original local repair commit SHA is unavailable and is stored as null. Matching patch hashes verify equivalence with the reconstructed commit but this does not recover the unavailable original commit identity.",
+        "taskManifestSha256": "a895c922a12bc4799db6b38d56cc1eb9faa83ad5622f72206c547bee76ffba99",
         "priorAEGExperienceUsed": "no; recommender abstained at threshold 0.05",
         "nonInterference": "experiences/verified.json, schemas, SKILL.md, package versions, release files, and extension sources unchanged"
       }
     },
     "metrics": {"attempts": 1, "completedCommands": 16, "actualTestExecutions": 62, "durationMs": null, "nonCachedTokens": null, "interpretation": "One internal validator gap was reproduced and repaired. Verification covers canonical evidence, the CI-listed Python tests, schema/result validators, and extension tests; this is internal reliability evidence only."},
-    "limitations": ["The category's 30-minute wall-clock target was exceeded, although command/file bounds held.", "Evidence existence does not prove evidence truth, freshness, or semantic adequacy.", "Filesystem checks run automatically only for the canonical verified library; arbitrary --library candidates retain portable semantic validation.", "Bare root unittest discovery ran zero tests, so verification switched to the explicit CI-listed test commands.", "npm/AJV installation emitted public transitive deprecation warnings; npm audit for the extension reported zero vulnerabilities.", "No hosted workflow, PR review, maintainer acceptance, cross-project transfer, or PMF evidence exists."],
+    "limitations": ["The category's 30-minute wall-clock target was exceeded, although command/file bounds held.", "Evidence existence does not prove evidence truth, freshness, or semantic adequacy.", "Filesystem checks run automatically only for the canonical verified library; arbitrary --library candidates retain portable semantic validation.", "Bare root unittest discovery ran zero tests, so verification switched to the explicit CI-listed test commands.", "npm/AJV installation emitted public transitive deprecation warnings; npm audit for the extension reported zero vulnerabilities.", "The original local repair commit SHA is unavailable; patch-hash equivalence with reconstructed commit ab0362955a755ab0353422b6044e5d9d08b6713a does not recover the missing identity.", "PR #13 and post-merge main CI accepted the equivalent validator patch, but no cross-project transfer or PMF evidence exists."],
     "reuse": {"retrievalTags": ["verified evidence path", "provenance artifact exists", "repository path confinement", "semantic validator false positive", "canonical library maintenance"], "recommendedFor": ["hardening a promoted experience library against missing local evidence files", "testing semantic provenance beyond cross-field string equality", "adding repository-confined validation without breaking portable candidate libraries"]}
   }
 ]

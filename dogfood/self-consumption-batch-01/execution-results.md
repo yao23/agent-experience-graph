@@ -174,3 +174,10 @@ This ledger is append-only. Times are UTC unless stated otherwise. Command and t
 - **Category 05:** the AEG query occurred after the MCP probe. Its retrieval timing and retrieval-effect evidence are **invalid/procedurally contaminated**. The task was not rerun. The independently observed partial outcome—successful handshake, discovery, bounded read, and outside-root denial, with licensing and shutdown limitations—remains unchanged.
 - **Category 06:** the AEG query occurred after the ETL execution. Its retrieval timing and retrieval-effect evidence are **invalid/procedurally contaminated**. The task was not rerun. The independently verified ETL outcome and its source-freshness/non-VCS limitations remain unchanged.
 - The original per-category entries are retained as an append-only record. Any earlier summary wording that counted Categories 05 or 06 as correct pre-execution abstentions is superseded: the batch has four procedurally valid pre-execution abstentions (01, 02, 04, 07), one valid pre-execution reuse (03), and two invalid late retrievals (05, 06).
+
+## Category 07 provenance correction
+
+- Earlier Category 07 entries name an original local validator-repair commit that is not available for public resolution. Those commit-identity claims are superseded: the original local repair commit SHA is **unavailable** and is stored as `null` in the corrected manifest/candidate provenance.
+- Equivalent reconstructed commit `ab0362955a755ab0353422b6044e5d9d08b6713a`, merged through PR #13, has stable patch ID `b3572af4a74e94805d5da12036c42c7d6327038b`, matching the historical patch. The preserved candidate patch SHA-256 is `1f40ec46d7746c77f6d3851e23866c8c812bc047842b937fc0c4342b0de8fc96`.
+- Hash equivalence verifies that the reconstructed commit carries the same patch; it does **not** recover or establish the unavailable original commit identity. Execution and verification outcomes remain unchanged.
+- The corrected Category 07 manifest has SHA-256 `a895c922a12bc4799db6b38d56cc1eb9faa83ad5622f72206c547bee76ffba99`; the earlier manifest digest remains historical evidence for the pre-correction record.

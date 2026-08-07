@@ -12,7 +12,7 @@ Audit date: 2026-08-06. This audit classifies evidence, not JSON shape. Schema a
 | 04 documentation doctor | Executable example improved from 3/5 to 5/5 | Yes—before execution | Abstained at 0.05 | No | Confirms a real public docs defect | historical/non-blind replay | Existing open PR disclosed the fix and blocks a competing contribution |
 | 05 MCP compatibility | Read-only compatibility surface partial | **No—invalid/contaminated** | Late abstention; excluded from retrieval metrics | No | Bounded compatibility and missing-package-license evidence | partial | Retrieval was post hoc; packaged license and graceful shutdown remain unresolved |
 | 06 public-data ETL | Bounded deterministic pipeline passed | **No—invalid/contaminated** | Late abstention; excluded from retrieval metrics | No | Reusable public-data quality oracle | locally verified but awaiting external evidence | Post-hoc retrieval, revisable source response, and non-VCS provenance encoding |
-| 07 AEG maintenance | Validator false-positive reproduced and repaired | Yes—before repair | Abstained at 0.05 | No | Protects users from promoted records naming nonexistent evidence | locally verified but awaiting external evidence | Local-only repair lacks hosted CI, review, and upstream acceptance |
+| 07 AEG maintenance | Validator false-positive reproduced and repaired | Yes—before repair | Abstained at 0.05 | No | Protects users from promoted records naming nonexistent evidence | locally verified but awaiting external evidence | Original local commit identity is unavailable; equivalent patch was merged, but independent reuse evidence remains absent |
 
 ## Candidate-by-candidate audit
 
@@ -82,9 +82,10 @@ Audit date: 2026-08-06. This audit classifies evidence, not JSON shape. Schema a
 - **Objective verification:** the old false pass on a nonexistent evidence file was reproduced; focused tests, the full relevant Python suite, schema/result validators, and extension tests passed after repair.
 - **Retrieval and effect:** AEG was queried before repair and abstained (best 0.0171). No experience was reused and the repair path did not change because of retrieval.
 - **Blindness/currentness:** blindness was preserved for diagnosis—the false positive was reproduced before the fix was implemented. The source was current at frozen base `e7ab21f` for this batch.
-- **External value/acceptance:** users benefit because canonical promoted evidence must resolve to repository files. The repair is local only; hosted CI, code review, merge, and release acceptance do not yet exist.
+- **External value/acceptance:** users benefit because canonical promoted evidence must resolve to repository files. The equivalent reconstructed repair was accepted through PR #13 and passed post-merge main CI; this is product-code acceptance, not independent reuse or promotion evidence for the candidate.
 - **Legal/privacy:** AEG MIT-0 public source; no candidate promotion, credentials, proprietary material, or raw conversation evidence.
-- **Promotion limit:** no external review/upstream acceptance; file existence alone does not establish evidence truth or freshness.
+- **Provenance qualification:** the original local repair commit SHA is unavailable and is stored as `null`. Equivalent reconstructed commit `ab0362955a755ab0353422b6044e5d9d08b6713a` has the same stable patch ID `b3572af4a74e94805d5da12036c42c7d6327038b`; the preserved patch SHA-256 is `1f40ec46d7746c77f6d3851e23866c8c812bc047842b937fc0c4342b0de8fc96`. Hash equivalence verifies patch equivalence but does not recover the unavailable original commit identity.
+- **Promotion limit:** merged product code does not establish independent reuse, cross-project value, or evidence truth/freshness.
 
 ## Aggregate evidence
 
@@ -97,7 +98,7 @@ Audit date: 2026-08-06. This audit classifies evidence, not JSON shape. Schema a
 - **Invalid late retrievals:** 2 (05, 06).
 - **Experiences reused:** 1 existing experience (TR-04). Three new candidates show the strongest future reuse potential after more evidence: 03, 06, and 07.
 - **Commands/tests/time/tokens:** 113 completed commands; 608 reported unit-test or focused-oracle executions; 8h16m43s batch wall time. These are heterogeneous counts, not normalized efficiency measures. Reliable token and cost data were unavailable (`null`).
-- **External patches potentially worth contributing:** Category 07's validator repair is the strongest ready-for-review patch. Category 04 may justify a non-duplicative validation note on existing PR #920, and Category 05 may justify a packaging-license issue, but both require approval. Categories 01 and 02 are already repaired upstream; 03 is synthetic; 06 is a local pipeline rather than an upstream patch.
+- **External patches potentially worth contributing:** Category 07's equivalent validator repair was merged through PR #13. Category 04 may justify a non-duplicative validation note on existing PR #920, and Category 05 may justify a packaging-license issue, but both require approval. Categories 01 and 02 are already repaired upstream; 03 is synthetic; 06 is a local pipeline rather than an upstream patch.
 - **Candidates that should remain candidates:** all seven. None belongs in `experiences/verified.json` on present evidence.
 
 ## Repository-hygiene conclusion

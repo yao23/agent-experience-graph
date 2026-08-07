@@ -7,3 +7,11 @@ Rules: preserve negative evidence; never force retrieval; keep external reposito
 Resume procedure: read `execution-state.json`, verify the current worktree is clean or contains only the named running category's artifacts, then continue the first project whose status is `running` or `pending`. Corrections to `execution-results.md` are appended, never rewritten.
 
 Post-batch review starts with `evidence-audit.md`. Candidate schema validity is necessary but never sufficient for promotion; retrieval timing, blindness, source freshness, external value, acceptance, and legal/privacy evidence are audited separately.
+
+Run the dedicated deterministic evidence check from the repository root:
+
+```bash
+python3 dogfood/self-consumption-batch-01/validate_evidence.py --base-ref origin/main
+```
+
+The command requires Python 3 plus Node/npm for pinned AJV schema validation. It performs no agent or model execution.
