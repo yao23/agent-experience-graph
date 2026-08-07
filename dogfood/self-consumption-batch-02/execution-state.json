@@ -3,8 +3,8 @@
   "preregisteredAt": "2026-08-07T16:08:00Z",
   "preregistrationCommit": "1e72f8f9840bccfb9ad5a73c4dd608a966258a31",
   "preregistrationCommitStatus": "available locally: frozen protocol committed before candidate selection",
-  "status": "retrieving",
-  "phase": "pre-execution retrieval",
+  "status": "executing",
+  "phase": "category 01 diagnosis and repair",
   "selectedTaskLimit": 3,
   "screeningCandidateLimit": 24,
   "screened": 24,
@@ -17,7 +17,8 @@
       "issue": 3571,
       "preFixCommit": "00e592cea702e0b2caa0dee42489fdb1c22cd845",
       "oracleSha256": "7c33b75bba6eade9e6981cda8d0232717072481a3078a82c3887d6266138b815",
-      "status": "selected; frozen oracle fails; awaiting pre-diagnosis AEG query"
+      "retrieval": "correct abstention at 0.05; best diagnostic-only score 0.0179",
+      "status": "selected; frozen oracle fails; valid pre-diagnosis retrieval complete"
     }
   ]
 }
