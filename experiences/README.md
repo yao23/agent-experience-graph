@@ -61,6 +61,11 @@ observed workflow run and its exact validated commit. That commit must contain
 the promoted record; later wording or product changes do not rewrite the
 historical promotion event.
 
+For the canonical `experiences/verified.json` library, every declared evidence
+artifact must be a repository-relative path that stays inside the repository
+and resolves to a regular file. Validation of a portable candidate supplied via
+`--library` checks record semantics without assuming the AEG repository layout.
+
 ## Promotion requirements
 
 Store an experience here only when it:

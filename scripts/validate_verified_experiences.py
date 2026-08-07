@@ -18,6 +18,13 @@ FORBIDDEN_KEYS = {
 }
 PRIVATE_PATH_RE = re.compile(r"(?:/Users/[^/\s]+/|/home/[^/\s]+/|[A-Za-z]:\\\\Users\\\\[^\\\s]+\\\\)")
 TOKEN_RE = re.compile(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,})")
+EVIDENCE_FILE_FIELDS = (
+    "experimentArtifact",
+    "experienceSchema",
+    "semanticValidator",
+    "pairedResultsValidator",
+    "resultValidator",
+)
 
 
 class ValidationError(ValueError):
@@ -45,6 +52,22 @@ def inspect_public_value(value, path="$"):
     elif isinstance(value, str):
         require(not PRIVATE_PATH_RE.search(value), f"{path} contains a private workspace path")
         require(not TOKEN_RE.search(value), f"{path} contains a credential-like token")
+
+
+def validate_evidence_files(library, root=ROOT):
+    """Require promoted-library evidence references to resolve inside the repository."""
+    root = Path(root).resolve()
+    for index, experience in enumerate(library):
+        evidence = experience.get("verification", {}).get("evidence", {})
+        for field in EVIDENCE_FILE_FIELDS:
+            value = evidence.get(field)
+            if value is None:
+                continue
+            path = f"experiences[{index}].verification.evidence.{field}"
+            require(isinstance(value, str) and value, f"{path} must be a non-empty path")
+            relative = Path(value)
+            require(not relative.is_absolute() and ".." not in relative.parts, f"{path} must stay repository-relative")
+            require((root / relative).is_file(), f"{path} does not resolve to a file: {value}")
 
 
 def validate_library(library):
@@ -118,7 +141,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library", default=str(DEFAULT_LIBRARY))
     args = parser.parse_args()
-    library = json.loads(Path(args.library).read_text(encoding="utf-8"))
+    library_path = Path(args.library)
+    library = json.loads(library_path.read_text(encoding="utf-8"))
+    if library_path.resolve() == DEFAULT_LIBRARY.resolve():
+        validate_evidence_files(library)
     print(json.dumps(validate_library(library), indent=2))
 
 
