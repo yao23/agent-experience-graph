@@ -1,0 +1,16 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-04-PENDULUM-FLUENT-HELPERS",
+  "frozenAt": "2026-08-06T09:20:00Z",
+  "sourceRepository": "https://github.com/python-pendulum/pendulum",
+  "license": "MIT",
+  "preFixCommit": "5ad098bc7b74d660679f0606673728042b9d4aca",
+  "existingPullRequest": "https://github.com/python-pendulum/pendulum/pull/920",
+  "pullRequestCommit": "0e32103a99d623c3fb4482fafb3d659f3b650708",
+  "documentedContract": "Each fluent timezone transformation example is independent and its printed result must match the adjacent documented output.",
+  "preFixOracle": "Execute all five transformations in documented order; mutation of dt makes only three of five displayed outputs match.",
+  "postFixOracle": "Start each transformation from dt0 and require all five runtime values to equal the documented outputs.",
+  "successCriteria": ["Pre-fix execution demonstrates the stale-state mismatch.", "Five of five outputs match after the documentation-only change.", "Only docs/docs/fluent_helpers.md changes.", "git diff --check passes."],
+  "allowedScope": {"expectedFiles": ["docs/docs/fluent_helpers.md"], "constraint": "Repair example state and explanation only; do not change library behavior."},
+  "classification": "Non-blind validation and refinement of an existing open pull request; no duplicate contribution.",
+  "externalConstraints": ["Do not push, comment, or open a competing PR.", "Do not claim maintainer acceptance while PR #920 remains open.", "Do not promote the candidate without review."]
+}

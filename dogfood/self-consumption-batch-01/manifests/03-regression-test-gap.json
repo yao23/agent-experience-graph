@@ -1,0 +1,26 @@
+{
+  "taskId": "AEG-BATCH-01-CATEGORY-03-PROTOCOL-DELEGATION-TRANSFER",
+  "frozenAt": "2026-08-06T06:55:40Z",
+  "sourceRepository": "https://github.com/yao23/agent-experience-graph",
+  "sourceCommit": "e7ab21fead7af45050003a312bae4cca60b2a7d8",
+  "license": "MIT-0",
+  "fixture": "experiments/public-repair-lab/tasks/protocol-resource-delegation/fixture",
+  "relatedPublicSource": {
+    "repository": "https://github.com/tornadoweb/tornado",
+    "buggyCommit": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+    "fixedCommit": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+    "license": "Apache-2.0",
+    "benchmark": "BugsInPy Tornado bug 1"
+  },
+  "publicContract": "Channel.set_keepalive must delegate through ChannelProtocol to the active stream after stream ownership moved behind the protocol.",
+  "preFixOracle": "The legacy protocol-send test passes while test_public_control_delegates_through_protocol fails with AssertionError at the stale Channel.socket access.",
+  "successCriteria": [
+    "The focused contract test fails before the repair and passes after it.",
+    "The legacy protocol-send test remains green.",
+    "The public control follows Channel -> ChannelProtocol -> active stream without restoring stale ownership.",
+    "All fixture Python files compile."
+  ],
+  "allowedScope": {"expectedFiles": ["channel.py"], "constraint": "Repair the three-layer delegation contract only; do not edit or weaken the focused regression test."},
+  "classification": "Controlled dependency-free transfer fixture, not a fresh external-project contribution.",
+  "externalConstraints": ["Do not push or open upstream issues/PRs.", "Do not claim independence from TR-04; this pilot intentionally consumes it.", "Do not promote the candidate without review."]
+}

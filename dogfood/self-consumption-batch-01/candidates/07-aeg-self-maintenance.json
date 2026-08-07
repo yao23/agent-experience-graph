@@ -1,0 +1,51 @@
+[
+  {
+    "id": "trace-2026-08-06-aeg-verified-evidence-paths",
+    "task": "Reject promoted AEG experiences whose repository-relative evidence files do not exist",
+    "outcome": "success",
+    "subtasks": [
+      {"description": "Audit bounded internal consistency candidates without release overlap", "skills": ["maintenance-candidate-triage", "non-interference-audit"], "tools": ["git", "python", "ripgrep"], "outcome": "success", "lessons": ["Reject ambiguous version mismatches when components may version independently and release work is excluded."]},
+      {"description": "Reproduce semantic acceptance of a nonexistent but internally matching evidence path", "skills": ["validator-gap-reproduction"], "tools": ["python"], "outcome": "success", "lessons": ["Cross-field equality is insufficient provenance validation when both fields can agree on a nonexistent artifact."]},
+      {"description": "Add repository-confined file resolution for canonical promoted evidence", "skills": ["semantic-validation", "path-confinement"], "tools": ["pathlib", "apply_patch"], "outcome": "success", "lessons": ["Apply repository existence checks to the canonical promoted library without forcing standalone candidate artifacts into the same repository layout."]},
+      {"description": "Run focused, full Python, schema, result, benchmark, and extension verification", "skills": ["narrow-to-broad-verification"], "tools": ["unittest", "AJV", "npm", "TypeScript"], "outcome": "success", "lessons": ["Use the CI command list rather than bare unittest discovery; root discovery found zero tests because test modules live in non-package directories."]}
+    ],
+    "skills": ["maintenance-candidate-triage", "non-interference-audit", "validator-gap-reproduction", "semantic-validation", "path-confinement", "narrow-to-broad-verification"],
+    "tools": ["git", "python", "ripgrep", "pathlib", "apply_patch", "unittest", "AJV", "npm", "TypeScript"],
+    "constraints": ["Change at most three files and no promoted experience, schema, version, or release artifact.", "Keep checks deterministic and repository-confined.", "Do not push, publish, promote, or make cross-project/PMF claims."],
+    "lessons": ["Validate that provenance evidence is both internally consistent and resolvable; matching strings can otherwise certify absent files.", "Reject absolute and parent-traversing paths before filesystem resolution so evidence cannot escape the repository.", "AEG abstained because generic Repair Lab validation overlap scored only 0.0171; no prior record changed the implementation.", "A successful internal maintenance pilot improves repository reliability only; it is not independent product-market evidence."],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.5 development branch",
+      "recordedAt": "2026-08-06T14:19:00Z",
+      "publicSource": {"repository": "https://github.com/yao23/agent-experience-graph", "buggyCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "fixedCommitSha": "ab0362955a755ab0353422b6044e5d9d08b6713a", "license": "MIT-0", "benchmark": "AEG self-maintenance regression: original local repair commit SHA unavailable; fixedCommitSha names the equivalent reconstructed commit merged through PR #13"},
+      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T14:19:00Z", "runnerSourceCommitSha": null, "runnerSourceCommitStatus": "unavailable: the original local repair commit identity cannot be resolved; equivalent reconstructed commit ab0362955a755ab0353422b6044e5d9d08b6713a has stable patch ID b3572af4a74e94805d5da12036c42c7d6327038b"},
+      "promotionEvidence": {"workflowName": "No promotion workflow run", "workflowFile": ".github/workflows/repair-lab.yml", "validatedCommitSha": null, "status": "expected-on-pull-request", "runResolver": "Internal candidate remains local and unpromoted."},
+      "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {"experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md", "experienceSchema": "experiences/verified-experience.schema.json", "semanticValidator": "scripts/validate_verified_experiences.py"},
+      "localChecks": {
+        "preFixFocused": "mutated TR-04 artifact path to experiences/missing-result.json in both provenance and verification; validate_library returned passed",
+        "postFixFocused": "6 semantic-validator tests passed, including missing-file rejection",
+        "currentEvidenceAudit": "all 7 canonical verification evidence references resolved to files",
+        "pythonTests": "42 CI-listed Python unit tests passed",
+        "resultValidation": "paired-result aggregate and natural-transfer manifest validation passed",
+        "jsonSchema": "AJV 5.0.0 reports experiences/verified.json valid",
+        "extensionTests": "20 TypeScript/Node tests passed after locked npm install; source/bundled library equality passed",
+        "changedFiles": ["scripts/validate_verified_experiences.py", "scripts/test_validate_verified_experiences.py"],
+        "patchSize": "36 insertions, 1 deletion",
+        "candidatePatchSha256": "1f40ec46d7746c77f6d3851e23866c8c812bc047842b937fc0c4342b0de8fc96",
+        "equivalentReconstructedCommitSha": "ab0362955a755ab0353422b6044e5d9d08b6713a",
+        "stablePatchId": "b3572af4a74e94805d5da12036c42c7d6327038b",
+        "commitIdentityQualification": "The original local repair commit SHA is unavailable and is stored as null. Matching patch hashes verify equivalence with the reconstructed commit but this does not recover the unavailable original commit identity.",
+        "taskManifestSha256": "a895c922a12bc4799db6b38d56cc1eb9faa83ad5622f72206c547bee76ffba99",
+        "priorAEGExperienceUsed": "no; recommender abstained at threshold 0.05",
+        "nonInterference": "experiences/verified.json, schemas, SKILL.md, package versions, release files, and extension sources unchanged"
+      }
+    },
+    "metrics": {"attempts": 1, "completedCommands": 16, "actualTestExecutions": 62, "durationMs": null, "nonCachedTokens": null, "interpretation": "One internal validator gap was reproduced and repaired. Verification covers canonical evidence, the CI-listed Python tests, schema/result validators, and extension tests; this is internal reliability evidence only."},
+    "limitations": ["The category's 30-minute wall-clock target was exceeded, although command/file bounds held.", "Evidence existence does not prove evidence truth, freshness, or semantic adequacy.", "Filesystem checks run automatically only for the canonical verified library; arbitrary --library candidates retain portable semantic validation.", "Bare root unittest discovery ran zero tests, so verification switched to the explicit CI-listed test commands.", "npm/AJV installation emitted public transitive deprecation warnings; npm audit for the extension reported zero vulnerabilities.", "The original local repair commit SHA is unavailable; patch-hash equivalence with reconstructed commit ab0362955a755ab0353422b6044e5d9d08b6713a does not recover the missing identity.", "PR #13 and post-merge main CI accepted the equivalent validator patch, but no cross-project transfer or PMF evidence exists."],
+    "reuse": {"retrievalTags": ["verified evidence path", "provenance artifact exists", "repository path confinement", "semantic validator false positive", "canonical library maintenance"], "recommendedFor": ["hardening a promoted experience library against missing local evidence files", "testing semantic provenance beyond cross-field string equality", "adding repository-confined validation without breaking portable candidate libraries"]}
+  }
+]

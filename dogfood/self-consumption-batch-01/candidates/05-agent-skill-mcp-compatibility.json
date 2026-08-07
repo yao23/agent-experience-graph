@@ -1,0 +1,47 @@
+[
+  {
+    "id": "trace-2026-08-06-mcp-filesystem-2026.7.10-compatibility",
+    "task": "Verify the bounded stdio and read-only permission surface of MCP filesystem server 2026.7.10",
+    "outcome": "partial",
+    "subtasks": [
+      {"description": "Freeze exact npm package, source commit, manifest, integrity, and one-root permission envelope", "skills": ["mcp-candidate-triage", "provenance-freezing"], "tools": ["npm", "SHA-512", "SHA-256"], "outcome": "partial", "lessons": ["Verify that a package declaring SEE LICENSE actually ships the referenced file; repository licensing does not cure packaging ambiguity."]},
+      {"description": "Start stdio transport and negotiate the declared protocol", "skills": ["mcp-stdio-compatibility"], "tools": ["npx", "JSON-RPC"], "outcome": "success", "lessons": ["Redirect package-manager caches into the disposable scope when the host user cache is not writable."]},
+      {"description": "Discover tools and inspect permission annotations", "skills": ["tool-schema-audit", "permission-envelope-audit"], "tools": ["MCP tools/list"], "outcome": "success", "lessons": ["Discovery exposed both read and destructive tools, so compatibility must be scoped to invoked operations rather than summarized as globally safe."]},
+      {"description": "Read one allowed file and verify denial outside the configured root", "skills": ["bounded-readonly-probe", "negative-path-testing"], "tools": ["MCP tools/call"], "outcome": "success", "lessons": ["Pair a successful in-root read with an out-of-root denial to verify both usefulness and confinement."]}
+    ],
+    "skills": ["mcp-candidate-triage", "provenance-freezing", "mcp-stdio-compatibility", "tool-schema-audit", "permission-envelope-audit", "bounded-readonly-probe"],
+    "tools": ["npm", "npx", "JSON-RPC", "MCP tools/list", "MCP tools/call", "SHA-256", "SHA-512"],
+    "constraints": ["Allow only /tmp/aeg-batch01-cat05-mcp.", "Invoke no write or destructive tool.", "Use no credentials, accounts, private roots, or remote data.", "Record a scoped compatibility card rather than a global safety score."],
+    "lessons": ["Validate handshake, discovery, a safe call, and a denied call as separate protocol contracts.", "Tool annotations make permission review inspectable, but the client must still choose not to invoke destructive tools.", "AEG had no MCP experience and correctly abstained; the query was accidentally run after execution and therefore could not affect the path.", "Treat a missing packaged license file as a distribution-quality limitation even when the public repository is permissively licensed."],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-06T11:10:00Z",
+      "publicSource": {"repository": "https://github.com/modelcontextprotocol/servers", "buggyCommitSha": "9a96ea6e5913736f92b88345bf51caeaaa8e719f", "fixedCommitSha": "9a96ea6e5913736f92b88345bf51caeaaa8e719f", "license": "Apache-2.0 transition for new code; package license file missing", "benchmark": "Bounded local compatibility card for @modelcontextprotocol/server-filesystem@2026.7.10; no repair commit"},
+      "experimentEvidence": {"artifact": "dogfood/self-consumption-batch-01/execution-results.md", "sourceReportCreatedAt": "2026-08-06T11:10:00Z", "runnerSourceCommitSha": "e7ab21fead7af45050003a312bae4cca60b2a7d8", "runnerSourceCommitStatus": "available: isolated AEG worktree used for recording"},
+      "promotionEvidence": {"workflowName": "No promotion workflow run", "workflowFile": ".github/workflows/repair-lab.yml", "validatedCommitSha": null, "status": "expected-on-pull-request", "runResolver": "Compatibility candidate is intentionally unpromoted."},
+      "publication": {"pullRequest": "https://github.com/modelcontextprotocol/servers"}
+    },
+    "verification": {
+      "status": "partial",
+      "evidence": {"experimentArtifact": "dogfood/self-consumption-batch-01/execution-results.md", "experienceSchema": "experiences/verified-experience.schema.json", "semanticValidator": "scripts/validate_verified_experiences.py"},
+      "localChecks": {
+        "package": "@modelcontextprotocol/server-filesystem@2026.7.10; npm SHA-512 integrity frozen",
+        "manifest": "package.json names repository and binary; SHA-256 6b2c11d4d348cace9c652636d602713c377ba59d868e013de69f3a9046d61244",
+        "licensePackaging": "partial: package declares SEE LICENSE IN LICENSE but installed package has no LICENSE file",
+        "handshake": "protocol 2025-11-25; server secure-filesystem-server 0.2.0; tools listChanged true",
+        "discovery": "14 tools discovered with JSON schemas and read/write annotations",
+        "safeCall": "read_text_file returned the exact probe text; SHA-256 6efb5ec7fab84c0d31fa8f720cc8b99e05a3e63eca6cca4bb91eb7081729ce78",
+        "invalidCall": "read_text_file(/etc/hosts) returned isError true and named the two normalized allowed-root paths",
+        "termination": "bounded subprocess stopped with SIGINT; exit 1 from signal, not a protocol error",
+        "taskManifestSha256": "198e053c0c5b53ffe2376c360c7648c3c872187c571d73ff0e88cc398b4027cb",
+        "priorAEGExperienceUsed": "no; recommender abstained and was queried late",
+        "retrievalTimingValidity": "invalid/procedurally contaminated: AEG was queried only after execution completed",
+        "retrievalEffectEvidence": "invalid: no execution-path or efficiency effect may be inferred from a post-execution query; the partial compatibility outcome remains independently recorded"
+      }
+    },
+    "metrics": {"attempts": 2, "completedCommands": 17, "actualTestExecutions": 2, "durationMs": null, "nonCachedTokens": null, "interpretation": "The stdio/read-only surface and confinement passed. Distribution licensing and graceful zero-exit shutdown were not fully verified, so the card is partial."},
+    "limitations": ["The AEG query occurred after the live probe. Retrieval-effect evidence is invalid/procedurally contaminated and the task was not rerun to manufacture favorable evidence.", "The package exposed destructive tools that were discovered but intentionally not invoked.", "The installed npm package omitted the LICENSE file named by package.json; repository licensing is undergoing a transition.", "The server was terminated with SIGINT and exited 1; a zero-exit protocol shutdown was not observed.", "npx emitted a deprecation/security-support warning for transitive glob@10.5.0; no vulnerability analysis was performed.", "No Windows, Roots-capable client, dynamic-root, media-file, or write-tool behavior was tested."],
+    "reuse": {"retrievalTags": ["MCP stdio handshake", "tools/list schema", "filesystem allowed root", "readOnlyHint", "out-of-root denial", "missing packaged license"], "recommendedFor": ["creating a scoped MCP compatibility card with one disposable filesystem root", "verifying safe discovery and read-only invocation without exercising destructive tools", "auditing package manifest and license-file consistency before recommending an MCP server"]}
+  }
+]
