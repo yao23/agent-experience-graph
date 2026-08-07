@@ -1,0 +1,14 @@
+{
+  "batchId": "aeg-self-consumption-batch-02",
+  "preregisteredAt": "2026-08-07T16:08:00Z",
+  "preregistrationCommit": null,
+  "preregistrationCommitStatus": "awaiting the local commit that contains this frozen protocol",
+  "status": "preregistering",
+  "phase": "protocol",
+  "selectedTaskLimit": 3,
+  "screeningCandidateLimit": 24,
+  "screened": 0,
+  "accepted": 0,
+  "rejected": 0,
+  "projects": []
+}
