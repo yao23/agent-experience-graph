@@ -1,0 +1,52 @@
+name: Validate Batch 02 Evidence
+
+on:
+  pull_request:
+    paths:
+      - "dogfood/self-consumption-batch-02/**"
+      - ".github/workflows/batch-02-evidence.yml"
+  push:
+    branches: [main]
+    paths:
+      - "dogfood/self-consumption-batch-02/**"
+      - ".github/workflows/batch-02-evidence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate corrected Batch 02 evidence and selection gate
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          npx --yes ajv-cli@5.0.0 validate --all-errors \
+            -s experiences/verified-experience.schema.json \
+            -d dogfood/self-consumption-batch-02/candidates/category-01-click-progressbar.json
+          python3 scripts/validate_verified_experiences.py \
+            --library dogfood/self-consumption-batch-02/candidates/category-01-click-progressbar.json
+          python3 dogfood/self-consumption-batch-02/validate_evidence.py \
+            --base-ref "$BASE_REF"
+          python3 dogfood/self-consumption-batch-02/test_selection_gate.py
+          python3 -m unittest \
+            scripts/test_recommend_traces.py \
+            scripts/test_validate_verified_experiences.py
+          git diff --check "$BASE_REF" HEAD

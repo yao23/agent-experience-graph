@@ -1,0 +1,52 @@
+# Batch 02 selection ledger
+
+Append-only. Preregistration was written before candidate search. Screening began only after commit `1e72f8f9840bccfb9ad5a73c4dd608a966258a31` recorded the frozen protocol.
+
+For every screened candidate record: UTC timestamp; repository and public task URL; license; current default-branch SHA; issue/defect state; active-PR search; repair-disclosure exposure; oracle feasibility; size; contribution path; gate decision; and rejection reason when applicable. Do not record or inspect repair content during selection.
+
+## Screening pass — 2026-08-07T16:12:13Z
+
+The public issue search returned issue metadata and issue bodies only. Comments, commits, pull-request diffs, and repair implementations were not inspected. Once a decisive exclusion was visible, later gates (including cloning, license, source SHA, and contribution-path checks) were intentionally not evaluated. “Not evaluated” therefore does not imply that the gate would fail.
+
+| # | Repository / task | Public task | State at screen | Repair disclosure / active PR | Oracle / size | License, SHA, contribution path | Decision |
+|---:|---|---|---|---|---|---|---|
+| 01 | astral-sh/ruff — EXE001 flags shebang-like comments | [#27028](https://github.com/astral-sh/ruff/issues/27028) | Open | Body identifies the affected extraction/filter behavior | Not evaluated after gate 5 | Not evaluated | Rejected: repair-oriented implementation disclosure compromises blindness |
+| 02 | astral-sh/ruff — RUF066 misses properties | [#27027](https://github.com/astral-sh/ruff/issues/27027) | Open | Body prescribes visitor/protocol exemption behavior | Not evaluated after gate 5 | Not evaluated | Rejected: repair-oriented disclosure compromises blindness |
+| 03 | astral-sh/ruff — RUF038 runtime `Literal` | [#27026](https://github.com/astral-sh/ruff/issues/27026) | Open | Body specifies context/member constraints | Not evaluated after gate 5 | Not evaluated | Rejected: repair-oriented disclosure compromises blindness |
+| 04 | astral-sh/ruff — RUF055 and `memoryview` | [#27024](https://github.com/astral-sh/ruff/issues/27024) | Open | Body proposes suppressing the rule/fix | Not evaluated after gate 5 | Not evaluated | Rejected: proposed repair is disclosed |
+| 05 | astral-sh/ruff — B006 multiline strings | [#27022](https://github.com/astral-sh/ruff/issues/27022) | Open | Body identifies preview transformation behavior | Not evaluated after gate 5 | Not evaluated | Rejected: diagnosis-oriented disclosure compromises blindness |
+| 06 | astral-sh/ruff — UP040/UP046/UP047 kwargs | [#27008](https://github.com/astral-sh/ruff/issues/27008) | Open | Body says the fix should not be offered | Not evaluated after gate 5 | Not evaluated | Rejected: repair behavior disclosed |
+| 07 | astral-sh/ruff — starred constraints | [#26954](https://github.com/astral-sh/ruff/issues/26954) | Open | Body discloses expected fix behavior | Not evaluated after gate 5 | Not evaluated | Rejected: repair behavior disclosed |
+| 08 | astral-sh/ruff — FURB101/FURB103 | [#26922](https://github.com/astral-sh/ruff/issues/26922) | Open | Body links a related known issue and fix-safety concern | Not evaluated after gate 5 | Not evaluated | Rejected: prior repair context compromises blindness |
+| 09 | astral-sh/ruff — FURB103 safety | [#26920](https://github.com/astral-sh/ruff/issues/26920) | Open | Body calls for a specific safety classification | Not evaluated after gate 5 | Not evaluated | Rejected: proposed repair is disclosed |
+| 10 | astral-sh/ruff — invalid LSP ranges | [#26768](https://github.com/astral-sh/ruff/issues/26768) | Open | Body states the same class was addressed by #26740 | Not evaluated after gate 5 | Not evaluated | Rejected: known repair disclosed |
+| 11 | astral-sh/ruff — B031 panic with `match list(group)` | [#26624](https://github.com/astral-sh/ruff/issues/26624) | Open | No active PR found, but body exposes internal source line, failing `unwrap`, and workaround | Deterministic CLI repro appears bounded | Not evaluated after gate 5 | Rejected: issue statement itself compromises blind diagnosis |
+| 12 | astral-sh/ruff — SIGINT output truncation | [#26480](https://github.com/astral-sh/ruff/issues/26480) | Open | Body gives prior art and exact temporary-file/rename repair | Not evaluated after gate 5 | Not evaluated | Rejected: exact repair disclosed |
+| 13 | astral-sh/ruff — TID254 convergence | [#26450](https://github.com/astral-sh/ruff/issues/26450) | Open | Body proposes splitting the lazy import statement | Not evaluated after gate 5 | Not evaluated | Rejected: proposed repair disclosed |
+| 14 | astral-sh/ruff — `--add-noqa` deletes trailing content | [#26287](https://github.com/astral-sh/ruff/issues/26287) | Open | Active PR [#26409](https://github.com/astral-sh/ruff/pull/26409) states it fixes the issue; diff not inspected | Deterministic CLI repro appears bounded | Not evaluated after gate 4 | Rejected: active correct PR |
+| 15 | astral-sh/ruff — suppression discrepancies | [#26282](https://github.com/astral-sh/ruff/issues/26282) | Open | Body identifies divergent code paths/root cause | Not evaluated after gate 5 | Not evaluated | Rejected: root-cause disclosure compromises blindness |
+| 16 | astral-sh/ruff — PD003/PD004 and xarray | [#26264](https://github.com/astral-sh/ruff/issues/26264) | Open | No repair used | Exact contract/version oracle is ambiguous and type-inference scope appears unbounded | Not evaluated after gates 6/9 | Rejected: unreliable oracle and unbounded scope |
+| 17 | astral-sh/ruff — PYI036 generic exception false positive | [#25905](https://github.com/astral-sh/ruff/issues/25905) | Open | Active PR [#26381](https://github.com/astral-sh/ruff/pull/26381) states it fixes the issue and its public description exposes repair details; diff not inspected | Deterministic lint repro appears bounded | Not evaluated after gates 4/5 | Rejected: active correct PR and repair disclosure |
+| 18 | pallets/click — progressbar `show_pos` with `update_min_steps` ends at 14/20 | [#3571](https://github.com/pallets/click/issues/3571) | Open | No active PR found; issue body contains behavior/repro only | Deterministic public-API oracle appears bounded | Pending full gate verification | Pending: only survivor of metadata screen |
+| 19 | astral-sh/ruff — RUF070 async conflict | [#25653](https://github.com/astral-sh/ruff/issues/25653) | Open | No repair used | Expected contract is ambiguous | Not evaluated after gate 6 | Rejected: no reliable exact oracle |
+| 20 | astral-sh/ruff — lazy-import configuration conflict | [#25418](https://github.com/astral-sh/ruff/issues/25418) | Open | No repair used | No minimal exact reproduction; configuration semantics ambiguous | Not evaluated after gates 6/9 | Rejected: unreliable oracle and unclear bounded scope |
+| 21 | Textualize/rich — `getcwd` PermissionError | [#4201](https://github.com/Textualize/rich/issues/4201) | Open | Body proposes an exact code change | Not evaluated after gate 5 | Not evaluated | Rejected: exact repair disclosed |
+| 22 | pydantic/pydantic — `Annotated` order behavior | [#13556](https://github.com/pydantic/pydantic/issues/13556) | Open | No repair used | Desired ordering contract is ambiguous | Not evaluated after gate 6 | Rejected: unreliable objective oracle |
+| 23 | Textualize/rich — NBSP wrapping | [#4196](https://github.com/Textualize/rich/issues/4196) | Open | Body gives root cause and exact regular-expression repair | Not evaluated after gate 5 | Not evaluated | Rejected: exact repair disclosed |
+| 24 | pydantic/pydantic — inherited `TypedDict` docstrings | [#13468](https://github.com/pydantic/pydantic/issues/13468) | Open | Body explains the mechanism/root cause | Not evaluated after gate 5 | Not evaluated | Rejected: diagnosis disclosure compromises blindness |
+
+The search response contained additional results after candidate 24. They were discarded without gate evaluation and are ineligible for Batch 02 because the preregistered screening cap was reached. No replacement search or optional-family search was performed.
+
+## Full-gate result — 2026-08-07T16:15:42Z
+
+Candidate 18 is accepted as the sole selected task. At public Click `main` commit `00e592cea702e0b2caa0dee42489fdb1c22cd845`, the BSD-3-Clause license and documented contribution path are present; issue #3571 is open and was updated 2026-08-01; an open-PR search for `3571` returned no result; the issue statement did not disclose a repair; and the frozen deterministic public-API oracle failed with the terminal rendering ending at 14/20 rather than the contractual 20/20. The checkout, SHA, task statement, manifest, and oracle hash were frozen before diagnosis. The task appears bounded to the per-task limit.
+
+Final selection total: 24 screened, 1 accepted, 23 rejected. Fewer than three tasks qualified because strict disclosure/active-PR/oracle gates eliminated 23 candidates and the preregistered screening cap was exhausted. Selection stopped rather than lowering gates or screening replacements.
+
+## Post-Batch-02 superseding correction — 2026-08-07T20:50:28Z
+
+The “Full-gate result” above is retained as the original decision but is incorrect. Candidate 18 was not eligible under preregistered freshness and contribution gates. The screen searched only open PRs in `pallets/click`; it did not inspect issue timeline/development links, all-state upstream PRs, global issue references, fork-local PRs, contributor branches, or public patch/defect-wording matches.
+
+Public repairs predating acceptance included `sijie-Z/click#1` (2026-06-11), closed upstream `pallets/click#3596` (2026-06-15), upstream #3632 (2026-06-24), `yoda77777/click#1` (2026-06-26), upstream #3679 (2026-07-08), and `uesugitorachiyo/click#1` (2026-08-07T15:41:04Z). They disclose the same residual `_completed_intervals` root cause, flush/reset repair, and TTY test family. Exact audit evidence and queries are in `evidence/category-01-post-audit.md`.
+
+Corrected totals: 24 screened; 0 qualified under the preregistered gates; 1 incorrectly accepted during initial screening; 24 rejected under the corrected gate; 0 fresh eligible executions; and 1 independent local reproduction. Execution blindness remains supported because the agent did not inspect the prior repairs before completing its patch. This distinction preserves patch independence while invalidating public freshness and contribution availability.
