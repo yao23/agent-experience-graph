@@ -14,3 +14,10 @@ These rules apply throughout `autonomous-lab/`.
 7. Record every escalation as JSON and surface it in the human report.
 8. Never claim generalized effectiveness or product-market fit from local,
    historical, contaminated, non-blind, or non-contributable evidence.
+9. Scheduled execution may select only one registry entry whose
+   `operational_status` is `active` and whose `scheduler_eligible` value is
+   explicitly `true`.
+10. Never break a non-expired execution lease, clean or stash a working tree,
+    activate a proposed experiment, or retry exit codes 10 through 15.
+11. Treat files in the repository as authoritative. Prior task conversation,
+    screenshots, and process memory are never continuation state.

@@ -12,9 +12,21 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+import uuid
 
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
+
+from scheduler import (
+    ExecutionLease,
+    LeaseHeldError,
+    SchedulerConfigError,
+    UnsafeWorktreeError,
+    load_config,
+    preflight_worktree,
+    repository_root,
+    write_transient_recovery_request,
+)
 
 
 ACTIVE_STATES = (
@@ -91,7 +103,12 @@ EXIT_OK = 0
 EXIT_APPROVAL_REQUIRED = 10
 EXIT_VALIDATION_FAILED = 11
 EXIT_BUDGET_EXHAUSTED = 12
+EXIT_LEASE_HELD = 13
+EXIT_UNSAFE_WORKTREE = 14
+EXIT_SCHEDULER_CONFIG = 15
 CONTINUATION_COMMAND = "python3 autonomous-lab/scripts/lab.py run-one-step"
+SCHEDULED_COMMAND = "python3 autonomous-lab/scripts/lab.py scheduled-step"
+NO_ELIGIBLE_MESSAGE = "No scheduler-eligible experiment is currently approved."
 
 
 class LabValidationError(Exception):
@@ -135,6 +152,11 @@ class Lab:
 
     def current_entry(self, experiment_id: str | None = None) -> dict[str, Any]:
         selected = experiment_id or self.registry.get("current_experiment_id")
+        if selected is None:
+            eligible = self.scheduler_entries()
+            if not eligible:
+                raise SchedulerConfigError(NO_ELIGIBLE_MESSAGE)
+            selected = eligible[0]["experiment_id"]
         entries = [
             entry
             for entry in self.registry["experiments"]
@@ -145,6 +167,25 @@ class Lab:
         if len(entries) != 1:
             raise LabValidationError(f"expected exactly one matching controlled experiment, found {len(entries)}")
         return entries[0]
+
+    def scheduler_entries(self) -> list[dict[str, Any]]:
+        entries = [
+            entry
+            for entry in self.registry.get("experiments", [])
+            if entry.get("scheduler_eligible") is True
+            and entry.get("operational_status") == "active"
+            and "goal_path" in entry
+            and "state_path" in entry
+        ]
+        if len(entries) > 1:
+            raise SchedulerConfigError(
+                f"expected at most one scheduler-eligible experiment, found {len(entries)}"
+            )
+        return entries
+
+    def scheduler_entry(self) -> dict[str, Any] | None:
+        entries = self.scheduler_entries()
+        return entries[0] if entries else None
 
     def resolve(self, repository_path: str) -> Path:
         path = (self.repo_root / repository_path).resolve()
@@ -338,8 +379,8 @@ class Lab:
             raise LabValidationError("execution progressed without model_or_agent_execution approval")
 
     def validate_registry(self) -> None:
-        if self.registry.get("schema_version") != 1:
-            raise LabValidationError("registry schema_version must be 1")
+        if self.registry.get("schema_version") != 2:
+            raise LabValidationError("registry schema_version must be 2")
         entries = self.registry.get("experiments")
         if not isinstance(entries, list) or not entries:
             raise LabValidationError("registry experiments must be a non-empty list")
@@ -351,13 +392,25 @@ class Lab:
             ids.add(experiment_id)
             if entry.get("state") not in ALL_STATES:
                 raise LabValidationError(f"registry state invalid for {experiment_id}")
+            if entry.get("experiment_kind") not in {"production", "commercial", "shakedown", "regression_fixture"}:
+                raise LabValidationError(f"registry experiment_kind invalid for {experiment_id}")
+            if entry.get("operational_status") not in {"active", "proposed", "archived", "disabled"}:
+                raise LabValidationError(f"registry operational_status invalid for {experiment_id}")
+            if not isinstance(entry.get("scheduler_eligible"), bool):
+                raise LabValidationError(f"registry scheduler_eligible must be boolean for {experiment_id}")
+            if entry["scheduler_eligible"] and entry["operational_status"] != "active":
+                raise LabValidationError(f"scheduler-eligible experiment is not active: {experiment_id}")
+            if entry["scheduler_eligible"] and "goal_path" not in entry:
+                raise LabValidationError(f"scheduler-eligible experiment is not controlled: {experiment_id}")
             for key in ("evidence_path", "goal_path", "state_path", "scorecard_path", "escalation_path", "request_path", "input_path", "artifact_schema_path"):
                 if key in entry and not self.resolve(entry[key]).is_file():
                     raise LabValidationError(f"registry path does not exist: {entry[key]}")
         current_id = self.registry.get("current_experiment_id")
-        if current_id not in ids:
+        if current_id is not None and current_id not in ids:
             raise LabValidationError("registry current_experiment_id is absent from experiments")
-        self.current_entry(current_id)
+        if current_id is not None:
+            self.current_entry(current_id)
+        self.scheduler_entries()
 
     def validate_templates(self) -> None:
         self.schema_validate(load_yaml(self.root / "templates" / "goal.yaml"), "goal", "goal template")
@@ -369,6 +422,7 @@ class Lab:
             raise LabValidationError("run-record template omits required fields")
 
     def validate(self, base_ref: str | None = None) -> dict[str, Any]:
+        load_config(self.root)
         for name, schema in self.schemas.items():
             try:
                 Draft202012Validator.check_schema(schema)
@@ -391,13 +445,14 @@ class Lab:
             self.validate_ledger(goal, state)
         if base_ref:
             self.validate_git_history(base_ref)
-        _, current_goal, current_state, _, _ = self.records()
+        selected = self.scheduler_entry()
         return {
             "schemas": len(self.schemas),
             "registry_experiments": len(self.registry["experiments"]),
             "controlled_experiments": len(controlled),
-            "current_experiment": current_goal["experiment_id"],
-            "state": current_state["state"],
+            "current_experiment": selected["experiment_id"] if selected else None,
+            "state": load_json(self.resolve(selected["state_path"]))["state"] if selected else None,
+            "scheduler_eligible_experiments": 1 if selected else 0,
             "ledger_events": len(self.read_ledger()),
             "result": "valid",
         }
@@ -443,6 +498,8 @@ class Lab:
         return {"kind": "permitted", "reason": f"{gate} approval is recorded"}
 
     def next_action(self, experiment_id: str | None = None) -> dict[str, Any]:
+        if experiment_id is None and self.registry.get("current_experiment_id") is None and self.scheduler_entry() is None:
+            return {"kind": "no_work", "reason": NO_ELIGIBLE_MESSAGE, "transition": None}
         entry, goal, state, _, escalation = self.records(experiment_id)
         current = state["state"]
         if current in TERMINAL_STATES:
@@ -483,10 +540,21 @@ class Lab:
         return {"kind": "transition", "reason": "next lifecycle evidence may be recorded", "transition": transition}
 
     def status(self, experiment_id: str | None = None) -> dict[str, Any]:
+        if experiment_id is None and self.registry.get("current_experiment_id") is None and self.scheduler_entry() is None:
+            return {
+                "experiment_id": None,
+                "experiment_kind": None,
+                "state": None,
+                "next_action": self.next_action(),
+                "scheduler_useful": False,
+                "human_approval_required": False,
+                "continuation_command": SCHEDULED_COMMAND,
+            }
         entry, goal, state, scorecard, escalation = self.records(experiment_id)
         next_action = self.next_action(experiment_id)
         return {
             "experiment_id": goal["experiment_id"],
+            "experiment_kind": entry["experiment_kind"],
             "registry_state": entry["state"],
             "state": state["state"],
             "milestone": state["milestone"],
@@ -961,6 +1029,16 @@ class Lab:
         return event
 
     def run_one_step(self, experiment_id: str | None = None, timestamp: str | None = None) -> tuple[int, dict[str, Any]]:
+        if experiment_id is None and self.registry.get("current_experiment_id") is None:
+            selected = self.scheduler_entry()
+            if selected is None:
+                return EXIT_OK, {
+                    "result": "no_eligible_experiment",
+                    "state": None,
+                    "transition": None,
+                    "message": NO_ELIGIBLE_MESSAGE,
+                }
+            experiment_id = selected["experiment_id"]
         entry, goal, state, scorecard, escalation = self.records(experiment_id)
         action = self.next_action(goal["experiment_id"])
         if action["kind"] == "stop":
@@ -1023,8 +1101,54 @@ class Lab:
         self._persist_event(entry, state, event)
         return event
 
-    def render_reports(self) -> tuple[str, str, str]:
+    def render_reports(self, run_id: str | None = None, scheduled: bool = False) -> tuple[str, str, str]:
+        if self.registry.get("current_experiment_id") is None and self.scheduler_entry() is None:
+            status = {
+                "schema_version": 1,
+                "run_id": run_id,
+                "experiment_id": None,
+                "experiment_kind": None,
+                "current_state": None,
+                "last_transition": None,
+                "next_permitted_action": {"kind": "no_work", "reason": NO_ELIGIBLE_MESSAGE, "transition": None},
+                "another_scheduled_run_useful": False,
+                "human_approval_required": False,
+                "budget_consumed": None,
+                "budget_remaining": None,
+                "artifact_sha256": None,
+                "state_sha256": None,
+                "continuation_command": SCHEDULED_COMMAND,
+                "latest_error_or_blocker": NO_ELIGIBLE_MESSAGE,
+                "scheduler_enabled": False,
+            }
+            status_json = json.dumps(status, indent=2) + "\n"
+            status_md = f"""# Autonomous Lab current status
+
+## Operator summary
+
+- Run ID: `{run_id}`
+- Experiment ID: `None`
+- Experiment kind: `None`
+- Current state: `None`
+- Last transition: `None`
+- Next permitted action: `no_work` — {NO_ELIGIBLE_MESSAGE}
+- Another scheduled run useful: `no`
+- Human approval required: `no`
+- Budget consumed: `None`
+- Budget remaining: `None`
+- Artifact SHA-256: `None`
+- State SHA-256: `None`
+- Exact continuation command: `{SCHEDULED_COMMAND}`
+- Latest error or blocker: {NO_ELIGIBLE_MESSAGE}
+
+The scheduler infrastructure is prepared for review but is not enabled. The
+commercial experiment remains proposed and unapproved. Archived shakedown and
+regression fixtures are excluded from live selection.
+"""
+            next_md = "# Next human action\n\nNo human action required\n"
+            return status_json, status_md, next_md
         _, goal, state, scorecard, escalation = self.records()
+        entry = self.current_entry()
         matching_events = [event for event in self.read_ledger() if event["experiment_id"] == goal["experiment_id"]]
         last_event = matching_events[-1]
         next_action = self.next_action(goal["experiment_id"])
@@ -1041,9 +1165,11 @@ class Lab:
         }
         status = {
             "schema_version": 1,
+            "run_id": run_id,
             "generated_from_state_at": state["updated_at"],
             "current_experiment": {
                 "experiment_id": goal["experiment_id"],
+                "experiment_kind": entry["experiment_kind"],
                 "state": state["state"],
                 "milestone": state["milestone"],
                 "blocker": state["blocker"],
@@ -1052,11 +1178,14 @@ class Lab:
                 "budget_consumed": state["budget_used"],
                 "budget_remaining": budget_remaining,
                 "human_approval_required": human_required,
-                "continuation_command": CONTINUATION_COMMAND,
+                "another_scheduled_run_useful": next_action["kind"] == "transition",
+                "continuation_command": SCHEDULED_COMMAND if scheduled else CONTINUATION_COMMAND,
+                "latest_error_or_blocker": state["blocker"],
                 "scorecard_status": scorecard["status"],
                 "ledger_event_count": state["ledger_event_count"],
                 "ledger_head_sha256": state["ledger_head_sha256"],
                 "artifact_sha256": last_event.get("artifact_sha256"),
+                "state_sha256": sha256_file(self.resolve(entry["state_path"])),
             },
             "open_escalation": {
                 "escalation_id": escalation["escalation_id"],
@@ -1085,13 +1214,17 @@ class Lab:
 ## Operator summary
 
 - Active experiment: `{goal['experiment_id']}`
+- Run ID: `{run_id}`
+- Experiment kind: `{entry['experiment_kind']}`
 - Current state: `{state['state']}`
 - Last completed transition: `{last_event['previous_state']}->{last_event['new_state']}`
 - Next permitted action: `{next_action['kind']}` — {next_action['reason']}
 - Budget consumed: `{json.dumps(state['budget_used'], sort_keys=True)}`
 - Budget remaining: `{json.dumps(budget_remaining, sort_keys=True)}`
 - Human approval required: `{'yes' if human_required else 'no'}`
-- Exact continuation command: `{CONTINUATION_COMMAND}`
+- Another scheduled run useful: `{'yes' if next_action['kind'] == 'transition' else 'no'}`
+- Exact continuation command: `{SCHEDULED_COMMAND if scheduled else CONTINUATION_COMMAND}`
+- Latest error or blocker: `{state['blocker']}`
 
 ## Integrity
 
@@ -1100,6 +1233,7 @@ class Lab:
 - Experiment ledger events: {state['ledger_event_count']}
 - Ledger head: `{state['ledger_head_sha256']}`
 - Last artifact SHA-256: `{last_event.get('artifact_sha256')}`
+- State SHA-256: `{sha256_file(self.resolve(entry['state_path']))}`
 - Scorecard: `{scorecard['status']}` / `{scorecard['decision']}`
 - Model calls: `{state['budget_used']['model_calls']}`
 - Paid cost: `${state['budget_used']['cost_usd']}`
@@ -1147,7 +1281,7 @@ local action. A fresh invocation of `{CONTINUATION_COMMAND}` returns exit code
         else:
             next_md = f"""# Next human action
 
-No human approval is required for the current next step.
+No human action required
 
 - Experiment: `{goal['experiment_id']}`
 - State: `{state['state']}`
@@ -1159,8 +1293,8 @@ transition, persists evidence and state, regenerates reports, and exits.
 """
         return status_json, status_md, next_md
 
-    def report(self, check: bool = False) -> None:
-        rendered = self.render_reports()
+    def report(self, check: bool = False, run_id: str | None = None, scheduled: bool = False) -> None:
+        rendered = self.render_reports(run_id=run_id, scheduled=scheduled)
         paths = (
             self.root / "reports" / "current-status.json",
             self.root / "reports" / "current-status.md",
@@ -1172,6 +1306,65 @@ transition, persists evidence and state, regenerates reports, and exits.
         if not check:
             for path, content in zip(paths, rendered):
                 path.write_text(content, encoding="utf-8")
+
+    def scheduled_step(
+        self,
+        timestamp: str | None = None,
+        run_id: str | None = None,
+        actor: str | None = None,
+    ) -> tuple[int, dict[str, Any]]:
+        timestamp = timestamp or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        run_id = run_id or str(uuid.uuid4())
+        config = load_config(self.root)
+        repository_root(self.repo_root)
+        selected = self.scheduler_entry()
+        expected_state: str | None = None
+        expected_hash: str | None = None
+        if selected:
+            state_path = self.resolve(selected["state_path"])
+            expected_state = load_json(state_path)["state"]
+            expected_hash = sha256_file(state_path)
+        lease = ExecutionLease(self.repo_root, config)
+        lease.acquire(
+            run_id,
+            timestamp,
+            selected["experiment_id"] if selected else None,
+            expected_state,
+            expected_hash,
+            actor,
+        )
+        outcome = "failed"
+        try:
+            preflight = preflight_worktree(self.repo_root, self.root, config, selected)
+            self.validate()
+            if selected is None:
+                outcome = "no_eligible_experiment"
+                return EXIT_OK, {
+                    "run_id": run_id,
+                    "result": outcome,
+                    "message": NO_ELIGIBLE_MESSAGE,
+                    "experiment_id": None,
+                    "transition": None,
+                    "preflight": preflight,
+                }
+            exit_code, result = self.run_one_step(selected["experiment_id"], timestamp)
+            self.report(run_id=run_id, scheduled=True)
+            outcome = result["result"]
+            return exit_code, {"run_id": run_id, "experiment_id": selected["experiment_id"], **result, "preflight": preflight}
+        except UnsafeWorktreeError as error:
+            recovery = write_transient_recovery_request(self.repo_root, timestamp, run_id, str(error))
+            outcome = "unsafe_worktree"
+            raise UnsafeWorktreeError(f"{error}; recovery request: {recovery}") from error
+        finally:
+            lease.release(timestamp, outcome)
+
+    def recover_stale_lease(self, timestamp: str | None = None, run_id: str | None = None) -> dict[str, Any]:
+        timestamp = timestamp or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        run_id = run_id or str(uuid.uuid4())
+        config = load_config(self.root)
+        repository_root(self.repo_root)
+        recovered = ExecutionLease(self.repo_root, config).recover_stale(timestamp, run_id)
+        return {"run_id": run_id, "result": "stale_lease_recovered", "recovered_run_id": recovered.get("run_id")}
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -1187,6 +1380,13 @@ def make_parser() -> argparse.ArgumentParser:
     report.add_argument("--check", action="store_true")
     step = subparsers.add_parser("run-one-step")
     step.add_argument("--timestamp", help="explicit RFC 3339 timestamp; defaults to current UTC time")
+    scheduled = subparsers.add_parser("scheduled-step")
+    scheduled.add_argument("--timestamp", help="explicit RFC 3339 timestamp; defaults to current UTC time")
+    scheduled.add_argument("--run-id", help="explicit run ID; defaults to a UUID")
+    scheduled.add_argument("--actor", help="optional scheduler actor identity")
+    recover = subparsers.add_parser("recover-stale-lease")
+    recover.add_argument("--timestamp", help="explicit RFC 3339 timestamp; defaults to current UTC time")
+    recover.add_argument("--run-id", help="explicit recovery run ID; defaults to a UUID")
     evaluate = subparsers.add_parser("evaluate")
     evaluate.add_argument("--results", type=Path, required=True)
     evaluate.add_argument("--timestamp", required=True)
@@ -1216,14 +1416,30 @@ def main(argv: list[str] | None = None) -> int:
                 lab.report()
             print(json.dumps({"exit_code": exit_code, **result}, indent=2))
             return exit_code
+        elif args.command == "scheduled-step":
+            exit_code, result = lab.scheduled_step(args.timestamp, args.run_id, args.actor)
+            print(json.dumps({"exit_code": exit_code, **result}, indent=2))
+            return exit_code
+        elif args.command == "recover-stale-lease":
+            result = lab.recover_stale_lease(args.timestamp, args.run_id)
+            print(json.dumps({"exit_code": EXIT_OK, **result}, indent=2))
         elif args.command == "evaluate":
             lab.validate()
             event = lab.evaluate(args.results, args.timestamp)
             print(json.dumps(event, indent=2))
         return EXIT_OK
-    except (LabValidationError, FileNotFoundError, json.JSONDecodeError, yaml.YAMLError) as error:
+    except (LabValidationError, FileNotFoundError, ValueError, json.JSONDecodeError, yaml.YAMLError) as error:
         print(f"error: {error}", file=sys.stderr)
         return EXIT_VALIDATION_FAILED
+    except LeaseHeldError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_LEASE_HELD
+    except UnsafeWorktreeError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_UNSAFE_WORKTREE
+    except SchedulerConfigError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_SCHEDULER_CONFIG
 
 
 if __name__ == "__main__":

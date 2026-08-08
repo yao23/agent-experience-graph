@@ -1,13 +1,19 @@
-schema_version: 1
-current_experiment_id: external-action-escalation-01
+schema_version: 2
+current_experiment_id: null
 experiments:
 - experiment_id: aeg-self-consumption-batch-01
+  experiment_kind: regression_fixture
+  operational_status: archived
+  scheduler_eligible: false
   state: completed
   evidence_path: dogfood/self-consumption-batch-01/batch-01-decision.md
   conclusion: Established experiment infrastructure and calibrated evidence boundaries,
     but produced zero promotion-ready experiences and no generalized-effectiveness,
     causal-efficiency, PMF, or commercial-demand evidence.
 - experiment_id: aeg-self-consumption-batch-02
+  experiment_kind: regression_fixture
+  operational_status: archived
+  scheduler_eligible: false
   state: completed
   evidence_path: dogfood/self-consumption-batch-02/batch-02-decision.md
   conclusion: Twenty-four candidates screened, zero qualified under corrected gates,
@@ -15,6 +21,9 @@ experiments:
     qualification, and no affirmative AEG retrieval benefit, generalized-effectiveness,
     causal-efficiency, PMF, or commercial-demand evidence.
 - experiment_id: aeg-assisted-agent-failure-recovery-service-v0
+  experiment_kind: commercial
+  operational_status: proposed
+  scheduler_eligible: false
   state: proposed
   goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
   state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json
@@ -23,6 +32,9 @@ experiments:
   conclusion: Proposed only; no authorization, execution, external write, or commercial
     claim.
 - experiment_id: repository-state-recovery-01
+  experiment_kind: shakedown
+  operational_status: archived
+  scheduler_eligible: false
   state: completed
   runner_kind: deterministic-normalization
   goal_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/goal.yaml
@@ -35,6 +47,9 @@ experiments:
   conclusion: Local orchestration fixture only; not AEG effectiveness, coding-agent
     intelligence, commercial-validation, or PMF evidence.
 - experiment_id: external-action-escalation-01
+  experiment_kind: regression_fixture
+  operational_status: archived
+  scheduler_eligible: false
   state: escalated
   runner_kind: external-action-escalation
   requested_action: external_write
