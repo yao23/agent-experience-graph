@@ -3,13 +3,13 @@
 ## Operator summary
 
 - Active experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- Run ID: `a9d72df5-7fd7-4724-af9f-aaccf5120f45`
+- Run ID: `0e3b7d22-15fb-49fe-800a-ad090d8986df`
 - Experiment kind: `commercial`
-- Current state: `ready`
-- Last completed transition: `preregistered->ready`
+- Current state: `running`
+- Last completed transition: `ready->running`
 - Next permitted action: `transition` — next lifecycle evidence may be recorded
-- Budget consumed: `{"commands": 1, "cost_usd": 0, "iterations": 1, "model_calls": 1, "tests": 1, "tokens": 0, "wall_minutes": 0}`
-- Budget remaining: `{"commands": 63, "cost_usd": 0, "iterations": 7, "model_calls": 7, "tests": 127, "tokens": 0, "wall_minutes": 480}`
+- Budget consumed: `{"commands": 2, "cost_usd": 0, "iterations": 2, "model_calls": 2, "tests": 2, "tokens": 0, "wall_minutes": 0}`
+- Budget remaining: `{"commands": 62, "cost_usd": 0, "iterations": 6, "model_calls": 6, "tests": 126, "tokens": 0, "wall_minutes": 480}`
 - Human approval required: `no`
 - Another scheduled run useful: `yes`
 - Exact continuation command: `python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit`
@@ -17,14 +17,14 @@
 
 ## Integrity
 
-- Milestone: entered ready
+- Milestone: entered running
 - Blocker: `None`
-- Experiment ledger events: 4
-- Ledger head: `b02aa4af9a0d5e97343beb589f771574a7759372c84ce5cae2057f23ce3c2d56`
+- Experiment ledger events: 5
+- Ledger head: `79f356d830cdb6d67e9779eb809906aaaba8785a3bb444c1c1499cea81f5ce08`
 - Last artifact SHA-256: `ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb`
-- State SHA-256: `411490f5a29e73bf43c5e457c99755c2a0886d4855aaadbc03b339ebf3815e94`
+- State SHA-256: `04fb299ad4a490bb567d863d1c6c51b56abb797570c571621aa960b390d994e1`
 - Scorecard: `incomplete` / `pending`
-- Model calls: `1`
+- Model calls: `2`
 - Paid cost: `$0`
 - External writes: `0`
 - Candidate promotions: `0`
