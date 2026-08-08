@@ -3,28 +3,28 @@
 ## Operator summary
 
 - Active experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- Run ID: `None`
+- Run ID: `a9d72df5-7fd7-4724-af9f-aaccf5120f45`
 - Experiment kind: `commercial`
-- Current state: `preregistered`
-- Last completed transition: `screening->preregistered`
+- Current state: `ready`
+- Last completed transition: `preregistered->ready`
 - Next permitted action: `transition` — next lifecycle evidence may be recorded
-- Budget consumed: `{"commands": 0, "cost_usd": 0, "iterations": 0, "model_calls": 0, "tests": 0, "tokens": 0, "wall_minutes": 0}`
-- Budget remaining: `{"commands": 64, "cost_usd": 0, "iterations": 8, "model_calls": 8, "tests": 128, "tokens": 0, "wall_minutes": 480}`
+- Budget consumed: `{"commands": 1, "cost_usd": 0, "iterations": 1, "model_calls": 1, "tests": 1, "tokens": 0, "wall_minutes": 0}`
+- Budget remaining: `{"commands": 63, "cost_usd": 0, "iterations": 7, "model_calls": 7, "tests": 127, "tokens": 0, "wall_minutes": 480}`
 - Human approval required: `no`
 - Another scheduled run useful: `yes`
-- Exact continuation command: `python3 autonomous-lab/scripts/lab.py run-one-step`
+- Exact continuation command: `python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit`
 - Latest error or blocker: `None`
 
 ## Integrity
 
-- Milestone: Phase 0 preparation authorized and preregistered; awaiting deterministic readiness validation
+- Milestone: entered ready
 - Blocker: `None`
-- Experiment ledger events: 3
-- Ledger head: `0f55023b894d05ebf17d74a0b15f5916a5be212bd7d1db49a022fb228c56a1af`
-- Last artifact SHA-256: `ded39f48e89335266062c4525ddc97aa04d51b31f524553e6d35cc8ceaf59cf8`
-- State SHA-256: `5f1140d891fbb81a9e09d5ccf3e51fc6d041d1260a7b23f1c522989f8d27bd63`
+- Experiment ledger events: 4
+- Ledger head: `b02aa4af9a0d5e97343beb589f771574a7759372c84ce5cae2057f23ce3c2d56`
+- Last artifact SHA-256: `ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb`
+- State SHA-256: `411490f5a29e73bf43c5e457c99755c2a0886d4855aaadbc03b339ebf3815e94`
 - Scorecard: `incomplete` / `pending`
-- Model calls: `0`
+- Model calls: `1`
 - Paid cost: `$0`
 - External writes: `0`
 - Candidate promotions: `0`

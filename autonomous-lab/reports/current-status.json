@@ -1,46 +1,46 @@
 {
   "schema_version": 1,
-  "run_id": null,
-  "generated_from_state_at": "2026-08-08T04:26:00Z",
+  "run_id": "a9d72df5-7fd7-4724-af9f-aaccf5120f45",
+  "generated_from_state_at": "2026-08-08T17:01:29.247682Z",
   "current_experiment": {
     "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
     "experiment_kind": "commercial",
-    "state": "preregistered",
-    "milestone": "Phase 0 preparation authorized and preregistered; awaiting deterministic readiness validation",
+    "state": "ready",
+    "milestone": "entered ready",
     "blocker": null,
-    "last_completed_transition": "screening->preregistered",
+    "last_completed_transition": "preregistered->ready",
     "next_permitted_action": {
       "kind": "transition",
       "reason": "next lifecycle evidence may be recorded",
-      "transition": "ready"
+      "transition": "running"
     },
     "budget_consumed": {
-      "iterations": 0,
-      "commands": 0,
-      "tests": 0,
-      "model_calls": 0,
+      "iterations": 1,
+      "commands": 1,
+      "tests": 1,
+      "model_calls": 1,
       "wall_minutes": 0,
       "tokens": 0,
       "cost_usd": 0
     },
     "budget_remaining": {
-      "iterations": 8,
-      "commands": 64,
-      "tests": 128,
-      "model_calls": 8,
+      "iterations": 7,
+      "commands": 63,
+      "tests": 127,
+      "model_calls": 7,
       "wall_minutes": 480,
       "tokens": 0,
       "cost_usd": 0
     },
     "human_approval_required": false,
     "another_scheduled_run_useful": true,
-    "continuation_command": "python3 autonomous-lab/scripts/lab.py run-one-step",
+    "continuation_command": "python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit",
     "latest_error_or_blocker": null,
     "scorecard_status": "incomplete",
-    "ledger_event_count": 3,
-    "ledger_head_sha256": "0f55023b894d05ebf17d74a0b15f5916a5be212bd7d1db49a022fb228c56a1af",
-    "artifact_sha256": "ded39f48e89335266062c4525ddc97aa04d51b31f524553e6d35cc8ceaf59cf8",
-    "state_sha256": "5f1140d891fbb81a9e09d5ccf3e51fc6d041d1260a7b23f1c522989f8d27bd63"
+    "ledger_event_count": 4,
+    "ledger_head_sha256": "b02aa4af9a0d5e97343beb589f771574a7759372c84ce5cae2057f23ce3c2d56",
+    "artifact_sha256": "ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb",
+    "state_sha256": "411490f5a29e73bf43c5e457c99755c2a0886d4855aaadbc03b339ebf3815e94"
   },
   "open_escalation": null,
   "historical_summary": {
