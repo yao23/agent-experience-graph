@@ -24,7 +24,7 @@ Before taking any action:
 Then execute exactly once:
 
 ```sh
-python3 autonomous-lab/scripts/lab.py scheduled-step
+python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit
 ```
 
 Do not loop or retry. Obey the result code:
@@ -44,9 +44,15 @@ release, secret use, payment, recruitment, user contact, offer publication,
 commercial action, model call, or network action without explicit recorded
 approval for that exact action. Never clean, reset, stash, discard, or overwrite
 user work. Never substitute a local action for an approval-gated action.
+Do not run `git add`, `git commit`, `git push`, `git reset`, `git stash`, or
+`git clean` yourself. The `--persist-commit` controller may create one local,
+un-pushed commit containing only its validated transition outputs. Any other
+changed path must fail closed with exit code `14`.
 
 After a successful safe step, confirm the command regenerated
 `autonomous-lab/reports/current-status.md`, `current-status.json`, and
-`next-human-action.md`. Summarize only the transition, objective evidence,
-budget consumed and remaining, exit code, and next permitted action. Do not ask
-for screenshots or conversational reconstruction.
+`next-human-action.md`, created exactly one allowlisted local commit, left the
+worktree clean, and did not push it. Summarize only the transition, objective
+evidence, persistence commit, budget consumed and remaining, exit code, and
+next permitted action. Do not ask for screenshots or conversational
+reconstruction.

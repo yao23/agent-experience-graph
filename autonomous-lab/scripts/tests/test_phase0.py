@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -92,6 +95,130 @@ class Phase0Tests(unittest.TestCase):
         code, result = self.lab().run_one_step(EXPERIMENT, "2026-08-08T06:00:00Z")
         self.assertEqual(code, EXIT_BUDGET_EXHAUSTED)
         self.assertEqual(result["state"], "budget_exhausted")
+
+
+class Phase0ScheduledPersistenceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.repo = Path(self.temp.name) / "repo"
+        self.root = self.repo / "autonomous-lab"
+        shutil.copytree(SOURCE_LAB, self.root)
+        for batch in ("self-consumption-batch-01", "self-consumption-batch-02"):
+            decision = "batch-01-decision.md" if batch.endswith("01") else "batch-02-decision.md"
+            path = self.repo / "dogfood" / batch
+            path.mkdir(parents=True)
+            (path / decision).write_text("historical evidence fixture\n", encoding="utf-8")
+        (self.repo / "experiences").mkdir()
+        shutil.copy2(
+            SOURCE_REPO / "experiences" / "verified.json",
+            self.repo / "experiences" / "verified.json",
+        )
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "user.email", "scheduler-test@example.invalid"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Scheduler Test"], cwd=self.repo, check=True)
+        subprocess.run(["git", "add", "."], cwd=self.repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "phase0 fixture"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "--unset", "user.email"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "--unset", "user.name"], cwd=self.repo, check=True)
+        self.script = self.root / "scripts" / "lab.py"
+        self.env = {
+            "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+            "PYTHONPYCACHEPREFIX": str(Path(self.temp.name) / "pycache"),
+        }
+
+    def tearDown(self) -> None:
+        self.temp.cleanup()
+
+    def test_four_independent_scheduled_runs_commit_only_transition_outputs(self) -> None:
+        verified_path = self.repo / "experiences" / "verified.json"
+        verified_before = verified_path.read_bytes()
+        entry = Lab(self.root).current_entry(EXPERIMENT)
+        business_hashes = {
+            path: hashlib.sha256((self.repo / path).read_bytes()).hexdigest()
+            for path in entry["phase0_artifact_paths"]
+            if not path.endswith("phase0-scorecard.json")
+        }
+        ledger_path = self.root / "ledger" / "events.jsonl"
+        prior_lines = ledger_path.read_text().splitlines()
+        initial_commit_count = int(
+            subprocess.run(
+                ["git", "rev-list", "--count", "HEAD"], cwd=self.repo,
+                text=True, capture_output=True, check=True,
+            ).stdout
+        )
+        expected_states = ("ready", "running", "evaluating", "completed")
+        expected_codes = (0, 0, 0, EXIT_APPROVAL_REQUIRED)
+        experiment_dir = "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service"
+        common_paths = {
+            "autonomous-lab/experiments/registry.yaml",
+            "autonomous-lab/ledger/events.jsonl",
+            "autonomous-lab/reports/current-status.json",
+            "autonomous-lab/reports/current-status.md",
+            "autonomous-lab/reports/next-human-action.md",
+            f"{experiment_dir}/state.json",
+            f"{experiment_dir}/phase0-validation.json",
+        }
+        expected_paths = {
+            "ready": common_paths,
+            "running": common_paths,
+            "evaluating": common_paths | {f"{experiment_dir}/scorecard.json"},
+            "completed": common_paths | {
+                f"{experiment_dir}/scorecard.json",
+                f"{experiment_dir}/phase0-scorecard.json",
+                f"{experiment_dir}/escalation.json",
+            },
+        }
+        for index, (state_name, expected_code) in enumerate(zip(expected_states, expected_codes), 1):
+            result = subprocess.run(
+                [
+                    sys.executable, str(self.script), "--root", str(self.root),
+                    "scheduled-step", "--persist-commit",
+                    "--timestamp", f"2026-08-08T09:0{index}:00Z",
+                    "--run-id", f"phase0-persist-{index}",
+                ],
+                cwd=self.repo, env=self.env, text=True, capture_output=True, check=False,
+            )
+            self.assertEqual(result.returncode, expected_code, result.stderr or result.stdout)
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["state"], state_name)
+            self.assertEqual(payload["transition"].split("->")[1], state_name)
+            self.assertFalse(payload["persistence"]["pushed"])
+            self.assertEqual(set(payload["persistence"]["paths"]), expected_paths[state_name])
+            self.assertEqual(
+                subprocess.run(
+                    ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+                    cwd=self.repo, text=True, capture_output=True, check=True,
+                ).stdout,
+                "",
+            )
+            current_lines = ledger_path.read_text().splitlines()
+            self.assertEqual(current_lines[:len(prior_lines)], prior_lines)
+            self.assertEqual(len(current_lines), len(prior_lines) + 1)
+            prior_lines = current_lines
+            self.assertEqual(verified_path.read_bytes(), verified_before)
+
+        commit_count = int(
+            subprocess.run(
+                ["git", "rev-list", "--count", "HEAD"], cwd=self.repo,
+                text=True, capture_output=True, check=True,
+            ).stdout
+        )
+        self.assertEqual(commit_count, initial_commit_count + 4)
+        self.assertEqual(
+            subprocess.run(
+                ["git", "show", "-s", "--format=%an <%ae>", "HEAD"], cwd=self.repo,
+                text=True, capture_output=True, check=True,
+            ).stdout.strip(),
+            "AEG Autonomous Lab <aeg-autonomous-lab@localhost.invalid>",
+        )
+        for path, digest in business_hashes.items():
+            self.assertEqual(hashlib.sha256((self.repo / path).read_bytes()).hexdigest(), digest)
+        entry, _, state, phase0_scorecard, escalation = Lab(self.root).records(EXPERIMENT)
+        self.assertEqual(state["state"], "completed")
+        self.assertFalse(entry["scheduler_eligible"])
+        self.assertEqual(escalation["status"], "open")
+        self.assertEqual(phase0_scorecard["metrics"]["external_actions"], 0)
+        self.assertEqual(state["verified_library_sha256"], hashlib.sha256(verified_before).hexdigest())
 
 
 if __name__ == "__main__":
