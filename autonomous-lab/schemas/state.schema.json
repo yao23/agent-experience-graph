@@ -37,6 +37,21 @@
     "ledger_event_count": {"type": "integer", "minimum": 1},
     "ledger_head_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "verified_library_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    ,"approved_phase": {"type": "string", "minLength": 1}
+    ,"phase_run_count": {"type": "integer", "minimum": 0}
+    ,"approval_record_path": {"type": "string", "minLength": 1}
+    ,"approval_event_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    ,"approval_file_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    ,"usage_observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_calls", "tokens", "cost_usd"],
+      "properties": {
+        "model_calls": {"type": "string", "minLength": 1},
+        "tokens": {"enum": ["available", "unavailable", "not_applicable"]},
+        "cost_usd": {"enum": ["available", "unavailable", "not_applicable"]}
+      }
+    }
   },
   "$defs": {
     "state": {"enum": ["proposed", "screening", "preregistered", "ready", "running", "evaluating", "completed", "rejected", "blocked", "budget_exhausted", "contaminated", "escalated", "cancelled"]}

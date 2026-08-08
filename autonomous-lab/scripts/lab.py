@@ -17,6 +17,8 @@ import uuid
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
+from phase0 import Phase0ValidationError, validate_package
+
 from scheduler import (
     ExecutionLease,
     LeaseHeldError,
@@ -321,6 +323,23 @@ class Lab:
         if result.returncode != 0:
             raise LabValidationError(f"could not read prior ledger from {base_ref}")
         self.validate_append_only(result.stdout)
+        for entry in self.registry.get("experiments", []):
+            approval_path = entry.get("approval_record_path")
+            if not approval_path:
+                continue
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{base_ref}:{approval_path}"],
+                cwd=self.repo_root, capture_output=True, check=False,
+            )
+            if exists.returncode != 0:
+                continue
+            previous = subprocess.run(
+                ["git", "show", f"{base_ref}:{approval_path}"],
+                cwd=self.repo_root, text=True, capture_output=True, check=True,
+            ).stdout.splitlines()
+            current = self.resolve(approval_path).read_text(encoding="utf-8").splitlines()
+            if len(current) < len(previous) or current[:len(previous)] != previous:
+                raise LabValidationError("append-only approval history was removed or overwritten")
 
     def validate_semantics(
         self,
@@ -443,6 +462,11 @@ class Lab:
             self.schema_validate(escalation, "escalation", f"{label} escalation")
             self.validate_semantics(entry, goal, state, scorecard, escalation)
             self.validate_ledger(goal, state)
+            if entry.get("runner_kind") == "phase0-preparation":
+                try:
+                    validate_package(self.repo_root, entry, state)
+                except Phase0ValidationError as error:
+                    raise LabValidationError(str(error)) from error
         if base_ref:
             self.validate_git_history(base_ref)
         selected = self.scheduler_entry()
@@ -876,6 +900,114 @@ class Lab:
         self._persist_event(entry, state, event)
         return event
 
+    def _run_phase0_step(
+        self,
+        entry: dict[str, Any],
+        goal: dict[str, Any],
+        state: dict[str, Any],
+        scorecard: dict[str, Any],
+        escalation: dict[str, Any],
+        transition: str,
+        timestamp: str,
+    ) -> dict[str, Any]:
+        """Validate the bounded package and record exactly one Phase 0 transition."""
+        budget_before = copy.deepcopy(state["budget_used"])
+        state["phase_run_count"] += 1
+        self._increment_budget(state, iterations=1, commands=1, tests=1, model_calls=1)
+        if state["phase_run_count"] > 8:
+            raise LabValidationError("Phase 0 scheduled/model-assisted run limit reached")
+        try:
+            validation = validate_package(self.repo_root, entry, state)
+        except Phase0ValidationError as error:
+            raise LabValidationError(str(error)) from error
+        validation.update({"validated_at": timestamp, "transition": transition})
+        validation_path = self.resolve(entry["runtime_evidence_paths"][0])
+        self._write_json(validation_path, validation)
+        artifact_digest = hashlib.sha256()
+        for path in entry["phase0_artifact_paths"]:
+            artifact_digest.update(path.encode())
+            artifact_digest.update(self.resolve(path).read_bytes())
+        artifact_hash = artifact_digest.hexdigest()
+        acceptance = [
+            {"test_id": "phase0-artifact-package", "passed": True, "evidence": self._repository_relative(validation_path)},
+            {"test_id": "phase0-boundary-oracle", "passed": True, "evidence": self._repository_relative(validation_path)},
+        ]
+        evidence = [self._repository_relative(validation_path), entry["approval_record_path"]]
+
+        if transition == "ready":
+            state["milestone"] = "Phase 0 package passed deterministic readiness validation"
+        elif transition == "running":
+            state["milestone"] = "Phase 0 repository-local package validation running"
+        elif transition == "evaluating":
+            state["milestone"] = "Phase 0 package passed its preregistered deterministic oracle"
+            scorecard["acceptance_results"] = acceptance
+            scorecard["metrics"]["phase0_artifacts_complete"] = 1
+            scorecard["metrics"]["model_calls"] = state["budget_used"]["model_calls"]
+            scorecard["decision"] = "continue"
+            self._write_json(self.resolve(entry["scorecard_path"]), scorecard)
+        elif transition == "completed":
+            phase_scorecard_path = self.resolve(entry["runtime_evidence_paths"][1])
+            phase_scorecard = load_json(phase_scorecard_path)
+            phase_scorecard.update(
+                {
+                    "status": "completed",
+                    "artifact_checks_passed": True,
+                    "internal_links_resolve": True,
+                    "claims_match_batch_evidence": True,
+                    "unsupported_claims_absent": True,
+                    "private_or_proprietary_information_absent": True,
+                    "sample_is_sanitized_and_reproducible": True,
+                    "pricing_labeled_hypothesis": True,
+                    "outreach_is_draft_only": True,
+                    "scheduled_or_model_assisted_runs": state["phase_run_count"],
+                    "model_calls": state["budget_used"]["model_calls"],
+                    "decision": "Phase 0 complete; human approval required for any Phase 1 recruitment",
+                }
+            )
+            self._write_json(phase_scorecard_path, phase_scorecard)
+            scorecard["status"] = "evaluated"
+            scorecard["acceptance_results"] = acceptance
+            scorecard["metrics"]["phase0_artifacts_complete"] = 1
+            scorecard["metrics"]["model_calls"] = state["budget_used"]["model_calls"]
+            scorecard["decision"] = "complete"
+            self._write_json(self.resolve(entry["scorecard_path"]), scorecard)
+            escalation.update(
+                {
+                    "escalation_id": "failure-recovery-v0-phase1-recruitment",
+                    "created_at": timestamp,
+                    "status": "open",
+                    "reason_code": "approval_required",
+                    "summary": "Phase 0 is complete; Phase 1 recruitment and every external action remain blocked.",
+                    "evidence": [self._repository_relative(validation_path), self._repository_relative(phase_scorecard_path)],
+                    "requested_decision": "whether to begin Phase 1 seed-user recruitment",
+                    "allowed_resolutions": ["keep the service repository-local and stopped", "authorize a separately preregistered Phase 1 recruitment plan"],
+                    "tradeoffs": ["Stopping preserves the zero-external-action boundary.", "Recruitment could test demand but requires new privacy, outreach, budget, and external-action approval."],
+                    "recommended_choice": "Review Phase 0 evidence before deciding whether to authorize a separate Phase 1 plan.",
+                    "resolved_at": None,
+                    "resolution": None,
+                }
+            )
+            self._write_json(self.resolve(entry["escalation_path"]), escalation)
+            entry["scheduler_eligible"] = False
+            entry["operational_status"] = "disabled"
+            entry["conclusion"] = "Phase 0 package preparation completed with zero external actions; Phase 1 seed-user recruitment requires a separate human approval."
+        else:
+            raise LabValidationError(f"Phase 0 runner does not implement transition {transition}")
+
+        budget_after = copy.deepcopy(state["budget_used"])
+        event = self._event_for_transition(
+            goal, state, transition, evidence, timestamp, "lab.py", SCHEDULED_COMMAND,
+            acceptance, budget_before, budget_after,
+            {"passed": True, "summary": "repository-local Phase 0 package validation passed"},
+            artifact_hash, actor_type="bounded_phase0_controller",
+        )
+        self._persist_event(entry, state, event)
+        if transition == "completed":
+            state["milestone"] = "Phase 0 completed; awaiting a human decision on Phase 1 seed-user recruitment"
+            state["blocker"] = "Phase 1 recruitment is not approved"
+            self._write_json(self.resolve(entry["state_path"]), state)
+        return event
+
     def _run_external_escalation_step(
         self,
         entry: dict[str, Any],
@@ -1056,9 +1188,16 @@ class Lab:
             event = self._run_normalization_step(entry, goal, state, scorecard, action["transition"], timestamp)
         elif entry.get("runner_kind") == "external-action-escalation":
             event = self._run_external_escalation_step(entry, goal, state, scorecard, escalation, action, timestamp)
+        elif entry.get("runner_kind") == "phase0-preparation":
+            if action["kind"] != "transition":
+                raise LabValidationError(f"Phase 0 runner cannot perform action {action['kind']}")
+            event = self._run_phase0_step(entry, goal, state, scorecard, escalation, action["transition"], timestamp)
         else:
             raise LabValidationError("current experiment has no autonomous local runner; approval is required")
-        return EXIT_APPROVAL_REQUIRED if event["new_state"] == "escalated" else EXIT_OK, {
+        approval_required = event["new_state"] == "escalated" or (
+            entry.get("runner_kind") == "phase0-preparation" and event["new_state"] == "completed"
+        )
+        return EXIT_APPROVAL_REQUIRED if approval_required else EXIT_OK, {
             "result": "one_step_completed",
             "previous_state": event["previous_state"],
             "state": event["new_state"],
@@ -1141,9 +1280,9 @@ class Lab:
 - Exact continuation command: `{SCHEDULED_COMMAND}`
 - Latest error or blocker: {NO_ELIGIBLE_MESSAGE}
 
-The scheduler infrastructure is prepared for review but is not enabled. The
-commercial experiment remains proposed and unapproved. Archived shakedown and
-regression fixtures are excluded from live selection.
+No experiment is currently scheduler-eligible. Archived shakedown and
+regression fixtures remain excluded from live selection, and no experiment is
+implicitly enabled by this report.
 """
             next_md = "# Next human action\n\nNo human action required\n"
             return status_json, status_md, next_md

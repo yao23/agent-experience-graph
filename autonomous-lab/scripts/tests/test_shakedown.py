@@ -67,6 +67,10 @@ class ShakedownIntegrationTests(unittest.TestCase):
     def reset_fixture(self, current_id: str) -> None:
         registry_path = self.root / "experiments" / "registry.yaml"
         registry = yaml.safe_load(registry_path.read_text())
+        registry["experiments"] = [
+            entry for entry in registry["experiments"]
+            if entry["experiment_id"] != "aeg-assisted-agent-failure-recovery-service-v0"
+        ]
         registry["current_experiment_id"] = current_id
         for entry in registry["experiments"]:
             if entry["experiment_id"] in {RECOVERY_ID, EXTERNAL_ID}:
@@ -227,9 +231,9 @@ class ShakedownIntegrationTests(unittest.TestCase):
         current_events = [event for event in events if event["experiment_id"] == EXTERNAL_ID]
         self.assertEqual(state["ledger_head_sha256"], current_events[-1]["event_sha256"])
         report = json.loads((clean_root / "reports" / "current-status.json").read_text())
-        self.assertIsNone(report["experiment_id"])
-        self.assertFalse(report["another_scheduled_run_useful"])
-        self.assertEqual(report["latest_error_or_blocker"], "No scheduler-eligible experiment is currently approved.")
+        self.assertEqual(report["current_experiment"]["experiment_id"], "aeg-assisted-agent-failure-recovery-service-v0")
+        self.assertTrue(report["current_experiment"]["another_scheduled_run_useful"])
+        self.assertIsNone(report["current_experiment"]["latest_error_or_blocker"])
         all_text = "\n".join(path.read_text(errors="ignore") for path in clean_root.rglob("*") if path.is_file())
         self.assertNotIn("agent-experience-graph-" + "self-consumption-batch", all_text)
         self.assertNotIn("/" + "Users" + "/", all_text)

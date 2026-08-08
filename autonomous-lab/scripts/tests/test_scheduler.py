@@ -16,6 +16,7 @@ import yaml
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from lab import Lab  # noqa: E402
 from scheduler import ExecutionLease, LeaseHeldError, load_config  # noqa: E402
 
 
@@ -44,6 +45,19 @@ class SchedulerIntegrationTests(unittest.TestCase):
         experiences = self.repo / "experiences"
         experiences.mkdir()
         shutil.copy2(SOURCE_REPO / "experiences" / "verified.json", experiences / "verified.json")
+        registry_path = self.root / "experiments" / "registry.yaml"
+        registry = yaml.safe_load(registry_path.read_text())
+        registry["current_experiment_id"] = None
+        commercial = next(
+            item for item in registry["experiments"]
+            if item["experiment_id"] == "aeg-assisted-agent-failure-recovery-service-v0"
+        )
+        commercial.update({"operational_status": "proposed", "scheduler_eligible": False, "state": "proposed"})
+        for key in tuple(commercial):
+            if key.endswith("_path") or key.endswith("_paths"):
+                commercial.pop(key)
+        registry_path.write_text(yaml.safe_dump(registry, sort_keys=False), encoding="utf-8")
+        Lab(self.root).report()
         subprocess.run(["git", "init", "-q", "-b", "main"], cwd=self.repo, check=True)
         subprocess.run(["git", "config", "user.email", "scheduler-test@example.invalid"], cwd=self.repo, check=True)
         subprocess.run(["git", "config", "user.name", "Scheduler Test"], cwd=self.repo, check=True)

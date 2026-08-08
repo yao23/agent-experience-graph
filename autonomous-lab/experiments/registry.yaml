@@ -1,5 +1,5 @@
 schema_version: 2
-current_experiment_id: null
+current_experiment_id: aeg-assisted-agent-failure-recovery-service-v0
 experiments:
 - experiment_id: aeg-self-consumption-batch-01
   experiment_kind: regression_fixture
@@ -22,15 +22,41 @@ experiments:
     causal-efficiency, PMF, or commercial-demand evidence.
 - experiment_id: aeg-assisted-agent-failure-recovery-service-v0
   experiment_kind: commercial
-  operational_status: proposed
-  scheduler_eligible: false
-  state: proposed
+  operational_status: active
+  scheduler_eligible: true
+  approved_phase: phase0_preparation
+  state: preregistered
+  runner_kind: phase0-preparation
   goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
   state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json
   scorecard_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/scorecard.json
   escalation_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/escalation.json
-  conclusion: Proposed only; no authorization, execution, external write, or commercial
-    claim.
+  approval_record_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/approvals/phase0-approvals.jsonl
+  approval_event_sha256: d22bc8999e4dbe5fd7a578ba24c99f8a21b396919bc44b1e2e84d82f257dac16
+  approval_file_sha256: 5f57927f3ff28dd937ab0654d4aa56ae3f678658629d6c1d08f960d1feb22384
+  runtime_evidence_paths:
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json
+  phase0_artifact_paths:
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/service-spec.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/target-customer.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/problem-statement.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/intake-questionnaire.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/eligibility-checklist.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/delivery-workflow.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/customer-report-template.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/sanitized-sample-report.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/pricing-hypotheses.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/landing-page-copy.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/outreach-drafts.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/baseline-treatment-protocol.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/metrics-plan.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/privacy-and-ip-boundaries.md
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json
+  - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-decision.md
+  conclusion: Only bounded repository-local Phase 0 preparation is approved. No
+    customer contact, publication, payment, real repair, baseline or treatment arm,
+    external write, promotion, release, Phase 1, or effectiveness claim is authorized.
 - experiment_id: repository-state-recovery-01
   experiment_kind: shakedown
   operational_status: archived

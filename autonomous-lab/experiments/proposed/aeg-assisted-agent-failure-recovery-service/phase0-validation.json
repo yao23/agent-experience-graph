@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "approved_phase": "phase0_preparation",
+  "validated_at": "2026-08-08T04:26:00Z",
+  "transition": "activation",
+  "approval_event_sha256": "d22bc8999e4dbe5fd7a578ba24c99f8a21b396919bc44b1e2e84d82f257dac16",
+  "approval_file_sha256": "5f57927f3ff28dd937ab0654d4aa56ae3f678658629d6c1d08f960d1feb22384",
+  "required_artifacts": 16,
+  "artifact_checks_passed": true,
+  "internal_links_checked": 0,
+  "internal_links_resolve": true,
+  "claims_and_evidence_boundaries_passed": true,
+  "sensitive_content_absent": true,
+  "verified_library_modifications": 0,
+  "external_actions": 0,
+  "customer_contacts": 0,
+  "paid_experiments": 0,
+  "baseline_treatment_repairs": 0,
+  "phase_run_count": 0,
+  "result": "valid"
+}

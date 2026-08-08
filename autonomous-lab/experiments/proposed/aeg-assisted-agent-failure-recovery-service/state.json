@@ -1,15 +1,25 @@
 {
   "schema_version": 1,
   "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "state": "proposed",
-  "milestone": "design recorded; awaiting authorization to screen",
-  "blocker": "begin_experiment approval is pending",
-  "updated_at": "2026-08-08T00:55:00Z",
+  "state": "preregistered",
+  "milestone": "Phase 0 preparation authorized and preregistered; awaiting deterministic readiness validation",
+  "blocker": null,
+  "updated_at": "2026-08-08T04:26:00Z",
+  "approved_phase": "phase0_preparation",
+  "phase_run_count": 0,
+  "approval_record_path": "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/approvals/phase0-approvals.jsonl",
+  "approval_event_sha256": "d22bc8999e4dbe5fd7a578ba24c99f8a21b396919bc44b1e2e84d82f257dac16",
+  "approval_file_sha256": "5f57927f3ff28dd937ab0654d4aa56ae3f678658629d6c1d08f960d1feb22384",
+  "usage_observability": {
+    "model_calls": "tracked by scheduled/model-assisted run count",
+    "tokens": "unavailable",
+    "cost_usd": "unavailable"
+  },
   "budget_used": {"iterations": 0, "commands": 0, "tests": 0, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
   "retry_count": 0,
   "approvals": {
-    "begin_experiment": "pending",
-    "model_or_agent_execution": "pending",
+    "begin_experiment": "approved",
+    "model_or_agent_execution": "approved",
     "paid_execution": "pending",
     "external_project_write": "pending",
     "contact_external_user": "pending",
@@ -19,7 +29,7 @@
     "release_publication": "pending",
     "secret_creation_or_use": "pending"
   },
-  "ledger_event_count": 1,
-  "ledger_head_sha256": "e3e541d451f65a290694fe45e19cd7303159b23e8918954caaf5fe96eba47c62",
+  "ledger_event_count": 3,
+  "ledger_head_sha256": "0f55023b894d05ebf17d74a0b15f5916a5be212bd7d1db49a022fb228c56a1af",
   "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
 }

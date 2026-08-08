@@ -1,27 +1,27 @@
 schema_version: 1
 experiment_id: aeg-assisted-agent-failure-recovery-service-v0
-experiment_version: 1
+experiment_version: 2
 title: AEG-assisted Agent Failure Recovery Service
-hypothesis: For maintainers with a reproducible failed agent task, a preregistered AEG-assisted recovery treatment can improve objective recovery success over a no-retrieval baseline without increasing contamination or external-write risk.
-customer_segment: Maintainers and agent-platform teams with reproducible failed software-engineering agent tasks
-customer_problem: Failed agent runs are expensive to diagnose, prior successful recovery experience is hard to find, and unverified reuse can create false confidence.
-deliverable_type: sanitized recovery evidence package and deterministic scorecard
+hypothesis: A bounded repository-local Phase 0 can produce an internally reviewable service package with enforceable evidence, privacy, pricing, and evaluation boundaries without contacting users, publishing, running repairs, or claiming AEG effectiveness.
+customer_segment: Independent developers and small engineering teams using Playwright, CI systems, or coding agents who experience repeated failures, ineffective retries, or difficult-to-diagnose regressions
+customer_problem: Repeated agent and CI failures consume diagnosis time, while unsupported reuse claims and unclear evidence boundaries make recovery services difficult to trust.
+deliverable_type: unpublished Phase 0 service package, templates, sample report, protocols, and deterministic scorecard
 acceptance_tests:
-  - id: recovery-oracle
-    objective: The failed task passes its preregistered project-native objective oracle after treatment.
-    command: project-specific command frozen before any diagnosis
-    oracle: Exit status is zero and the preregistered failing regression passes without unrelated regressions.
-  - id: provenance-oracle
-    objective: All retrieval, freshness, patch, and execution evidence is attributable and sanitized.
+  - id: phase0-artifact-package
+    objective: Every required Phase 0 artifact exists, links resolve, and the custom scorecard is complete only after deterministic validation.
     command: python3 autonomous-lab/scripts/lab.py validate
-    oracle: The lab validator exits zero with an intact ledger and no missing evidence.
+    oracle: The lab validator exits zero and phase0-validation.json records every required check as passed.
+  - id: phase0-boundary-oracle
+    objective: The package contains no unsupported effectiveness or PMF claim, private material, external action, published offer, or authorization beyond Phase 0.
+    command: python3 autonomous-lab/scripts/lab.py validate
+    oracle: Boundary, privacy, sensitive-content, approval-scope, and verified-library checks all pass.
 objective_oracle:
-  kind: test
-  description: A project-native regression that reproduces the failure before treatment and passes afterward, frozen before diagnosis.
-  pass_condition: Each comparison pair has an objective pre-failure and post-treatment pass, with no preregistered regression failures.
-baseline: A blind recovery attempt with AEG retrieval disabled after freshness and contribution gates pass.
-treatment: A separate blind recovery attempt with AEG queried before diagnosis and only verified, relevant experiences eligible for reuse.
-minimum_comparison_pairs: 3
+  kind: schema
+  description: Deterministic repository-local validation of required artifacts, links, approval scope, evidence claims, privacy boundaries, budgets, and next-decision wording.
+  pass_condition: All Phase 0 acceptance checks pass without network, external writes, repair execution, publication, or verified-library mutation.
+baseline: Future Phase 1 design only; a blind recovery attempt with AEG retrieval disabled after freshness, privacy, contribution, and oracle gates pass. No baseline runs in Phase 0.
+treatment: Future Phase 1 design only; a separate blind recovery attempt with AEG queried before diagnosis and only verified relevant experiences eligible. No treatment runs in Phase 0.
+minimum_comparison_pairs: 1
 metrics:
   quality: [task success rate, first-pass success, regression-free rate, improvement from delivery N compared with delivery 1]
   time: [time to verified repair]
@@ -45,22 +45,21 @@ commercial_gates:
   - a preregistered baseline and treatment comparison
   - no promotion based only on synthetic or historical replay
 budgets:
-  max_iterations: 5
-  max_commands: 120
-  max_tests: 300
-  max_model_calls: 0
+  max_iterations: 8
+  max_commands: 64
+  max_tests: 128
+  max_model_calls: 8
   max_wall_clock_hours: 8
   max_tokens: 0
   max_model_cost_usd: 0
   max_same_failure_repeats: 3
 stop_conditions:
-  - any freshness or contribution gate fails
-  - objective oracle is unavailable or changes after diagnosis
-  - evidence blindness is contaminated
+  - any action exceeds repository-local Phase 0 preparation
+  - any external contact, write, publication, payment, repair execution, promotion, release, secret use, or personal-information collection would be required
+  - any artifact, link, evidence claim, privacy boundary, approval hash, or verified-library check fails
   - any command, test, time, token, cost, or retry budget is exhausted
-  - external value cannot be observed without unapproved external contact or write
-  - fewer than 3 real external users can be preregistered after approval
-  - no path exists to one independently accepted deliverable and either one repeat user or one paid diagnostic
+  - eight scheduled or model-assisted Phase 0 runs are consumed
+  - Phase 1 recruitment or external validation would begin without a new approval
 approval_gates:
   begin_experiment: required
   model_or_agent_execution: required
@@ -73,12 +72,14 @@ approval_gates:
   release_publication: required
   secret_creation_or_use: required
 allowed_actions:
-  - validate repository-local control-plane records
-  - generate deterministic status and escalation reports
-  - inspect public metadata read-only after begin_experiment approval
+  - repository-local planning and creation of the approved Phase 0 artifacts
+  - read existing public AEG repository evidence within its documented limitations
+  - generate and validate service specifications, templates, unpublished copy and drafts, pricing hypotheses, protocols, reports, and scorecards
+  - perform one repository-local Phase 0 transition per scheduled run, up to eight runs
 forbidden_actions:
-  - start screening or execution without begin_experiment approval
-  - run a model or agent without model_or_agent_execution approval
-  - incur paid cost without paid_execution approval
-  - contact a user or write to an external project without the corresponding approval
-  - publish, promote, release, or modify the verified library without explicit approval
+  - contact users or developers, collect personal information, or write to external projects
+  - publish or release any website, post, package, extension, offer, outreach message, price, or artifact
+  - charge money, accept payment, use credentials or secrets, or incur a paid experiment cost
+  - start a real repair, baseline arm, treatment arm, Phase 1 recruitment, or Batch 03
+  - promote an experience or modify experiences/verified.json
+  - claim AEG repair improvement, generalized effectiveness, external acceptance, commercial demand, or PMF from Phase 0

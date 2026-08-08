@@ -16,7 +16,9 @@ Before taking any action:
    `autonomous-lab/reports/next-human-action.md`, and
    `autonomous-lab/ledger/events.jsonl`.
 4. If exactly one scheduler-eligible experiment exists, read its `goal.yaml`,
-   `state.json`, `scorecard.json`, escalation record, and referenced evidence.
+   `state.json`, `scorecard.json`, escalation record, referenced evidence, and
+   any hash-linked approval record. For the failure-recovery service, the only
+   active authorization is `phase0_preparation`; Phase 1 remains blocked.
 5. Run `python3 autonomous-lab/scripts/lab.py validate` before mutation.
 
 Then execute exactly once:

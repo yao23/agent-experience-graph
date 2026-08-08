@@ -2,23 +2,22 @@
   "schema_version": 1,
   "escalation_id": "failure-recovery-v0-begin-approval",
   "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "created_at": "2026-08-08T00:55:00Z",
-  "status": "open",
+  "created_at": "2026-08-08T04:25:00Z",
+  "status": "resolved",
   "reason_code": "approval_required",
-  "summary": "The proposed commercial experiment requires human approval before screening or any model, agent, paid, or external action.",
+  "summary": "Repository-local Phase 0 preparation is approved; external validation and Phase 1 remain blocked.",
   "evidence": [
-    "goal.yaml approval_gates.begin_experiment is required",
-    "state.json records begin_experiment as pending",
-    "No experiment execution or external write is recorded"
+    "approvals/phase0-approvals.jsonl contains the scoped authorization",
+    "state.json links the approval event and file hashes",
+    "External writes, customer contacts, paid experiments, and verified-library modifications remain limited to zero"
   ],
-  "requested_decision": "Approve, revise, or reject the proposed experiment design before screening begins.",
-  "allowed_resolutions": ["approve screening only", "request design revision", "reject experiment"],
+  "requested_decision": "No human decision is required during authorized repository-local Phase 0 preparation.",
+  "allowed_resolutions": ["continue bounded Phase 0 preparation", "stop Phase 0"],
   "tradeoffs": [
-    "Approving screening tests candidate availability but still supplies no authority to recruit, execute models, spend, or write externally.",
-    "Revising the design delays screening but can improve causal and commercial measurement before any exposure.",
-    "Rejecting preserves all budgets and closes this experiment family without testing demand."
+    "Continuing may improve the reviewability of the unpublished service package but supplies no external-value or repair-effect evidence.",
+    "Stopping preserves all external, payment, publication, promotion, and repair-execution boundaries."
   ],
-  "recommended_choice": "Request design review, then approve screening only if the baseline, treatment, customer access, and external acceptance path are credible.",
-  "resolved_at": null,
-  "resolution": null
+  "recommended_choice": "Continue only the bounded repository-local Phase 0 package validation.",
+  "resolved_at": "2026-08-08T04:25:00Z",
+  "resolution": "Phase 0 preparation only was approved; Phase 1 and all external actions remain unapproved."
 }
