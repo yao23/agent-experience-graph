@@ -4,7 +4,8 @@
 
 - Scheduler infrastructure: **ready for review**.
 - Scheduler itself: **not enabled**.
-- Commercial experiment: **proposed and not approved**.
+- Commercial experiment: **Phase 0 preparation only is approved and
+  preregistered**; the complete commercial experiment and Phase 1 are not.
 - Batch 03: **not started**.
 
 ## Readiness answers
@@ -19,8 +20,8 @@
   lease creation rejects concurrent worktree runners and stale leases require
   explicit recovery. Independent clones are not mutually locked.
 - Is working-tree safety enforced? **Yes.** Repository, branch, Git operation,
-  expected tracked mutations, untracked Autonomous Lab content, verified
-  library, state, and ledger are checked fail-closed.
+  clean starting state, exact post-transition allowlist, local persistence
+  commit, verified library, state, and ledger are checked fail-closed.
 - Is there a scheduler-eligible experiment? **Yes.** Exactly one bounded,
   repository-local `phase0_preparation` entry is eligible.
 - Is the commercial experiment fully approved? **No.** Only Phase 0 package
@@ -34,15 +35,14 @@
 - What events require pausing? Exit codes `10`, `11`, `12`, `13`, `14`, and
   `15`, plus any unexpected report or working-tree change.
 
-## Activation prerequisites still outstanding
+## Scheduled Task prerequisites still outstanding
 
-1. Review and merge the scheduler-readiness pull request.
-2. Separately approve one bounded non-commercial experiment and mark exactly
-   one registry entry active and scheduler-eligible.
-3. Reconfirm local branch, clean/expected working-tree state, no secrets, and
+1. Review and merge the scheduler-persistence repair pull request.
+2. Reconfirm local `main`, clean working-tree state, no secrets, and
    no competing independent clone.
-4. Test the saved prompt manually in the selected local project.
-5. Create the scheduled task only after explicit human authorization.
+3. Test the saved prompt manually in the selected local project without
+   executing the real Phase 0 transition.
+4. Create the scheduled task only after explicit human authorization.
 
 This record does not authorize task creation, commercial execution, network
 access, model execution, external writes, promotion, publication, release, or

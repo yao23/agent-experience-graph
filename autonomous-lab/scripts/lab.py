@@ -26,6 +26,7 @@ from scheduler import (
     UnsafeWorktreeError,
     load_config,
     preflight_worktree,
+    persist_transition_commit,
     repository_root,
     write_transient_recovery_request,
 )
@@ -109,7 +110,7 @@ EXIT_LEASE_HELD = 13
 EXIT_UNSAFE_WORKTREE = 14
 EXIT_SCHEDULER_CONFIG = 15
 CONTINUATION_COMMAND = "python3 autonomous-lab/scripts/lab.py run-one-step"
-SCHEDULED_COMMAND = "python3 autonomous-lab/scripts/lab.py scheduled-step"
+SCHEDULED_COMMAND = "python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit"
 NO_ELIGIBLE_MESSAGE = "No scheduler-eligible experiment is currently approved."
 
 
@@ -1451,6 +1452,7 @@ transition, persists evidence and state, regenerates reports, and exits.
         timestamp: str | None = None,
         run_id: str | None = None,
         actor: str | None = None,
+        persist_commit: bool = False,
     ) -> tuple[int, dict[str, Any]]:
         timestamp = timestamp or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         run_id = run_id or str(uuid.uuid4())
@@ -1488,8 +1490,21 @@ transition, persists evidence and state, regenerates reports, and exits.
                 }
             exit_code, result = self.run_one_step(selected["experiment_id"], timestamp)
             self.report(run_id=run_id, scheduled=True)
+            persistence = None
+            if persist_commit and result.get("event_sha256") and result.get("transition"):
+                self.validate()
+                self.report(check=True, run_id=run_id, scheduled=True)
+                persistence = persist_transition_commit(
+                    self.repo_root, selected, result["transition"]
+                )
             outcome = result["result"]
-            return exit_code, {"run_id": run_id, "experiment_id": selected["experiment_id"], **result, "preflight": preflight}
+            return exit_code, {
+                "run_id": run_id,
+                "experiment_id": selected["experiment_id"],
+                **result,
+                "preflight": preflight,
+                "persistence": persistence,
+            }
         except UnsafeWorktreeError as error:
             recovery = write_transient_recovery_request(self.repo_root, timestamp, run_id, str(error))
             outcome = "unsafe_worktree"
@@ -1523,6 +1538,11 @@ def make_parser() -> argparse.ArgumentParser:
     scheduled.add_argument("--timestamp", help="explicit RFC 3339 timestamp; defaults to current UTC time")
     scheduled.add_argument("--run-id", help="explicit run ID; defaults to a UUID")
     scheduled.add_argument("--actor", help="optional scheduler actor identity")
+    scheduled.add_argument(
+        "--persist-commit",
+        action="store_true",
+        help="commit only the validated allowlisted outputs of one transition",
+    )
     recover = subparsers.add_parser("recover-stale-lease")
     recover.add_argument("--timestamp", help="explicit RFC 3339 timestamp; defaults to current UTC time")
     recover.add_argument("--run-id", help="explicit recovery run ID; defaults to a UUID")
@@ -1556,7 +1576,9 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"exit_code": exit_code, **result}, indent=2))
             return exit_code
         elif args.command == "scheduled-step":
-            exit_code, result = lab.scheduled_step(args.timestamp, args.run_id, args.actor)
+            exit_code, result = lab.scheduled_step(
+                args.timestamp, args.run_id, args.actor, args.persist_commit
+            )
             print(json.dumps({"exit_code": exit_code, **result}, indent=2))
             return exit_code
         elif args.command == "recover-stale-lease":

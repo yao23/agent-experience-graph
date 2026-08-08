@@ -263,7 +263,7 @@ def _git_operation_in_progress(common: Path) -> str | None:
     return next((marker for marker in markers if (common / marker).exists()), None)
 
 
-def _expected_mutation_paths(entry: dict[str, Any] | None) -> set[str]:
+def expected_mutation_paths(entry: dict[str, Any] | None) -> set[str]:
     paths = {
         "autonomous-lab/experiments/registry.yaml",
         "autonomous-lab/ledger/events.jsonl",
@@ -296,7 +296,7 @@ def preflight_worktree(
     if marker:
         raise UnsafeWorktreeError(f"Git operation is in progress: {marker}")
 
-    allowed = _expected_mutation_paths(selected_entry)
+    allowed = expected_mutation_paths(selected_entry)
     status = run_git(repo_root, "status", "--porcelain=v1", "--untracked-files=all").stdout.splitlines()
     conflicts: list[str] = []
     for line in status:
@@ -305,11 +305,12 @@ def preflight_worktree(
         if " -> " in path:
             path = path.split(" -> ", 1)[1]
         if code == "??":
-            if path == "autonomous-lab" or path.startswith("autonomous-lab/"):
-                conflicts.append(f"untracked Autonomous Lab artifact: {path}")
+            conflicts.append(f"untracked file: {path}")
             continue
         if code[0] != " ":
             conflicts.append(f"staged or conflicted user change: {path}")
+        elif path in allowed:
+            conflicts.append(f"uncommitted scheduler output from a prior run: {path}")
         elif path not in allowed:
             conflicts.append(f"unrelated tracked modification: {path}")
     if conflicts:
@@ -326,6 +327,88 @@ def preflight_worktree(
         "tracked_modifications": [line for line in status if line[:2] != "??"],
         "verified_library_sha256": actual_sha,
         "verified_library_blob_oid": actual_blob,
+    }
+
+
+def persist_transition_commit(
+    repo_root: Path,
+    selected_entry: dict[str, Any],
+    transition: str,
+) -> dict[str, Any]:
+    """Commit only the tracked outputs produced by one validated transition."""
+    allowed = expected_mutation_paths(selected_entry)
+    status = run_git(
+        repo_root, "status", "--porcelain=v1", "--untracked-files=all"
+    ).stdout.splitlines()
+    changed: set[str] = set()
+    conflicts: list[str] = []
+    for line in status:
+        code = line[:2]
+        path = line[3:]
+        if " -> " in path:
+            conflicts.append(f"rename is not an approved scheduler output: {path}")
+            continue
+        if code != " M":
+            conflicts.append(f"unsupported worktree status {code!r}: {path}")
+        elif path not in allowed:
+            conflicts.append(f"changed path is outside the scheduler allowlist: {path}")
+        else:
+            changed.add(path)
+    if conflicts:
+        raise UnsafeWorktreeError("; ".join(conflicts))
+    if not changed:
+        raise UnsafeWorktreeError("transition produced no tracked files to persist")
+
+    paths = sorted(changed)
+    whitespace = run_git(repo_root, "diff", "--check", "--", *paths, check=False)
+    if whitespace.returncode != 0:
+        raise UnsafeWorktreeError(
+            f"scheduler output failed git diff --check: {whitespace.stdout.strip()}"
+        )
+    run_git(repo_root, "add", "--", *paths)
+    staged = set(
+        run_git(repo_root, "diff", "--cached", "--name-only", "--", *paths)
+        .stdout.splitlines()
+    )
+    if staged != changed:
+        raise UnsafeWorktreeError(
+            f"staged scheduler paths differ from validated outputs: {sorted(staged)}"
+        )
+    all_staged = set(run_git(repo_root, "diff", "--cached", "--name-only").stdout.splitlines())
+    if all_staged != changed:
+        raise UnsafeWorktreeError(
+            f"staged set contains paths outside this transition: {sorted(all_staged - changed)}"
+        )
+    message = f"autonomous-lab: persist {transition}"
+    run_git(
+        repo_root,
+        "-c", "commit.gpgSign=false",
+        "-c", "user.name=AEG Autonomous Lab",
+        "-c", "user.email=aeg-autonomous-lab@localhost.invalid",
+        "commit", "--only", "--no-verify",
+        "-m", message, "--", *paths,
+    )
+    committed = set(
+        run_git(
+            repo_root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"
+        ).stdout.splitlines()
+    )
+    if committed != changed:
+        raise UnsafeWorktreeError(
+            f"persistence commit differs from validated outputs: {sorted(committed)}"
+        )
+    remaining = run_git(
+        repo_root, "status", "--porcelain=v1", "--untracked-files=all"
+    ).stdout.splitlines()
+    if remaining:
+        raise UnsafeWorktreeError(
+            f"repository is not clean after scheduler commit: {remaining}"
+        )
+    return {
+        "commit_sha": run_git(repo_root, "rev-parse", "HEAD").stdout.strip(),
+        "message": message,
+        "paths": paths,
+        "pushed": False,
     }
 
 

@@ -17,7 +17,14 @@ SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from lab import Lab  # noqa: E402
-from scheduler import ExecutionLease, LeaseHeldError, load_config  # noqa: E402
+from scheduler import (  # noqa: E402
+    ExecutionLease,
+    LeaseHeldError,
+    UnsafeWorktreeError,
+    load_config,
+    persist_transition_commit,
+    preflight_worktree,
+)
 
 
 SOURCE_LAB = Path(__file__).resolve().parents[2]
@@ -350,6 +357,23 @@ class SchedulerIntegrationTests(unittest.TestCase):
         verified.write_text(verified.read_text() + " ", encoding="utf-8")
         self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:10:00Z", "--run-id", "verified", expected=14)
 
+    def test_prior_uncommitted_scheduler_output_is_rejected(self) -> None:
+        self.make_eligible()
+        entry = Lab(self.root).scheduler_entry()
+        state_path = self.root / "experiments" / "shakedown" / RECOVERY_ID / "state.json"
+        state_path.write_text(state_path.read_text() + " ", encoding="utf-8")
+        with self.assertRaisesRegex(UnsafeWorktreeError, "uncommitted scheduler output"):
+            preflight_worktree(self.repo, self.root, load_config(self.root), entry)
+
+    def test_persistence_rejects_any_path_outside_transition_allowlist(self) -> None:
+        self.make_eligible()
+        entry = Lab(self.root).scheduler_entry()
+        readme = self.root / "README.md"
+        readme.write_text(readme.read_text() + "\nunrelated\n", encoding="utf-8")
+        with self.assertRaisesRegex(UnsafeWorktreeError, "outside the scheduler allowlist"):
+            persist_transition_commit(self.repo, entry, "proposed->screening")
+        self.assertIn("unrelated", readme.read_text())
+
     def test_invalid_ledger_returns_validation_failure(self) -> None:
         self.make_eligible()
         ledger = self.root / "ledger" / "events.jsonl"
@@ -358,6 +382,7 @@ class SchedulerIntegrationTests(unittest.TestCase):
         event["action"] = "corrupt"
         lines[0] = json.dumps(event, sort_keys=True, separators=(",", ":"))
         ledger.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        self.commit("corrupt ledger fixture")
         self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:11:00Z", "--run-id", "invalid", expected=11)
 
     def test_budget_exhaustion_and_external_approval_exit_codes(self) -> None:
@@ -373,8 +398,8 @@ class SchedulerIntegrationTests(unittest.TestCase):
         self.tearDown()
         self.setUp()
         self.make_eligible(EXTERNAL_ID)
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:13:00Z", "--run-id", "external-screen")
-        approval = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:14:00Z", "--run-id", "external-gate", expected=10)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:13:00Z", "--run-id", "external-screen")
+        approval = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:14:00Z", "--run-id", "external-gate", expected=10)
         self.assertEqual(approval["state"], "escalated")
 
 

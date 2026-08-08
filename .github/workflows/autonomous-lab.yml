@@ -2,7 +2,7 @@ name: Validate Autonomous Experiment Lab
 
 on:
   push:
-    branches: [main, "codex/aeg-autonomous-experiment-lab-v0", "codex/aeg-autonomous-lab-shakedown-01", "codex/aeg-autonomous-lab-scheduler-readiness-v0", "codex/aeg-failure-recovery-service-phase0"]
+    branches: [main, "codex/aeg-autonomous-experiment-lab-v0", "codex/aeg-autonomous-lab-shakedown-01", "codex/aeg-autonomous-lab-scheduler-readiness-v0", "codex/aeg-failure-recovery-service-phase0", "codex/aeg-scheduler-persistence-repair"]
     paths:
       - "autonomous-lab/**"
       - ".github/workflows/autonomous-lab.yml"

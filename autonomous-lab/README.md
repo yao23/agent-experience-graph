@@ -33,7 +33,7 @@ python3 autonomous-lab/scripts/lab.py validate
 python3 autonomous-lab/scripts/lab.py status
 python3 autonomous-lab/scripts/lab.py next
 python3 autonomous-lab/scripts/lab.py run-one-step
-python3 autonomous-lab/scripts/lab.py scheduled-step
+python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit
 python3 autonomous-lab/scripts/lab.py report
 python3 -m unittest discover -s autonomous-lab/scripts/tests -p 'test_*.py'
 git diff --check
@@ -61,7 +61,10 @@ Exit codes are stable:
 verifies the repository, selects at most one explicitly active and eligible
 experiment, acquires an atomic lease shared by Git worktrees, performs the
 working-tree preflight, validates, executes at most one transition, regenerates
-notification-friendly reports, and releases the lease. It never loops.
+notification-friendly reports, and releases the lease. With the required
+`--persist-commit` flag, it stages only the transition allowlist, creates one
+local un-pushed commit, and verifies the worktree is clean. It never loops,
+pushes, resets, stashes, or cleans.
 
 The checked-in registry contains exactly one scheduler-eligible experiment:
 the bounded, repository-local `phase0_preparation` stage of the Agent Failure
