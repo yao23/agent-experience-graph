@@ -1452,7 +1452,6 @@ transition, persists evidence and state, regenerates reports, and exits.
         timestamp: str | None = None,
         run_id: str | None = None,
         actor: str | None = None,
-        persist_commit: bool = False,
     ) -> tuple[int, dict[str, Any]]:
         timestamp = timestamp or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         run_id = run_id or str(uuid.uuid4())
@@ -1491,7 +1490,7 @@ transition, persists evidence and state, regenerates reports, and exits.
             exit_code, result = self.run_one_step(selected["experiment_id"], timestamp)
             self.report(run_id=run_id, scheduled=True)
             persistence = None
-            if persist_commit and result.get("event_sha256") and result.get("transition"):
+            if result.get("event_sha256") and result.get("transition"):
                 self.validate()
                 self.report(check=True, run_id=run_id, scheduled=True)
                 persistence = persist_transition_commit(
@@ -1541,6 +1540,7 @@ def make_parser() -> argparse.ArgumentParser:
     scheduled.add_argument(
         "--persist-commit",
         action="store_true",
+        required=True,
         help="commit only the validated allowlisted outputs of one transition",
     )
     recover = subparsers.add_parser("recover-stale-lease")
@@ -1576,9 +1576,7 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"exit_code": exit_code, **result}, indent=2))
             return exit_code
         elif args.command == "scheduled-step":
-            exit_code, result = lab.scheduled_step(
-                args.timestamp, args.run_id, args.actor, args.persist_commit
-            )
+            exit_code, result = lab.scheduled_step(args.timestamp, args.run_id, args.actor)
             print(json.dumps({"exit_code": exit_code, **result}, indent=2))
             return exit_code
         elif args.command == "recover-stale-lease":

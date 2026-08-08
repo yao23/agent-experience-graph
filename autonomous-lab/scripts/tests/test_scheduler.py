@@ -250,8 +250,8 @@ class SchedulerIntegrationTests(unittest.TestCase):
     def test_no_eligible_experiment_is_mutation_free_and_repeatable(self) -> None:
         before = self.tracked_hash()
         legacy = self.run_cli("run-one-step", "--timestamp", "2026-08-08T07:59:00Z")
-        first = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:00:00Z", "--run-id", "no-work-1")
-        second = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:01:00Z", "--run-id", "no-work-2")
+        first = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:00:00Z", "--run-id", "no-work-1")
+        second = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:01:00Z", "--run-id", "no-work-2")
         self.assertEqual(legacy["message"], "No scheduler-eligible experiment is currently approved.")
         self.assertEqual(first["message"], "No scheduler-eligible experiment is currently approved.")
         self.assertEqual(second["result"], "no_eligible_experiment")
@@ -261,9 +261,20 @@ class SchedulerIntegrationTests(unittest.TestCase):
         )
         self.assertEqual(before, self.tracked_hash())
 
+    def test_scheduled_step_rejects_missing_persistence_acknowledgment(self) -> None:
+        before = self.tracked_hash()
+        result = self.run_cli(
+            "scheduled-step",
+            "--timestamp", "2026-08-08T08:01:30Z",
+            "--run-id", "missing-persistence",
+            expected=2,
+        )
+        self.assertIn("--persist-commit", result["stderr"])
+        self.assertEqual(before, self.tracked_hash())
+
     def test_one_eligible_safe_experiment_executes_one_step_and_reports_deterministically(self) -> None:
         self.make_eligible()
-        result = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:02:00Z", "--run-id", "safe-1")
+        result = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:02:00Z", "--run-id", "safe-1")
         self.assertEqual(result["transition"], "proposed->screening")
         status = json.loads((self.root / "reports" / "current-status.json").read_text())
         self.assertEqual(status["run_id"], "safe-1")
@@ -286,10 +297,10 @@ class SchedulerIntegrationTests(unittest.TestCase):
         external = next(item for item in registry["experiments"] if item["experiment_id"] == EXTERNAL_ID)
         external.update({"experiment_kind": "production", "operational_status": "active", "scheduler_eligible": True})
         registry_path.write_text(yaml.safe_dump(registry, sort_keys=False), encoding="utf-8")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:03:00Z", "--run-id", "multiple", expected=15)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:03:00Z", "--run-id", "multiple", expected=15)
 
     def test_archived_and_unapproved_commercial_entries_are_not_selected(self) -> None:
-        result = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:04:00Z", "--run-id", "archive")
+        result = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:04:00Z", "--run-id", "archive")
         self.assertEqual(result["experiment_id"], None)
         registry = yaml.safe_load((self.root / "experiments" / "registry.yaml").read_text())
         commercial = next(item for item in registry["experiments"] if item["experiment_kind"] == "commercial")
@@ -300,8 +311,8 @@ class SchedulerIntegrationTests(unittest.TestCase):
         config = load_config(self.root)
         lease = ExecutionLease(self.repo, config)
         lease.acquire("holder", "2026-08-08T08:05:00Z", None, None, None, "test")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:06:00Z", "--run-id", "contender", expected=13)
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T09:00:00Z", "--run-id", "stale-detect", expected=13)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:06:00Z", "--run-id", "contender", expected=13)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T09:00:00Z", "--run-id", "stale-detect", expected=13)
         recovered = self.run_cli("recover-stale-lease", "--timestamp", "2026-08-08T09:00:00Z", "--run-id", "recovery")
         self.assertEqual(recovered["recovered_run_id"], "holder")
         audit_path = self.repo / ".git" / "aeg-autonomous-lab" / "lease-audit.jsonl"
@@ -336,26 +347,26 @@ class SchedulerIntegrationTests(unittest.TestCase):
     def test_unrelated_dirty_file_fails_without_cleanup_and_writes_recovery_request(self) -> None:
         (self.repo / "README-user-work.md").write_text("untracked outside lab\n", encoding="utf-8")
         subprocess.run(["git", "add", "README-user-work.md"], cwd=self.repo, check=True)
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:09:00Z", "--run-id", "dirty", expected=14)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:09:00Z", "--run-id", "dirty", expected=14)
         self.assertTrue((self.repo / "README-user-work.md").is_file())
         self.assertTrue((self.repo / ".git" / "aeg-autonomous-lab" / "next-human-action.json").is_file())
 
     def test_untracked_autonomous_lab_artifact_is_rejected(self) -> None:
         artifact = self.root / "unexpected-secret.txt"
         artifact.write_text("conflicting runtime artifact\n", encoding="utf-8")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:09:30Z", "--run-id", "untracked", expected=14)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:09:30Z", "--run-id", "untracked", expected=14)
         self.assertTrue(artifact.is_file())
 
     def test_git_operation_in_progress_is_rejected(self) -> None:
         marker = self.repo / ".git" / "MERGE_HEAD"
         marker.write_text("0" * 40 + "\n", encoding="utf-8")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:09:45Z", "--run-id", "merge", expected=14)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:09:45Z", "--run-id", "merge", expected=14)
         self.assertTrue(marker.is_file())
 
     def test_verified_library_mutation_returns_unsafe_worktree(self) -> None:
         verified = self.repo / "experiences" / "verified.json"
         verified.write_text(verified.read_text() + " ", encoding="utf-8")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:10:00Z", "--run-id", "verified", expected=14)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:10:00Z", "--run-id", "verified", expected=14)
 
     def test_prior_uncommitted_scheduler_output_is_rejected(self) -> None:
         self.make_eligible()
@@ -383,7 +394,7 @@ class SchedulerIntegrationTests(unittest.TestCase):
         lines[0] = json.dumps(event, sort_keys=True, separators=(",", ":"))
         ledger.write_text("\n".join(lines) + "\n", encoding="utf-8")
         self.commit("corrupt ledger fixture")
-        self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:11:00Z", "--run-id", "invalid", expected=11)
+        self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:11:00Z", "--run-id", "invalid", expected=11)
 
     def test_budget_exhaustion_and_external_approval_exit_codes(self) -> None:
         self.make_eligible()
@@ -392,7 +403,7 @@ class SchedulerIntegrationTests(unittest.TestCase):
         state["budget_used"]["commands"] = 10
         write_json(state_path, state)
         self.commit("exhausted fixture")
-        exhausted = self.run_cli("scheduled-step", "--timestamp", "2026-08-08T08:12:00Z", "--run-id", "budget", expected=12)
+        exhausted = self.run_cli("scheduled-step", "--persist-commit", "--timestamp", "2026-08-08T08:12:00Z", "--run-id", "budget", expected=12)
         self.assertEqual(exhausted["state"], "budget_exhausted")
 
         self.tearDown()
