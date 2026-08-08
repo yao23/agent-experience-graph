@@ -1,48 +1,66 @@
 {
   "schema_version": 1,
-  "run_id": "2d363f36-6f80-4cd1-913a-a2bbea4bb843",
-  "generated_from_state_at": "2026-08-08T19:02:36.144426Z",
+  "run_id": "72cf3020-1c39-47ae-a954-32f70b548201",
+  "generated_from_state_at": "2026-08-08T20:02:04.110564Z",
   "current_experiment": {
     "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
     "experiment_kind": "commercial",
-    "state": "evaluating",
-    "milestone": "entered evaluating",
-    "blocker": null,
-    "last_completed_transition": "running->evaluating",
+    "state": "completed",
+    "milestone": "Phase 0 completed; awaiting a human decision on Phase 1 seed-user recruitment",
+    "blocker": "Phase 1 recruitment is not approved",
+    "last_completed_transition": "evaluating->completed",
     "next_permitted_action": {
-      "kind": "transition",
-      "reason": "next lifecycle evidence may be recorded",
-      "transition": "completed"
+      "kind": "human_approval",
+      "reason": "Phase 0 is complete; Phase 1 recruitment and every external action remain blocked.",
+      "transition": null,
+      "escalation_id": "failure-recovery-v0-phase1-recruitment"
     },
     "budget_consumed": {
-      "iterations": 3,
-      "commands": 3,
-      "tests": 3,
-      "model_calls": 3,
-      "wall_minutes": 0,
+      "commands": 4,
+      "cost_usd": 0,
+      "iterations": 4,
+      "model_calls": 4,
+      "tests": 4,
       "tokens": 0,
-      "cost_usd": 0
+      "wall_minutes": 0
     },
     "budget_remaining": {
-      "iterations": 5,
-      "commands": 61,
-      "tests": 125,
-      "model_calls": 5,
+      "iterations": 4,
+      "commands": 60,
+      "tests": 124,
+      "model_calls": 4,
       "wall_minutes": 480,
       "tokens": 0,
       "cost_usd": 0
     },
-    "human_approval_required": false,
-    "another_scheduled_run_useful": true,
+    "human_approval_required": true,
+    "another_scheduled_run_useful": false,
     "continuation_command": "python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit",
-    "latest_error_or_blocker": null,
-    "scorecard_status": "incomplete",
-    "ledger_event_count": 6,
-    "ledger_head_sha256": "1dcc1a3f389faff7fc25dcd094666c28e5398ebf204c5b375b7aa15e603055a6",
+    "latest_error_or_blocker": "Phase 1 recruitment is not approved",
+    "scorecard_status": "evaluated",
+    "ledger_event_count": 7,
+    "ledger_head_sha256": "2c03f761117c1d5295c2d27d24529498e5c6e4b0af12534bb1b2427da1573d7d",
     "artifact_sha256": "ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb",
-    "state_sha256": "2da82586f2ef9ff9bf7d70f029593c096d6c926b753036ceb9e11f65eb5edd62"
+    "state_sha256": "5cf2314cdb78bd6f162daa966e6d590efb4ea8819f78b2a9bb8512c8f4305a36"
   },
-  "open_escalation": null,
+  "open_escalation": {
+    "escalation_id": "failure-recovery-v0-phase1-recruitment",
+    "reason_code": "approval_required",
+    "requested_decision": "whether to begin Phase 1 seed-user recruitment",
+    "evidence": [
+      "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json",
+      "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json"
+    ],
+    "options": [
+      "keep the service repository-local and stopped",
+      "authorize a separately preregistered Phase 1 recruitment plan"
+    ],
+    "risks_and_tradeoffs": [
+      "Stopping preserves the zero-external-action boundary.",
+      "Recruitment could test demand but requires new privacy, outreach, budget, and external-action approval."
+    ],
+    "recommended_choice": "Review Phase 0 evidence before deciding whether to authorize a separate Phase 1 plan."
+  },
   "historical_summary": {
     "batch_01": "Technical feasibility and limited external usefulness; zero promotion-ready candidates.",
     "batch_02": "Twenty-four screened, zero qualified under corrected gates, and no material AEG repair effect."

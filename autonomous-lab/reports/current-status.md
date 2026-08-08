@@ -3,28 +3,28 @@
 ## Operator summary
 
 - Active experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- Run ID: `2d363f36-6f80-4cd1-913a-a2bbea4bb843`
+- Run ID: `72cf3020-1c39-47ae-a954-32f70b548201`
 - Experiment kind: `commercial`
-- Current state: `evaluating`
-- Last completed transition: `running->evaluating`
-- Next permitted action: `transition` — next lifecycle evidence may be recorded
-- Budget consumed: `{"commands": 3, "cost_usd": 0, "iterations": 3, "model_calls": 3, "tests": 3, "tokens": 0, "wall_minutes": 0}`
-- Budget remaining: `{"commands": 61, "cost_usd": 0, "iterations": 5, "model_calls": 5, "tests": 125, "tokens": 0, "wall_minutes": 480}`
-- Human approval required: `no`
-- Another scheduled run useful: `yes`
+- Current state: `completed`
+- Last completed transition: `evaluating->completed`
+- Next permitted action: `human_approval` — Phase 0 is complete; Phase 1 recruitment and every external action remain blocked.
+- Budget consumed: `{"commands": 4, "cost_usd": 0, "iterations": 4, "model_calls": 4, "tests": 4, "tokens": 0, "wall_minutes": 0}`
+- Budget remaining: `{"commands": 60, "cost_usd": 0, "iterations": 4, "model_calls": 4, "tests": 124, "tokens": 0, "wall_minutes": 480}`
+- Human approval required: `yes`
+- Another scheduled run useful: `no`
 - Exact continuation command: `python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit`
-- Latest error or blocker: `None`
+- Latest error or blocker: `Phase 1 recruitment is not approved`
 
 ## Integrity
 
-- Milestone: entered evaluating
-- Blocker: `None`
-- Experiment ledger events: 6
-- Ledger head: `1dcc1a3f389faff7fc25dcd094666c28e5398ebf204c5b375b7aa15e603055a6`
+- Milestone: Phase 0 completed; awaiting a human decision on Phase 1 seed-user recruitment
+- Blocker: `Phase 1 recruitment is not approved`
+- Experiment ledger events: 7
+- Ledger head: `2c03f761117c1d5295c2d27d24529498e5c6e4b0af12534bb1b2427da1573d7d`
 - Last artifact SHA-256: `ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb`
-- State SHA-256: `2da82586f2ef9ff9bf7d70f029593c096d6c926b753036ceb9e11f65eb5edd62`
-- Scorecard: `incomplete` / `continue`
-- Model calls: `3`
+- State SHA-256: `5cf2314cdb78bd6f162daa966e6d590efb4ea8819f78b2a9bb8512c8f4305a36`
+- Scorecard: `evaluated` / `complete`
+- Model calls: `4`
 - Paid cost: `$0`
 - External writes: `0`
 - Candidate promotions: `0`

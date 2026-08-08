@@ -11,12 +11,12 @@
   "internal_links_checked": 23,
   "internal_links_resolve": true,
   "paid_experiments": 0,
-  "phase_run_count": 3,
+  "phase_run_count": 4,
   "required_artifacts": 16,
   "result": "valid",
   "schema_version": 1,
   "sensitive_content_absent": true,
-  "transition": "evaluating",
-  "validated_at": "2026-08-08T19:02:36.144426Z",
+  "transition": "completed",
+  "validated_at": "2026-08-08T20:02:04.110564Z",
   "verified_library_modifications": 0
 }

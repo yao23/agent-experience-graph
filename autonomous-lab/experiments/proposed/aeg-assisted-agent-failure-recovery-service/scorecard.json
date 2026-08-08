@@ -12,7 +12,7 @@
     }
   ],
   "comparison_pairs": 0,
-  "decision": "continue",
+  "decision": "complete",
   "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
   "limitations": [
     "Only repository-local Phase 0 preparation is authorized.",
@@ -23,7 +23,7 @@
     "cost_usd": "unavailable",
     "external_acceptance_rate": null,
     "external_actions": 0,
-    "model_calls": 3,
+    "model_calls": 4,
     "objective_recovery_rate": null,
     "paid_pilot_conversion": null,
     "phase0_artifacts_complete": 1,
@@ -31,5 +31,5 @@
     "tokens": "unavailable"
   },
   "schema_version": 1,
-  "status": "incomplete"
+  "status": "evaluated"
 }

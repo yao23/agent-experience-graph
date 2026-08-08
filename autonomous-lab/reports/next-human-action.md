@@ -1,11 +1,26 @@
 # Next human action
 
-No human action required
+Human approval is required for `aeg-assisted-agent-failure-recovery-service-v0`.
 
-- Experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- State: `evaluating`
-- Next action: `transition` — next lifecycle evidence may be recorded
-- Continue with: `python3 autonomous-lab/scripts/lab.py run-one-step`
+Decision required: whether to begin Phase 1 seed-user recruitment
 
-The command validates first, performs at most one safe repository-local
-transition, persists evidence and state, regenerates reports, and exits.
+## Evidence
+
+- autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json
+- autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json
+
+## Options
+
+1. keep the service repository-local and stopped
+2. authorize a separately preregistered Phase 1 recruitment plan
+
+## Risks and tradeoffs
+
+- Stopping preserves the zero-external-action boundary.
+- Recruitment could test demand but requires new privacy, outreach, budget, and external-action approval.
+
+Recommended choice: Review Phase 0 evidence before deciding whether to authorize a separate Phase 1 plan.
+
+The controller performed no external action and will not silently substitute a
+local action. A fresh invocation of `python3 autonomous-lab/scripts/lab.py run-one-step` returns exit code
+`10` until a reviewed decision is recorded.
