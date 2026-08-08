@@ -1,0 +1,84 @@
+schema_version: 1
+experiment_id: aeg-assisted-agent-failure-recovery-service-v0
+experiment_version: 1
+title: AEG-assisted Agent Failure Recovery Service
+hypothesis: For maintainers with a reproducible failed agent task, a preregistered AEG-assisted recovery treatment can improve objective recovery success over a no-retrieval baseline without increasing contamination or external-write risk.
+customer_segment: Maintainers and agent-platform teams with reproducible failed software-engineering agent tasks
+customer_problem: Failed agent runs are expensive to diagnose, prior successful recovery experience is hard to find, and unverified reuse can create false confidence.
+deliverable_type: sanitized recovery evidence package and deterministic scorecard
+acceptance_tests:
+  - id: recovery-oracle
+    objective: The failed task passes its preregistered project-native objective oracle after treatment.
+    command: project-specific command frozen before any diagnosis
+    oracle: Exit status is zero and the preregistered failing regression passes without unrelated regressions.
+  - id: provenance-oracle
+    objective: All retrieval, freshness, patch, and execution evidence is attributable and sanitized.
+    command: python3 autonomous-lab/scripts/lab.py validate
+    oracle: The lab validator exits zero with an intact ledger and no missing evidence.
+objective_oracle:
+  kind: test
+  description: A project-native regression that reproduces the failure before treatment and passes afterward, frozen before diagnosis.
+  pass_condition: Each comparison pair has an objective pre-failure and post-treatment pass, with no preregistered regression failures.
+baseline: A blind recovery attempt with AEG retrieval disabled after freshness and contribution gates pass.
+treatment: A separate blind recovery attempt with AEG queried before diagnosis and only verified, relevant experiences eligible for reuse.
+minimum_comparison_pairs: 3
+metrics:
+  quality: [task success rate, first-pass success, regression-free rate, improvement from delivery N compared with delivery 1]
+  time: [time to verified repair]
+  model_calls: [model calls per delivery]
+  retries: [retries per failure family]
+  tokens: [input tokens where available, output tokens where available]
+  cost: [model cost in USD, founder cost per accepted delivery]
+  human_intervention: [human interventions, human minutes]
+  retrieval: [valid pre-diagnosis retrieval rate, relevant recommendation rate, treatment execution changes attributable to retrieval]
+  external_user: [external acceptance, user activation, repeated usage, customer-reported time saved]
+  revenue: [willingness to pay, first revenue, paid-diagnostic conversion]
+output:
+  kind: service
+  artifact: sanitized per-pair run records, append-only evidence, and a deterministic scorecard
+  delivery_path: repository-local draft review until external delivery is separately approved
+external_metrics: [upstream acceptance, maintainer usefulness rating, repeated use by the same customer]
+commercial_gates:
+  - 3 to 5 real external users after explicit recruitment approval
+  - at least one independently accepted repair or deliverable
+  - at least one repeat user or one paid diagnostic
+  - a preregistered baseline and treatment comparison
+  - no promotion based only on synthetic or historical replay
+budgets:
+  max_iterations: 5
+  max_commands: 120
+  max_tests: 300
+  max_model_calls: 0
+  max_wall_clock_hours: 8
+  max_tokens: 0
+  max_model_cost_usd: 0
+  max_same_failure_repeats: 3
+stop_conditions:
+  - any freshness or contribution gate fails
+  - objective oracle is unavailable or changes after diagnosis
+  - evidence blindness is contaminated
+  - any command, test, time, token, cost, or retry budget is exhausted
+  - external value cannot be observed without unapproved external contact or write
+  - fewer than 3 real external users can be preregistered after approval
+  - no path exists to one independently accepted deliverable and either one repeat user or one paid diagnostic
+approval_gates:
+  begin_experiment: required
+  model_or_agent_execution: required
+  paid_execution: required
+  external_project_write: required
+  contact_external_user: required
+  open_or_merge_pull_request: required
+  candidate_promotion: required
+  verified_library_change: required
+  release_publication: required
+  secret_creation_or_use: required
+allowed_actions:
+  - validate repository-local control-plane records
+  - generate deterministic status and escalation reports
+  - inspect public metadata read-only after begin_experiment approval
+forbidden_actions:
+  - start screening or execution without begin_experiment approval
+  - run a model or agent without model_or_agent_execution approval
+  - incur paid cost without paid_execution approval
+  - contact a user or write to an external project without the corresponding approval
+  - publish, promote, release, or modify the verified library without explicit approval

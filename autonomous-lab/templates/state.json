@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "experiment_id": "replace-with-experiment-id",
+  "state": "proposed",
+  "milestone": "awaiting screening authorization",
+  "blocker": "begin_experiment approval is pending",
+  "updated_at": "2026-08-08T00:00:00Z",
+  "budget_used": {"iterations": 0, "commands": 0, "tests": 0, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
+  "retry_count": 0,
+  "approvals": {"begin_experiment": "pending"},
+  "ledger_event_count": 1,
+  "ledger_head_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "verified_library_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

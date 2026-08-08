@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "state": "proposed",
+  "milestone": "design recorded; awaiting authorization to screen",
+  "blocker": "begin_experiment approval is pending",
+  "updated_at": "2026-08-08T00:55:00Z",
+  "budget_used": {"iterations": 0, "commands": 0, "tests": 0, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
+  "retry_count": 0,
+  "approvals": {
+    "begin_experiment": "pending",
+    "model_or_agent_execution": "pending",
+    "paid_execution": "pending",
+    "external_project_write": "pending",
+    "contact_external_user": "pending",
+    "open_or_merge_pull_request": "pending",
+    "candidate_promotion": "pending",
+    "verified_library_change": "pending",
+    "release_publication": "pending",
+    "secret_creation_or_use": "pending"
+  },
+  "ledger_event_count": 1,
+  "ledger_head_sha256": "e3e541d451f65a290694fe45e19cd7303159b23e8918954caaf5fe96eba47c62",
+  "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
+}

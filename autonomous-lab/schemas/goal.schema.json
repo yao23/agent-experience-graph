@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/autonomous-lab/goal.schema.json",
+  "title": "Autonomous Lab Goal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "experiment_id", "experiment_version", "title", "hypothesis",
+    "customer_segment", "customer_problem", "deliverable_type",
+    "acceptance_tests", "objective_oracle", "baseline", "treatment",
+    "minimum_comparison_pairs", "metrics", "output", "external_metrics",
+    "budgets", "stop_conditions", "approval_gates", "allowed_actions",
+    "forbidden_actions"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+    "experiment_version": {"type": "integer", "minimum": 1},
+    "title": {"type": "string", "minLength": 1},
+    "hypothesis": {"type": "string", "minLength": 1},
+    "customer_segment": {"type": "string", "minLength": 1},
+    "customer_problem": {"type": "string", "minLength": 1},
+    "deliverable_type": {"type": "string", "minLength": 1},
+    "acceptance_tests": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "objective", "command", "oracle"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "objective": {"type": "string", "minLength": 1},
+          "command": {"type": "string", "minLength": 1},
+          "oracle": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "objective_oracle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "description", "pass_condition"],
+      "properties": {
+        "kind": {"enum": ["test", "schema", "metric", "external_acceptance"]},
+        "description": {"type": "string", "minLength": 1},
+        "pass_condition": {"type": "string", "minLength": 1}
+      }
+    },
+    "baseline": {"type": "string", "minLength": 1},
+    "treatment": {"type": "string", "minLength": 1},
+    "minimum_comparison_pairs": {"type": "integer", "minimum": 1},
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["quality", "time", "model_calls", "retries", "tokens", "cost", "human_intervention", "retrieval", "external_user", "revenue"],
+      "properties": {
+        "quality": {"$ref": "#/$defs/stringList"},
+        "time": {"$ref": "#/$defs/stringList"},
+        "model_calls": {"$ref": "#/$defs/stringList"},
+        "retries": {"$ref": "#/$defs/stringList"},
+        "tokens": {"$ref": "#/$defs/stringList"},
+        "cost": {"$ref": "#/$defs/stringList"},
+        "human_intervention": {"$ref": "#/$defs/stringList"},
+        "retrieval": {"$ref": "#/$defs/stringList"},
+        "external_user": {"$ref": "#/$defs/stringList"},
+        "revenue": {"$ref": "#/$defs/stringList"}
+      }
+    },
+    "output": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "artifact", "delivery_path"],
+      "properties": {
+        "kind": {"enum": ["product", "service", "experience"]},
+        "artifact": {"type": "string", "minLength": 1},
+        "delivery_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "external_metrics": {"$ref": "#/$defs/stringList"},
+    "commercial_gates": {"$ref": "#/$defs/stringList"},
+    "budgets": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_iterations", "max_commands", "max_tests", "max_model_calls", "max_wall_clock_hours", "max_tokens", "max_model_cost_usd", "max_same_failure_repeats"],
+      "properties": {
+        "max_iterations": {"type": "integer", "minimum": 1},
+        "max_commands": {"type": "integer", "minimum": 1},
+        "max_tests": {"type": "integer", "minimum": 1},
+        "max_model_calls": {"type": "integer", "minimum": 0},
+        "max_wall_clock_hours": {"type": "number", "exclusiveMinimum": 0},
+        "max_tokens": {"type": "integer", "minimum": 0},
+        "max_model_cost_usd": {"type": "number", "minimum": 0},
+        "max_same_failure_repeats": {"type": "integer", "minimum": 1}
+      }
+    },
+    "stop_conditions": {"$ref": "#/$defs/stringList"},
+    "approval_gates": {
+      "type": "object", "minProperties": 1,
+      "additionalProperties": {"enum": ["required", "not_required"]}
+    },
+    "allowed_actions": {"$ref": "#/$defs/stringList"},
+    "forbidden_actions": {"$ref": "#/$defs/stringList"}
+  },
+  "$defs": {
+    "stringList": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

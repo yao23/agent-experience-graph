@@ -1,0 +1,54 @@
+schema_version: 1
+experiment_id: replace-with-experiment-id
+experiment_version: 1
+title: Replace with a bounded experiment title
+hypothesis: State one falsifiable customer and product hypothesis.
+customer_segment: Define the external customer segment.
+customer_problem: Define the observed customer problem.
+deliverable_type: repository-local evidence package
+acceptance_tests:
+  - id: objective-test
+    objective: Define the observable outcome.
+    command: replace-with-deterministic-command
+    oracle: Define the exact pass condition.
+objective_oracle:
+  kind: test
+  description: Replace with the objective oracle.
+  pass_condition: All preregistered acceptance tests pass.
+baseline: Define the no-AEG comparison.
+treatment: Define the AEG-assisted comparison.
+minimum_comparison_pairs: 1
+metrics:
+  quality: [acceptance pass rate]
+  time: [wall-clock time]
+  model_calls: [model calls]
+  retries: [retry count]
+  tokens: [input tokens, output tokens]
+  cost: [model cost in USD]
+  human_intervention: [human interventions, human minutes]
+  retrieval: [valid pre-execution retrieval rate]
+  external_user: [externally accepted outcomes]
+  revenue: [qualified customer interest, revenue]
+output:
+  kind: service
+  artifact: sanitized evidence and scorecard
+  delivery_path: repository review
+external_metrics: [external acceptance rate]
+commercial_gates: [external acceptance observed before any effectiveness claim]
+budgets:
+  max_iterations: 3
+  max_commands: 20
+  max_tests: 20
+  max_model_calls: 0
+  max_wall_clock_hours: 2
+  max_tokens: 0
+  max_model_cost_usd: 0
+  max_same_failure_repeats: 1
+stop_conditions: [budget exhausted, objective oracle unavailable, evidence contaminated]
+approval_gates:
+  begin_experiment: required
+  external_write: required
+  paid_execution: required
+  candidate_promotion: required
+allowed_actions: [validate repository-local evidence, generate deterministic reports]
+forbidden_actions: [external writes without approval, paid execution without approval, candidate promotion without approval]

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/autonomous-lab/state.schema.json",
+  "title": "Autonomous Lab State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "experiment_id", "state", "milestone", "blocker",
+    "updated_at", "budget_used", "retry_count", "approvals",
+    "ledger_event_count", "ledger_head_sha256", "verified_library_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+    "state": {"$ref": "#/$defs/state"},
+    "milestone": {"type": "string", "minLength": 1},
+    "blocker": {"type": ["string", "null"]},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "budget_used": {
+      "type": "object", "additionalProperties": false,
+      "required": ["iterations", "commands", "tests", "model_calls", "wall_minutes", "tokens", "cost_usd"],
+      "properties": {
+        "iterations": {"type": "integer", "minimum": 0},
+        "commands": {"type": "integer", "minimum": 0},
+        "tests": {"type": "integer", "minimum": 0},
+        "model_calls": {"type": "integer", "minimum": 0},
+        "wall_minutes": {"type": "integer", "minimum": 0},
+        "tokens": {"type": "integer", "minimum": 0},
+        "cost_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "retry_count": {"type": "integer", "minimum": 0},
+    "approvals": {
+      "type": "object",
+      "additionalProperties": {"enum": ["pending", "approved", "denied", "not_required"]}
+    },
+    "ledger_event_count": {"type": "integer", "minimum": 1},
+    "ledger_head_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "verified_library_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "state": {"enum": ["proposed", "screening", "preregistered", "ready", "running", "evaluating", "completed", "rejected", "blocked", "budget_exhausted", "contaminated", "escalated", "cancelled"]}
+  }
+}
