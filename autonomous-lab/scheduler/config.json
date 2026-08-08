@@ -1,0 +1,10 @@
+{
+  "allowed_branches": [
+    "main"
+  ],
+  "execution_mode": "local_project",
+  "lease_ttl_seconds": 900,
+  "schema_version": 1,
+  "verified_library_blob_oid": "9e9c1294ffbe0039da9973b52402ce4f8593c906",
+  "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
+}

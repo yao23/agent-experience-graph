@@ -33,6 +33,7 @@ python3 autonomous-lab/scripts/lab.py validate
 python3 autonomous-lab/scripts/lab.py status
 python3 autonomous-lab/scripts/lab.py next
 python3 autonomous-lab/scripts/lab.py run-one-step
+python3 autonomous-lab/scripts/lab.py scheduled-step
 python3 autonomous-lab/scripts/lab.py report
 python3 -m unittest discover -s autonomous-lab/scripts/tests -p 'test_*.py'
 git diff --check
@@ -50,6 +51,39 @@ Exit codes are stable:
 - `10`: human approval is required and no gated action was performed;
 - `11`: validation, schema, evidence, or oracle failure;
 - `12`: execution budget is exhausted.
+- `13`: another execution lease is held, or a stale lease requires explicit
+  recovery;
+- `14`: repository identity, branch, Git operation, working-tree content, or
+  verified-library state is unsafe;
+- `15`: scheduler configuration or experiment selection is invalid.
+
+`scheduled-step` is the unattended, local-project entry point. It locates and
+verifies the repository, selects at most one explicitly active and eligible
+experiment, acquires an atomic lease shared by Git worktrees, performs the
+working-tree preflight, validates, executes at most one transition, regenerates
+notification-friendly reports, and releases the lease. It never loops.
+
+The checked-in registry currently contains no scheduler-eligible experiment.
+Therefore both the default `run-one-step` and `scheduled-step` stop safely and
+report:
+
+`No scheduler-eligible experiment is currently approved.`
+
+The completed recovery shakedown is archived. The synthetic external-action
+escalation remains immutable regression evidence and is also archived, so its
+unresolved synthetic approval is not live work. The commercial experiment is
+still proposed, unapproved, and ineligible.
+
+If `scheduled-step` reports a stale lease, inspect it and use the explicit
+recovery command only after its expiration:
+
+```sh
+python3 autonomous-lab/scripts/lab.py recover-stale-lease
+```
+
+Never remove a lease manually or break a non-expired lease. See
+[`scheduler/operations.md`](scheduler/operations.md) before creating any
+desktop scheduled task.
 
 `evaluate` remains available for experiments that supply acceptance-result
 files explicitly. The deterministic shakedown uses the same evaluator logic
@@ -73,10 +107,14 @@ commercial-demand, generalized-effectiveness, or PMF evidence.
 
 ## Stateless continuation
 
-An independent Codex run needs no screenshot or prior conversation. From a
+An independent run needs no screenshot or prior conversation. From a
 clean checkout, read `AGENTS.md` and
 `prompts/continue-experiment.md`, then run exactly:
 
 ```sh
 python3 autonomous-lab/scripts/lab.py run-one-step
 ```
+
+For a future scheduled run, use the standalone prompt in
+[`prompts/scheduled-step.md`](prompts/scheduled-step.md). Preparing that prompt
+does not create or enable a scheduled task.

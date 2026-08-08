@@ -227,7 +227,9 @@ class ShakedownIntegrationTests(unittest.TestCase):
         current_events = [event for event in events if event["experiment_id"] == EXTERNAL_ID]
         self.assertEqual(state["ledger_head_sha256"], current_events[-1]["event_sha256"])
         report = json.loads((clean_root / "reports" / "current-status.json").read_text())
-        self.assertEqual(report["current_experiment"]["artifact_sha256"], current_events[-1]["artifact_sha256"])
+        self.assertIsNone(report["experiment_id"])
+        self.assertFalse(report["another_scheduled_run_useful"])
+        self.assertEqual(report["latest_error_or_blocker"], "No scheduler-eligible experiment is currently approved.")
         all_text = "\n".join(path.read_text(errors="ignore") for path in clean_root.rglob("*") if path.is_file())
         self.assertNotIn("agent-experience-graph-" + "self-consumption-batch", all_text)
         self.assertNotIn("/" + "Users" + "/", all_text)
