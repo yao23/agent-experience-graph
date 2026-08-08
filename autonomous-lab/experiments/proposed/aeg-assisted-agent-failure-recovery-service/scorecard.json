@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "status": "not_started",
+  "comparison_pairs": 0,
+  "acceptance_results": [],
+  "metrics": {
+    "objective_recovery_rate": null,
+    "retrieval_effect_rate": null,
+    "external_acceptance_rate": null,
+    "paid_pilot_conversion": null
+  },
+  "decision": "pending",
+  "limitations": [
+    "The experiment is proposed and has not been authorized or executed.",
+    "No customer, external-value, generalized-effectiveness, or PMF evidence exists."
+  ]
+}

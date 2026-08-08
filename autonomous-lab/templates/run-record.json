@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "experiment_id": "replace-with-experiment-id",
+  "run_id": "replace-with-run-id",
+  "started_at": null,
+  "finished_at": null,
+  "baseline_or_treatment": "baseline",
+  "commands": [],
+  "acceptance_results": [],
+  "budget_used": {"iterations": 0, "commands": 0, "tests": 0, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
+  "external_writes": false,
+  "notes": "Template only; no run occurred."
+}

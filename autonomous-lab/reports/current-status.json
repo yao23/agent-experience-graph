@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "generated_from_state_at": "2026-08-08T00:55:00Z",
+  "current_experiment": {
+    "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+    "state": "proposed",
+    "milestone": "design recorded; awaiting authorization to screen",
+    "blocker": "begin_experiment approval is pending",
+    "ledger_event_count": 1,
+    "ledger_head_sha256": "e3e541d451f65a290694fe45e19cd7303159b23e8918954caaf5fe96eba47c62"
+  },
+  "open_escalation": {
+    "escalation_id": "failure-recovery-v0-begin-approval",
+    "reason_code": "approval_required",
+    "requested_decision": "Approve, revise, or reject the proposed experiment design before screening begins."
+  },
+  "historical_summary": {
+    "batch_01": "Technical feasibility and limited external usefulness; zero promotion-ready candidates.",
+    "batch_02": "Twenty-four screened, zero qualified under corrected gates, and no material AEG repair effect."
+  },
+  "forbidden_without_approval": [
+    "screening or execution",
+    "model, agent, or paid execution",
+    "external communication or writes",
+    "candidate promotion or verified-library changes",
+    "release publication"
+  ]
+}

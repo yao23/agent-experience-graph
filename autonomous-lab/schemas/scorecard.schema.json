@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/autonomous-lab/scorecard.schema.json",
+  "title": "Autonomous Lab Scorecard",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "status", "comparison_pairs", "acceptance_results", "metrics", "decision", "limitations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["not_started", "incomplete", "evaluated"]},
+    "comparison_pairs": {"type": "integer", "minimum": 0},
+    "acceptance_results": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["test_id", "passed", "evidence"],
+        "properties": {
+          "test_id": {"type": "string", "minLength": 1},
+          "passed": {"type": "boolean"},
+          "evidence": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "metrics": {
+      "type": "object", "additionalProperties": {"type": ["number", "string", "null"]}
+    },
+    "decision": {"enum": ["pending", "continue", "stop", "escalate", "complete"]},
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  }
+}
