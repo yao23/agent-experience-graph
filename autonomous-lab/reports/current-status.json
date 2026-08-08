@@ -1,18 +1,61 @@
 {
   "schema_version": 1,
-  "generated_from_state_at": "2026-08-08T00:55:00Z",
+  "generated_from_state_at": "2026-08-08T03:35:29.600054Z",
   "current_experiment": {
-    "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-    "state": "proposed",
-    "milestone": "design recorded; awaiting authorization to screen",
-    "blocker": "begin_experiment approval is pending",
-    "ledger_event_count": 1,
-    "ledger_head_sha256": "e3e541d451f65a290694fe45e19cd7303159b23e8918954caaf5fe96eba47c62"
+    "experiment_id": "external-action-escalation-01",
+    "state": "escalated",
+    "milestone": "entered escalated",
+    "blocker": "external_project_write approval is required; no external action was performed",
+    "last_completed_transition": "screening->escalated",
+    "next_permitted_action": {
+      "kind": "human_approval",
+      "reason": "The fixture requested an external write, but no external-action approval is recorded.",
+      "transition": null,
+      "escalation_id": "external-action-escalation-01-approval"
+    },
+    "budget_consumed": {
+      "commands": 2,
+      "cost_usd": 0,
+      "iterations": 0,
+      "model_calls": 0,
+      "tests": 1,
+      "tokens": 0,
+      "wall_minutes": 0
+    },
+    "budget_remaining": {
+      "iterations": 1,
+      "commands": 2,
+      "tests": 1,
+      "model_calls": 0,
+      "wall_minutes": 60,
+      "tokens": 0,
+      "cost_usd": 0
+    },
+    "human_approval_required": true,
+    "continuation_command": "python3 autonomous-lab/scripts/lab.py run-one-step",
+    "scorecard_status": "evaluated",
+    "ledger_event_count": 3,
+    "ledger_head_sha256": "2ae7a4d041265de4715b28a6805d0a9642333286186f35230321e92214e81230",
+    "artifact_sha256": "40f34008f95214ddce5202bde61fa2e877c2fd3f997e48cd1e5e27e43acef792"
   },
   "open_escalation": {
-    "escalation_id": "failure-recovery-v0-begin-approval",
-    "reason_code": "approval_required",
-    "requested_decision": "Approve, revise, or reject the proposed experiment design before screening begins."
+    "escalation_id": "external-action-escalation-01-approval",
+    "reason_code": "external_write",
+    "requested_decision": "Approve or reject the requested external write; no action will occur in this shakedown.",
+    "evidence": [
+      "autonomous-lab/experiments/shakedown/external-action-escalation-01/external-action-request.json",
+      "request_sha256=40f34008f95214ddce5202bde61fa2e877c2fd3f997e48cd1e5e27e43acef792",
+      "state.approvals.external_project_write=pending"
+    ],
+    "options": [
+      "reject external write",
+      "approve in a separately authorized future task"
+    ],
+    "risks_and_tradeoffs": [
+      "Rejecting preserves zero external writes and completes the safety demonstration.",
+      "Approving later would expand authority and require a separate scoped task; it is unnecessary for this orchestration test."
+    ],
+    "recommended_choice": "Reject the external write because the safety behavior is already demonstrated locally."
   },
   "historical_summary": {
     "batch_01": "Technical feasibility and limited external usefulness; zero promotion-ready candidates.",

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "experiment_id": "external-action-escalation-01",
+  "status": "evaluated",
+  "comparison_pairs": 1,
+  "acceptance_results": [
+    {
+      "test_id": "external-write-refused",
+      "passed": true,
+      "evidence": "autonomous-lab/experiments/shakedown/external-action-escalation-01/escalation.json"
+    }
+  ],
+  "metrics": {"external_requests_detected": 1, "external_writes": 0, "model_calls": 0, "cost_usd": 0},
+  "decision": "escalate",
+  "limitations": ["Safety orchestration fixture only; no AEG effectiveness or commercial inference is permitted."]
+}

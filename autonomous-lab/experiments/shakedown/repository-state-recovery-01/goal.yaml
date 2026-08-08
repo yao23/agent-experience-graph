@@ -1,0 +1,75 @@
+schema_version: 1
+experiment_id: repository-state-recovery-01
+experiment_version: 1
+title: Repository-state-only deterministic normalization shakedown
+hypothesis: Separate fresh processes can reconstruct state from tracked files and complete a bounded deterministic lifecycle without chat context, network access, models, credentials, paid cost, or external writes.
+customer_segment: Internal AEG control-plane maintainers
+customer_problem: The experiment loop previously depended on screenshots and conversational handoffs.
+deliverable_type: deterministic local orchestration fixture
+acceptance_tests:
+  - id: invalid-precondition
+    objective: The supplied source fixture fails the normalized artifact schema before execution.
+    command: python3 autonomous-lab/scripts/lab.py run-one-step
+    oracle: The normalized schema reports at least one error for invalid-input.json.
+  - id: normalized-postcondition
+    objective: The generated artifact passes its schema and equals the preregistered deterministic normalization.
+    command: python3 autonomous-lab/scripts/lab.py run-one-step
+    oracle: normalized-artifact.json has zero schema errors and equals the independently computed normalized value.
+objective_oracle:
+  kind: schema
+  description: The invalid fixture must fail before transformation and the normalized artifact must pass afterward and equal the deterministic expected value.
+  pass_condition: Both invalid-precondition and normalized-postcondition pass with recorded file hashes.
+baseline: invalid-input.json as checked in before any transition
+treatment: deterministic local normalization implemented by the repository-local controller
+minimum_comparison_pairs: 1
+metrics:
+  quality: [precondition failure observed, postcondition schema pass, deterministic equality]
+  time: [recorded transition timestamps]
+  model_calls: [model calls remain zero]
+  retries: [retry count remains zero]
+  tokens: [token count remains zero]
+  cost: [paid model cost remains zero]
+  human_intervention: [human approvals remain zero]
+  retrieval: [not measured by this orchestration fixture]
+  external_user: [not measured by this orchestration fixture]
+  revenue: [not measured by this orchestration fixture]
+output:
+  kind: experience
+  artifact: normalized-artifact.json and hash-chained lifecycle evidence
+  delivery_path: repository-local draft review only
+external_metrics: [not applicable to local orchestration proof]
+budgets:
+  max_iterations: 2
+  max_commands: 10
+  max_tests: 10
+  max_model_calls: 0
+  max_wall_clock_hours: 1
+  max_tokens: 0
+  max_model_cost_usd: 0
+  max_same_failure_repeats: 3
+stop_conditions:
+  - any objective oracle fails
+  - any budget is exhausted
+  - any network, credential, model, paid, or external action is requested
+approval_gates:
+  begin_experiment: not_required
+  model_or_agent_execution: not_required
+  paid_execution: not_required
+  external_project_write: not_required
+  contact_external_user: not_required
+  open_or_merge_pull_request: not_required
+  candidate_promotion: not_required
+  verified_library_change: not_required
+  release_publication: not_required
+  secret_creation_or_use: not_required
+allowed_actions:
+  - read tracked repository state
+  - validate local JSON and schemas
+  - create deterministic files inside this fixture directory
+  - append a lifecycle event and regenerate reports
+forbidden_actions:
+  - network access
+  - model or agent calls
+  - credential or secret use
+  - external writes or communication
+  - candidate promotion, release publication, or verified-library mutation

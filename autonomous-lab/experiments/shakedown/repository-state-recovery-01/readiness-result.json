@@ -1,0 +1,9 @@
+{
+  "experiment_id": "repository-state-recovery-01",
+  "input_hash_matches": true,
+  "passed": true,
+  "preregistration_present": true,
+  "schema_hash_matches": true,
+  "schema_version": 1,
+  "timestamp": "2026-08-08T03:34:18.480354Z"
+}

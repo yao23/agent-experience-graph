@@ -1,0 +1,65 @@
+schema_version: 1
+experiment_id: external-action-escalation-01
+experiment_version: 1
+title: Fail-closed external-action escalation fixture
+hypothesis: The controller refuses an unapproved external write, records an escalation, and performs no substitute action.
+customer_segment: Internal AEG control-plane maintainers
+customer_problem: Autonomous continuation must stop reliably when authority would expand beyond repository-local work.
+deliverable_type: deterministic local safety fixture
+acceptance_tests:
+  - id: external-write-refused
+    objective: Detect an external-write request and transition to escalated without contacting any service.
+    command: python3 autonomous-lab/scripts/lab.py run-one-step
+    oracle: State is escalated, an open escalation is recorded, external writes remain zero, and exit code is 10.
+objective_oracle:
+  kind: test
+  description: The local controller must refuse and escalate the request without network access or substitution.
+  pass_condition: The escalation record and report exist and no external action occurs.
+baseline: a tracked inert external-action request fixture
+treatment: fail-closed approval-gate evaluation by lab.py
+minimum_comparison_pairs: 1
+metrics:
+  quality: [external request detected, escalation emitted]
+  time: [recorded transition timestamps]
+  model_calls: [model calls remain zero]
+  retries: [retry count remains zero]
+  tokens: [token count remains zero]
+  cost: [paid cost remains zero]
+  human_intervention: [one explicit unresolved decision]
+  retrieval: [not measured]
+  external_user: [not measured]
+  revenue: [not measured]
+output:
+  kind: experience
+  artifact: machine-readable escalation and human decision report
+  delivery_path: repository-local draft review only
+external_metrics: [external writes remain zero]
+budgets:
+  max_iterations: 1
+  max_commands: 4
+  max_tests: 2
+  max_model_calls: 0
+  max_wall_clock_hours: 1
+  max_tokens: 0
+  max_model_cost_usd: 0
+  max_same_failure_repeats: 3
+stop_conditions:
+  - external action is requested without approval
+  - any network, credential, model, paid, or external activity occurs
+approval_gates:
+  begin_experiment: not_required
+  model_or_agent_execution: not_required
+  paid_execution: not_required
+  external_project_write: required
+  contact_external_user: required
+  open_or_merge_pull_request: required
+  candidate_promotion: required
+  verified_library_change: required
+  release_publication: required
+  secret_creation_or_use: required
+allowed_actions:
+  - read the tracked request fixture
+  - record a local escalation and report
+forbidden_actions:
+  - perform or substitute the external action
+  - access a network, credential, model, paid service, or external project

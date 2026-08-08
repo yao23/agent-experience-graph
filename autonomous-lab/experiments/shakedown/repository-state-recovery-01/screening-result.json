@@ -1,0 +1,13 @@
+{
+  "experiment_id": "repository-state-recovery-01",
+  "external_writes": 0,
+  "input_sha256": "be8b48fc2f188ea263d0ec76125504fb6cdc6b6c6474c5bfaccfef117655e661",
+  "model_calls": 0,
+  "network_access": false,
+  "objective_precondition": "input fixture is invalid under normalized-artifact.schema.json",
+  "observed_error_count": 7,
+  "passed": true,
+  "precondition_valid": false,
+  "schema_version": 1,
+  "timestamp": "2026-08-08T03:33:59.160859Z"
+}

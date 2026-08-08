@@ -1,0 +1,29 @@
+{
+  "acceptance_results": [
+    {
+      "evidence": "autonomous-lab/experiments/shakedown/repository-state-recovery-01/normalized-artifact.json",
+      "passed": true,
+      "test_id": "normalized-schema"
+    },
+    {
+      "evidence": "autonomous-lab/experiments/shakedown/repository-state-recovery-01/acceptance-results.json",
+      "passed": true,
+      "test_id": "deterministic-normalization"
+    }
+  ],
+  "comparison_pairs": 1,
+  "decision": "complete",
+  "experiment_id": "repository-state-recovery-01",
+  "limitations": [
+    "This validates orchestration and repository-state reconstruction only.",
+    "It is not evidence of AEG retrieval benefit, coding-agent intelligence, commercial demand, generalized effectiveness, or PMF."
+  ],
+  "metrics": {
+    "cost_usd": 0,
+    "model_calls": 0,
+    "postcondition_passed": 1,
+    "precondition_failed_as_expected": 1
+  },
+  "schema_version": 1,
+  "status": "evaluated"
+}

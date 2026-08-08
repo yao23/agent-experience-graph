@@ -1,0 +1,27 @@
+{
+  "acceptance_results": [],
+  "artifact_sha256": "63cd4bda642a81516fef23f0186c91d27b06aee350929f675d3e191702ef4b13",
+  "baseline_or_treatment": "deterministic-local-fixture",
+  "budget_used": {
+    "commands": 4,
+    "cost_usd": 0,
+    "iterations": 1,
+    "model_calls": 0,
+    "tests": 2,
+    "tokens": 0,
+    "wall_minutes": 0
+  },
+  "commands": [
+    "python3 autonomous-lab/scripts/lab.py run-one-step"
+  ],
+  "experiment_id": "repository-state-recovery-01",
+  "external_writes": false,
+  "finished_at": "2026-08-08T03:34:29.465143Z",
+  "input_sha256": "be8b48fc2f188ea263d0ec76125504fb6cdc6b6c6474c5bfaccfef117655e661",
+  "model_calls": 0,
+  "notes": "Deterministic orchestration fixture; not AEG effectiveness evidence.",
+  "paid_cost_usd": 0,
+  "run_id": "repository-state-recovery-01-run-01",
+  "schema_version": 1,
+  "started_at": "2026-08-08T03:34:29.465143Z"
+}

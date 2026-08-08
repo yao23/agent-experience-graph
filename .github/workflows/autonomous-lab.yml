@@ -2,7 +2,7 @@ name: Validate Autonomous Experiment Lab
 
 on:
   push:
-    branches: [main, "codex/aeg-autonomous-experiment-lab-v0"]
+    branches: [main, "codex/aeg-autonomous-experiment-lab-v0", "codex/aeg-autonomous-lab-shakedown-01"]
     paths:
       - "autonomous-lab/**"
       - ".github/workflows/autonomous-lab.yml"
@@ -36,6 +36,9 @@ jobs:
         env:
           BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
+          if [[ "$BASE_REF" =~ ^0+$ ]]; then
+            BASE_REF="$(git merge-base HEAD origin/main)"
+          fi
           python autonomous-lab/scripts/lab.py validate --base-ref "$BASE_REF"
           python autonomous-lab/scripts/lab.py status
           python autonomous-lab/scripts/lab.py next

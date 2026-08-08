@@ -1,0 +1,33 @@
+{
+  "approvals": {
+    "begin_experiment": "not_required",
+    "candidate_promotion": "pending",
+    "contact_external_user": "pending",
+    "external_project_write": "pending",
+    "model_or_agent_execution": "not_required",
+    "open_or_merge_pull_request": "pending",
+    "paid_execution": "not_required",
+    "release_publication": "pending",
+    "secret_creation_or_use": "pending",
+    "verified_library_change": "pending"
+  },
+  "blocker": "external_project_write approval is required; no external action was performed",
+  "budget_used": {
+    "commands": 2,
+    "cost_usd": 0,
+    "iterations": 0,
+    "model_calls": 0,
+    "tests": 1,
+    "tokens": 0,
+    "wall_minutes": 0
+  },
+  "experiment_id": "external-action-escalation-01",
+  "ledger_event_count": 3,
+  "ledger_head_sha256": "2ae7a4d041265de4715b28a6805d0a9642333286186f35230321e92214e81230",
+  "milestone": "entered escalated",
+  "retry_count": 0,
+  "schema_version": 1,
+  "state": "escalated",
+  "updated_at": "2026-08-08T03:35:29.600054Z",
+  "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
+}

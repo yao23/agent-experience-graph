@@ -16,6 +16,20 @@ and screenshots are never authoritative state.
    when acceptance tests or market evidence are absent.
 6. Record sanitized evidence and all budget consumption.
 
+The single continuation entry point is:
+
+```sh
+python3 autonomous-lab/scripts/lab.py run-one-step
+```
+
+It validates, chooses at most one action, persists state and evidence,
+regenerates reports, and exits. Interpret exit codes as follows:
+
+- `0`: one safe step completed or terminal state is stable;
+- `10`: human approval is required;
+- `11`: validation, evidence, schema, or oracle failure;
+- `12`: budget exhausted.
+
 Perform at most one transition and continue only when the state machine
 explicitly permits it. Do not continue from a terminal state. Do not
 execute an approval-gated or forbidden action. If evidence is missing, a budget
@@ -23,3 +37,7 @@ or retry limit is reached, contamination is possible, the oracle is absent, or
 approval is pending, stop and create/update the machine-readable escalation and
 human report. Append a hash-chained event; never replace an old event. Validate
 again and report exactly what changed.
+
+When exit code `10` is returned, read
+`autonomous-lab/reports/next-human-action.md` and stop. Do not infer approval
+from silence, chat history, or a local substitute action.

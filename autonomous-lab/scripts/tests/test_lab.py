@@ -36,6 +36,10 @@ class LabTests(unittest.TestCase):
         experiences = self.repo / "experiences"
         experiences.mkdir()
         shutil.copy2(SOURCE_REPO / "experiences" / "verified.json", experiences / "verified.json")
+        registry_path = self.root / "experiments" / "registry.yaml"
+        registry = yaml.safe_load(registry_path.read_text())
+        registry["current_experiment_id"] = "aeg-assisted-agent-failure-recovery-service-v0"
+        registry_path.write_text(yaml.safe_dump(registry, sort_keys=False), encoding="utf-8")
         self.lab = Lab(self.root)
 
     def tearDown(self) -> None:
@@ -68,7 +72,7 @@ class LabTests(unittest.TestCase):
     def test_complete_control_plane_validates(self) -> None:
         result = self.lab.validate()
         self.assertEqual(result["result"], "valid")
-        self.assertEqual(result["registry_experiments"], 3)
+        self.assertEqual(result["registry_experiments"], len(self.lab.registry["experiments"]))
 
     def test_valid_state_transition_is_constructed(self) -> None:
         _, goal, state, _, _ = self.lab.records()
@@ -92,7 +96,7 @@ class LabTests(unittest.TestCase):
         state["ledger_head_sha256"] = events[0]["event_sha256"]
         self.write_json(state_path, state)
         registry = yaml.safe_load((self.root / "experiments" / "registry.yaml").read_text())
-        registry["experiments"][-1]["state"] = "ready"
+        next(entry for entry in registry["experiments"] if entry["experiment_id"] == "aeg-assisted-agent-failure-recovery-service-v0")["state"] = "ready"
         self.write_yaml(self.root / "experiments" / "registry.yaml", registry)
         with self.assertRaisesRegex(LabValidationError, "invalid or skipped transition"):
             Lab(self.root).validate()
@@ -185,6 +189,7 @@ class LabTests(unittest.TestCase):
         first = self.lab.render_reports()
         second = self.lab.render_reports()
         self.assertEqual(first, second)
+        self.lab.report()
         self.lab.report(check=True)
 
     def test_one_step_makes_at_most_one_transition(self) -> None:
