@@ -110,17 +110,15 @@ class Lab:
         }
         self.registry = load_yaml(self.root / "experiments" / "registry.yaml")
 
-    def controlled_entries(self) -> list[dict[str, Any]]:
-        return [
+    def current_entry(self, experiment_id: str | None = None) -> dict[str, Any]:
+        selected = experiment_id or self.registry.get("current_experiment_id")
+        entries = [
             entry
             for entry in self.registry["experiments"]
-            if "goal_path" in entry and "state_path" in entry
+            if entry.get("experiment_id") == selected
+            and "goal_path" in entry
+            and "state_path" in entry
         ]
-
-    def current_entry(self, experiment_id: str | None = None) -> dict[str, Any]:
-        entries = self.controlled_entries()
-        if experiment_id:
-            entries = [entry for entry in entries if entry["experiment_id"] == experiment_id]
         if len(entries) != 1:
             raise LabValidationError(f"expected exactly one matching controlled experiment, found {len(entries)}")
         return entries[0]
@@ -219,6 +217,24 @@ class Lab:
 
     def validate_git_history(self, base_ref: str) -> None:
         relative = self.root.relative_to(self.repo_root) / "ledger" / "events.jsonl"
+        commit = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", f"{base_ref}^{{commit}}"],
+            cwd=self.repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if commit.returncode != 0:
+            raise LabValidationError(f"append-only base ref is not a commit: {base_ref}")
+        exists = subprocess.run(
+            ["git", "cat-file", "-e", f"{base_ref}:{relative.as_posix()}"],
+            cwd=self.repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if exists.returncode != 0:
+            return
         result = subprocess.run(
             ["git", "show", f"{base_ref}:{relative.as_posix()}"],
             cwd=self.repo_root,
@@ -226,8 +242,9 @@ class Lab:
             capture_output=True,
             check=False,
         )
-        if result.returncode == 0:
-            self.validate_append_only(result.stdout)
+        if result.returncode != 0:
+            raise LabValidationError(f"could not read prior ledger from {base_ref}")
+        self.validate_append_only(result.stdout)
 
     def validate_semantics(
         self,
@@ -302,6 +319,10 @@ class Lab:
             for key in ("evidence_path", "goal_path", "state_path", "scorecard_path", "escalation_path"):
                 if key in entry and not self.resolve(entry[key]).is_file():
                     raise LabValidationError(f"registry path does not exist: {entry[key]}")
+        current_id = self.registry.get("current_experiment_id")
+        if current_id not in ids:
+            raise LabValidationError("registry current_experiment_id is absent from experiments")
+        self.current_entry(current_id)
 
     def validate_templates(self) -> None:
         self.schema_validate(load_yaml(self.root / "templates" / "goal.yaml"), "goal", "goal template")
