@@ -1,0 +1,6 @@
+{
+  "records": [
+    {"id": " B ", "enabled": "true", "tags": ["Z", "a", "a"]},
+    {"id": "a", "enabled": 1, "tags": [" A "]}
+  ]
+}

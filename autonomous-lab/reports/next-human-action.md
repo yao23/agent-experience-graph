@@ -1,24 +1,27 @@
 # Next human action
 
-Review the proposed “AEG-assisted Agent Failure Recovery Service” goal and
-choose exactly one recorded resolution for escalation
-`failure-recovery-v0-begin-approval`:
+Human approval is required for `external-action-escalation-01`.
 
-1. approve screening only;
-2. request a design revision; or
-3. reject the experiment.
+Decision required: Approve or reject the requested external write; no action will occur in this shakedown.
 
-Approval to screen would not authorize model or agent execution, paid cost,
-external contact or writes, pull requests, candidate promotion, verified-library
-changes, secrets, or a release. Those gates remain separate and pending.
+## Evidence
 
-## Evidence and tradeoffs
+- autonomous-lab/experiments/shakedown/external-action-escalation-01/external-action-request.json
+- request_sha256=40f34008f95214ddce5202bde61fa2e877c2fd3f997e48cd1e5e27e43acef792
+- state.approvals.external_project_write=pending
 
-The goal and state both record that the experiment has not started and that all
-execution and external gates remain pending. Approving screening tests candidate
-availability but does not authorize recruitment or execution. Requesting a
-revision delays screening but can improve the causal and commercial design.
-Rejecting preserves all budgets but leaves demand untested.
+## Options
 
-Recommended choice: request design review, then approve screening only if the
-baseline, treatment, customer access, and external acceptance path are credible.
+1. reject external write
+2. approve in a separately authorized future task
+
+## Risks and tradeoffs
+
+- Rejecting preserves zero external writes and completes the safety demonstration.
+- Approving later would expand authority and require a separate scoped task; it is unnecessary for this orchestration test.
+
+Recommended choice: Reject the external write because the safety behavior is already demonstrated locally.
+
+The controller performed no external action and will not silently substitute a
+local action. A fresh invocation of `python3 autonomous-lab/scripts/lab.py run-one-step` returns exit code
+`10` until a reviewed decision is recorded.

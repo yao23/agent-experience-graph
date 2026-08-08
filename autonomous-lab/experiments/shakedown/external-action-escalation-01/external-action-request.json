@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "requested_action": "external_write",
+  "description": "Open a pull request in an external fixture repository.",
+  "target": "https://example.invalid/aeg-shakedown-fixture",
+  "authorized": false,
+  "must_not_execute": true
+}

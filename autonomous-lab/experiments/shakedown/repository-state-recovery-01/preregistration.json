@@ -1,0 +1,15 @@
+{
+  "experiment_id": "repository-state-recovery-01",
+  "frozen_before_execution": true,
+  "goal_sha256": "8277a6ac458f49bfe591b51f02556a752aa806818c84b2613113cf87ae510029",
+  "input_sha256": "be8b48fc2f188ea263d0ec76125504fb6cdc6b6c6474c5bfaccfef117655e661",
+  "oracle": {
+    "description": "The invalid fixture must fail before transformation and the normalized artifact must pass afterward and equal the deterministic expected value.",
+    "kind": "schema",
+    "pass_condition": "Both invalid-precondition and normalized-postcondition pass with recorded file hashes."
+  },
+  "schema_sha256": "7f3d40ff86a3a6f38414c3bccb3363d6f7f807d5158145af9a969269d58583a8",
+  "schema_version": 1,
+  "timestamp": "2026-08-08T03:34:09.163922Z",
+  "transformation": "trim and lowercase IDs; coerce booleans; lowercase, deduplicate, and sort tags; sort records by ID"
+}

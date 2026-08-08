@@ -1,18 +1,48 @@
 schema_version: 1
-current_experiment_id: aeg-assisted-agent-failure-recovery-service-v0
+current_experiment_id: external-action-escalation-01
 experiments:
-  - experiment_id: aeg-self-consumption-batch-01
-    state: completed
-    evidence_path: dogfood/self-consumption-batch-01/batch-01-decision.md
-    conclusion: Established experiment infrastructure and calibrated evidence boundaries, but produced zero promotion-ready experiences and no generalized-effectiveness, causal-efficiency, PMF, or commercial-demand evidence.
-  - experiment_id: aeg-self-consumption-batch-02
-    state: completed
-    evidence_path: dogfood/self-consumption-batch-02/batch-02-decision.md
-    conclusion: Twenty-four candidates screened, zero qualified under corrected gates, one independent reproduction of a previously public repair invalid for fresh-task qualification, and no affirmative AEG retrieval benefit, generalized-effectiveness, causal-efficiency, PMF, or commercial-demand evidence.
-  - experiment_id: aeg-assisted-agent-failure-recovery-service-v0
-    state: proposed
-    goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
-    state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json
-    scorecard_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/scorecard.json
-    escalation_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/escalation.json
-    conclusion: Proposed only; no authorization, execution, external write, or commercial claim.
+- experiment_id: aeg-self-consumption-batch-01
+  state: completed
+  evidence_path: dogfood/self-consumption-batch-01/batch-01-decision.md
+  conclusion: Established experiment infrastructure and calibrated evidence boundaries,
+    but produced zero promotion-ready experiences and no generalized-effectiveness,
+    causal-efficiency, PMF, or commercial-demand evidence.
+- experiment_id: aeg-self-consumption-batch-02
+  state: completed
+  evidence_path: dogfood/self-consumption-batch-02/batch-02-decision.md
+  conclusion: Twenty-four candidates screened, zero qualified under corrected gates,
+    one independent reproduction of a previously public repair invalid for fresh-task
+    qualification, and no affirmative AEG retrieval benefit, generalized-effectiveness,
+    causal-efficiency, PMF, or commercial-demand evidence.
+- experiment_id: aeg-assisted-agent-failure-recovery-service-v0
+  state: proposed
+  goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
+  state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json
+  scorecard_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/scorecard.json
+  escalation_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/escalation.json
+  conclusion: Proposed only; no authorization, execution, external write, or commercial
+    claim.
+- experiment_id: repository-state-recovery-01
+  state: completed
+  runner_kind: deterministic-normalization
+  goal_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/goal.yaml
+  state_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/state.json
+  scorecard_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/scorecard.json
+  escalation_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/escalation.json
+  input_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/invalid-input.json
+  artifact_schema_path: autonomous-lab/experiments/shakedown/repository-state-recovery-01/normalized-artifact.schema.json
+  evidence_path: autonomous-lab/evidence/shakedown-01/execution-summary.json
+  conclusion: Local orchestration fixture only; not AEG effectiveness, coding-agent
+    intelligence, commercial-validation, or PMF evidence.
+- experiment_id: external-action-escalation-01
+  state: escalated
+  runner_kind: external-action-escalation
+  requested_action: external_write
+  goal_path: autonomous-lab/experiments/shakedown/external-action-escalation-01/goal.yaml
+  state_path: autonomous-lab/experiments/shakedown/external-action-escalation-01/state.json
+  scorecard_path: autonomous-lab/experiments/shakedown/external-action-escalation-01/scorecard.json
+  escalation_path: autonomous-lab/experiments/shakedown/external-action-escalation-01/escalation.json
+  request_path: autonomous-lab/experiments/shakedown/external-action-escalation-01/external-action-request.json
+  evidence_path: autonomous-lab/evidence/shakedown-01/execution-summary.json
+  conclusion: Local fail-closed escalation fixture only; no external action is authorized
+    or performed.

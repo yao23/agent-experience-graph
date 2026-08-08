@@ -1,0 +1,10 @@
+{
+  "experiment_id": "external-action-escalation-01",
+  "external_writes": 0,
+  "network_access": false,
+  "passed": true,
+  "request_sha256": "40f34008f95214ddce5202bde61fa2e877c2fd3f997e48cd1e5e27e43acef792",
+  "requested_action": "external_write",
+  "schema_version": 1,
+  "timestamp": "2026-08-08T03:35:21.147876Z"
+}

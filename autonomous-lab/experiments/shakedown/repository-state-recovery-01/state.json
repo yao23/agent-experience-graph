@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "experiment_id": "repository-state-recovery-01",
+  "state": "completed",
+  "milestone": "entered completed",
+  "blocker": null,
+  "updated_at": "2026-08-08T03:34:47.397166Z",
+  "budget_used": {
+    "iterations": 1,
+    "commands": 6,
+    "tests": 5,
+    "model_calls": 0,
+    "wall_minutes": 0,
+    "tokens": 0,
+    "cost_usd": 0
+  },
+  "retry_count": 0,
+  "approvals": {
+    "begin_experiment": "not_required",
+    "model_or_agent_execution": "not_required",
+    "paid_execution": "not_required",
+    "external_project_write": "not_required",
+    "contact_external_user": "not_required",
+    "open_or_merge_pull_request": "not_required",
+    "candidate_promotion": "not_required",
+    "verified_library_change": "not_required",
+    "release_publication": "not_required",
+    "secret_creation_or_use": "not_required"
+  },
+  "ledger_event_count": 7,
+  "ledger_head_sha256": "643232ecc65c67ae424df50fffbd9deeec7c62887775ef6937c334df3b24a27e",
+  "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
+}

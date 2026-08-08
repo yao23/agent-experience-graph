@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "shakedown_id": "repository-state-only-shakedown-01",
+  "base_commit": "091213771e9e57731d135424dc46351bf411c30f",
+  "classification": "repository-state orchestration proof only",
+  "not_evidence_of": [
+    "AEG retrieval benefit",
+    "coding-agent intelligence",
+    "generalized effectiveness",
+    "external-user value",
+    "commercial demand",
+    "product-market fit"
+  ],
+  "stateless_processes": {
+    "run_one_step_invocations": 10,
+    "preflight_validate_status_next_processes": 30,
+    "total_fresh_subprocesses": 40,
+    "chat_transcripts_used": 0,
+    "screenshots_used": 0,
+    "session_state_used": 0
+  },
+  "recovery_fixture": {
+    "experiment_id": "repository-state-recovery-01",
+    "run_one_step_invocations": 7,
+    "transitions_completed": 6,
+    "transition_history": [
+      {"previous": "proposed", "next": "screening", "timestamp": "2026-08-08T03:33:59.160859Z", "event_sha256": "cd2311b2f188153e85a4688b5771b3e738515a7037c9888e30a903d40012c3fd"},
+      {"previous": "screening", "next": "preregistered", "timestamp": "2026-08-08T03:34:09.163922Z", "event_sha256": "0cf331d8a4c1cf0918530b7d17e746e3331158bd4cd301d0ec6ae06a5351f95b"},
+      {"previous": "preregistered", "next": "ready", "timestamp": "2026-08-08T03:34:18.480354Z", "event_sha256": "b22c2d015b13fa9b51fa1412b0378b2921470d2a339998cad12f6db0c98904f9"},
+      {"previous": "ready", "next": "running", "timestamp": "2026-08-08T03:34:29.465143Z", "event_sha256": "a3eb7c68693f95520db8d1042c57cb931f3f28733cfbda1a8018a5f90687f11d"},
+      {"previous": "running", "next": "evaluating", "timestamp": "2026-08-08T03:34:39.017572Z", "event_sha256": "01e7fcbaa40c3ec5e05fce82c7dda9118b99176b053fa1409433bd03892c027c"},
+      {"previous": "evaluating", "next": "completed", "timestamp": "2026-08-08T03:34:47.397166Z", "event_sha256": "643232ecc65c67ae424df50fffbd9deeec7c62887775ef6937c334df3b24a27e"}
+    ],
+    "objective_precondition": {"expected_valid": false, "observed_valid": false, "schema_errors": 7, "passed": true},
+    "objective_postcondition": {"schema_errors": 0, "deterministic_equality": true, "passed": true},
+    "artifact_path": "autonomous-lab/experiments/shakedown/repository-state-recovery-01/normalized-artifact.json",
+    "artifact_sha256": "63cd4bda642a81516fef23f0186c91d27b06aee350929f675d3e191702ef4b13",
+    "final_state": "completed",
+    "budget_used": {"iterations": 1, "commands": 6, "tests": 5, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
+    "human_decision_required": false,
+    "terminal_idempotence": {
+      "exit_code": 0,
+      "mutation_observed": false,
+      "state_sha256_before_and_after": "16853695ac176c8f55a33cd5c3edf882ea44460791450e186dda9c79ef3eae5d",
+      "ledger_sha256_before_and_after": "62336dc16b5be7a8739c2d2f6f2d6fc3c1fccd8274ca0ffac772e7aed8411a58",
+      "artifact_sha256_before_and_after": "63cd4bda642a81516fef23f0186c91d27b06aee350929f675d3e191702ef4b13"
+    }
+  },
+  "escalation_fixture": {
+    "experiment_id": "external-action-escalation-01",
+    "run_one_step_invocations": 3,
+    "transition_history": [
+      {"previous": "proposed", "next": "screening", "timestamp": "2026-08-08T03:35:21.147876Z", "event_sha256": "7072c7af38a595e873d9729e010290f8103df79b2b7f8a0f2d50c88d40cf48d3"},
+      {"previous": "screening", "next": "escalated", "timestamp": "2026-08-08T03:35:29.600054Z", "event_sha256": "2ae7a4d041265de4715b28a6805d0a9642333286186f35230321e92214e81230"}
+    ],
+    "final_state": "escalated",
+    "exit_code": 10,
+    "external_writes": 0,
+    "network_access": false,
+    "model_calls": 0,
+    "cost_usd": 0,
+    "local_substitution": false,
+    "human_decision_required": true,
+    "approval_authority_consumed": false,
+    "stable_repeat_mutation_observed": false
+  },
+  "ledger": {"global_event_count": 11, "global_head_sha256": "2ae7a4d041265de4715b28a6805d0a9642333286186f35230321e92214e81230", "chain_valid": true, "append_only_against_main": true},
+  "tracked_state_reconstruction": {"passed": true, "clean_temporary_repository": true, "reports_reproduced_byte_for_byte": true, "batch_temporary_worktrees_required": false},
+  "verified_library": {"changed": false, "blob_oid": "9e9c1294ffbe0039da9973b52402ce4f8593c906", "sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"},
+  "commercial_experiment": {"state": "proposed", "budget_consumed": 0, "state_sha256": "a54f7baf3a872ceaffbc077a34f619454e2a8feecf6aa69701a9b1fcaec9239b"}
+}
