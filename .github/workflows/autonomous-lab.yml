@@ -1,0 +1,81 @@
+name: Validate Autonomous Experiment Lab
+
+on:
+  push:
+    branches: [main, "codex/aeg-autonomous-experiment-lab-v0"]
+    paths:
+      - "autonomous-lab/**"
+      - ".github/workflows/autonomous-lab.yml"
+  pull_request:
+    paths:
+      - "autonomous-lab/**"
+      - ".github/workflows/autonomous-lab.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/aeg-autonomous-lab-pycache
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deterministic validation dependencies
+        run: python -m pip install -r autonomous-lab/requirements.txt
+
+      - name: Validate schemas, records, budgets, transitions, and ledger
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          python autonomous-lab/scripts/lab.py validate --base-ref "$BASE_REF"
+          python autonomous-lab/scripts/lab.py status
+          python autonomous-lab/scripts/lab.py next
+          python autonomous-lab/scripts/lab.py report --check
+
+      - name: Run autonomous-lab regression tests
+        run: python -m unittest discover -s autonomous-lab/scripts/tests -p 'test_*.py' -v
+
+      - name: Compile Python and parse YAML
+        run: |
+          python -m compileall -q autonomous-lab/scripts
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for path in sorted(Path("autonomous-lab").rglob("*.yaml")):
+              with path.open(encoding="utf-8") as handle:
+                  yaml.safe_load(handle)
+              print(f"parsed {path}")
+          with Path(".github/workflows/autonomous-lab.yml").open(encoding="utf-8") as handle:
+              yaml.safe_load(handle)
+          print("parsed .github/workflows/autonomous-lab.yml")
+          PY
+
+      - name: Reject private or runtime artifacts
+        run: |
+          if find autonomous-lab -type f \( -name '*.pyc' -o -name '*.jsonl.raw' -o -name '*.log' -o -name '.DS_Store' \) -print -quit | grep -q .; then
+            echo "runtime or raw artifact found" >&2
+            exit 1
+          fi
+          if grep -RInE '(/Users/|/home/[^ /]+/|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|gh[pousr]_[A-Za-z0-9_]{20,})' autonomous-lab; then
+            echo "private path or credential-like content found" >&2
+            exit 1
+          fi
+
+      - name: Confirm verified library is unchanged in pull request
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code "${{ github.event.pull_request.base.sha }}...HEAD" -- experiences/verified.json
+
+      - name: Confirm generated files and patch whitespace are clean
+        run: |
+          git diff --exit-code
+          git diff --check
