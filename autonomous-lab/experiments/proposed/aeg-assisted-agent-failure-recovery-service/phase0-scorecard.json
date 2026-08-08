@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "approved_phase": "phase0_preparation",
+  "status": "preregistered",
+  "required_artifacts": 16,
+  "artifact_checks_passed": null,
+  "internal_links_resolve": null,
+  "claims_match_batch_evidence": null,
+  "unsupported_claims_absent": null,
+  "private_or_proprietary_information_absent": null,
+  "sample_is_sanitized_and_reproducible": null,
+  "pricing_labeled_hypothesis": null,
+  "outreach_is_draft_only": null,
+  "external_actions": 0,
+  "customer_contacts": 0,
+  "paid_experiments": 0,
+  "verified_library_modifications": 0,
+  "baseline_treatment_repairs": 0,
+  "scheduled_or_model_assisted_runs": 0,
+  "model_calls": 0,
+  "tokens": "unavailable",
+  "cost_usd": "unavailable",
+  "next_requested_decision": "whether to begin Phase 1 seed-user recruitment",
+  "decision": "pending deterministic Phase 0 validation",
+  "limitations": [
+    "Repository-local package preparation is not repair-effectiveness evidence.",
+    "No user, maintainer, customer, payment, publication, or external acceptance evidence exists.",
+    "Exact token and dollar cost telemetry is unavailable and is not estimated as zero."
+  ]
+}

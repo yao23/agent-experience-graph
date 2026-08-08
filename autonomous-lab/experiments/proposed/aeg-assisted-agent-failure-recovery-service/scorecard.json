@@ -1,18 +1,24 @@
 {
   "schema_version": 1,
   "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "status": "not_started",
+  "status": "incomplete",
   "comparison_pairs": 0,
   "acceptance_results": [],
   "metrics": {
     "objective_recovery_rate": null,
     "retrieval_effect_rate": null,
     "external_acceptance_rate": null,
-    "paid_pilot_conversion": null
+    "paid_pilot_conversion": null,
+    "phase0_artifacts_complete": null,
+    "external_actions": 0,
+    "model_calls": 0,
+    "tokens": "unavailable",
+    "cost_usd": "unavailable"
   },
   "decision": "pending",
   "limitations": [
-    "The experiment is proposed and has not been authorized or executed.",
-    "No customer, external-value, generalized-effectiveness, or PMF evidence exists."
+    "Only repository-local Phase 0 preparation is authorized.",
+    "No repair, baseline, treatment, customer contact, external-value, generalized-effectiveness, or PMF evidence exists.",
+    "Exact token and dollar cost telemetry is unavailable and is not estimated as zero."
   ]
 }

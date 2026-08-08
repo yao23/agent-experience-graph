@@ -76,12 +76,11 @@ class LabTests(unittest.TestCase):
 
     def test_valid_state_transition_is_constructed(self) -> None:
         _, goal, state, _, _ = self.lab.records()
-        state["approvals"]["begin_experiment"] = "approved"
         event = self.lab._event_for_transition(
-            goal, state, "screening", ["screening-evidence.json"], "2026-08-08T01:00:00Z", "test", "test"
+            goal, state, "ready", ["readiness-evidence.json"], "2026-08-08T01:00:00Z", "test", "test"
         )
-        self.assertEqual(event["previous_state"], "proposed")
-        self.assertEqual(event["new_state"], "screening")
+        self.assertEqual(event["previous_state"], "preregistered")
+        self.assertEqual(event["new_state"], "ready")
         self.assertEqual(event["event_sha256"], canonical_hash(event))
 
     def test_skipped_transition_is_rejected(self) -> None:
@@ -111,7 +110,7 @@ class LabTests(unittest.TestCase):
     def test_missing_evidence_is_rejected(self) -> None:
         _, goal, state, _, _ = self.lab.records()
         with self.assertRaisesRegex(LabValidationError, "requires evidence"):
-            self.lab._event_for_transition(goal, state, "screening", [], "2026-08-08T01:00:00Z", "test", "test")
+            self.lab._event_for_transition(goal, state, "ready", [], "2026-08-08T01:00:00Z", "test", "test")
 
     def test_missing_oracle_is_rejected(self) -> None:
         _, goal, state, _, _ = self.lab.records()
@@ -195,19 +194,18 @@ class LabTests(unittest.TestCase):
     def test_one_step_makes_at_most_one_transition(self) -> None:
         _, state_path, _, escalation_path = self.current_paths()
         state = json.loads(state_path.read_text())
-        state["approvals"]["begin_experiment"] = "approved"
         self.write_json(state_path, state)
         escalation = json.loads(escalation_path.read_text())
         escalation["status"] = "resolved"
         escalation["resolved_at"] = "2026-08-08T00:59:00Z"
-        escalation["resolution"] = "approve screening only"
+        escalation["resolution"] = "approve Phase 0 only"
         self.write_json(escalation_path, escalation)
         lab = Lab(self.root)
         before = lab.status()["ledger_event_count"]
-        lab.perform_transition("screening", ["freshness-search.json"], "2026-08-08T01:00:00Z")
+        lab.perform_transition("ready", ["phase0-validation.json"], "2026-08-08T01:00:00Z")
         after = Lab(self.root).status()["ledger_event_count"]
         self.assertEqual(after - before, 1)
-        self.assertEqual(Lab(self.root).status()["state"], "screening")
+        self.assertEqual(Lab(self.root).status()["state"], "ready")
 
     def test_batch_registry_records_honest_historical_limits(self) -> None:
         self.lab.validate_registry()

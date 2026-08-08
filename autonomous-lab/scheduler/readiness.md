@@ -21,10 +21,10 @@
 - Is working-tree safety enforced? **Yes.** Repository, branch, Git operation,
   expected tracked mutations, untracked Autonomous Lab content, verified
   library, state, and ledger are checked fail-closed.
-- Is there a scheduler-eligible experiment? **No.** The safe no-work result is
-  `No scheduler-eligible experiment is currently approved.`
-- Is the commercial experiment proposed and unapproved? **Yes.** It is not
-  silently activated and remains at zero execution budget.
+- Is there a scheduler-eligible experiment? **Yes.** Exactly one bounded,
+  repository-local `phase0_preparation` entry is eligible.
+- Is the commercial experiment fully approved? **No.** Only Phase 0 package
+  preparation is authorized; Phase 1 and all external actions remain blocked.
 - What prompt should be pasted into Scheduled Tasks? Use the complete contents
   of `autonomous-lab/prompts/scheduled-step.md`.
 - What local project should be selected? Select the local AEG repository root
