@@ -25,7 +25,7 @@ experiments:
   operational_status: active
   scheduler_eligible: true
   approved_phase: phase0_preparation
-  state: running
+  state: evaluating
   runner_kind: phase0-preparation
   goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
   state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json

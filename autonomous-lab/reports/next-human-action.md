@@ -3,7 +3,7 @@
 No human action required
 
 - Experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- State: `running`
+- State: `evaluating`
 - Next action: `transition` — next lifecycle evidence may be recorded
 - Continue with: `python3 autonomous-lab/scripts/lab.py run-one-step`
 

@@ -1,24 +1,35 @@
 {
-  "schema_version": 1,
-  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "status": "incomplete",
+  "acceptance_results": [
+    {
+      "evidence": "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json",
+      "passed": true,
+      "test_id": "phase0-artifact-package"
+    },
+    {
+      "evidence": "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json",
+      "passed": true,
+      "test_id": "phase0-boundary-oracle"
+    }
+  ],
   "comparison_pairs": 0,
-  "acceptance_results": [],
-  "metrics": {
-    "objective_recovery_rate": null,
-    "retrieval_effect_rate": null,
-    "external_acceptance_rate": null,
-    "paid_pilot_conversion": null,
-    "phase0_artifacts_complete": null,
-    "external_actions": 0,
-    "model_calls": 0,
-    "tokens": "unavailable",
-    "cost_usd": "unavailable"
-  },
-  "decision": "pending",
+  "decision": "continue",
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
   "limitations": [
     "Only repository-local Phase 0 preparation is authorized.",
     "No repair, baseline, treatment, customer contact, external-value, generalized-effectiveness, or PMF evidence exists.",
     "Exact token and dollar cost telemetry is unavailable and is not estimated as zero."
-  ]
+  ],
+  "metrics": {
+    "cost_usd": "unavailable",
+    "external_acceptance_rate": null,
+    "external_actions": 0,
+    "model_calls": 3,
+    "objective_recovery_rate": null,
+    "paid_pilot_conversion": null,
+    "phase0_artifacts_complete": 1,
+    "retrieval_effect_rate": null,
+    "tokens": "unavailable"
+  },
+  "schema_version": 1,
+  "status": "incomplete"
 }

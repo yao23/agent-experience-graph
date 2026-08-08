@@ -1,33 +1,33 @@
 {
   "schema_version": 1,
-  "run_id": "0e3b7d22-15fb-49fe-800a-ad090d8986df",
-  "generated_from_state_at": "2026-08-08T18:02:52.981692Z",
+  "run_id": "2d363f36-6f80-4cd1-913a-a2bbea4bb843",
+  "generated_from_state_at": "2026-08-08T19:02:36.144426Z",
   "current_experiment": {
     "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
     "experiment_kind": "commercial",
-    "state": "running",
-    "milestone": "entered running",
+    "state": "evaluating",
+    "milestone": "entered evaluating",
     "blocker": null,
-    "last_completed_transition": "ready->running",
+    "last_completed_transition": "running->evaluating",
     "next_permitted_action": {
       "kind": "transition",
       "reason": "next lifecycle evidence may be recorded",
-      "transition": "evaluating"
+      "transition": "completed"
     },
     "budget_consumed": {
-      "iterations": 2,
-      "commands": 2,
-      "tests": 2,
-      "model_calls": 2,
+      "iterations": 3,
+      "commands": 3,
+      "tests": 3,
+      "model_calls": 3,
       "wall_minutes": 0,
       "tokens": 0,
       "cost_usd": 0
     },
     "budget_remaining": {
-      "iterations": 6,
-      "commands": 62,
-      "tests": 126,
-      "model_calls": 6,
+      "iterations": 5,
+      "commands": 61,
+      "tests": 125,
+      "model_calls": 5,
       "wall_minutes": 480,
       "tokens": 0,
       "cost_usd": 0
@@ -37,10 +37,10 @@
     "continuation_command": "python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit",
     "latest_error_or_blocker": null,
     "scorecard_status": "incomplete",
-    "ledger_event_count": 5,
-    "ledger_head_sha256": "79f356d830cdb6d67e9779eb809906aaaba8785a3bb444c1c1499cea81f5ce08",
+    "ledger_event_count": 6,
+    "ledger_head_sha256": "1dcc1a3f389faff7fc25dcd094666c28e5398ebf204c5b375b7aa15e603055a6",
     "artifact_sha256": "ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb",
-    "state_sha256": "04fb299ad4a490bb567d863d1c6c51b56abb797570c571621aa960b390d994e1"
+    "state_sha256": "2da82586f2ef9ff9bf7d70f029593c096d6c926b753036ceb9e11f65eb5edd62"
   },
   "open_escalation": null,
   "historical_summary": {
