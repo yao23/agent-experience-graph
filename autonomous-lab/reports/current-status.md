@@ -3,7 +3,7 @@
 ## Operator summary
 
 - Active experiment: `aeg-assisted-agent-failure-recovery-service-v0`
-- Run ID: `72cf3020-1c39-47ae-a954-32f70b548201`
+- Run ID: `None`
 - Experiment kind: `commercial`
 - Current state: `completed`
 - Last completed transition: `evaluating->completed`
@@ -12,7 +12,7 @@
 - Budget remaining: `{"commands": 60, "cost_usd": 0, "iterations": 4, "model_calls": 4, "tests": 124, "tokens": 0, "wall_minutes": 480}`
 - Human approval required: `yes`
 - Another scheduled run useful: `no`
-- Exact continuation command: `python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit`
+- Exact continuation command: `python3 autonomous-lab/scripts/lab.py run-one-step`
 - Latest error or blocker: `Phase 1 recruitment is not approved`
 
 ## Integrity

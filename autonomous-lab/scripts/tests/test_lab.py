@@ -13,8 +13,10 @@ import yaml
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lab import Lab, LabValidationError, canonical_hash  # noqa: E402
+from phase0_fixture import prepare_preregistered_phase0  # noqa: E402
 
 
 SOURCE_LAB = Path(__file__).resolve().parents[2]
@@ -36,6 +38,7 @@ class LabTests(unittest.TestCase):
         experiences = self.repo / "experiences"
         experiences.mkdir()
         shutil.copy2(SOURCE_REPO / "experiences" / "verified.json", experiences / "verified.json")
+        prepare_preregistered_phase0(self.root)
         registry_path = self.root / "experiments" / "registry.yaml"
         registry = yaml.safe_load(registry_path.read_text())
         registry["current_experiment_id"] = "aeg-assisted-agent-failure-recovery-service-v0"

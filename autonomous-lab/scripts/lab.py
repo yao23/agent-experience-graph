@@ -1242,10 +1242,14 @@ class Lab:
         return event
 
     def render_reports(self, run_id: str | None = None, scheduled: bool = False) -> tuple[str, str, str]:
+        # Reports are tracked, durable projections of repository state. Scheduler
+        # invocation IDs and the entry point that requested rendering are
+        # operational metadata, so neither may change committed report bytes.
+        del run_id, scheduled
         if self.registry.get("current_experiment_id") is None and self.scheduler_entry() is None:
             status = {
                 "schema_version": 1,
-                "run_id": run_id,
+                "run_id": None,
                 "experiment_id": None,
                 "experiment_kind": None,
                 "current_state": None,
@@ -1266,7 +1270,7 @@ class Lab:
 
 ## Operator summary
 
-- Run ID: `{run_id}`
+- Run ID: `None`
 - Experiment ID: `None`
 - Experiment kind: `None`
 - Current state: `None`
@@ -1292,6 +1296,11 @@ implicitly enabled by this report.
         matching_events = [event for event in self.read_ledger() if event["experiment_id"] == goal["experiment_id"]]
         last_event = matching_events[-1]
         next_action = self.next_action(goal["experiment_id"])
+        continuation_command = (
+            SCHEDULED_COMMAND
+            if entry.get("scheduler_eligible") is True and next_action["kind"] == "transition"
+            else CONTINUATION_COMMAND
+        )
         human_required = next_action["kind"] in {"human_approval", "external_action"} or escalation["status"] == "open"
         budget_limits = goal["budgets"]
         budget_remaining = {
@@ -1305,7 +1314,7 @@ implicitly enabled by this report.
         }
         status = {
             "schema_version": 1,
-            "run_id": run_id,
+            "run_id": None,
             "generated_from_state_at": state["updated_at"],
             "current_experiment": {
                 "experiment_id": goal["experiment_id"],
@@ -1319,7 +1328,7 @@ implicitly enabled by this report.
                 "budget_remaining": budget_remaining,
                 "human_approval_required": human_required,
                 "another_scheduled_run_useful": next_action["kind"] == "transition",
-                "continuation_command": SCHEDULED_COMMAND if scheduled else CONTINUATION_COMMAND,
+                "continuation_command": continuation_command,
                 "latest_error_or_blocker": state["blocker"],
                 "scorecard_status": scorecard["status"],
                 "ledger_event_count": state["ledger_event_count"],
@@ -1354,7 +1363,7 @@ implicitly enabled by this report.
 ## Operator summary
 
 - Active experiment: `{goal['experiment_id']}`
-- Run ID: `{run_id}`
+- Run ID: `None`
 - Experiment kind: `{entry['experiment_kind']}`
 - Current state: `{state['state']}`
 - Last completed transition: `{last_event['previous_state']}->{last_event['new_state']}`
@@ -1363,7 +1372,7 @@ implicitly enabled by this report.
 - Budget remaining: `{json.dumps(budget_remaining, sort_keys=True)}`
 - Human approval required: `{'yes' if human_required else 'no'}`
 - Another scheduled run useful: `{'yes' if next_action['kind'] == 'transition' else 'no'}`
-- Exact continuation command: `{SCHEDULED_COMMAND if scheduled else CONTINUATION_COMMAND}`
+- Exact continuation command: `{continuation_command}`
 - Latest error or blocker: `{state['blocker']}`
 
 ## Integrity

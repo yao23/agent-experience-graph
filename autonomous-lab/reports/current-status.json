@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "run_id": "72cf3020-1c39-47ae-a954-32f70b548201",
+  "run_id": null,
   "generated_from_state_at": "2026-08-08T20:02:04.110564Z",
   "current_experiment": {
     "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
@@ -35,7 +35,7 @@
     },
     "human_approval_required": true,
     "another_scheduled_run_useful": false,
-    "continuation_command": "python3 autonomous-lab/scripts/lab.py scheduled-step --persist-commit",
+    "continuation_command": "python3 autonomous-lab/scripts/lab.py run-one-step",
     "latest_error_or_blocker": "Phase 1 recruitment is not approved",
     "scorecard_status": "evaluated",
     "ledger_event_count": 7,
