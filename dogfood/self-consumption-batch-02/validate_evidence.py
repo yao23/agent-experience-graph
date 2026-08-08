@@ -47,10 +47,33 @@ def load(relative: str):
     return json.loads((BATCH / relative).read_text(encoding="utf-8"))
 
 
-def validate_files() -> None:
-    for path in BATCH.rglob("*"):
-        if not path.is_file():
-            continue
+def evidence_files() -> list[Path]:
+    """Include tracked evidence and non-runtime worktree files.
+
+    Importing the selection evaluator creates an untracked ``__pycache__`` on
+    some Python installations. Ignore that runtime cache, but retain every
+    tracked path so a committed cache or binary still fails validation.
+    """
+    batch_relative = BATCH.relative_to(ROOT)
+    tracked_output = subprocess.run(
+        ["git", "ls-files", "--", str(batch_relative)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    tracked = {ROOT / line for line in tracked_output.splitlines() if line}
+    worktree = {
+        path
+        for path in BATCH.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts
+    }
+    return sorted(tracked | worktree)
+
+
+def validate_files() -> int:
+    paths = evidence_files()
+    for path in paths:
         require(
             path.name == ".gitkeep" or path.suffix in ALLOWED_SUFFIXES,
             f"unsupported file type: {path.relative_to(BATCH)}",
@@ -70,9 +93,10 @@ def validate_files() -> None:
             not TOKEN_RE.search(text),
             f"credential-like token in {path.relative_to(BATCH)}",
         )
+    return len(paths)
 
 
-def validate_correction() -> dict[str, int | str]:
+def validate_correction(file_count: int) -> dict[str, int | str]:
     state = load("execution-state.json")
     require(state["screened"] == 24, "screened total must remain 24")
     require(
@@ -142,7 +166,7 @@ def validate_correction() -> dict[str, int | str]:
 
     return {
         "status": "passed",
-        "files": sum(path.is_file() for path in BATCH.rglob("*")),
+        "files": file_count,
         "screened": state["screened"],
         "qualified": state["qualifiedUnderPreregisteredGates"],
         "independentLocalReproductions": state["independentLocalReproductions"],
@@ -153,8 +177,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-ref")
     args = parser.parse_args()
-    validate_files()
-    result = validate_correction()
+    file_count = validate_files()
+    result = validate_correction(file_count)
     if args.base_ref:
         subprocess.run(
             [
