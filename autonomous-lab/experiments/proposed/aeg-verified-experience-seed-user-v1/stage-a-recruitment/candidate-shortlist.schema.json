@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/phase1-stage-a/candidate-shortlist.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "authorization_id", "template_only", "records"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
+    "authorization_id": {"const": "aeg-phase1-stage-a-recruitment-v1"},
+    "template_only": {"type": "boolean"},
+    "records": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "discovery_source", "review_status", "eligibility", "consent_status", "participant_id"],
+        "properties": {
+          "candidate_id": {"type": "string", "pattern": "^C[0-9]{3}$"},
+          "discovery_source": {"enum": ["founder_existing_network", "relevant_public_work"]},
+          "review_status": {"enum": ["screening", "invite_ready", "invited", "declined", "nonresponsive", "enrolled", "withdrawn", "excluded"]},
+          "eligibility": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["active_coding_agent_user", "current_real_task", "repository_authorization", "objective_reproducible_oracle", "correct_public_repair_known", "sensitive_data_boundary_agreed"],
+            "properties": {
+              "active_coding_agent_user": {"$ref": "#/$defs/gateStatus"},
+              "current_real_task": {"$ref": "#/$defs/gateStatus"},
+              "repository_authorization": {"enum": ["not_assessed", "public", "owner_authorized_not_accessed", "failed"]},
+              "objective_reproducible_oracle": {"$ref": "#/$defs/gateStatus"},
+              "correct_public_repair_known": {"enum": ["not_assessed", "no", "yes"]},
+              "sensitive_data_boundary_agreed": {"$ref": "#/$defs/gateStatus"}
+            }
+          },
+          "consent_status": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["participation", "eligibility_record_retention", "anonymized_experimental_evidence_retention", "public_result_publication"],
+            "properties": {
+              "participation": {"$ref": "#/$defs/consentStatus"},
+              "eligibility_record_retention": {"$ref": "#/$defs/consentStatus"},
+              "anonymized_experimental_evidence_retention": {"$ref": "#/$defs/consentStatus"},
+              "public_result_publication": {"$ref": "#/$defs/consentStatus"}
+            }
+          },
+          "participant_id": {"type": ["string", "null"], "pattern": "^P[0-9]{2}$"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "gateStatus": {"enum": ["not_assessed", "confirmed", "failed"]},
+    "consentStatus": {"enum": ["not_requested", "pending", "consented", "declined", "withdrawn"]}
+  }
+}

@@ -21,6 +21,7 @@ from validate_phase1_seed_user import (  # noqa: E402
     PACKAGE_RELATIVE,
     Phase1ValidationError,
     validate_phase1_package,
+    validate_recruitment_records,
 )
 
 
@@ -63,15 +64,120 @@ class Phase1SeedUserTests(unittest.TestCase):
         self.assertEqual(lab.status()["state"], "completed")
         self.assertEqual(lab.validate()["protocol_experiments"], 1)
 
-    def test_recruitment_and_execution_must_remain_unapproved(self) -> None:
-        self.mutate("approval-record.json", lambda value: value["actions"].update({"recruitment": "approved"}))
-        with self.assertRaisesRegex(Phase1ValidationError, "recruitment must remain pending"):
+    def test_recruitment_requires_human_reviewed_merge(self) -> None:
+        self.mutate("approval-record.json", lambda value: value.update({"effective_condition": "effective immediately on this draft branch"}))
+        with self.assertRaisesRegex(Phase1ValidationError, "human-reviewed merge"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_participant_execution_remains_unapproved(self) -> None:
+        self.mutate("approval-record.json", lambda value: value["actions"].update({"participant_task_execution": "approved"}))
+        with self.assertRaisesRegex(Phase1ValidationError, "participant_task_execution must remain pending"):
             validate_phase1_package(self.repo, self.entry)
 
     def test_stage_b_and_evidence_decisions_remain_separate(self) -> None:
         self.mutate("approval-record.json", lambda value: value["actions"].update({"stage_b": "approved"}))
         with self.assertRaisesRegex(Phase1ValidationError, "stage_b must remain pending"):
             validate_phase1_package(self.repo, self.entry)
+
+    def test_recruitment_budget_is_bounded_and_unused(self) -> None:
+        self.mutate(
+            "stage-a-recruitment/budget.json",
+            lambda value: value["initial_invitations"].update({"maximum": 11}),
+        )
+        with self.assertRaisesRegex(Phase1ValidationError, "initial_invitations maximum is unsafe"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_recruitment_templates_are_empty(self) -> None:
+        for name in ("candidate-shortlist-template.json", "outreach-ledger-template.json"):
+            value = json.loads((SOURCE_REPO / PACKAGE_RELATIVE / "stage-a-recruitment" / name).read_text(encoding="utf-8"))
+            self.assertTrue(value["template_only"])
+            self.assertEqual(value["records"], [])
+
+    def recruitment_fixture(self) -> tuple[dict, dict]:
+        candidate = {
+            "candidate_id": "C001",
+            "discovery_source": "relevant_public_work",
+            "review_status": "enrolled",
+            "eligibility": {
+                "active_coding_agent_user": "confirmed",
+                "current_real_task": "confirmed",
+                "repository_authorization": "public",
+                "objective_reproducible_oracle": "confirmed",
+                "correct_public_repair_known": "no",
+                "sensitive_data_boundary_agreed": "confirmed",
+            },
+            "consent_status": {
+                "participation": "consented",
+                "eligibility_record_retention": "consented",
+                "anonymized_experimental_evidence_retention": "not_requested",
+                "public_result_publication": "not_requested",
+            },
+            "participant_id": "P01",
+        }
+        event = {
+            "outreach_id": "O001",
+            "candidate_id": "C001",
+            "event_type": "initial_invitation",
+            "review_id": "R001",
+            "review_completed": True,
+            "personalized": True,
+            "channel": "direct_message",
+            "sent_at": "2026-08-09T05:00:00Z",
+            "response": "interested",
+        }
+        shortlist = {
+            "schema_version": 1,
+            "experiment_id": EXPERIMENT_ID,
+            "authorization_id": "aeg-phase1-stage-a-recruitment-v1",
+            "template_only": False,
+            "records": [candidate],
+        }
+        outreach = {
+            "schema_version": 1,
+            "experiment_id": EXPERIMENT_ID,
+            "authorization_id": "aeg-phase1-stage-a-recruitment-v1",
+            "template_only": False,
+            "records": [event],
+        }
+        return shortlist, outreach
+
+    def test_recruitment_record_semantics_accept_one_consented_enrollment(self) -> None:
+        shortlist, outreach = self.recruitment_fixture()
+        result = validate_recruitment_records(SOURCE_REPO, shortlist, outreach)
+        self.assertEqual(result["enrolled_participants"], 1)
+        self.assertEqual(result["initial_invitations"], 1)
+
+    def test_nonresponse_is_not_consent(self) -> None:
+        shortlist, outreach = self.recruitment_fixture()
+        outreach["records"][0]["response"] = "no_response"
+        with self.assertRaisesRegex(Phase1ValidationError, "nonresponse is not consent"):
+            validate_recruitment_records(SOURCE_REPO, shortlist, outreach)
+
+    def test_only_one_initial_invitation_and_follow_up_per_candidate(self) -> None:
+        shortlist, outreach = self.recruitment_fixture()
+        duplicate = copy.deepcopy(outreach["records"][0])
+        duplicate.update({"outreach_id": "O002", "review_id": "R002", "sent_at": "2026-08-09T05:01:00Z"})
+        outreach["records"].append(duplicate)
+        with self.assertRaisesRegex(Phase1ValidationError, "more than one initial invitation"):
+            validate_recruitment_records(SOURCE_REPO, shortlist, outreach)
+
+    def test_stage_a_enrollment_is_capped_at_three(self) -> None:
+        shortlist, outreach = self.recruitment_fixture()
+        for index in range(2, 5):
+            candidate = copy.deepcopy(shortlist["records"][0])
+            candidate.update({"candidate_id": f"C{index:03d}", "participant_id": f"P{index:02d}"})
+            shortlist["records"].append(candidate)
+            event = copy.deepcopy(outreach["records"][0])
+            event.update({"outreach_id": f"O{index:03d}", "candidate_id": f"C{index:03d}", "review_id": f"R{index:03d}"})
+            outreach["records"].append(event)
+        with self.assertRaisesRegex(Phase1ValidationError, "enrollment exceeds 3"):
+            validate_recruitment_records(SOURCE_REPO, shortlist, outreach)
+
+    def test_candidate_schema_rejects_identity_and_source_fields(self) -> None:
+        shortlist, outreach = self.recruitment_fixture()
+        shortlist["records"][0]["email"] = "not-allowed@example.invalid"
+        with self.assertRaisesRegex(Phase1ValidationError, "Additional properties are not allowed"):
+            validate_recruitment_records(SOURCE_REPO, shortlist, outreach)
 
     def test_scheduler_eligibility_cannot_be_enabled(self) -> None:
         entry = copy.deepcopy(self.entry)

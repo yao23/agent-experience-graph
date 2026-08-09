@@ -1,18 +1,30 @@
 {
   "schema_version": 1,
   "experiment_id": "aeg-verified-experience-seed-user-v1",
-  "recorded_at": "2026-08-09T01:26:59Z",
-  "status": "planning_only_approved",
+  "recorded_at": "2026-08-09T05:04:04Z",
+  "status": "stage_a_recruitment_authorized_on_merge",
+  "effective_condition": "This bounded recruitment authorization becomes effective only when the reviewed Stage A recruitment authorization pull request containing this record is merged into main. Draft or ready-but-unmerged state grants no authority.",
+  "recruitment_authorization_id": "aeg-phase1-stage-a-recruitment-v1",
   "authorized_scope": [
-    "author Phase 1 protocol, schemas, budgets, stopping policy, and unsent templates in the local repository",
-    "run repository-local and GitHub-hosted validation",
-    "open one draft pull request for human review"
+    "identify up to 10 invite-ready candidates from relevant public work or the founder's existing network without scraping or retaining unnecessary identity data",
+    "prepare a pseudonymous candidate shortlist containing at most 10 records",
+    "send at most 10 individually reviewed personalized initial invitations and at most one follow-up per candidate",
+    "onboard at most 3 voluntary unpaid Stage A participants",
+    "collect only eligibility and task-submission information and record consent under pseudonymous participant IDs",
+    "retain only the minimal recruitment records authorized by the participant; experimental evidence retention remains separately pending"
   ],
   "actions": {
     "repository_local_planning": "approved",
     "draft_pr": "approved",
-    "recruitment": "pending",
-    "external_communication": "pending",
+    "candidate_discovery": "approved",
+    "candidate_shortlisting": "approved",
+    "recruitment": "approved",
+    "external_communication": "approved",
+    "personalized_invitations": "approved",
+    "stage_a_onboarding": "approved",
+    "eligibility_and_task_submission_collection": "approved",
+    "pseudonymous_consent_recording": "approved",
+    "minimal_recruitment_record_retention": "approved",
     "participant_task_execution": "pending",
     "evidence_retention": "pending",
     "model_or_agent_execution": "pending",
@@ -26,5 +38,5 @@
     "secret_use": "pending",
     "scheduled_task_creation_or_enablement": "denied"
   },
-  "human_decision_required": "whether to approve the protocol for publication only; recruitment, Stage A participant-task execution, evidence retention, Stage B, result publication, and experience promotion each require a separate recorded decision"
+  "human_decision_required": "whether to merge this bounded Stage A recruitment authorization; participant-task execution, experimental evidence retention, model or AEG use, Stage B, result publication, and experience promotion each still require separate recorded approval"
 }
