@@ -3,17 +3,19 @@
   "$id": "https://aeg.local/phase1-seed-user/approval-record.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "experiment_id", "recorded_at", "status", "authorized_scope", "actions", "human_decision_required"],
+  "required": ["schema_version", "experiment_id", "recorded_at", "status", "effective_condition", "recruitment_authorization_id", "authorized_scope", "actions", "human_decision_required"],
   "properties": {
     "schema_version": {"const": 1},
     "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
     "recorded_at": {"type": "string", "format": "date-time"},
-    "status": {"const": "planning_only_approved"},
+    "status": {"const": "stage_a_recruitment_authorized_on_merge"},
+    "effective_condition": {"type": "string", "minLength": 1},
+    "recruitment_authorization_id": {"const": "aeg-phase1-stage-a-recruitment-v1"},
     "authorized_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "actions": {
       "type": "object",
       "additionalProperties": {"enum": ["approved", "pending", "denied"]},
-      "required": ["repository_local_planning", "draft_pr", "recruitment", "external_communication", "participant_task_execution", "evidence_retention", "model_or_agent_execution", "stage_b", "external_project_write", "experience_promotion", "verified_library_change", "result_publication", "release", "paid_execution", "secret_use", "scheduled_task_creation_or_enablement"]
+      "required": ["repository_local_planning", "draft_pr", "candidate_discovery", "candidate_shortlisting", "recruitment", "external_communication", "personalized_invitations", "stage_a_onboarding", "eligibility_and_task_submission_collection", "pseudonymous_consent_recording", "minimal_recruitment_record_retention", "participant_task_execution", "evidence_retention", "model_or_agent_execution", "stage_b", "external_project_write", "experience_promotion", "verified_library_change", "result_publication", "release", "paid_execution", "secret_use", "scheduled_task_creation_or_enablement"]
     },
     "human_decision_required": {"type": "string", "minLength": 1}
   }

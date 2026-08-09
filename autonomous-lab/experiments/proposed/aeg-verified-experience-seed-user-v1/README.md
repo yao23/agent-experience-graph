@@ -1,6 +1,7 @@
 # Phase 1 seed-user proposal
 
-Status: **proposed; recruitment and execution unauthorized**.
+Status: **proposed; bounded Stage A recruitment activates only after separate
+human review and merge; participant-task execution remains unauthorized**.
 
 This package preregisters a bounded Verified Experience Challenge with three to
 five seed developers and no more than five tasks, split into a three-task Stage
@@ -9,10 +10,14 @@ A and an optional two-task Stage B that requires a separate approval. The canoni
 `approval-record.json` are independently schema-validated. Every recruitment
 artifact in `templates/` is an unsent draft.
 
-Nothing in this package authorizes outreach, participant onboarding, evidence
-retention, task execution, model use, external-project writes, candidate
-promotion, verified-library changes, publication, release, payment, secret use,
-or Scheduled Task creation or enablement.
+The Stage A recruitment package in `stage-a-recruitment/` authorizes, only once
+its approval record is merged to `main`, a maximum of ten individually reviewed
+personalized invitations and three voluntary unpaid enrollments. It permits
+minimal eligibility, task-submission, and pseudonymous consent records only.
+It does not authorize participant-task execution, AEG queries, model-assisted
+diagnosis or repair, private-repository access, experimental evidence retention,
+external-project writes, publication, promotion, verified-library changes,
+Stage B, or Scheduled Task creation or enablement.
 
 Validate with:
 
@@ -22,9 +27,9 @@ python3 autonomous-lab/scripts/lab.py validate --base-ref origin/main
 python3 -m unittest autonomous-lab.scripts.tests.test_phase1_seed_user
 ```
 
-The next human decision is whether to approve this preregistration and
-separately authorize bounded recruitment. Approval of the protocol must not be
-interpreted as approval to merge its draft PR or contact anyone.
+The next human decision is whether to merge the separate Stage A recruitment
+authorization. A draft or ready-but-unmerged pull request grants no outreach
+authority, and merging it grants no participant-task execution authority.
 
 Recruitment, participant-task execution, evidence retention, Stage B, result
 publication, and experience promotion are separate approval decisions. No stage

@@ -67,10 +67,16 @@ experiments:
   budget_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/budget.json
   stopping_policy_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stopping-policy.json
   artifact_schema_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/schemas/protocol.schema.json
+  recruitment_budget_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stage-a-recruitment/budget.json
+  recruitment_stopping_policy_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stage-a-recruitment/stopping-policy.json
+  candidate_shortlist_template_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stage-a-recruitment/candidate-shortlist-template.json
+  outreach_ledger_template_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stage-a-recruitment/outreach-ledger-template.json
   evidence_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/protocol.md
   conclusion: Proposed repository-local preregistration for three to five seed developers;
-    recruitment, execution, external communication, publication, promotion, verified-library
-    changes, release, and Scheduled Task creation or enablement remain unauthorized.
+    bounded Stage A candidate discovery and personalized outreach activate only after
+    separate human review and merge, while participant-task execution, AEG or model
+    use, publication, promotion, verified-library changes, Stage B, release, and
+    Scheduled Task creation or enablement remain unauthorized.
 - experiment_id: repository-state-recovery-01
   experiment_kind: shakedown
   operational_status: archived

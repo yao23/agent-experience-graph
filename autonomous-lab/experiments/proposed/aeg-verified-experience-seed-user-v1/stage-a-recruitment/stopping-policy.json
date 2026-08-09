@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "authorization_id": "aeg-phase1-stage-a-recruitment-v1",
+  "immediate_stop": [
+    "the authorization record is not present on main after a separately reviewed human-approved merge",
+    "an invitation has not passed the individual invitation-review checklist",
+    "a mass post, scraping, automated message, unsolicited bulk email, or more than one initial invitation or one follow-up per candidate is attempted",
+    "10 initial invitations, 3 enrolled participants, or any other recruitment budget is reached or the next action would exceed it",
+    "a nonresponse is treated as consent or participation is not voluntary and unpaid",
+    "credentials, private-repository content, employer-confidential code, customer data, proprietary logs, submitted source code, or raw private logs are requested, accessed, or retained",
+    "participant-task execution, an AEG query on a participant task, or model-assisted diagnosis or repair is attempted",
+    "an external-project code change, issue, comment, or pull request is attempted",
+    "payment, paid acquisition, participant identity or submission publication, result publication, experience promotion, verified-library change, Stage B activity, or Scheduled Task enablement is attempted",
+    "a participant withdraws or declines consent for a recruitment record still being retained"
+  ],
+  "candidate_exclusion": [
+    "the candidate does not actively use a coding agent or lacks a current real software task",
+    "repository ownership or authorization cannot be established without accessing a private repository",
+    "an objective reproducible oracle is unavailable",
+    "a correct public repair is already known during initial screening",
+    "the sensitive-data boundary is not accepted or candid negative feedback is unlikely"
+  ],
+  "completion": [
+    "3 consenting eligible Stage A participants are enrolled",
+    "10 individually reviewed initial invitations have been sent without reaching 3 enrollments",
+    "a stopping condition occurs or the human reviewer closes the authorization"
+  ]
+}

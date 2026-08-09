@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "authorization_id": "aeg-phase1-stage-a-recruitment-v1",
+  "shortlist_candidates": {"used": 0, "maximum": 10},
+  "initial_invitations": {"used": 0, "maximum": 10},
+  "follow_ups": {"used": 0, "maximum": 10},
+  "total_outbound_messages": {"used": 0, "maximum": 20},
+  "enrolled_participants": {"used": 0, "maximum": 3},
+  "task_submissions": {"used": 0, "maximum": 3},
+  "initial_invitations_per_candidate": {"used": 0, "maximum": 1},
+  "follow_ups_per_candidate": {"used": 0, "maximum": 1},
+  "participant_task_executions": {"used": 0, "maximum": 0},
+  "aeg_queries_on_participant_tasks": {"used": 0, "maximum": 0},
+  "model_calls": {"used": 0, "maximum": 0},
+  "mass_posts": {"used": 0, "maximum": 0},
+  "automated_messages": {"used": 0, "maximum": 0},
+  "participant_payments_usd": {"used": 0, "maximum": 0},
+  "paid_acquisition_usd": {"used": 0, "maximum": 0}
+}

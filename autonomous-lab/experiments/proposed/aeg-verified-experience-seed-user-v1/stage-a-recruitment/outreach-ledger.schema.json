@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/phase1-stage-a/outreach-ledger.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "authorization_id", "template_only", "records"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
+    "authorization_id": {"const": "aeg-phase1-stage-a-recruitment-v1"},
+    "template_only": {"type": "boolean"},
+    "records": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["outreach_id", "candidate_id", "event_type", "review_id", "review_completed", "personalized", "channel", "sent_at", "response"],
+        "properties": {
+          "outreach_id": {"type": "string", "pattern": "^O[0-9]{3}$"},
+          "candidate_id": {"type": "string", "pattern": "^C[0-9]{3}$"},
+          "event_type": {"enum": ["initial_invitation", "follow_up"]},
+          "review_id": {"type": "string", "pattern": "^R[0-9]{3}$"},
+          "review_completed": {"const": true},
+          "personalized": {"const": true},
+          "channel": {"enum": ["direct_message", "email", "github", "x", "bluesky", "other"]},
+          "sent_at": {"type": "string", "format": "date-time"},
+          "response": {"enum": ["no_response", "interested", "declined", "withdrawn"]}
+        }
+      }
+    }
+  }
+}

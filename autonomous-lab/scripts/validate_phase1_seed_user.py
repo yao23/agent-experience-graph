@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the proposed Phase 1 seed-user package without authorizing it."""
+"""Validate Phase 1 and its bounded recruitment-only activation record."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ RUNNER_KIND = "phase1-seed-user-protocol"
 PACKAGE_RELATIVE = Path(
     "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1"
 )
+RECRUITMENT_RELATIVE = PACKAGE_RELATIVE / "stage-a-recruitment"
 
 
 class Phase1ValidationError(Exception):
@@ -53,6 +54,84 @@ def require(condition: bool, message: str) -> None:
         raise Phase1ValidationError(message)
 
 
+def validate_recruitment_records(
+    repo_root: Path,
+    shortlist: dict[str, Any],
+    outreach: dict[str, Any],
+) -> dict[str, int]:
+    """Apply schema and cross-record limits to recruitment-only records."""
+    recruitment = repo_root.resolve() / RECRUITMENT_RELATIVE
+    validate_instance(shortlist, recruitment / "candidate-shortlist.schema.json", "candidate shortlist")
+    validate_instance(outreach, recruitment / "outreach-ledger.schema.json", "outreach ledger")
+
+    candidates = shortlist["records"]
+    events = outreach["records"]
+    candidate_ids = [record["candidate_id"] for record in candidates]
+    require(len(candidate_ids) == len(set(candidate_ids)), "candidate IDs must be unique")
+    outreach_ids = [record["outreach_id"] for record in events]
+    require(len(outreach_ids) == len(set(outreach_ids)), "outreach IDs must be unique")
+    require(len(candidates) <= 10, "candidate shortlist exceeds 10")
+
+    enrolled = [record for record in candidates if record["review_status"] == "enrolled"]
+    require(len(enrolled) <= 3, "Stage A enrollment exceeds 3")
+    participant_ids = [record["participant_id"] for record in enrolled]
+    require(all(participant_ids), "enrolled candidates require pseudonymous participant IDs")
+    require(len(participant_ids) == len(set(participant_ids)), "participant IDs must be unique")
+
+    by_candidate = {record["candidate_id"]: record for record in candidates}
+    events_by_candidate: dict[str, list[dict[str, Any]]] = {}
+    for event in events:
+        require(event["candidate_id"] in by_candidate, "outreach references an unknown candidate")
+        events_by_candidate.setdefault(event["candidate_id"], []).append(event)
+
+    initial_count = 0
+    follow_up_count = 0
+    for candidate_id, candidate_events in events_by_candidate.items():
+        initials = [event for event in candidate_events if event["event_type"] == "initial_invitation"]
+        follow_ups = [event for event in candidate_events if event["event_type"] == "follow_up"]
+        require(len(initials) <= 1, "more than one initial invitation for a candidate")
+        require(len(follow_ups) <= 1, "more than one follow-up for a candidate")
+        require(not follow_ups or initials, "follow-up requires an initial invitation")
+        if follow_ups and initials:
+            require(follow_ups[0]["sent_at"] > initials[0]["sent_at"], "follow-up must occur after the initial invitation")
+        initial_count += len(initials)
+        follow_up_count += len(follow_ups)
+
+    require(initial_count <= 10, "initial invitation limit exceeds 10")
+    require(follow_up_count <= 10, "follow-up limit exceeds 10")
+    require(len(events) <= 20, "total outbound message limit exceeds 20")
+
+    required_eligibility = {
+        "active_coding_agent_user": "confirmed",
+        "current_real_task": "confirmed",
+        "objective_reproducible_oracle": "confirmed",
+        "correct_public_repair_known": "no",
+        "sensitive_data_boundary_agreed": "confirmed",
+    }
+    for candidate in candidates:
+        if candidate["review_status"] in {"invite_ready", "invited", "enrolled"}:
+            eligibility = candidate["eligibility"]
+            for gate, expected in required_eligibility.items():
+                require(eligibility[gate] == expected, f"invite-ready candidate fails {gate}")
+            require(
+                eligibility["repository_authorization"] in {"public", "owner_authorized_not_accessed"},
+                "invite-ready candidate lacks repository authorization",
+            )
+        if candidate["review_status"] == "enrolled":
+            consent = candidate["consent_status"]
+            require(consent["participation"] == "consented", "enrollment requires affirmative participation consent")
+            require(consent["eligibility_record_retention"] == "consented", "enrollment requires eligibility-record retention consent")
+            responses = [event["response"] for event in events_by_candidate.get(candidate["candidate_id"], [])]
+            require(any(response == "interested" for response in responses), "nonresponse is not consent")
+
+    return {
+        "shortlist_candidates": len(candidates),
+        "initial_invitations": initial_count,
+        "follow_ups": follow_up_count,
+        "enrolled_participants": len(enrolled),
+    }
+
+
 def validate_phase1_package(repo_root: Path, entry: dict[str, Any]) -> dict[str, Any]:
     repo_root = repo_root.resolve()
     require(entry.get("experiment_id") == EXPERIMENT_ID, "Phase 1 experiment ID is incorrect")
@@ -66,6 +145,10 @@ def validate_phase1_package(repo_root: Path, entry: dict[str, Any]) -> dict[str,
     approval = load_json(resolve(repo_root, entry["approval_path"]))
     budget = load_json(resolve(repo_root, entry["budget_path"]))
     stopping = load_json(resolve(repo_root, entry["stopping_policy_path"]))
+    recruitment_budget = load_json(resolve(repo_root, entry["recruitment_budget_path"]))
+    recruitment_stopping = load_json(resolve(repo_root, entry["recruitment_stopping_policy_path"]))
+    shortlist = load_json(resolve(repo_root, entry["candidate_shortlist_template_path"]))
+    outreach = load_json(resolve(repo_root, entry["outreach_ledger_template_path"]))
 
     validate_instance(protocol, resolve(repo_root, entry["artifact_schema_path"]), "protocol")
     validate_instance(approval, package / "schemas" / "approval-record.schema.json", "approval")
@@ -171,18 +254,72 @@ def validate_phase1_package(repo_root: Path, entry: dict[str, Any]) -> dict[str,
     for term in required_promotion_terms:
         require(term in promotion_text, f"promotion boundary omits {term}")
 
+    require(approval["status"] == "stage_a_recruitment_authorized_on_merge", "Stage A recruitment approval status is incorrect")
+    require(
+        "only when" in approval["effective_condition"]
+        and "merged into main" in approval["effective_condition"]
+        and "unmerged state grants no authority" in approval["effective_condition"],
+        "recruitment activation must require a human-reviewed merge",
+    )
     actions = approval["actions"]
     require(actions["repository_local_planning"] == "approved", "local planning approval is missing")
     require(actions["draft_pr"] == "approved", "draft PR approval is missing")
     for action in (
-        "recruitment", "external_communication", "participant_task_execution",
-        "evidence_retention", "model_or_agent_execution", "stage_b",
+        "candidate_discovery", "candidate_shortlisting", "recruitment",
+        "external_communication", "personalized_invitations", "stage_a_onboarding",
+        "eligibility_and_task_submission_collection", "pseudonymous_consent_recording",
+        "minimal_recruitment_record_retention",
+    ):
+        require(actions[action] == "approved", f"bounded {action} authorization is missing")
+    for action in (
+        "participant_task_execution", "evidence_retention", "model_or_agent_execution", "stage_b",
         "external_project_write", "experience_promotion",
         "verified_library_change", "result_publication", "release",
         "paid_execution", "secret_use",
     ):
         require(actions[action] == "pending", f"{action} must remain pending")
     require(actions["scheduled_task_creation_or_enablement"] == "denied", "Scheduled Task creation or enablement must remain denied")
+
+    expected_recruitment_limits = {
+        "shortlist_candidates": 10,
+        "initial_invitations": 10,
+        "follow_ups": 10,
+        "total_outbound_messages": 20,
+        "enrolled_participants": 3,
+        "task_submissions": 3,
+        "initial_invitations_per_candidate": 1,
+        "follow_ups_per_candidate": 1,
+        "participant_task_executions": 0,
+        "aeg_queries_on_participant_tasks": 0,
+        "model_calls": 0,
+        "mass_posts": 0,
+        "automated_messages": 0,
+        "participant_payments_usd": 0,
+        "paid_acquisition_usd": 0,
+    }
+    for name, maximum in expected_recruitment_limits.items():
+        require(recruitment_budget[name]["used"] == 0, f"recruitment package has nonzero {name} usage")
+        require(recruitment_budget[name]["maximum"] == maximum, f"recruitment {name} maximum is unsafe")
+
+    recruitment_stop_text = "\n".join(recruitment_stopping["immediate_stop"])
+    for term in (
+        "human-approved merge", "individual invitation-review", "scraping",
+        "10 initial invitations", "3 enrolled participants", "nonresponse",
+        "private-repository", "participant-task execution", "external-project",
+        "verified-library change", "Stage B", "Scheduled Task",
+    ):
+        require(term in recruitment_stop_text, f"recruitment stopping policy omits {term}")
+
+    record_counts = validate_recruitment_records(repo_root, shortlist, outreach)
+    require(shortlist["template_only"] and shortlist["records"] == [], "candidate shortlist must remain an empty template")
+    require(outreach["template_only"] and outreach["records"] == [], "outreach ledger must remain an empty template")
+    eligibility_text = (repo_root / RECRUITMENT_RELATIVE / "eligibility-checklist.md").read_text(encoding="utf-8")
+    invitation_text = (repo_root / RECRUITMENT_RELATIVE / "invitation-review-checklist.md").read_text(encoding="utf-8")
+    normalized_eligibility = eligibility_text.lower()
+    for term in ("actively uses", "real, current", "objective reproducible oracle", "no correct public repair", "nonresponse is not consent"):
+        require(term in normalized_eligibility, f"eligibility checklist omits {term}")
+    for term in ("individual", "personalized", "no scraping", "single allowed follow-up", "no unsupported performance claim"):
+        require(term.lower() in invitation_text.lower(), f"invitation review checklist omits {term}")
 
     limits = {
         "participants": 5,
@@ -260,6 +397,8 @@ def validate_phase1_package(repo_root: Path, entry: dict[str, Any]) -> dict[str,
         "maximum_model_cost_usd": 100,
         "stage_a_maximum_tasks": 3,
         "stage_b_maximum_tasks": 2,
+        "recruitment_authorization": "effective_only_after_human_reviewed_merge_to_main",
+        **record_counts,
     }
 
 
