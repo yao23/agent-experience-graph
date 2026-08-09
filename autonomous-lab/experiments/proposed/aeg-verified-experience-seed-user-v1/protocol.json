@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "phase": "phase1_seed_user",
+  "lifecycle_state": "proposed",
+  "title": "Verified Experience Challenge seed-user experiment",
+  "hypothesis": "For a small set of real, reproducible public or explicitly authorized coding tasks, querying AEG before diagnosis will sometimes supply a relevant verified experience that observably changes the repair path, while abstaining when no relevant experience exists and avoiding misleading guidance.",
+  "offer": "Bring one real coding problem. We will test whether a reusable, verified agent experience helps your coding agent solve it with less effort or better reliability.",
+  "recruitment": {
+    "minimum_participants": 3,
+    "maximum_participants": 5,
+    "maximum_tasks": 5,
+    "target_participants": [
+      "developers who already use Codex, Claude Code, Cursor, Copilot, or a similar coding agent",
+      "maintainers or contributors working on public open-source repositories",
+      "people with a current reproducible bug, test failure, migration, or CI problem"
+    ],
+    "excluded_participants": [
+      "close friends or other relationships that make candid negative feedback difficult",
+      "any person unable to give informed consent for evidence retention",
+      "any person offering only private or proprietary code without explicit authorization"
+    ],
+    "excluded_methods": [
+      "mass outreach",
+      "scraping",
+      "paid acquisition",
+      "unsolicited automation"
+    ],
+    "lead_asset": "Verified Experience Challenge"
+  },
+  "design": {
+    "unit": "one participant with one frozen coding task",
+    "tasks_per_participant": 1,
+    "task_types": [
+      "reproducible bug",
+      "test failure",
+      "dependency or API migration",
+      "continuous-integration failure"
+    ],
+    "retrieval_outcomes": [
+      "relevant_recommendation",
+      "correct_abstention",
+      "irrelevant_retrieval",
+      "misleading_retrieval"
+    ],
+    "repair_outcomes": [
+      "objective oracle passed with evidence that AEG materially changed the repair path",
+      "objective oracle passed independently of AEG",
+      "objective oracle failed",
+      "task not executed or excluded"
+    ],
+    "observable_value_definition": "Observable AEG-assisted value requires an independently reviewable timestamped trace showing an above-threshold relevant recommendation before diagnosis, a material influence on a subsequently attempted action, and passage of the frozen oracle. Correct abstention is valuable calibration evidence but is not affirmative evidence of AEG usefulness. Participant ratings, latency, tokens, commands, or intervention reductions alone never satisfy this definition.",
+    "baseline_control": "Where repository authorization, reproducibility, time, and model budget permit, create identical isolated snapshots and run a delayed-retrieval control with the same agent and configuration before exposing the treatment process to AEG output. The treatment queries AEG before diagnosis. If a valid control is infeasible, record the reason before execution and make no causal efficiency claim.",
+    "causal_claim_rule": "Only clean comparable control/treatment pairs may support bounded task-level causal language. Unpaired tasks may show observed path change or participant perception, never generalized effectiveness."
+  },
+  "definitions": {
+    "relevant_recommendation": "An above-threshold AEG recommendation whose specific verified lesson is independently judged applicable to the frozen task's failure mechanism and a permissible next action before the task outcome is reviewed; generic vocabulary overlap is not relevant.",
+    "misleading_retrieval": "An AEG recommendation containing materially inapplicable, incorrect, unsafe, or falsely confident guidance that influences or would reasonably influence a repair action, test, diagnosis, or avoided path. An irrelevant result that is recognized and ignored is recorded separately as irrelevant_retrieval.",
+    "material_repair_path_change": "A timestamped comparison or decision trace shows that a specific AEG lesson caused the agent or participant to take or avoid a diagnosis, command, test, patch strategy, or failure path that otherwise was not selected. Retrieval receives credit only when it preceded diagnosis, influenced a subsequently executed action, and that action is verified by the frozen oracle.",
+    "observable_user_value": "An uncontaminated task produces a result that passes the frozen objective oracle and addresses the submitted problem. It is AEG-assisted user value only when the material-repair-path-change definition also passes. A correct abstention is calibration evidence, not affirmative AEG usefulness.",
+    "uncontaminated_task": "A task for which every authorization, consent, privacy, license, freshness, frozen-task, frozen-oracle, prior-repair-search, retrieval-timing, evidence-integrity, and applicable arm-isolation gate passes with no protocol violation before or during execution.",
+    "independent_success": "The frozen oracle passes, but no AEG retrieval is credited because AEG abstained, retrieval was irrelevant and ignored, no material path change is evidenced, or the repair path was already selected independently. Independent success is reported as a repair outcome, never an AEG-assisted success.",
+    "protocol_violation": "Any missing required approval or consent, unauthorized action, unrecorded soft-limit crossing, absolute-budget overrun, privacy breach, diagnosis-before-query, post-query oracle manipulation, arm leakage, evidence tampering, or other failure to follow a preregistered gate. If execution has begun, any contamination is an experiment-level stop.",
+    "task_level_success": "An uncontaminated task completes its authorized procedure and the frozen objective oracle passes. It is labeled AEG-assisted only when an above-threshold relevant recommendation materially changed the repair path and the influenced action passed the oracle; otherwise it is independent success.",
+    "experiment_level_success": "The only experiment-level success label is initial_positive_signal, which requires at least three uncontaminated completed tasks, at least two with objectively verified user value, at least one credited above-threshold recommendation with a material path change and frozen-oracle pass, zero misleading retrievals, median participant usefulness at least 4 of 5, and every authorization, privacy, freshness, and retrieval-timing gate passing."
+  },
+  "metric_computation": {
+    "recommendation_correctness": {
+      "numerator": "Number of uncontaminated tasks with an above-threshold AEG recommendation independently classified as a relevant_recommendation before outcome review.",
+      "denominator": "Number of uncontaminated tasks in which AEG emitted any above-threshold recommendation.",
+      "reporting": "Always report correct recommendations / total recommendations as raw counts and the ratio rounded to two decimals.",
+      "zero_denominator": "Report 0/0 and ratio N/A. A zero denominator is not success and cannot satisfy any positive-retrieval requirement."
+    },
+    "abstention_correctness": {
+      "numerator": "Number of uncontaminated tasks where AEG abstained and independent review confirms no verified experience met the frozen relevance threshold for the task.",
+      "denominator": "Number of uncontaminated tasks in which AEG abstained.",
+      "reporting": "Always report correct abstentions / total abstentions as raw counts and the ratio rounded to two decimals.",
+      "zero_denominator": "Report 0/0 and ratio N/A. A zero denominator is not success; even a correct nonzero abstention rate is calibration evidence only."
+    },
+    "raw_count_rule": "Every ratio is reported with its integer numerator and denominator. Counts are never inferred from rounded ratios, and a zero denominator is always N/A rather than 0 percent or 100 percent."
+  },
+  "stages": {
+    "stage_a": {
+      "maximum_participants": 3,
+      "maximum_tasks": 3,
+      "entry_approval": "Separate recorded approvals are required for recruitment, participant-task execution, and evidence retention before Stage A begins.",
+      "exit_rule": "Stop for mandatory human review after three Stage A tasks finish, or earlier on any stopping condition.",
+      "continuation_rule": "Stage A never continues automatically into Stage B."
+    },
+    "stage_b": {
+      "maximum_participants": 2,
+      "maximum_tasks": 2,
+      "entry_approval": "A distinct Stage B approval may be recorded only after human review of all available Stage A evidence and protocol incidents.",
+      "exit_rule": "Stop after at most two additional Stage B tasks or earlier on any stopping condition.",
+      "continuation_rule": "Stage B approval does not imply result-publication or experience-promotion approval."
+    },
+    "total_maximum": {"participants": 5, "tasks": 5}
+  },
+  "outcome_classifications": {
+    "initial_positive_signal": "Every experiment-level success condition passes. This is only an initial small-sample signal, not PMF, generalized effectiveness, causal superiority, or commercial demand.",
+    "positive_retrieval_signal": "At least one uncontaminated task has a credited above-threshold relevant recommendation, material path change, and frozen-oracle pass, but the complete initial-positive-signal criteria are not met.",
+    "calibration_abstention_evidence_only": "At least one abstention is independently correct, no task has credited retrieval, and any successful repairs are independent outcomes. This is not affirmative AEG usefulness.",
+    "inconclusive": "No failure classification applies, but sample size, denominators, task outcomes, or other clean evidence are insufficient for an initial positive signal.",
+    "protocol_failure": "A protocol violation or contaminated execution occurs without a more specific harmful-retrieval or privacy/authorization classification.",
+    "harmful_or_misleading_retrieval": "A materially harmful or misleading recommendation occurs, whether or not the frozen oracle later passes.",
+    "privacy_or_authorization_failure": "A critical privacy, consent, retention, recruitment, execution, publication, promotion, or other authorization boundary is breached."
+  },
+  "eligibility_gates": [
+    {"id": "repository-authorization", "requirement": "The repository is public or its owner has explicitly authorized this experiment and evidence handling.", "failure_action": "Reject the task."},
+    {"id": "license", "requirement": "The repository license permits the contemplated local work and evidence use.", "failure_action": "Reject the task."},
+    {"id": "contribution-path", "requirement": "The contribution path and whether an external contribution is wanted are confirmed; no issue or pull request is opened by this protocol.", "failure_action": "Reject or classify as local-only before diagnosis."},
+    {"id": "reproduction", "requirement": "The defect is reproduced before diagnosis with a recorded failing command and result.", "failure_action": "Reject the task as non-reproducible."},
+    {"id": "freeze", "requirement": "The task statement, repository commit, environment, and objective oracle are frozen before querying AEG.", "failure_action": "Exclude the task from evaluation."},
+    {"id": "prior-repair-search", "requirement": "Public prior repairs are searched across issues, pull requests, commits, and forks before AEG retrieval or diagnosis.", "failure_action": "Exclude fresh-task and contribution-value claims."},
+    {"id": "pre-diagnosis-query", "requirement": "AEG is queried and its scores and result are frozen before diagnosis begins.", "failure_action": "Classify retrieval evidence as contaminated and exclude it from AEG-value metrics."},
+    {"id": "baseline-plan", "requirement": "A control procedure is frozen where feasible, or the infeasibility reason is recorded before execution.", "failure_action": "Disallow causal efficiency claims."},
+    {"id": "evidence-plan", "requirement": "Exact commands, test results, UTC timestamps, retrieval scores, agent actions, and interventions can be recorded in sanitized form.", "failure_action": "Reject the task."},
+    {"id": "privacy", "requirement": "No raw private conversation, credentials, private absolute paths, personal data, or proprietary code will be retained.", "failure_action": "Stop and quarantine the task record for deletion review."},
+    {"id": "consent", "requirement": "Participant consent is recorded before retaining task evidence, and separate publication consent is required before publishing any evidence.", "failure_action": "Do not retain or publish the evidence."}
+  ],
+  "evidence_capture": [
+    "pseudonymous participant and task identifiers",
+    "repository authorization, license, and contribution-path decision",
+    "frozen repository commit, environment, task, and oracle",
+    "prior-repair searches across issues, pull requests, commits, and forks",
+    "exact sanitized commands, test results, UTC timestamps, retrieval scores, and agent actions",
+    "control feasibility decision and arm configuration",
+    "retrieval outcome and independent relevance review",
+    "whether AEG materially changed diagnosis, commands, tests, or avoided paths",
+    "participant usefulness rating and short rationale",
+    "contamination, exclusions, consent, retention, and deletion decisions"
+  ],
+  "primary_metrics": [
+    {"id": "task-completion", "definition": "Fraction of uncontaminated tasks reaching their preregistered terminal procedure."},
+    {"id": "objective-oracle-result", "definition": "Fraction of uncontaminated executed tasks whose frozen objective oracle passes."},
+    {"id": "material-path-change", "definition": "Count and fraction with evidence that AEG changed diagnosis, a command, a test, or an avoided failure path."},
+    {"id": "commands-and-interventions", "definition": "Sanitized command count and human intervention count by task and arm."},
+    {"id": "participant-usefulness", "definition": "Participant rating from 1 to 5 plus a short rationale, reported without identity."},
+    {"id": "correct-recommendation-rate", "definition": "Correct above-threshold recommendations divided by all above-threshold recommendations on uncontaminated tasks, always reported as numerator/denominator and ratio; 0/0 is N/A, never success."},
+    {"id": "correct-abstention-rate", "definition": "Correct abstentions divided by all abstentions on uncontaminated tasks, always reported as numerator/denominator and ratio; correct abstention is calibration evidence only and 0/0 is N/A."},
+    {"id": "misleading-retrieval-count", "definition": "Retrievals that cause or plausibly encourage an incorrect, irrelevant, unsafe, or materially wasteful path."}
+  ],
+  "thresholds": {
+    "success": [
+      "At least 3 uncontaminated evaluable tasks from at least 3 participants.",
+      "At least 2 uncontaminated tasks produce objectively verified user value.",
+      "At least 1 above-threshold AEG recommendation materially changes the repair path and the influenced action passes the frozen oracle.",
+      "Misleading-retrieval count is 0.",
+      "Median participant usefulness is at least 4 of 5 across completed uncontaminated tasks.",
+      "Every authorization, consent, privacy, freshness, provenance, and retrieval-timing gate passes."
+    ],
+    "failure": [
+      "One materially harmful or misleading recommendation occurs.",
+      "One critical privacy, consent, authorization, provenance, or verified-library violation occurs.",
+      "One unauthorized action or contaminated execution occurs.",
+      "An absolute experiment budget is exceeded."
+    ],
+    "inconclusive": [
+      "Fewer than 3 uncontaminated evaluable tasks are obtained within the participant, time, or cost budget.",
+      "After 5 uncontaminated tasks the initial-positive-signal criteria are not all met and no protocol-failure classification applies.",
+      "Recommendation or abstention denominators are zero or too small for useful descriptive interpretation.",
+      "Only latency or token differences are observed without objective or path-change evidence.",
+      "Contamination prevents interpreting the minimum sample without meeting an immediate failure condition."
+    ]
+  },
+  "contamination_rules": [
+    {"id": "diagnosis-before-query", "trigger": "Diagnosis, repair-oriented source inspection, or agent advice occurs before AEG output is frozen.", "disposition": "Exclude all AEG-effect evidence; retain only a consented procedural note."},
+    {"id": "oracle-after-query", "trigger": "The task definition or oracle is changed after AEG output without a preregistered independent reason.", "disposition": "Exclude the task from primary metrics."},
+    {"id": "public-prior-repair", "trigger": "A materially matching public repair predates selection.", "disposition": "Classify as independent reproduction, not a fresh task or contribution opportunity; do not count it as external reuse of a new experience."},
+    {"id": "arm-leakage", "trigger": "Control sees the retrieval result, treatment trace, or prior-arm patch before its run ends.", "disposition": "Discard the comparison and report the unpaired task only if otherwise valid."},
+    {"id": "relationship-bias", "trigger": "The participant relationship makes candid negative feedback doubtful.", "disposition": "Exclude the participant before onboarding."},
+    {"id": "privacy-leak", "trigger": "Private conversation, credential, private path, personal data, or proprietary code enters retained evidence.", "disposition": "Stop immediately, quarantine the record, and require human deletion review."}
+  ],
+  "promotion_requirements": [
+    "No Phase 1 candidate may enter experiences/verified.json from this experiment alone.",
+    "The candidate must demonstrate independent external reuse by a separate user and task beyond its originating participant.",
+    "The reused result must pass an objective preregistered oracle.",
+    "Public or explicitly authorized provenance and license must be documented.",
+    "A privacy and consent review must approve every retained or published field.",
+    "A separate human approval must explicitly authorize candidate promotion and the exact experiences/verified.json change."
+  ],
+  "artifact_paths": {
+    "approval": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/approval-record.json",
+    "budget": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/budget.json",
+    "stopping_policy": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stopping-policy.json",
+    "github_invitation": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/github-invitation.md",
+    "social_post": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/social-post.md",
+    "direct_message": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/direct-message.md",
+    "consent": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/consent-and-privacy.md",
+    "onboarding": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/onboarding-script.md",
+    "task_submission": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/task-submission.md",
+    "post_task_feedback": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/post-task-feedback.md",
+    "tracking_ledger": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/participant-task-ledger-template.json",
+    "result_report": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/anonymized-result-report.md",
+    "result_data": "autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/templates/anonymized-result-template.json"
+  },
+  "authorization_boundaries": {
+    "allowed_now": [
+      "repository-local Phase 1 protocol and template authoring",
+      "repository-local deterministic validation",
+      "one draft pull request for human review"
+    ],
+    "requires_new_human_approval": [
+      "marking the draft pull request ready or merging it",
+      "preregistering or activating participant recruitment",
+      "sending or publishing any invitation or message",
+      "onboarding a participant or retaining participant evidence",
+      "executing any participant task or model-assisted experimental run",
+      "continuing from Stage A to Stage B",
+      "writing to any external project",
+      "incurring model cost, paying a participant, or using a secret",
+      "publishing results, promoting a candidate, changing experiences/verified.json, or releasing anything"
+    ],
+    "forbidden_for_this_proposal": [
+      "mass outreach, scraping, paid acquisition, or unsolicited automation",
+      "creating or enabling a Scheduled Task",
+      "claiming success from latency or token savings alone",
+      "claiming generalized effectiveness, commercial demand, or product-market fit"
+    ]
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/phase1-seed-user/protocol.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "phase",
+    "lifecycle_state",
+    "title",
+    "hypothesis",
+    "offer",
+    "recruitment",
+    "design",
+    "definitions",
+    "metric_computation",
+    "stages",
+    "outcome_classifications",
+    "eligibility_gates",
+    "evidence_capture",
+    "primary_metrics",
+    "thresholds",
+    "contamination_rules",
+    "promotion_requirements",
+    "artifact_paths",
+    "authorization_boundaries"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
+    "phase": {"const": "phase1_seed_user"},
+    "lifecycle_state": {"enum": ["proposed", "preregistered"]},
+    "title": {"type": "string", "minLength": 1},
+    "hypothesis": {"type": "string", "minLength": 1},
+    "offer": {"type": "string", "minLength": 1},
+    "recruitment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum_participants", "maximum_participants", "maximum_tasks", "target_participants", "excluded_participants", "excluded_methods", "lead_asset"],
+      "properties": {
+        "minimum_participants": {"type": "integer", "minimum": 3, "maximum": 5},
+        "maximum_participants": {"type": "integer", "minimum": 3, "maximum": 5},
+        "maximum_tasks": {"type": "integer", "minimum": 3, "maximum": 5},
+        "target_participants": {"$ref": "#/$defs/nonEmptyStrings"},
+        "excluded_participants": {"$ref": "#/$defs/nonEmptyStrings"},
+        "excluded_methods": {"$ref": "#/$defs/nonEmptyStrings"},
+        "lead_asset": {"const": "Verified Experience Challenge"}
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "tasks_per_participant", "task_types", "retrieval_outcomes", "repair_outcomes", "observable_value_definition", "baseline_control", "causal_claim_rule"],
+      "properties": {
+        "unit": {"const": "one participant with one frozen coding task"},
+        "tasks_per_participant": {"const": 1},
+        "task_types": {"$ref": "#/$defs/nonEmptyStrings"},
+        "retrieval_outcomes": {"$ref": "#/$defs/nonEmptyStrings"},
+        "repair_outcomes": {"$ref": "#/$defs/nonEmptyStrings"},
+        "observable_value_definition": {"type": "string", "minLength": 1},
+        "baseline_control": {"type": "string", "minLength": 1},
+        "causal_claim_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relevant_recommendation", "misleading_retrieval", "material_repair_path_change", "observable_user_value", "uncontaminated_task", "independent_success", "protocol_violation", "task_level_success", "experiment_level_success"],
+      "properties": {
+        "relevant_recommendation": {"type": "string", "minLength": 1},
+        "misleading_retrieval": {"type": "string", "minLength": 1},
+        "material_repair_path_change": {"type": "string", "minLength": 1},
+        "observable_user_value": {"type": "string", "minLength": 1},
+        "uncontaminated_task": {"type": "string", "minLength": 1},
+        "independent_success": {"type": "string", "minLength": 1},
+        "protocol_violation": {"type": "string", "minLength": 1},
+        "task_level_success": {"type": "string", "minLength": 1},
+        "experiment_level_success": {"type": "string", "minLength": 1}
+      }
+    },
+    "metric_computation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommendation_correctness", "abstention_correctness", "raw_count_rule"],
+      "properties": {
+        "recommendation_correctness": {"$ref": "#/$defs/rateComputation"},
+        "abstention_correctness": {"$ref": "#/$defs/rateComputation"},
+        "raw_count_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_a", "stage_b", "total_maximum"],
+      "properties": {
+        "stage_a": {"$ref": "#/$defs/stage"},
+        "stage_b": {"$ref": "#/$defs/stage"},
+        "total_maximum": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["participants", "tasks"],
+          "properties": {
+            "participants": {"const": 5},
+            "tasks": {"const": 5}
+          }
+        }
+      }
+    },
+    "outcome_classifications": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial_positive_signal", "positive_retrieval_signal", "calibration_abstention_evidence_only", "inconclusive", "protocol_failure", "harmful_or_misleading_retrieval", "privacy_or_authorization_failure"],
+      "properties": {
+        "initial_positive_signal": {"type": "string", "minLength": 1},
+        "positive_retrieval_signal": {"type": "string", "minLength": 1},
+        "calibration_abstention_evidence_only": {"type": "string", "minLength": 1},
+        "inconclusive": {"type": "string", "minLength": 1},
+        "protocol_failure": {"type": "string", "minLength": 1},
+        "harmful_or_misleading_retrieval": {"type": "string", "minLength": 1},
+        "privacy_or_authorization_failure": {"type": "string", "minLength": 1}
+      }
+    },
+    "eligibility_gates": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "requirement", "failure_action"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "requirement": {"type": "string", "minLength": 1},
+          "failure_action": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "evidence_capture": {"$ref": "#/$defs/nonEmptyStrings"},
+    "primary_metrics": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "definition"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "definition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["success", "failure", "inconclusive"],
+      "properties": {
+        "success": {"$ref": "#/$defs/nonEmptyStrings"},
+        "failure": {"$ref": "#/$defs/nonEmptyStrings"},
+        "inconclusive": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "contamination_rules": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "trigger", "disposition"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "trigger": {"type": "string", "minLength": 1},
+          "disposition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "promotion_requirements": {"$ref": "#/$defs/nonEmptyStrings"},
+    "artifact_paths": {
+      "type": "object",
+      "minProperties": 8,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "authorization_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_now", "requires_new_human_approval", "forbidden_for_this_proposal"],
+      "properties": {
+        "allowed_now": {"$ref": "#/$defs/nonEmptyStrings"},
+        "requires_new_human_approval": {"$ref": "#/$defs/nonEmptyStrings"},
+        "forbidden_for_this_proposal": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    }
+  },
+  "$defs": {
+    "rateComputation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator", "reporting", "zero_denominator"],
+      "properties": {
+        "numerator": {"type": "string", "minLength": 1},
+        "denominator": {"type": "string", "minLength": 1},
+        "reporting": {"type": "string", "minLength": 1},
+        "zero_denominator": {"type": "string", "minLength": 1}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximum_participants", "maximum_tasks", "entry_approval", "exit_rule", "continuation_rule"],
+      "properties": {
+        "maximum_participants": {"type": "integer", "minimum": 1, "maximum": 3},
+        "maximum_tasks": {"type": "integer", "minimum": 1, "maximum": 3},
+        "entry_approval": {"type": "string", "minLength": 1},
+        "exit_rule": {"type": "string", "minLength": 1},
+        "continuation_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/phase1-seed-user/stopping-policy.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "immediate_stop", "task_exclusion", "experiment_completion", "restart_requirement"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
+    "immediate_stop": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "task_exclusion": {"type": "array", "minItems": 4, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "experiment_completion": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "restart_requirement": {"type": "string", "minLength": 1}
+  }
+}

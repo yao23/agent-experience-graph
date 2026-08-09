@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "status": "not_started",
+  "experiment_classification": "pending",
+  "participants": 0,
+  "tasks": 0,
+  "uncontaminated_tasks": 0,
+  "completed_tasks": 0,
+  "objectively_verified_user_value_tasks": 0,
+  "independent_successes": 0,
+  "recommendations_total": 0,
+  "correct_recommendations": 0,
+  "recommendation_correctness_rate": null,
+  "abstentions_total": 0,
+  "correct_abstentions": 0,
+  "correct_abstention_rate": null,
+  "material_path_change_count": 0,
+  "misleading_retrieval_count": 0,
+  "participant_usefulness_median": null,
+  "supported_conclusions": [],
+  "unsupported_conclusions": [
+    "generalized AEG effectiveness",
+    "causal efficiency without clean comparable control and treatment arms",
+    "product-market fit or commercial demand",
+    "success based only on latency, token, command, intervention, or usefulness-rating changes"
+  ],
+  "limitations": []
+}
