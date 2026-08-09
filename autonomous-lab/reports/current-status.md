@@ -5,26 +5,26 @@
 - Active experiment: `aeg-assisted-agent-failure-recovery-service-v0`
 - Run ID: `None`
 - Experiment kind: `commercial`
-- Current state: `preregistered`
-- Last completed transition: `screening->preregistered`
-- Next permitted action: `transition` — next lifecycle evidence may be recorded
-- Budget consumed: `{"commands": 0, "cost_usd": 0, "iterations": 0, "model_calls": 0, "tests": 0, "tokens": 0, "wall_minutes": 0}`
-- Budget remaining: `{"commands": 64, "cost_usd": 0, "iterations": 8, "model_calls": 8, "tests": 128, "tokens": 0, "wall_minutes": 480}`
-- Human approval required: `no`
-- Another scheduled run useful: `yes`
+- Current state: `completed`
+- Last completed transition: `evaluating->completed`
+- Next permitted action: `human_approval` — Phase 0 is complete; Phase 1 recruitment and every external action remain blocked.
+- Budget consumed: `{"commands": 4, "cost_usd": 0, "iterations": 4, "model_calls": 4, "tests": 4, "tokens": 0, "wall_minutes": 0}`
+- Budget remaining: `{"commands": 60, "cost_usd": 0, "iterations": 4, "model_calls": 4, "tests": 124, "tokens": 0, "wall_minutes": 480}`
+- Human approval required: `yes`
+- Another scheduled run useful: `no`
 - Exact continuation command: `python3 autonomous-lab/scripts/lab.py run-one-step`
-- Latest error or blocker: `None`
+- Latest error or blocker: `Phase 1 recruitment is not approved`
 
 ## Integrity
 
-- Milestone: Phase 0 preparation authorized and preregistered; awaiting deterministic readiness validation
-- Blocker: `None`
-- Experiment ledger events: 3
-- Ledger head: `0f55023b894d05ebf17d74a0b15f5916a5be212bd7d1db49a022fb228c56a1af`
-- Last artifact SHA-256: `ded39f48e89335266062c4525ddc97aa04d51b31f524553e6d35cc8ceaf59cf8`
-- State SHA-256: `5f1140d891fbb81a9e09d5ccf3e51fc6d041d1260a7b23f1c522989f8d27bd63`
-- Scorecard: `incomplete` / `pending`
-- Model calls: `0`
+- Milestone: Phase 0 completed; awaiting a human decision on Phase 1 seed-user recruitment
+- Blocker: `Phase 1 recruitment is not approved`
+- Experiment ledger events: 7
+- Ledger head: `2c03f761117c1d5295c2d27d24529498e5c6e4b0af12534bb1b2427da1573d7d`
+- Last artifact SHA-256: `ce6cf7c7e033cd5f309354a44aad153bf211c0b9a2ca0c9b18ad1d6b19fd84bb`
+- State SHA-256: `5cf2314cdb78bd6f162daa966e6d590efb4ea8819f78b2a9bb8512c8f4305a36`
+- Scorecard: `evaluated` / `complete`
+- Model calls: `4`
 - Paid cost: `$0`
 - External writes: `0`
 - Candidate promotions: `0`

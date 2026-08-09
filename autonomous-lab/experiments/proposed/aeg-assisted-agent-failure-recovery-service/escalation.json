@@ -1,23 +1,25 @@
 {
-  "schema_version": 1,
-  "escalation_id": "failure-recovery-v0-begin-approval",
-  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "created_at": "2026-08-08T04:25:00Z",
-  "status": "resolved",
-  "reason_code": "approval_required",
-  "summary": "Repository-local Phase 0 preparation is approved; external validation and Phase 1 remain blocked.",
+  "allowed_resolutions": [
+    "keep the service repository-local and stopped",
+    "authorize a separately preregistered Phase 1 recruitment plan"
+  ],
+  "created_at": "2026-08-08T20:02:04.110564Z",
+  "escalation_id": "failure-recovery-v0-phase1-recruitment",
   "evidence": [
-    "approvals/phase0-approvals.jsonl contains the scoped authorization",
-    "state.json links the approval event and file hashes",
-    "External writes, customer contacts, paid experiments, and verified-library modifications remain limited to zero"
+    "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-validation.json",
+    "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json"
   ],
-  "requested_decision": "No human decision is required during authorized repository-local Phase 0 preparation.",
-  "allowed_resolutions": ["continue bounded Phase 0 preparation", "stop Phase 0"],
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "reason_code": "approval_required",
+  "recommended_choice": "Review Phase 0 evidence before deciding whether to authorize a separate Phase 1 plan.",
+  "requested_decision": "whether to begin Phase 1 seed-user recruitment",
+  "resolution": null,
+  "resolved_at": null,
+  "schema_version": 1,
+  "status": "open",
+  "summary": "Phase 0 is complete; Phase 1 recruitment and every external action remain blocked.",
   "tradeoffs": [
-    "Continuing may improve the reviewability of the unpublished service package but supplies no external-value or repair-effect evidence.",
-    "Stopping preserves all external, payment, publication, promotion, and repair-execution boundaries."
-  ],
-  "recommended_choice": "Continue only the bounded repository-local Phase 0 package validation.",
-  "resolved_at": "2026-08-08T04:25:00Z",
-  "resolution": "Phase 0 preparation only was approved; Phase 1 and all external actions remain unapproved."
+    "Stopping preserves the zero-external-action boundary.",
+    "Recruitment could test demand but requires new privacy, outreach, budget, and external-action approval."
+  ]
 }

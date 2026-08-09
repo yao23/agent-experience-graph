@@ -13,8 +13,10 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lab import EXIT_APPROVAL_REQUIRED, EXIT_BUDGET_EXHAUSTED, Lab, LabValidationError  # noqa: E402
+from phase0_fixture import prepare_preregistered_phase0  # noqa: E402
 
 
 SOURCE_LAB = Path(__file__).resolve().parents[2]
@@ -35,6 +37,7 @@ class Phase0Tests(unittest.TestCase):
             (path / decision).write_text("historical evidence fixture\n", encoding="utf-8")
         (self.repo / "experiences").mkdir()
         shutil.copy2(SOURCE_REPO / "experiences" / "verified.json", self.repo / "experiences" / "verified.json")
+        prepare_preregistered_phase0(self.root)
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -113,6 +116,7 @@ class Phase0ScheduledPersistenceTests(unittest.TestCase):
             SOURCE_REPO / "experiences" / "verified.json",
             self.repo / "experiences" / "verified.json",
         )
+        prepare_preregistered_phase0(self.root)
         subprocess.run(["git", "init", "-q", "-b", "main"], cwd=self.repo, check=True)
         subprocess.run(["git", "config", "user.email", "scheduler-test@example.invalid"], cwd=self.repo, check=True)
         subprocess.run(["git", "config", "user.name", "Scheduler Test"], cwd=self.repo, check=True)
@@ -216,9 +220,48 @@ class Phase0ScheduledPersistenceTests(unittest.TestCase):
         entry, _, state, phase0_scorecard, escalation = Lab(self.root).records(EXPERIMENT)
         self.assertEqual(state["state"], "completed")
         self.assertFalse(entry["scheduler_eligible"])
+        self.assertIsNone(Lab(self.root).scheduler_entry())
         self.assertEqual(escalation["status"], "open")
         self.assertEqual(phase0_scorecard["metrics"]["external_actions"], 0)
         self.assertEqual(state["verified_library_sha256"], hashlib.sha256(verified_before).hexdigest())
+
+        committed_reports = tuple(
+            (self.root / "reports" / name).read_bytes()
+            for name in ("current-status.json", "current-status.md", "next-human-action.md")
+        )
+        Lab(self.root).report(check=True)
+        ledger_after_completion = ledger_path.read_bytes()
+        for index in (5, 6):
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(self.script),
+                    "--root",
+                    str(self.root),
+                    "scheduled-step",
+                    "--persist-commit",
+                    "--timestamp",
+                    f"2026-08-08T10:0{index}:00Z",
+                    "--run-id",
+                    f"phase0-no-work-{index}",
+                ],
+                cwd=self.repo,
+                env=self.env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+            self.assertEqual(json.loads(result.stdout)["result"], "no_eligible_experiment")
+        self.assertEqual(ledger_path.read_bytes(), ledger_after_completion)
+        self.assertEqual(verified_path.read_bytes(), verified_before)
+        self.assertEqual(
+            committed_reports,
+            tuple(
+                (self.root / "reports" / name).read_bytes()
+                for name in ("current-status.json", "current-status.md", "next-human-action.md")
+            ),
+        )
 
 
 if __name__ == "__main__":

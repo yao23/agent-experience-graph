@@ -22,10 +22,10 @@ experiments:
     causal-efficiency, PMF, or commercial-demand evidence.
 - experiment_id: aeg-assisted-agent-failure-recovery-service-v0
   experiment_kind: commercial
-  operational_status: active
-  scheduler_eligible: true
+  operational_status: disabled
+  scheduler_eligible: false
   approved_phase: phase0_preparation
-  state: preregistered
+  state: completed
   runner_kind: phase0-preparation
   goal_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/goal.yaml
   state_path: autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/state.json
@@ -54,9 +54,8 @@ experiments:
   - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/privacy-and-ip-boundaries.md
   - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-scorecard.json
   - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-decision.md
-  conclusion: Only bounded repository-local Phase 0 preparation is approved. No
-    customer contact, publication, payment, real repair, baseline or treatment arm,
-    external write, promotion, release, Phase 1, or effectiveness claim is authorized.
+  conclusion: Phase 0 package preparation completed with zero external actions; Phase
+    1 seed-user recruitment requires a separate human approval.
 - experiment_id: repository-state-recovery-01
   experiment_kind: shakedown
   operational_status: archived

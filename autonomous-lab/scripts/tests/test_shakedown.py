@@ -232,8 +232,12 @@ class ShakedownIntegrationTests(unittest.TestCase):
         self.assertEqual(state["ledger_head_sha256"], current_events[-1]["event_sha256"])
         report = json.loads((clean_root / "reports" / "current-status.json").read_text())
         self.assertEqual(report["current_experiment"]["experiment_id"], "aeg-assisted-agent-failure-recovery-service-v0")
-        self.assertTrue(report["current_experiment"]["another_scheduled_run_useful"])
-        self.assertIsNone(report["current_experiment"]["latest_error_or_blocker"])
+        self.assertEqual(report["current_experiment"]["state"], "completed")
+        self.assertFalse(report["current_experiment"]["another_scheduled_run_useful"])
+        self.assertEqual(
+            report["current_experiment"]["latest_error_or_blocker"],
+            "Phase 1 recruitment is not approved",
+        )
         all_text = "\n".join(path.read_text(errors="ignore") for path in clean_root.rglob("*") if path.is_file())
         self.assertNotIn("agent-experience-graph-" + "self-consumption-batch", all_text)
         self.assertNotIn("/" + "Users" + "/", all_text)

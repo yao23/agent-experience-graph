@@ -1,35 +1,43 @@
 {
-  "schema_version": 1,
-  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
-  "state": "preregistered",
-  "milestone": "Phase 0 preparation authorized and preregistered; awaiting deterministic readiness validation",
-  "blocker": null,
-  "updated_at": "2026-08-08T04:26:00Z",
-  "approved_phase": "phase0_preparation",
-  "phase_run_count": 0,
-  "approval_record_path": "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/approvals/phase0-approvals.jsonl",
   "approval_event_sha256": "d22bc8999e4dbe5fd7a578ba24c99f8a21b396919bc44b1e2e84d82f257dac16",
   "approval_file_sha256": "5f57927f3ff28dd937ab0654d4aa56ae3f678658629d6c1d08f960d1feb22384",
-  "usage_observability": {
-    "model_calls": "tracked by scheduled/model-assisted run count",
-    "tokens": "unavailable",
-    "cost_usd": "unavailable"
-  },
-  "budget_used": {"iterations": 0, "commands": 0, "tests": 0, "model_calls": 0, "wall_minutes": 0, "tokens": 0, "cost_usd": 0},
-  "retry_count": 0,
+  "approval_record_path": "autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/approvals/phase0-approvals.jsonl",
   "approvals": {
     "begin_experiment": "approved",
-    "model_or_agent_execution": "approved",
-    "paid_execution": "pending",
-    "external_project_write": "pending",
-    "contact_external_user": "pending",
-    "open_or_merge_pull_request": "pending",
     "candidate_promotion": "pending",
-    "verified_library_change": "pending",
+    "contact_external_user": "pending",
+    "external_project_write": "pending",
+    "model_or_agent_execution": "approved",
+    "open_or_merge_pull_request": "pending",
+    "paid_execution": "pending",
     "release_publication": "pending",
-    "secret_creation_or_use": "pending"
+    "secret_creation_or_use": "pending",
+    "verified_library_change": "pending"
   },
-  "ledger_event_count": 3,
-  "ledger_head_sha256": "0f55023b894d05ebf17d74a0b15f5916a5be212bd7d1db49a022fb228c56a1af",
+  "approved_phase": "phase0_preparation",
+  "blocker": "Phase 1 recruitment is not approved",
+  "budget_used": {
+    "commands": 4,
+    "cost_usd": 0,
+    "iterations": 4,
+    "model_calls": 4,
+    "tests": 4,
+    "tokens": 0,
+    "wall_minutes": 0
+  },
+  "experiment_id": "aeg-assisted-agent-failure-recovery-service-v0",
+  "ledger_event_count": 7,
+  "ledger_head_sha256": "2c03f761117c1d5295c2d27d24529498e5c6e4b0af12534bb1b2427da1573d7d",
+  "milestone": "Phase 0 completed; awaiting a human decision on Phase 1 seed-user recruitment",
+  "phase_run_count": 4,
+  "retry_count": 0,
+  "schema_version": 1,
+  "state": "completed",
+  "updated_at": "2026-08-08T20:02:04.110564Z",
+  "usage_observability": {
+    "cost_usd": "unavailable",
+    "model_calls": "tracked by scheduled/model-assisted run count",
+    "tokens": "unavailable"
+  },
   "verified_library_sha256": "7cfe56dd68d7d901cd7fa6d0ed01c8149b06711d7c0381f0ca6a3c95acb838d3"
 }
