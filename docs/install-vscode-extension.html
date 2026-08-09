@@ -1,560 +1,336 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Install AEG v0.1.5 for VS Code and retrieve verified debugging experience before your coding agent starts from scratch." />
-  <meta property="og:title" content="Install AEG for VS Code" />
-  <meta property="og:description" content="Retrieve explainable verified debugging experience, copy a guarded recovery capsule, and keep usefulness feedback local." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://yao23.github.io/agent-experience-graph/docs/install-vscode-extension.html" />
-  <meta name="theme-color" content="#0b1020" />
-  <title>Install AEG for VS Code — Agent Experience Graph</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #121a33;
-      --panel-2: #17213f;
-      --text: #eef3ff;
-      --muted: #a7b5d2;
-      --accent: #66e3ff;
-      --accent-2: #93f5b7;
-      --warn: #ffce73;
-      --border: rgba(255, 255, 255, 0.12);
-      --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color-scheme: dark;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-width: 320px;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 8% 0%, rgba(102, 227, 255, 0.19), transparent 34rem),
-        radial-gradient(circle at 95% 28%, rgba(147, 245, 183, 0.12), transparent 28rem),
-        var(--bg);
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    a { color: inherit; }
-    a:focus-visible, button:focus-visible {
-      outline: 3px solid var(--warn);
-      outline-offset: 3px;
-    }
-
-    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      border-bottom: 1px solid var(--border);
-      background: rgba(11, 16, 32, 0.86);
-      backdrop-filter: blur(18px);
-    }
-
-    .nav-inner {
-      min-height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      text-decoration: none;
-      font-weight: 850;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-mark {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 11px;
-      color: #06121d;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 10px 28px rgba(102, 227, 255, 0.24);
-      font-size: 13px;
-      font-weight: 950;
-    }
-
-    .nav-links { display: flex; align-items: center; gap: 18px; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 700; }
-    .nav-links a:hover { color: var(--text); }
-
-    header { padding: 86px 0 54px; }
-    .hero { max-width: 880px; }
-    .eyebrow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      align-items: center;
-      margin-bottom: 18px;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 850;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 30px;
-      padding: 5px 11px;
-      border: 1px solid rgba(147, 245, 183, 0.26);
-      border-radius: 999px;
-      color: var(--accent-2);
-      background: rgba(147, 245, 183, 0.09);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-    }
-
-    h1 {
-      margin: 0;
-      max-width: 850px;
-      font-size: clamp(46px, 7vw, 78px);
-      line-height: 0.98;
-      letter-spacing: -0.055em;
-    }
-
-    .gradient-text {
-      color: transparent;
-      background: linear-gradient(110deg, var(--accent), var(--accent-2));
-      background-clip: text;
-      -webkit-background-clip: text;
-    }
-
-    .lede { max-width: 760px; margin: 24px 0 0; color: var(--muted); font-size: 20px; line-height: 1.55; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-    .button {
-      min-height: 48px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 18px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 850;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-    .button:hover { transform: translateY(-2px); border-color: rgba(102, 227, 255, 0.45); }
-    .button.primary { color: #06121d; border: none; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-    .button.secondary { background: rgba(255, 255, 255, 0.055); }
-
-    .alpha-note {
-      margin: 34px 0 0;
-      padding: 15px 18px;
-      border: 1px solid rgba(255, 206, 115, 0.27);
-      border-radius: 16px;
-      color: #f5dfb7;
-      background: rgba(255, 206, 115, 0.08);
-    }
-    .alpha-note strong { color: var(--warn); }
-
-    section { padding: 46px 0; }
-    .section-heading { max-width: 760px; margin-bottom: 24px; }
-    .kicker { margin: 0 0 6px; color: var(--accent); font-size: 13px; font-weight: 850; letter-spacing: 0.14em; text-transform: uppercase; }
-    h2 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; }
-    .section-copy { margin: 12px 0 0; color: var(--muted); font-size: 17px; }
-
-    .requirements, .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .card, .step {
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
-      box-shadow: var(--shadow);
-    }
-
-    .card { padding: 20px; }
-    .card strong { display: block; font-size: 17px; }
-    .card span { display: block; margin-top: 5px; color: var(--muted); font-size: 14px; }
-
-    .steps { display: grid; gap: 16px; }
-    .step {
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr);
-      gap: 18px;
-      padding: 24px;
-    }
-    .step-number {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      color: #07111f;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      font-size: 18px;
-      font-weight: 950;
-    }
-    .step h3 { margin: 2px 0 6px; font-size: 23px; letter-spacing: -0.02em; }
-    .step p { margin: 0 0 14px; color: var(--muted); }
-
-    .code-wrap { position: relative; }
-    pre {
-      margin: 0;
-      max-width: 100%;
-      overflow-x: auto;
-      padding: 18px 68px 18px 18px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #080d1b;
-      font: 13.5px/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      white-space: pre;
-      scrollbar-color: var(--panel-2) transparent;
-    }
-    code { color: #dce9ff; }
-    .copy {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      min-height: 36px;
-      padding: 7px 10px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--muted);
-      background: var(--panel-2);
-      cursor: pointer;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 800;
-    }
-    .copy:hover { color: var(--text); }
-
-    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .choice {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-    }
-    .choice strong { display: block; margin-bottom: 6px; }
-    .choice p { margin: 0; color: var(--muted); }
-
-    .command-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-    .command-list li {
-      padding: 13px 15px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: rgba(255,255,255,0.035);
-    }
-    .command-list code { color: var(--accent); font-weight: 800; }
-
-    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .feature-grid .card { min-height: 160px; }
-    .feature-grid p { margin: 8px 0 0; color: var(--muted); }
-
-    .privacy {
-      padding: 28px;
-      border: 1px solid rgba(147, 245, 183, 0.25);
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(147,245,183,0.1), rgba(102,227,255,0.08));
-    }
-    .privacy h2 { font-size: clamp(27px, 4vw, 38px); }
-    .privacy p { max-width: 790px; margin: 12px 0 0; color: #d4e2e8; }
-
-    details {
-      padding: 17px 19px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: rgba(255,255,255,0.035);
-    }
-    details + details { margin-top: 10px; }
-    summary { cursor: pointer; font-weight: 850; }
-    details p { margin: 10px 0 0; color: var(--muted); }
-
-    .cta {
-      margin: 36px auto 76px;
-      padding: 34px;
-      text-align: center;
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      background: linear-gradient(135deg, rgba(102,227,255,0.12), rgba(147,245,183,0.08));
-      box-shadow: var(--shadow);
-    }
-    .cta h2 { max-width: 760px; margin: 0 auto; }
-    .cta p { max-width: 650px; margin: 13px auto 0; color: var(--muted); }
-    .cta .hero-actions { justify-content: center; }
-
-    footer { padding: 24px 0 38px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
-    .footer-inner { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
-    .footer-inner a:hover { color: var(--text); }
-
-    @media (max-width: 780px) {
-      .shell { width: min(100% - 28px, 1120px); }
-      .nav-inner { min-height: 62px; }
-      .nav-links a:not(:last-child) { display: none; }
-      header { padding: 58px 0 30px; }
-      h1 { font-size: clamp(41px, 13vw, 60px); }
-      .lede { font-size: 18px; }
-      section { padding: 34px 0; }
-      .requirements, .feature-grid, .choice-grid { grid-template-columns: 1fr; }
-      .step { grid-template-columns: 44px minmax(0, 1fr); gap: 13px; padding: 18px 15px; }
-      .step-number { width: 40px; height: 40px; border-radius: 12px; }
-      .step h3 { font-size: 20px; }
-      pre { padding: 16px 58px 16px 14px; font-size: 12px; }
-      .privacy, .cta { padding: 23px 19px; }
-      .button { width: 100%; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { transition: none !important; }
-    }
-  </style>
-</head>
-<body>
-  <nav aria-label="Primary navigation">
-    <div class="shell nav-inner">
-      <a class="brand" href="../" aria-label="Agent Experience Graph home">
-        <span class="brand-mark" aria-hidden="true">AEG</span>
-        <span>Agent Experience Graph</span>
-      </a>
-      <div class="nav-links">
-        <a href="../">Home</a>
-        <a href="60-second-demo.html">60-second demo</a>
-        <a href="https://github.com/yao23/agent-experience-graph">GitHub</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Install the local-first Agent Experience Graph extension for VS Code."
+    />
+    <meta name="theme-color" content="#121b18" />
+    <title>Install AEG for VS Code</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="../site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="../" aria-label="Agent Experience Graph home"
+          ><span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i></span
+          ><span>Agent Experience Graph</span></a
+        ><button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          ☰
+        </button>
+        <nav
+          class="site-nav"
+          id="site-nav"
+          aria-label="Primary navigation"
+          data-site-nav
+        >
+          <a href="../">Product</a><a href="../pitch/">Pitch</a
+          ><a href="./install-vscode-extension.html" aria-current="page"
+            >Install</a
+          ><a href="./60-second-demo.html">Demo</a
+          ><a
+            class="nav-github"
+            href="https://github.com/yao23/agent-experience-graph"
+            >GitHub ↗</a
+          >
+        </nav>
       </div>
-    </div>
-  </nav>
-
-  <header>
-    <div class="shell hero">
-      <div class="eyebrow">
-        <span>AEG for VS Code</span>
-        <span class="badge">Now on the VS Code Marketplace</span>
-      </div>
-      <h1>Retrieve <span class="gradient-text">verified debugging experience</span> before starting from scratch.</h1>
-      <p class="lede">Describe a task or error, inspect an explainable verified match, and copy a guarded recovery capsule for your coding agent—all locally inside VS Code.</p>
-      <div class="hero-actions">
-        <a class="button primary" href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph" target="_blank" rel="noopener">Install from Marketplace</a>
-        <a class="button secondary" href="https://github.com/yao23/agent-experience-graph/tree/main/integrations/vscode">View source</a>
-      </div>
-      <p class="alpha-note"><strong>Developer preview v0.1.5:</strong> verified means the source outcome was objectively checked, not that retrieval guarantees a better repair. Task text, code, capsules, and ratings are not uploaded.</p>
-    </div>
-  </header>
-
-  <main>
-    <section aria-labelledby="requirements-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">Get started</p>
-          <h2 id="requirements-title">Install in seconds</h2>
-        </div>
-        <div class="requirements">
-          <div class="card"><strong>VS Code 1.90+</strong><span>Use the desktop editor with access to Extensions.</span></div>
-          <div class="card"><strong>One-click installation</strong><span>No cloning, Node.js, or manual packaging is required.</span></div>
-          <div class="card"><strong>No setup data</strong><span>A small verified public library and transfer challenge are bundled.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="install" aria-labelledby="marketplace-install-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">Recommended installation</p>
-          <h2 id="marketplace-install-title">Get AEG from the VS Code Marketplace.</h2>
-          <p class="section-copy">AEG brings verified-only retrieval, match explanations, recovery capsules, and local usefulness ratings into your editor. Install the official extension published by <code>AgentExperienceGraph</code>.</p>
-        </div>
-        <div class="steps">
-          <article class="step">
-            <div class="step-number" aria-hidden="true">1</div>
-            <div>
-              <h3>Open the Marketplace listing</h3>
-              <p>Review the extension details, release notes, and permissions on the official listing.</p>
-              <a class="button primary" href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph" target="_blank" rel="noopener">View AEG in the Marketplace</a>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <p class="kicker">AEG for VS Code · v0.1.5</p>
+            <h1>
+              Retrieve verified debugging experience
+              <span class="accent-underline"
+                >before starting from scratch.</span
+              >
+            </h1>
+            <p class="lede">
+              Describe a task or error, inspect an explainable verified match,
+              and copy a guarded recovery capsule for your coding agent—all
+              locally inside VS Code.
+            </p>
+            <div class="actions">
+              <a
+                class="button primary"
+                href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph"
+                >Install from Marketplace ↗</a
+              ><a class="button" href="#source">Build from source</a>
             </div>
-          </article>
-          <article class="step">
-            <div class="step-number" aria-hidden="true">2</div>
-            <div>
-              <h3>Select Install</h3>
-              <p>Allow the browser to open VS Code, then confirm installation. VS Code will manage future updates automatically.</p>
-              <div class="code-wrap">
-                <pre><code>ext install AgentExperienceGraph.agent-experience-graph</code></pre>
-                <button class="copy" type="button" aria-label="Copy extension identifier">Copy</button>
-              </div>
+          </div>
+          <aside class="loop-panel" aria-label="Extension workflow">
+            <div class="loop-top">
+              <span class="loop-status">LOCAL-FIRST PREVIEW</span
+              ><span>v0.1.5</span>
             </div>
-          </article>
-          <article class="step">
-            <div class="step-number" aria-hidden="true">3</div>
-            <div>
-              <h3>Open a workspace and try AEG</h3>
-              <p>Open the Command Palette and run <code>AEG: Try a Verified Experience</code>, or open the bundled challenge for an immediate demo.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="source-install" aria-labelledby="install-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">Developer option</p>
-          <h2 id="install-title">Build and install from source.</h2>
-          <p class="section-copy">Contributors can compile the open-source extension and create a local <code>agent-experience-graph-0.1.5.vsix</code>. This path requires Node.js 20+ and Git.</p>
-        </div>
-
-        <div class="steps">
-          <article class="step">
-            <div class="step-number" aria-hidden="true">1</div>
-            <div>
-              <h3>Clone the repository</h3>
-              <p>Run this in Terminal, PowerShell, or the integrated terminal in VS Code.</p>
-              <div class="code-wrap">
-                <pre><code>git clone https://github.com/yao23/agent-experience-graph.git
-cd agent-experience-graph/integrations/vscode</code></pre>
-                <button class="copy" type="button" aria-label="Copy clone commands">Copy</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="step">
-            <div class="step-number" aria-hidden="true">2</div>
-            <div>
-              <h3>Compile and package the extension</h3>
-              <p><code>npx</code> runs the official VS Code extension packager without requiring a global install.</p>
-              <div class="code-wrap">
-                <pre><code>npm install
-npm run compile
-npx @vscode/vsce package</code></pre>
-                <button class="copy" type="button" aria-label="Copy package commands">Copy</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="step">
-            <div class="step-number" aria-hidden="true">3</div>
-            <div>
-              <h3>Install the generated VSIX</h3>
-              <div class="choice-grid">
-                <div class="choice">
-                  <strong>In VS Code</strong>
-                  <p>Open <strong>Extensions</strong> → select the <strong>…</strong> menu → <strong>Install from VSIX…</strong> → choose <code>agent-experience-graph-0.1.5.vsix</code>.</p>
+            <ol class="loop-list">
+              <li>
+                <div>
+                  <strong>Describe a task</strong
+                  ><span>or select a failure in the editor</span>
                 </div>
-                <div class="choice">
-                  <strong>From the command line</strong>
-                  <p>Run the command below from <code>integrations/vscode</code>.</p>
-                  <div class="code-wrap" style="margin-top: 10px;">
-                    <pre><code>code --install-extension agent-experience-graph-0.1.5.vsix</code></pre>
-                    <button class="copy" type="button" aria-label="Copy VSIX install command">Copy</button>
-                  </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Inspect a match</strong
+                  ><span>evidence, provenance, constraints</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Copy a capsule</strong
+                  ><span>guarded guidance for your agent</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Validate and rate</strong
+                  ><span>feedback remains in the workspace</span>
+                </div>
+              </li>
+            </ol>
+            <div class="loop-foot">No task or rating upload in v0.1.5</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="install">
+        <div class="shell">
+          <p class="kicker">Marketplace install</p>
+          <h2>From listing to first lookup.</h2>
+          <div class="steps">
+            <article class="step">
+              <div>
+                <h3>Install Agent Experience Graph</h3>
+                <p>
+                  Open the Marketplace listing and choose
+                  <strong>Install</strong>. VS Code 1.90 or later is required.
+                </p>
+                <div class="actions">
+                  <a
+                    class="button primary"
+                    href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph"
+                    >Open Marketplace ↗</a
+                  >
                 </div>
               </div>
+            </article>
+            <article class="step">
+              <div>
+                <h3>Open a project</h3>
+                <p>
+                  Use any workspace, or open the AEG repository for the bundled
+                  verified-experience challenge.
+                </p>
+              </div>
+            </article>
+            <article class="step">
+              <div>
+                <h3>Run the first experience lookup</h3>
+                <p>
+                  Open the command palette and run
+                  <strong>AEG: Try a Verified Experience</strong>. Describe a
+                  task, inspect “Why this matched,” then copy the capsule.
+                </p>
+              </div>
+            </article>
+            <article class="step">
+              <div>
+                <h3>Validate before trusting</h3>
+                <p>
+                  Inspect local code and run focused plus regression tests. Mark
+                  the retrieved experience helpful, partial, irrelevant, or
+                  harmful.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">What is included</p>
+              <h2>A focused developer preview.</h2>
             </div>
-          </article>
+            <p>
+              AEG surfaces evidence and limitations. The extension does not
+              promise that a retrieved experience will improve a repair.
+            </p>
+          </div>
+          <div class="grid three">
+            <article class="card">
+              <h3>Verified-only lookup</h3>
+              <p>
+                Searches the validated public library; candidate and malformed
+                records are excluded.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Explainable matching</h3>
+              <p>
+                Shows the overlapping query terms and the record fields
+                contributing to rank.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Guarded capsules</h3>
+              <p>
+                Packages lessons, constraints, failure warnings, and a
+                requirement to verify locally.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Local ratings</h3>
+              <p>
+                Stores usefulness feedback in
+                <code>.aeg/verified-experience-feedback.json</code>.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Playwright diagnosis</h3>
+              <p>
+                Captures local failure and recovery receipts with explicit
+                outcome verification.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Public repair lab</h3>
+              <p>
+                Runs bounded local baseline/assisted comparisons; it never
+                pushes upstream.
+              </p>
+            </article>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section aria-labelledby="first-run-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">First run</p>
-          <h2 id="first-run-title">Try the product loop</h2>
-          <p class="section-copy">Open any workspace, then open the Command Palette with <strong>⇧⌘P</strong> on macOS or <strong>Ctrl+Shift+P</strong> on Windows/Linux.</p>
+      <section class="section" id="source">
+        <div class="shell">
+          <p class="kicker">Build from source</p>
+          <h2>Audit the package yourself.</h2>
+          <div class="steps">
+            <article class="step">
+              <div class="copy-row">
+                <h3>Clone</h3>
+                <pre id="clone-command">
+git clone https://github.com/yao23/agent-experience-graph.git
+cd agent-experience-graph/integrations/vscode</pre
+                >
+                <button
+                  class="copy-button"
+                  type="button"
+                  data-copy="#clone-command"
+                >
+                  Copy commands
+                </button>
+              </div>
+            </article>
+            <article class="step">
+              <div class="copy-row">
+                <h3>Install, test, and package</h3>
+                <pre id="build-command">
+npm ci
+npm test
+npm run package</pre
+                >
+                <button
+                  class="copy-button"
+                  type="button"
+                  data-copy="#build-command"
+                >
+                  Copy commands
+                </button>
+              </div>
+            </article>
+            <article class="step">
+              <div class="copy-row">
+                <h3>Install the VSIX</h3>
+                <pre id="vsix-command">
+code --install-extension agent-experience-graph-0.1.5.vsix</pre
+                >
+                <button
+                  class="copy-button"
+                  type="button"
+                  data-copy="#vsix-command"
+                >
+                  Copy command
+                </button>
+              </div>
+            </article>
+          </div>
         </div>
-        <ol class="command-list">
-          <li><code>AEG: Try a Verified Experience</code> — describe a task or use selected text.</li>
-          <li>Inspect the weighted match evidence, constraints, limitations, verification, and public provenance.</li>
-          <li>Copy the guarded recovery capsule into your coding-agent session and validate its repair locally.</li>
-          <li>Record helpful, partially helpful, irrelevant, or harmful feedback locally.</li>
-        </ol>
-      </div>
-    </section>
+      </section>
 
-    <section aria-labelledby="features-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">What is included</p>
-          <h2 id="features-title">A small preview with a focused job</h2>
+      <section class="section">
+        <div class="shell grid two">
+          <div>
+            <p class="kicker">Privacy boundary</p>
+            <h2>Local by default.</h2>
+            <p class="section-intro">
+              Version 0.1.5 does not upload code, task descriptions, capsules,
+              logs, artifacts, ratings, or experience receipts. Review
+              <code>.aeg/</code> before committing it.
+            </p>
+          </div>
+          <div class="callout">
+            <h3>Evidence boundary</h3>
+            <p>
+              The bundled challenge demonstrates discoverability, verified-only
+              retrieval, provenance, explainability, guardrails, and local
+              feedback. Its prior comparison did not improve the outcome and
+              increased token usage and wall time.
+            </p>
+          </div>
         </div>
-        <div class="feature-grid">
-          <div class="card"><strong>Retrieve verified-only</strong><p>Malformed and candidate records are excluded; below-threshold retrieval abstains.</p></div>
-          <div class="card"><strong>Explain</strong><p>See which public record fields contributed to the weighted lexical match.</p></div>
-          <div class="card"><strong>Guide, then verify</strong><p>Give the coding agent compact context while requiring local inspection and tests.</p></div>
-          <div class="card"><strong>Rate locally</strong><p>Capture usefulness without uploading task text, code, capsules, or feedback.</p></div>
+      </section>
+
+      <section class="meeting-strip">
+        <div class="shell meeting-grid">
+          <div>
+            <p class="kicker">See the loop first</p>
+            <h2>Not ready to install?</h2>
+          </div>
+          <div class="actions">
+            <a class="button primary" href="./60-second-demo.html"
+              >Run the browser demo</a
+            ><a
+              class="button"
+              href="https://github.com/yao23/agent-experience-graph/tree/main/integrations/vscode"
+              >Inspect source ↗</a
+            >
+          </div>
         </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <span>AEG for VS Code · Developer preview v0.1.5</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="../">Product</a><a href="../pitch/">Pitch</a
+          ><a href="./60-second-demo.html">Demo</a
+          ><a href="https://github.com/yao23/agent-experience-graph/issues/new"
+            >Feedback ↗</a
+          >
+        </nav>
       </div>
-    </section>
-
-    <section aria-labelledby="privacy-title">
-      <div class="shell privacy">
-        <p class="kicker">Privacy by default</p>
-        <h2 id="privacy-title">Your retrieval feedback stays in your workspace.</h2>
-        <p>AEG stores usefulness ratings in <code>.aeg/verified-experience-feedback.json</code>. Version 0.1.5 does not upload task text, source code, logs, recovery capsules, ratings, or receipts. Review or ignore <code>.aeg/</code> before committing it.</p>
-      </div>
-    </section>
-
-    <section aria-labelledby="help-title">
-      <div class="shell">
-        <div class="section-heading">
-          <p class="kicker">Troubleshooting</p>
-          <h2 id="help-title">Quick fixes</h2>
-        </div>
-        <details>
-          <summary>AEG found no skills</summary>
-          <p>Make sure the folder currently open in VS Code contains a <code>SKILL.md</code> or <code>capability.json</code>. You can change the default patterns in the <code>aeg.skillGlobs</code> setting.</p>
-        </details>
-        <details>
-          <summary>The VSIX was not created</summary>
-          <p>Confirm you are inside <code>agent-experience-graph/integrations/vscode</code>. Run <code>npm install</code> and <code>npm run compile</code> again, then rerun <code>npx @vscode/vsce package</code>.</p>
-        </details>
-        <details>
-          <summary>The <code>code</code> command is unavailable</summary>
-          <p>Use the VS Code interface instead: Extensions → … → Install from VSIX…. On macOS, you can also install the shell command from the Command Palette with “Shell Command: Install 'code' command in PATH”.</p>
-        </details>
-      </div>
-    </section>
-
-    <div class="shell cta">
-      <p class="kicker">Help shape AEG</p>
-      <h2>We are looking for 5–10 developers to try one real debugging task.</h2>
-      <p>Report whether retrieval helped, had no effect, was irrelevant, or caused harm. The current two-record library and bounded experiments do not support broad coverage, cross-project transfer, or generalized benefit claims.</p>
-      <div class="hero-actions">
-        <a class="button primary" href="https://github.com/yao23/agent-experience-graph/issues/new">Share alpha feedback</a>
-        <a class="button secondary" href="60-second-demo.html">See the 60-second demo</a>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="shell footer-inner">
-      <span>Agent Experience Graph · MIT-0</span>
-      <span><a href="https://github.com/yao23/agent-experience-graph">Source</a> · <a href="../">Project home</a></span>
-    </div>
-  </footer>
-
-  <script>
-    document.querySelectorAll('.copy').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const code = button.parentElement.querySelector('code').innerText;
-        try {
-          await navigator.clipboard.writeText(code);
-          const original = button.textContent;
-          button.textContent = 'Copied';
-          setTimeout(() => { button.textContent = original; }, 1400);
-        } catch {
-          button.textContent = 'Select text';
-        }
-      });
-    });
-  </script>
-</body>
+    </footer>
+  </body>
 </html>

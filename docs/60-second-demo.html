@@ -1,221 +1,225 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agent Experience Graph — 60 Second Demo</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #121a33;
-      --panel-2: #17213f;
-      --text: #eef3ff;
-      --muted: #9fb0d1;
-      --accent: #66e3ff;
-      --accent-2: #93f5b7;
-      --warn: #ffce73;
-      --danger: #ff8f8f;
-      --border: rgba(255,255,255,0.12);
-      --shadow: 0 24px 70px rgba(0,0,0,0.35);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(102,227,255,0.18), transparent 32rem),
-        radial-gradient(circle at bottom right, rgba(147,245,183,0.13), transparent 30rem),
-        var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 32px;
-    }
-    .app {
-      width: min(1180px, 100%);
-      display: grid;
-      grid-template-columns: 0.95fr 1.35fr;
-      gap: 22px;
-    }
-    .hero, .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-    }
-    .hero { padding: 34px; }
-    .eyebrow { color: var(--accent); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
-    h1 { margin: 14px 0 10px; font-size: 44px; line-height: 1.02; letter-spacing: -0.04em; }
-    .subtitle { color: var(--muted); font-size: 18px; line-height: 1.55; margin: 0 0 28px; }
-    .task-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 18px;
-      margin-top: 22px;
-    }
-    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.11em; font-weight: 700; }
-    .task { margin-top: 8px; font-size: 21px; font-weight: 700; }
-    button {
-      width: 100%;
-      margin-top: 22px;
-      border: none;
-      color: #07111f;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      font-weight: 800;
-      font-size: 16px;
-      border-radius: 16px;
-      padding: 15px 18px;
-      cursor: pointer;
-      box-shadow: 0 14px 32px rgba(102,227,255,0.25);
-    }
-    button.secondary {
-      background: rgba(255,255,255,0.1);
-      color: var(--text);
-      border: 1px solid var(--border);
-      box-shadow: none;
-    }
-    .panel { padding: 24px; min-height: 640px; position: relative; overflow: hidden; }
-    .stage-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
-    .stage-title h2 { margin: 0; font-size: 25px; letter-spacing: -0.02em; }
-    .pill { color: var(--accent-2); background: rgba(147,245,183,0.1); border: 1px solid rgba(147,245,183,0.25); padding: 7px 11px; border-radius: 99px; font-size: 12px; font-weight: 800; }
-    .timeline { display: grid; gap: 13px; }
-    .step {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: all 420ms ease;
-      background: rgba(255,255,255,0.055);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 15px;
-    }
-    .step.visible { opacity: 1; transform: translateY(0); }
-    .step strong { display: block; margin-bottom: 6px; }
-    .step p { margin: 0; color: var(--muted); line-height: 1.45; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-    .metric { background: rgba(255,255,255,0.055); border: 1px solid var(--border); border-radius: 18px; padding: 15px; }
-    .metric .num { font-size: 29px; font-weight: 900; color: var(--accent-2); }
-    .metric .cap { color: var(--muted); font-size: 13px; margin-top: 3px; }
-    .workflow { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
-    .node { padding: 10px 12px; background: rgba(102,227,255,0.11); border: 1px solid rgba(102,227,255,0.25); border-radius: 14px; font-size: 13px; font-weight: 800; }
-    .arrow { color: var(--muted); }
-    .warning { color: var(--warn); }
-    .danger { color: var(--danger); }
-    .footer-note { position: absolute; left: 24px; right: 24px; bottom: 20px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); padding-top: 14px; }
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      h1 { font-size: 36px; }
-      .panel { min-height: 560px; }
-    }
-  </style>
-</head>
-<body>
-  <main class="app">
-    <section class="hero">
-      <div class="eyebrow">Agent Experience Graph</div>
-      <h1>Retrieve verified debugging experience before starting from scratch.</h1>
-      <p class="subtitle">A transparent v0.1.5 demo: rank only verified records, explain the match, preserve limitations, and copy guarded context before the coding agent runs.</p>
-
-      <div class="task-card">
-        <div class="label">Current task</div>
-        <div class="task">Repair a public wrapper after active resource ownership moved behind a protocol layer</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A 60-second demonstration of verified experience retrieval with Agent Experience Graph."
+    />
+    <meta name="theme-color" content="#121b18" />
+    <title>60-Second Demo — Agent Experience Graph</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="../site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="../" aria-label="Agent Experience Graph home"
+          ><span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i></span
+          ><span>Agent Experience Graph</span></a
+        ><button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          ☰
+        </button>
+        <nav
+          class="site-nav"
+          id="site-nav"
+          aria-label="Primary navigation"
+          data-site-nav
+        >
+          <a href="../">Product</a><a href="../pitch/">Pitch</a
+          ><a href="./install-vscode-extension.html">Install</a
+          ><a href="./60-second-demo.html" aria-current="page">Demo</a
+          ><a
+            class="nav-github"
+            href="https://github.com/yao23/agent-experience-graph"
+            >GitHub ↗</a
+          >
+        </nav>
       </div>
+    </header>
+    <main id="main">
+      <section class="section section-compact">
+        <div class="shell">
+          <p class="kicker">60-second product moment</p>
+          <h1>
+            Retrieve verified experience before the next agent starts from
+            scratch.
+          </h1>
+          <p class="lede">
+            This lightweight simulation mirrors the repository’s verified-only
+            retrieval workflow. It demonstrates the interaction—not a
+            performance benefit.
+          </p>
+          <div class="demo-console">
+            <div class="demo-toolbar">
+              <span>AEG / VERIFIED EXPERIENCE LOOKUP</span
+              ><span>2 VERIFIED RECORDS · LOCAL</span>
+            </div>
+            <div class="demo-body">
+              <div class="demo-input">
+                <label for="task">CURRENT DEBUGGING TASK</label
+                ><textarea id="task">
+A public wrapper calls set_nodelay on a stale stream after resource ownership moved behind the protocol layer.</textarea
+                ><button class="button accent" type="button" data-run-demo>
+                  Retrieve verified experience
+                </button>
+              </div>
+              <div class="demo-output">
+                <div class="demo-idle" data-demo-idle>
+                  <strong>Ready to search verified records</strong
+                  ><span>AEG may match, rank, or abstain.</span>
+                </div>
+                <div class="demo-result" data-demo-result hidden tabindex="-1">
+                  <div class="match-head">
+                    <div>
+                      <small>VERIFIED MATCH</small>
+                      <h3>TR-04 · thin proxy delegation</h3>
+                    </div>
+                    <span class="tag good">objective repair</span>
+                  </div>
+                  <div class="match-block">
+                    <span>WHY THIS MATCHED</span>
+                    <p>
+                      Overlap in wrapper delegation, stale resource ownership,
+                      protocol layer, and <code>set_nodelay</code>.
+                    </p>
+                  </div>
+                  <div class="match-block">
+                    <span>RECOVERY PRINCIPLE</span>
+                    <p>
+                      Trace current resource ownership through the protocol
+                      abstraction; repair the public wrapper rather than a stale
+                      client-side object.
+                    </p>
+                  </div>
+                  <div class="match-block">
+                    <span>FAILURE WARNING</span>
+                    <p>
+                      A green patch can be a false positive when it fixes the
+                      wrong public API surface.
+                    </p>
+                  </div>
+                  <div class="match-block">
+                    <span>LIMITATION</span>
+                    <p class="caution">
+                      This prior collection run is not causal evidence that
+                      retrieval improves repairs. Inspect local code and run the
+                      full relevant test suite.
+                    </p>
+                  </div>
+                  <button class="button" type="button" data-reset-demo>
+                    Reset demo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <button id="runBtn">Try a Verified Experience</button>
-      <button id="resetBtn" class="secondary">Reset Demo</button>
-    </section>
+      <section class="section">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">What just happened</p>
+              <h2>Evidence traveled with the recommendation.</h2>
+            </div>
+            <p>
+              The match is not an answer guarantee. It packages a prior verified
+              outcome, explainable retrieval signal, failed path, recovery
+              principle, constraints, and provenance.
+            </p>
+          </div>
+          <div class="grid three">
+            <article class="card">
+              <span class="card-number">01 / RETRIEVE</span>
+              <h3>Search verified records</h3>
+              <p>
+                Candidate or malformed records are not eligible. If relevance is
+                too low, AEG abstains.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">02 / INSPECT</span>
+              <h3>See why it matched</h3>
+              <p>
+                Query terms, contributing fields, outcome, limitations, and
+                public provenance stay visible.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">03 / VALIDATE</span>
+              <h3>Treat guidance as a hypothesis</h3>
+              <p>
+                The next agent inspects local code, reproduces the failure, and
+                validates focused plus regression tests.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
 
-    <section class="panel">
-      <div class="stage-title">
-        <h2 id="stageTitle">Ready</h2>
-        <span class="pill" id="stagePill">Demo mode</span>
+      <section class="section dark">
+        <div class="shell grid two">
+          <div>
+            <p class="kicker">Evidence boundary</p>
+            <h2>The workflow works. Its benefit is still under test.</h2>
+          </div>
+          <div class="card">
+            <p>
+              The prior comparison for this synthetic challenge found the same
+              successful repair path and identical patch in baseline and
+              assisted arms. The assisted arm used 13,842 more non-cached tokens
+              and took 4,288 ms longer.
+            </p>
+            <p>
+              That is useful negative evidence: this demo proves discoverability
+              and auditability, not improved correctness or efficiency.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="meeting-strip">
+        <div class="shell meeting-grid">
+          <div>
+            <p class="kicker">Try the real surface</p>
+            <h2>Move from simulation to a local receipt.</h2>
+          </div>
+          <div class="actions">
+            <a class="button primary" href="./install-vscode-extension.html"
+              >Install for VS Code</a
+            ><a
+              class="button"
+              href="https://github.com/yao23/agent-experience-graph/blob/main/experiments/verified-experience-challenge/README.md"
+              >Inspect challenge evidence ↗</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <span>AEG demo · Guidance is not an answer guarantee</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="../">Product</a><a href="../pitch/">Pitch</a
+          ><a href="./install-vscode-extension.html">Install</a
+          ><a href="https://github.com/yao23/agent-experience-graph"
+            >Repository ↗</a
+          >
+        </nav>
       </div>
-      <div class="timeline" id="timeline"></div>
-      <div class="footer-note">This synthetic transfer demo shows the product loop. Its prior controlled pair found no repair-path or outcome improvement.</div>
-    </section>
-  </main>
-
-  <script>
-    const steps = [
-      {
-        title: "1. Accept a local task",
-        body: "AEG uses the task or selected error locally. Version 0.1.5 does not upload task text, code, capsules, or ratings."
-      },
-      {
-        title: "2. Search the verified-only library",
-        body: "Top match: TR-04 Tornado WebSocket set_nodelay. Candidate and malformed records are ineligible; below-threshold retrieval abstains."
-      },
-      {
-        title: "3. Explain why it matched",
-        body: "AEG exposes contributing task, retrieval-tag, recommended-use, lesson, and subtask phrases with lexical and weighted scores.",
-        workflow: ["Task", "Verified match", "Evidence", "Capsule", "Validate"]
-      },
-      {
-        title: "4. Preserve failed approaches",
-        body: "The source repair first modified the wrong client-side surface. The card keeps that failure and the recovery principle visible.",
-        warning: true
-      },
-      {
-        title: "5. Copy guarded context",
-        body: "The compact capsule is guidance, not a guaranteed answer. It requires local inspection, reproduction, focused tests, and regression tests."
-      },
-      {
-        title: "6. Report the measured result",
-        body: "In the prior one-pair transfer, both arms succeeded with the same path and patch. Retrieval added 13,842 non-cached tokens and 4,288 ms.",
-        metrics: true
-      }
-    ];
-
-    const timeline = document.getElementById('timeline');
-    const runBtn = document.getElementById('runBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const stageTitle = document.getElementById('stageTitle');
-    const stagePill = document.getElementById('stagePill');
-
-    function makeStep(step) {
-      const el = document.createElement('div');
-      el.className = 'step';
-      let html = `<strong>${step.title}</strong><p>${step.warning ? '<span class="danger">Known failure:</span> ' : ''}${step.body}</p>`;
-      if (step.workflow) {
-        html += '<div class="workflow">' + step.workflow.map((n, i) => `<span class="node">${n}</span>${i < step.workflow.length - 1 ? '<span class="arrow">→</span>' : ''}`).join('') + '</div>';
-      }
-      if (step.metrics) {
-        html += `<div class="grid"><div class="metric"><div class="num">No change</div><div class="cap">repair path or outcome</div></div><div class="metric"><div class="num">+13,842</div><div class="cap">assisted non-cached tokens</div></div></div>`;
-      }
-      el.innerHTML = html;
-      return el;
-    }
-
-    function reset() {
-      timeline.innerHTML = '';
-      stageTitle.textContent = 'Ready';
-      stagePill.textContent = 'Demo mode';
-      runBtn.disabled = false;
-    }
-
-    function runDemo() {
-      reset();
-      runBtn.disabled = true;
-      stageTitle.textContent = 'Ranking verified experience';
-      stagePill.textContent = 'Running';
-      steps.forEach((step, i) => {
-        setTimeout(() => {
-          const el = makeStep(step);
-          timeline.appendChild(el);
-          requestAnimationFrame(() => el.classList.add('visible'));
-          if (i === steps.length - 1) {
-            stageTitle.textContent = 'Guarded capsule ready';
-            stagePill.textContent = 'Validate locally';
-            runBtn.disabled = false;
-          }
-        }, 650 * i);
-      });
-    }
-
-    runBtn.addEventListener('click', runDemo);
-    resetBtn.addEventListener('click', reset);
-  </script>
-</body>
+    </footer>
+  </body>
 </html>
