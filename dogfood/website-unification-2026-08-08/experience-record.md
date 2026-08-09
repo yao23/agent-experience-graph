@@ -212,6 +212,31 @@ no treatment/control separation, and no measured retrieval intervention. It
 does not establish generalized transfer, production adoption, customer demand,
 or product-market fit.
 
+## Human visual-review polish
+
+The human visual review approved the design and requested a narrow final polish
+pass with no redesign or content expansion.
+
+- Replaced the symbolic `−1` homepage metric with `1 fewer` / `median completed
+  command` and clarified the bounded result as: “Median assisted runs used one
+  fewer completed command.”
+- Reworded the matching pitch evidence cell without broadening the five-pair,
+  single-family claim.
+- Standardized design-partnership and contact CTAs on the functioning
+  destination `mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership`.
+- Added an 84px fragment scroll margin for anchored sections and the main
+  landmark so the 69px sticky header does not obscure target headings.
+- Revalidated all four routes at 375px, 768px, and 1280px. Each route's
+  `scrollWidth` equaled its viewport width at all three sizes.
+- Verified representative homepage, pitch, and installation fragment targets at
+  all three widths. After smooth scrolling settled, every target began at 84px,
+  15px below the 69px sticky header.
+- Browser console warnings/errors: 0. The rendered partnership and contact links
+  exposed the reviewed mail destination and subject exactly.
+- Updated site smoke tests: 5 passed, including the reviewed contact destination
+  and sticky-header fragment offset. JavaScript syntax, Prettier formatting, and
+  `git diff --check` also passed.
+
 ## Cost
 
 - Paid cost: unavailable; do not infer.

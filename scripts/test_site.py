@@ -95,6 +95,22 @@ class SiteSmokeTest(unittest.TestCase):
         self.assertTrue((ROOT / "site.js").is_file())
         self.assertTrue((ROOT / "favicon.svg").is_file())
 
+    def test_design_partnership_contacts_use_reviewed_destination(self):
+        destination = (
+            "mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+        )
+        expected_counts = {
+            ROOT / "index.html": 2,
+            ROOT / "pitch" / "index.html": 2,
+        }
+        for page, expected_count in expected_counts.items():
+            with self.subTest(page=page.relative_to(ROOT)):
+                self.assertEqual(self.parse(page).links.count(destination), expected_count)
+
+    def test_fragment_targets_clear_sticky_header(self):
+        css = (ROOT / "site.css").read_text(encoding="utf-8")
+        self.assertIn("scroll-margin-top: 84px", css)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,6 +21,10 @@
 html {
   scroll-behavior: smooth;
 }
+.section[id],
+main[id] {
+  scroll-margin-top: 84px;
+}
 body {
   margin: 0;
   color: var(--ink);
