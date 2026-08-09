@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "participants": {"used": 0, "maximum": 5},
+  "tasks": {"used": 0, "maximum": 5},
+  "model_calls": {"used": 0, "maximum": 40},
+  "commands": {"used": 0, "maximum": 200},
+  "tests": {"used": 0, "maximum": 100},
+  "human_interventions": {"used": 0, "maximum": 40},
+  "wall_clock_hours": {"used": 0, "maximum": 15},
+  "tokens": {"used": 0, "maximum": 1000000},
+  "model_cost_usd": {"used": 0, "maximum": 100},
+  "participant_payments_usd": {"used": 0, "maximum": 0},
+  "paid_acquisition_usd": {"used": 0, "maximum": 0},
+  "same_failure_repeats": {"used": 0, "maximum": 2},
+  "cost_estimate": {
+    "maximum_usd": 100,
+    "basis": "At most 40 experimental agent calls across five tasks, including feasible control arms, with a hard aggregate provider-cost ceiling of USD 100 and no participant payment or acquisition spend.",
+    "telemetry_rule": "Record actual provider-reported cost and tokens when available; otherwise mark them unavailable and never estimate missing telemetry as zero."
+  }
+}

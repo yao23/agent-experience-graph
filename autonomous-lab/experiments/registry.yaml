@@ -56,6 +56,21 @@ experiments:
   - autonomous-lab/experiments/proposed/aeg-assisted-agent-failure-recovery-service/phase0-decision.md
   conclusion: Phase 0 package preparation completed with zero external actions; Phase
     1 seed-user recruitment requires a separate human approval.
+- experiment_id: aeg-verified-experience-seed-user-v1
+  experiment_kind: commercial
+  operational_status: proposed
+  scheduler_eligible: false
+  state: proposed
+  runner_kind: phase1-seed-user-protocol
+  protocol_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/protocol.json
+  approval_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/approval-record.json
+  budget_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/budget.json
+  stopping_policy_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/stopping-policy.json
+  artifact_schema_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/schemas/protocol.schema.json
+  evidence_path: autonomous-lab/experiments/proposed/aeg-verified-experience-seed-user-v1/protocol.md
+  conclusion: Proposed repository-local preregistration for three to five seed developers;
+    recruitment, execution, external communication, publication, promotion, verified-library
+    changes, release, and Scheduled Task creation or enablement remain unauthorized.
 - experiment_id: repository-state-recovery-01
   experiment_kind: shakedown
   operational_status: archived

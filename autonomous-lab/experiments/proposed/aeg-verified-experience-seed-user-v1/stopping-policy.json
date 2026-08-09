@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "immediate_stop": [
+    "recruitment or external communication begins without a separate human approval",
+    "a participant task or model-assisted experimental run begins without a separate human approval",
+    "a credential, secret, raw private conversation, private absolute path, personal data, or proprietary code enters retained evidence",
+    "repository authorization, license, contribution path, consent, frozen task, or frozen oracle cannot be confirmed",
+    "one misleading retrieval materially steers a task toward an incorrect or unsafe result",
+    "any participant withdraws consent for evidence still being retained",
+    "any verified-library change, candidate promotion, external-project write, publication, release, or Scheduled Task is attempted",
+    "any participant, task, model-call, command, test, intervention, wall-time, token, cost, payment, acquisition, or retry budget is reached"
+  ],
+  "task_exclusion": [
+    "diagnosis or repair-oriented source inspection occurs before the AEG query is frozen",
+    "the task or oracle changes after retrieval without an independent preregistered reason",
+    "a materially matching public prior repair invalidates fresh-task qualification",
+    "control and treatment information leaks across arms",
+    "the participant relationship makes candid negative feedback doubtful"
+  ],
+  "experiment_completion": [
+    "five evaluable tasks are completed",
+    "the preregistered success or failure threshold is met and no further task can change the decision",
+    "the participant, time, or cost window closes with fewer than three evaluable tasks, producing an inconclusive result"
+  ],
+  "restart_requirement": "After any immediate stop, no recruitment, task execution, or evidence retention may resume without a documented incident review, an amended preregistration, and separate human approval."
+}

@@ -18,6 +18,7 @@ import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
 from phase0 import Phase0ValidationError, validate_package
+from validate_phase1_seed_user import Phase1ValidationError, validate_phase1_package
 
 from scheduler import (
     ExecutionLease,
@@ -422,7 +423,12 @@ class Lab:
                 raise LabValidationError(f"scheduler-eligible experiment is not active: {experiment_id}")
             if entry["scheduler_eligible"] and "goal_path" not in entry:
                 raise LabValidationError(f"scheduler-eligible experiment is not controlled: {experiment_id}")
-            for key in ("evidence_path", "goal_path", "state_path", "scorecard_path", "escalation_path", "request_path", "input_path", "artifact_schema_path"):
+            for key in (
+                "evidence_path", "goal_path", "state_path", "scorecard_path",
+                "escalation_path", "request_path", "input_path",
+                "artifact_schema_path", "protocol_path", "approval_path",
+                "budget_path", "stopping_policy_path",
+            ):
                 if key in entry and not self.resolve(entry[key]).is_file():
                     raise LabValidationError(f"registry path does not exist: {entry[key]}")
         current_id = self.registry.get("current_experiment_id")
@@ -468,6 +474,16 @@ class Lab:
                     validate_package(self.repo_root, entry, state)
                 except Phase0ValidationError as error:
                     raise LabValidationError(str(error)) from error
+        protocol_experiments = [
+            entry
+            for entry in self.registry["experiments"]
+            if entry.get("runner_kind") == "phase1-seed-user-protocol"
+        ]
+        for entry in protocol_experiments:
+            try:
+                validate_phase1_package(self.repo_root, entry)
+            except Phase1ValidationError as error:
+                raise LabValidationError(str(error)) from error
         if base_ref:
             self.validate_git_history(base_ref)
         selected = self.scheduler_entry()
@@ -475,6 +491,7 @@ class Lab:
             "schemas": len(self.schemas),
             "registry_experiments": len(self.registry["experiments"]),
             "controlled_experiments": len(controlled),
+            "protocol_experiments": len(protocol_experiments),
             "current_experiment": selected["experiment_id"] if selected else None,
             "state": load_json(self.resolve(selected["state_path"]))["state"] if selected else None,
             "scheduler_eligible_experiments": 1 if selected else 0,

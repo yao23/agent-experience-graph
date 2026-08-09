@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "experiment_id": "aeg-verified-experience-seed-user-v1",
+  "recorded_at": "2026-08-09T01:26:59Z",
+  "status": "planning_only_approved",
+  "authorized_scope": [
+    "author Phase 1 protocol, schemas, budgets, stopping policy, and unsent templates in the local repository",
+    "run repository-local and GitHub-hosted validation",
+    "open one draft pull request for human review"
+  ],
+  "actions": {
+    "repository_local_planning": "approved",
+    "draft_pr": "approved",
+    "recruitment": "pending",
+    "external_communication": "pending",
+    "participant_task_execution": "pending",
+    "model_or_agent_execution": "pending",
+    "external_project_write": "pending",
+    "candidate_promotion": "pending",
+    "verified_library_change": "pending",
+    "publication": "pending",
+    "release": "pending",
+    "paid_execution": "pending",
+    "secret_use": "pending",
+    "scheduled_task_creation_or_enablement": "denied"
+  },
+  "human_decision_required": "whether to approve the preregistered Phase 1 protocol and separately authorize bounded recruitment of 3 to 5 seed developers"
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/phase1-seed-user/participant-task-ledger.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "template_only", "records"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
+    "template_only": {"const": true},
+    "records": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["participant_id", "task_id", "consent_status", "repository_authorization", "license_confirmed", "contribution_path_confirmed", "defect_reproduced", "oracle_frozen_at", "prior_repair_search", "aeg_queried_at", "diagnosis_started_at", "retrieval_outcome", "repair_outcome", "material_path_change", "participant_usefulness_rating", "commands", "tests", "agent_actions", "contamination", "retention_consent"],
+        "properties": {
+          "participant_id": {"type": "string", "pattern": "^P[0-9]{2}$"},
+          "task_id": {"type": "string", "pattern": "^T[0-9]{2}$"},
+          "consent_status": {"enum": ["pending", "consented", "withdrawn"]},
+          "repository_authorization": {"enum": ["public", "explicit_private_authorization"]},
+          "license_confirmed": {"type": "boolean"},
+          "contribution_path_confirmed": {"type": "boolean"},
+          "defect_reproduced": {"type": "boolean"},
+          "oracle_frozen_at": {"type": "string", "format": "date-time"},
+          "prior_repair_search": {"type": "array", "minItems": 4, "items": {"type": "string"}},
+          "aeg_queried_at": {"type": "string", "format": "date-time"},
+          "diagnosis_started_at": {"type": "string", "format": "date-time"},
+          "retrieval_outcome": {"enum": ["relevant_recommendation", "correct_abstention", "irrelevant_retrieval", "misleading_retrieval"]},
+          "repair_outcome": {"enum": ["oracle_passed", "oracle_failed", "independent_of_aeg", "not_executed"]},
+          "material_path_change": {"type": "boolean"},
+          "participant_usefulness_rating": {"type": "integer", "minimum": 1, "maximum": 5},
+          "commands": {"type": "array", "items": {"type": "object"}},
+          "tests": {"type": "array", "items": {"type": "object"}},
+          "agent_actions": {"type": "array", "items": {"type": "object"}},
+          "contamination": {"type": "array", "items": {"type": "string"}},
+          "retention_consent": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}
