@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Agent Experience Intelligence: turn real agent runs into verified, reusable experience."
+    />
+    <meta name="theme-color" content="#121b18" />
+    <title>Agent Experience Graph — Agent Experience Intelligence</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./site.css" />
+    <script src="./site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="./" aria-label="Agent Experience Graph home"
+          ><span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i></span
+          ><span>Agent Experience Graph</span></a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          ☰
+        </button>
+        <nav
+          class="site-nav"
+          id="site-nav"
+          aria-label="Primary navigation"
+          data-site-nav
+        >
+          <a href="./" aria-current="page">Product</a
+          ><a href="./pitch/">Pitch</a
+          ><a href="./docs/install-vscode-extension.html">Install</a
+          ><a href="./docs/60-second-demo.html">Demo</a
+          ><a
+            class="nav-github"
+            href="https://github.com/yao23/agent-experience-graph"
+            >GitHub ↗</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <p class="kicker">Agent Experience Intelligence</p>
+            <h1>
+              Turn real agent runs into
+              <span class="accent-underline">verified, reusable</span>
+              experience.
+            </h1>
+            <p class="lede">
+              AEG captures what agents tried, what failed, what recovered, and
+              what worked—then turns those runs into evidence-backed guidance
+              for future tasks.
+            </p>
+            <div class="actions">
+              <a class="button primary" href="./docs/60-second-demo.html"
+                >View the 60-second demo →</a
+              ><a class="button" href="./docs/install-vscode-extension.html"
+                >Install for VS Code</a
+              >
+            </div>
+          </div>
+          <aside
+            class="loop-panel"
+            aria-label="Agent Experience Intelligence operating loop"
+          >
+            <div class="loop-top">
+              <span class="loop-status">EXPERIENCE PIPELINE</span
+              ><span>LOCAL / AUDITABLE</span>
+            </div>
+            <ol class="loop-list">
+              <li>
+                <div>
+                  <strong>Capture</strong
+                  ><span>attempts, failures, recovery, outcome</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Normalize</strong
+                  ><span>portable, sanitized experience records</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Verify</strong
+                  ><span>objective outcomes and provenance</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Recommend</strong
+                  ><span>explainable matches and guardrails</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Reuse</strong
+                  ><span>guidance for the next agent run</span>
+                </div>
+              </li>
+            </ol>
+            <div class="loop-foot">
+              capture → normalize → verify → recommend → reuse
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="problem">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">The problem</p>
+              <h2>Agents keep paying the same learning cost.</h2>
+            </div>
+            <p>
+              Execution experience disappears across sessions: useful failures,
+              recovery steps, cost, and validation are rarely captured in a form
+              the next agent can trust.
+            </p>
+          </div>
+          <div class="grid three">
+            <article class="card">
+              <span class="card-number">01 / REDISCOVERY</span>
+              <h3>Start from zero</h3>
+              <p>
+                Similar tasks are decomposed, explored, and debugged
+                again—without access to prior execution lessons.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">02 / LOST SIGNAL</span>
+              <h3>Keep the answer, lose the path</h3>
+              <p>
+                Attempts, dead ends, recovery steps, latency, and token cost
+                vanish even when the final patch survives.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">03 / WEAK TRUST</span>
+              <h3>Guidance lacks evidence</h3>
+              <p>
+                A plausible tip is not a verified experience. Agents need
+                provenance, constraints, outcomes, and reproducibility.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark" id="loop">
+        <div class="shell">
+          <p class="kicker">The operating loop</p>
+          <h2>Make execution evidence useful at the next decision.</h2>
+          <p class="section-intro">
+            AEG focuses first on coding agents. It is an evidence layer—not a
+            generic agent marketplace, an orchestrator, or a replacement for
+            observability platforms.
+          </p>
+          <div class="flow" role="list" aria-label="AEG operating loop">
+            <article role="listitem">
+              <small>01 / CAPTURE</small>
+              <h3>Record the run</h3>
+              <p>
+                Intent, context, steps, skills, artifacts, failures, recovery,
+                outcome, and cost.
+              </p>
+            </article>
+            <article role="listitem">
+              <small>02 / NORMALIZE</small>
+              <h3>Shape the signal</h3>
+              <p>
+                Sanitize and structure the reusable lesson without raw private
+                work.
+              </p>
+            </article>
+            <article role="listitem">
+              <small>03 / VERIFY</small>
+              <h3>Test the outcome</h3>
+              <p>
+                Attach objective checks, limitations, and reproducible
+                provenance.
+              </p>
+            </article>
+            <article role="listitem">
+              <small>04 / RECOMMEND</small>
+              <h3>Explain the match</h3>
+              <p>
+                Retrieve relevant lessons and show why they apply—or abstain.
+              </p>
+            </article>
+            <article role="listitem">
+              <small>05 / REUSE</small>
+              <h3>Guide the next run</h3>
+              <p>
+                Offer a guarded capsule, then capture the new outcome and
+                feedback.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="evidence">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">Evidence, not theater</p>
+              <h2>
+                What exists. What is verified. What is still a hypothesis.
+              </h2>
+            </div>
+            <p>
+              AEG’s public artifacts are useful precisely because their
+              boundaries are visible.
+            </p>
+          </div>
+          <div class="status-grid">
+            <article class="status-card">
+              <span class="status-label"><i></i> Shipped infrastructure</span>
+              <h3>Working developer surface</h3>
+              <ul>
+                <li>Local-first VS Code extension v0.1.5</li>
+                <li>Open trace schema and validator</li>
+                <li>Explainable recommender and demo</li>
+                <li>Two records in the verified library</li>
+              </ul>
+            </article>
+            <article class="status-card verified">
+              <span class="status-label"><i></i> Bounded verification</span>
+              <h3>Auditable, narrow results</h3>
+              <ul>
+                <li>Five paired trials on one FastAPI repair family</li>
+                <li>All ten arms passed with the same fix</li>
+                <li>
+                  Median assisted runs used one fewer completed command.
+                </li>
+                <li>Median assisted wall time regressed by 18,235 ms</li>
+              </ul>
+            </article>
+            <article class="status-card hypothesis">
+              <span class="status-label"><i></i> Hypothesis under test</span>
+              <h3>Does retrieval improve the next run?</h3>
+              <p>
+                Test whether relevant prior experience reduces retries, token
+                usage, and execution time without lowering task success.
+              </p>
+            </article>
+          </div>
+          <div class="metric-strip" aria-label="Published five-pair result">
+            <div class="metric">
+              <strong>5 pairs</strong><span>single repair family</span>
+            </div>
+            <div class="metric">
+              <strong>10 / 10</strong><span>arms passed verification</span>
+            </div>
+            <div class="metric">
+              <strong>1 fewer</strong><span>median completed command</span>
+            </div>
+            <div class="metric">
+              <strong>+18.2s</strong><span>median wall-time regression</span>
+            </div>
+          </div>
+          <p class="evidence-note">
+            Source:
+            <a
+              href="https://github.com/yao23/agent-experience-graph/blob/main/experiments/public-repair-lab/RESULTS.md"
+              >public repair lab results</a
+            >. This does not establish success-rate improvement, generalized
+            transfer, or product-market fit.
+          </p>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="shell grid two">
+          <div>
+            <p class="kicker">What AEG preserves</p>
+            <h2>A compact receipt for agent work.</h2>
+            <p class="section-intro">
+              The reusable unit contains enough evidence to judge a
+              recommendation without retaining raw conversations or proprietary
+              code.
+            </p>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <div class="icon-box">↳</div>
+              <h3>Execution</h3>
+              <p>Intent, context, decomposition, attempted skills and tools.</p>
+            </article>
+            <article class="card">
+              <div class="icon-box">!</div>
+              <h3>Recovery</h3>
+              <p>
+                Failures, rejected paths, guardrails, and the steps that
+                recovered.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon-box">✓</div>
+              <h3>Verification</h3>
+              <p>
+                Outcome, objective oracle, provenance, reproducibility, and
+                limitations.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon-box">∑</div>
+              <h3>Cost</h3>
+              <p>
+                Attempts, commands, tests, latency, and tokens when reliably
+                observable.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="meeting-strip">
+        <div class="shell meeting-grid">
+          <div>
+            <p class="kicker">Next validation milestone</p>
+            <h2>Run a controlled retrieval test on fresh coding tasks.</h2>
+          </div>
+          <div class="actions">
+            <a class="button primary" href="./pitch/"
+              >Open the technical pitch</a
+            ><a
+              class="button"
+              href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+              >Explore a design partnership</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <span>Agent Experience Graph · Open source · MIT-0</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="./docs/60-second-demo.html">Demo</a
+          ><a href="./docs/install-vscode-extension.html">Install</a
+          ><a href="https://github.com/yao23/agent-experience-graph"
+            >Repository ↗</a
+          ><a
+            href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+            >Contact</a
+          >
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
