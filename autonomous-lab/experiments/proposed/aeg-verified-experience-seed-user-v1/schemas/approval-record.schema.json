@@ -13,7 +13,7 @@
     "actions": {
       "type": "object",
       "additionalProperties": {"enum": ["approved", "pending", "denied"]},
-      "required": ["repository_local_planning", "draft_pr", "recruitment", "external_communication", "participant_task_execution", "model_or_agent_execution", "external_project_write", "candidate_promotion", "verified_library_change", "publication", "release", "paid_execution", "secret_use", "scheduled_task_creation_or_enablement"]
+      "required": ["repository_local_planning", "draft_pr", "recruitment", "external_communication", "participant_task_execution", "evidence_retention", "model_or_agent_execution", "stage_b", "external_project_write", "experience_promotion", "verified_library_change", "result_publication", "release", "paid_execution", "secret_use", "scheduled_task_creation_or_enablement"]
     },
     "human_decision_required": {"type": "string", "minLength": 1}
   }

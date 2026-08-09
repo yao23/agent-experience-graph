@@ -2,8 +2,9 @@
 
 - Pseudonymous participant ID:
 - Pseudonymous task ID:
+- Stage (`A`; Stage `B` requires separate recorded approval):
 - Coding agent already used:
-- Repository is public or explicitly authorized:
+- Repository is public (do not submit a private repository):
 - Repository URL or authorized local reference (retain only with consent):
 - License and contribution path:
 - Frozen repository commit:
@@ -17,6 +18,8 @@
 - Evidence can be sanitized without private conversation, credentials, private
   paths, personal data, or proprietary code:
 - Retention consent recorded before evidence collection:
+- Per-task soft limits acknowledged: 6 model calls, 30 commands, 15 tests, 6
+  interventions, and 2 hours; any crossing requires a recorded explanation:
 
 Do not diagnose, inspect repair-oriented source, or query AEG while completing
 this form. An approved operator freezes the form before the pre-diagnosis query.

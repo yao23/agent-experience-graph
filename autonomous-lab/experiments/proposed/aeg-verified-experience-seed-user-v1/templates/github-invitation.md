@@ -2,21 +2,23 @@
 
 ## Verified Experience Challenge: bring one real coding problem
 
-Do you already use Codex, Claude Code, Cursor, Copilot, or a similar coding
-agent on public open-source work? We are preparing a small, consent-based test
-with three to five developers.
+This is an early research experiment for people who already use Codex, Claude
+Code, Cursor, Copilot, or a similar coding agent on public open-source work. AEG
+may recommend a relevant experience, may abstain, or provide no benefit.
 
 **Offer:** Bring one real coding problem. We will test whether a reusable,
 verified agent experience helps your coding agent solve it with less effort or
 better reliability.
 
 Good tasks are a current reproducible bug, test failure, migration, or CI
-problem in a public or explicitly authorized repository. We freeze the task and
+problem in a public repository. We freeze the task and
 objective test before diagnosis, query AEG before diagnosis, and record whether
 it recommends something relevant, correctly abstains, or misleads. A successful
 repair can still be independent of AEG.
 
-Participation would require explicit consent. We do not retain raw private
-conversation, credentials, private paths, proprietary code, or identifying
-details. No contribution or publication is promised. This invitation is a
+Do not submit credentials, private repositories, employer-confidential code,
+customer data, proprietary logs, or raw private conversations. Participation and
+withdrawal are voluntary. Retaining anonymized evidence and publicly publishing
+results require separate explicit consent decisions. No payment is offered, and
+no contribution, benefit, or publication is promised. This invitation is a
 repository-local draft until recruitment receives separate approval.

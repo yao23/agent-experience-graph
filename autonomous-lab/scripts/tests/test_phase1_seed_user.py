@@ -68,6 +68,11 @@ class Phase1SeedUserTests(unittest.TestCase):
         with self.assertRaisesRegex(Phase1ValidationError, "recruitment must remain pending"):
             validate_phase1_package(self.repo, self.entry)
 
+    def test_stage_b_and_evidence_decisions_remain_separate(self) -> None:
+        self.mutate("approval-record.json", lambda value: value["actions"].update({"stage_b": "approved"}))
+        with self.assertRaisesRegex(Phase1ValidationError, "stage_b must remain pending"):
+            validate_phase1_package(self.repo, self.entry)
+
     def test_scheduler_eligibility_cannot_be_enabled(self) -> None:
         entry = copy.deepcopy(self.entry)
         entry["scheduler_eligible"] = True
@@ -93,6 +98,41 @@ class Phase1SeedUserTests(unittest.TestCase):
     def test_budget_is_hard_capped_and_unused(self) -> None:
         self.mutate("budget.json", lambda value: value["model_calls"].update({"maximum": 41}))
         with self.assertRaisesRegex(Phase1ValidationError, "model_calls maximum"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_per_task_soft_limits_cannot_raise_absolute_budget(self) -> None:
+        self.mutate("budget.json", lambda value: value["soft_limits_per_task"].update({"commands": 31}))
+        with self.assertRaisesRegex(Phase1ValidationError, "soft_limits_per_task.commands"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_absolute_budget_stops_before_overrun(self) -> None:
+        self.mutate(
+            "stopping-policy.json",
+            lambda value: value["immediate_stop"].__setitem__(-1, "stop only after an absolute budget is exceeded"),
+        )
+        with self.assertRaisesRegex(Phase1ValidationError, "absolute budgets must stop before overrun"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_abstention_cannot_count_as_affirmative_aeg_value(self) -> None:
+        def credit_abstention(value: dict) -> None:
+            value["definitions"]["observable_user_value"] = "A correct abstention is affirmative AEG usefulness."
+
+        self.mutate("protocol.json", credit_abstention)
+        with self.assertRaisesRegex(Phase1ValidationError, "abstention must not count"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_zero_denominators_remain_not_applicable(self) -> None:
+        self.mutate(
+            "templates/anonymized-result-template.json",
+            lambda value: value.update({"recommendation_correctness_rate": 1}),
+        )
+        with self.assertRaisesRegex(Phase1ValidationError, "empty recommendation denominator"):
+            validate_phase1_package(self.repo, self.entry)
+
+    def test_each_invitation_contains_required_disclosures(self) -> None:
+        invitation = self.repo / PACKAGE_RELATIVE / "templates" / "social-post.md"
+        invitation.write_text("# DRAFT — DO NOT SEND\n\nVerified Experience Challenge\n", encoding="utf-8")
+        with self.assertRaisesRegex(Phase1ValidationError, "participant disclosure"):
             validate_phase1_package(self.repo, self.entry)
 
     def test_planning_package_contains_no_participant_records(self) -> None:

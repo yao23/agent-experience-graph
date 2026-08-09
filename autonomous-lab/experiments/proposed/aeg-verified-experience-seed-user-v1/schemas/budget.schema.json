@@ -3,7 +3,7 @@
   "$id": "https://aeg.local/phase1-seed-user/budget.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "experiment_id", "participants", "tasks", "model_calls", "commands", "tests", "human_interventions", "wall_clock_hours", "tokens", "model_cost_usd", "participant_payments_usd", "paid_acquisition_usd", "same_failure_repeats", "cost_estimate"],
+  "required": ["schema_version", "experiment_id", "participants", "tasks", "model_calls", "commands", "tests", "human_interventions", "wall_clock_hours", "tokens", "model_cost_usd", "participant_payments_usd", "paid_acquisition_usd", "same_failure_repeats", "soft_limits_per_task", "cost_estimate"],
   "properties": {
     "schema_version": {"const": 1},
     "experiment_id": {"const": "aeg-verified-experience-seed-user-v1"},
@@ -19,6 +19,19 @@
     "participant_payments_usd": {"$ref": "#/$defs/limit"},
     "paid_acquisition_usd": {"$ref": "#/$defs/limit"},
     "same_failure_repeats": {"$ref": "#/$defs/limit"},
+    "soft_limits_per_task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_calls", "commands", "tests", "human_interventions", "wall_clock_hours", "handling"],
+      "properties": {
+        "model_calls": {"const": 6},
+        "commands": {"const": 30},
+        "tests": {"const": 15},
+        "human_interventions": {"const": 6},
+        "wall_clock_hours": {"const": 2},
+        "handling": {"type": "string", "minLength": 1}
+      }
+    },
     "cost_estimate": {
       "type": "object",
       "additionalProperties": false,

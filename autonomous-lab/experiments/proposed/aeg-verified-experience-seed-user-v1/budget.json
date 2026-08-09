@@ -13,6 +13,14 @@
   "participant_payments_usd": {"used": 0, "maximum": 0},
   "paid_acquisition_usd": {"used": 0, "maximum": 0},
   "same_failure_repeats": {"used": 0, "maximum": 2},
+  "soft_limits_per_task": {
+    "model_calls": 6,
+    "commands": 30,
+    "tests": 15,
+    "human_interventions": 6,
+    "wall_clock_hours": 2,
+    "handling": "Crossing a per-task soft limit requires a timestamped explanation and mandatory human review before that task continues. It never raises an absolute task or experiment ceiling and never authorizes Stage B."
+  },
   "cost_estimate": {
     "maximum_usd": 100,
     "basis": "At most 40 experimental agent calls across five tasks, including feasible control arms, with a hard aggregate provider-cost ceiling of USD 100 and no participant payment or acquisition spend.",

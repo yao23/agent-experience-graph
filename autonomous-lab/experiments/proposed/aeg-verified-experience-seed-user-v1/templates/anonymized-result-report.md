@@ -3,6 +3,7 @@
 ## Scope
 
 - Protocol version and commit:
+- Stage reached (`A` or separately approved `B`):
 - Participants (maximum five; pseudonymous count only):
 - Submitted, excluded, contaminated, and evaluable tasks:
 - Model calls, commands, tests, interventions, wall time, tokens, and cost:
@@ -10,8 +11,8 @@
 
 ## Outcomes
 
-| Task ID | Retrieval outcome | Oracle result | Material path change | Commands / interventions | Usefulness (1–5) | Contamination |
-| --- | --- | --- | --- | --- | --- | --- |
+| Task ID | Stage | Retrieval outcome | Oracle result | Credited path change | Independent success | Resources / soft-limit notes | Usefulness | Contamination / violation |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Report relevant recommendations, correct abstentions, irrelevant retrievals,
 misleading retrievals, successful repairs independent of AEG, and excluded tasks
@@ -19,14 +20,20 @@ as distinct categories. Do not infer AEG value from repair success alone.
 
 ## Preregistered metrics and decision
 
-- Task completion rate:
-- Objective oracle pass rate:
+- Uncontaminated tasks / all tasks:
+- Completed uncontaminated tasks / uncontaminated tasks:
+- Objectively verified user-value tasks / uncontaminated tasks:
+- Independent successes / uncontaminated tasks:
 - Material path-change count:
-- Correct recommendation rate and denominator:
-- Correct abstention rate and denominator:
+- Recommendation correctness: correct recommendations / all above-threshold
+  recommendations, followed by ratio (`0/0 = N/A`, never success):
+- Abstention correctness: correct abstentions / all abstentions, followed by
+  ratio (`0/0 = N/A`; calibration evidence only):
 - Misleading-retrieval count:
 - Median participant usefulness and denominator:
-- Success, failure, or inconclusive threshold reached:
+- Experiment classification: initial positive signal, positive retrieval signal,
+  calibration/abstention evidence only, inconclusive, protocol failure, harmful
+  or misleading retrieval, or privacy/authorization failure:
 
 ## Evidence-supported conclusions
 
@@ -36,8 +43,9 @@ as distinct categories. Do not infer AEG value from repair success alone.
 
 Always address generalized effectiveness, causal efficiency for unpaired tasks,
 commercial demand, product-market fit, small-sample uncertainty, missing cost or
-token telemetry, selection effects, and participant-perception limits. Latency
-or token savings alone cannot establish success.
+token telemetry, selection effects, and participant-perception limits. Latency,
+tokens, command reductions, interventions, or usefulness ratings alone cannot
+establish success. A repair after abstention is an independent outcome.
 
 ## Promotion boundary
 

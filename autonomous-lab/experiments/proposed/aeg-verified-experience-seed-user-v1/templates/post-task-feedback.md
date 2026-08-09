@@ -16,4 +16,6 @@ Use the pseudonymous task ID only.
 9. Publication consent is separate and is not requested by this form.
 
 Latency and token changes may be recorded as secondary observations but cannot
-alone justify a success rating.
+alone justify a success rating. A usefulness rating cannot establish success by
+itself. A repair after abstention is recorded as an independent outcome, not an
+AEG-assisted success.

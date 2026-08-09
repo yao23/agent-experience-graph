@@ -14,15 +14,17 @@
     "recruitment": "pending",
     "external_communication": "pending",
     "participant_task_execution": "pending",
+    "evidence_retention": "pending",
     "model_or_agent_execution": "pending",
+    "stage_b": "pending",
     "external_project_write": "pending",
-    "candidate_promotion": "pending",
+    "experience_promotion": "pending",
     "verified_library_change": "pending",
-    "publication": "pending",
+    "result_publication": "pending",
     "release": "pending",
     "paid_execution": "pending",
     "secret_use": "pending",
     "scheduled_task_creation_or_enablement": "denied"
   },
-  "human_decision_required": "whether to approve the preregistered Phase 1 protocol and separately authorize bounded recruitment of 3 to 5 seed developers"
+  "human_decision_required": "whether to approve the protocol for publication only; recruitment, Stage A participant-task execution, evidence retention, Stage B, result publication, and experience promotion each require a separate recorded decision"
 }

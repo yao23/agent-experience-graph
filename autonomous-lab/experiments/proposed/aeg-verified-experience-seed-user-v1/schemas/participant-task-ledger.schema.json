@@ -14,10 +14,22 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["participant_id", "task_id", "consent_status", "repository_authorization", "license_confirmed", "contribution_path_confirmed", "defect_reproduced", "oracle_frozen_at", "prior_repair_search", "aeg_queried_at", "diagnosis_started_at", "retrieval_outcome", "repair_outcome", "material_path_change", "participant_usefulness_rating", "commands", "tests", "agent_actions", "contamination", "retention_consent"],
+        "required": ["participant_id", "task_id", "stage", "approval_ids", "consent_status", "repository_authorization", "license_confirmed", "contribution_path_confirmed", "defect_reproduced", "oracle_frozen_at", "prior_repair_search", "aeg_queried_at", "diagnosis_started_at", "retrieval_threshold", "retrieval_score", "retrieval_outcome", "retrieval_credit", "repair_outcome", "material_path_change", "independent_success", "participant_usefulness_rating", "resource_usage", "soft_limit_explanations", "commands", "tests", "agent_actions", "contamination", "protocol_violation", "retention_consent"],
         "properties": {
           "participant_id": {"type": "string", "pattern": "^P[0-9]{2}$"},
           "task_id": {"type": "string", "pattern": "^T[0-9]{2}$"},
+          "stage": {"enum": ["A", "B"]},
+          "approval_ids": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["recruitment", "participant_task_execution", "evidence_retention", "stage_b"],
+            "properties": {
+              "recruitment": {"type": "string", "minLength": 1},
+              "participant_task_execution": {"type": "string", "minLength": 1},
+              "evidence_retention": {"type": "string", "minLength": 1},
+              "stage_b": {"type": ["string", "null"]}
+            }
+          },
           "consent_status": {"enum": ["pending", "consented", "withdrawn"]},
           "repository_authorization": {"enum": ["public", "explicit_private_authorization"]},
           "license_confirmed": {"type": "boolean"},
@@ -27,14 +39,32 @@
           "prior_repair_search": {"type": "array", "minItems": 4, "items": {"type": "string"}},
           "aeg_queried_at": {"type": "string", "format": "date-time"},
           "diagnosis_started_at": {"type": "string", "format": "date-time"},
+          "retrieval_threshold": {"type": "number", "minimum": 0},
+          "retrieval_score": {"type": ["number", "null"], "minimum": 0},
           "retrieval_outcome": {"enum": ["relevant_recommendation", "correct_abstention", "irrelevant_retrieval", "misleading_retrieval"]},
+          "retrieval_credit": {"type": "boolean"},
           "repair_outcome": {"enum": ["oracle_passed", "oracle_failed", "independent_of_aeg", "not_executed"]},
           "material_path_change": {"type": "boolean"},
+          "independent_success": {"type": "boolean"},
           "participant_usefulness_rating": {"type": "integer", "minimum": 1, "maximum": 5},
+          "resource_usage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["model_calls", "commands", "tests", "human_interventions", "wall_clock_hours"],
+            "properties": {
+              "model_calls": {"type": "integer", "minimum": 0},
+              "commands": {"type": "integer", "minimum": 0},
+              "tests": {"type": "integer", "minimum": 0},
+              "human_interventions": {"type": "integer", "minimum": 0},
+              "wall_clock_hours": {"type": "number", "minimum": 0}
+            }
+          },
+          "soft_limit_explanations": {"type": "array", "items": {"type": "string", "minLength": 1}},
           "commands": {"type": "array", "items": {"type": "object"}},
           "tests": {"type": "array", "items": {"type": "object"}},
           "agent_actions": {"type": "array", "items": {"type": "object"}},
           "contamination": {"type": "array", "items": {"type": "string"}},
+          "protocol_violation": {"type": "boolean"},
           "retention_consent": {"type": "boolean"}
         }
       }

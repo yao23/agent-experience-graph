@@ -7,8 +7,9 @@ or mislead. State that a repaired task is not automatically evidence AEG helped.
 
 ## 2:00–5:00 — consent and boundaries
 
-Review the consent text, withdrawal, separate publication consent, prohibited
-private material, and pseudonymous evidence. Stop if consent is incomplete.
+Review voluntary participation and withdrawal, no payment, separate evidence
+retention and result-publication consent, prohibited private material, and
+pseudonymous evidence. Stop if any approval or consent is incomplete.
 
 ## 5:00–9:00 — eligibility
 
@@ -27,4 +28,5 @@ feasible before any AEG query or diagnosis.
 Explain pre-diagnosis retrieval, exact sanitized logging, the 1–5 usefulness
 rating, contamination handling, budgets, and immediate-stop conditions. Remind
 the participant that no external issue, PR, publication, or promotion is part of
-the session without separate approval.
+the session without separate approval. Explain the per-task soft limits and that
+Stage A stops for mandatory review after three tasks; Stage B is never automatic.
