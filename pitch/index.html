@@ -1,307 +1,352 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Agent Experience Graph — the experience infrastructure for AI agents." />
-  <title>Agent Experience Graph — Living Pitch</title>
-  <style>
-    :root {
-      --bg: #07111f;
-      --panel: rgba(15, 29, 48, 0.78);
-      --panel-strong: #10233b;
-      --text: #f4f7fb;
-      --muted: #a8b6c8;
-      --accent: #66d9c6;
-      --accent-2: #83a8ff;
-      --border: rgba(255,255,255,.12);
-      --shadow: 0 24px 80px rgba(0,0,0,.32);
-      --max: 1120px;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
-    body {
-      margin: 0;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 0%, rgba(102,217,198,.15), transparent 28rem),
-        radial-gradient(circle at 85% 15%, rgba(131,168,255,.14), transparent 30rem),
-        var(--bg);
-      font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    a { color: inherit; }
-    nav {
-      position: fixed; inset: 0 0 auto 0; z-index: 20;
-      background: rgba(7,17,31,.82);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(18px);
-    }
-    .nav-inner {
-      width: min(var(--max), calc(100% - 32px)); margin: auto;
-      min-height: 66px; display: flex; align-items: center; gap: 22px;
-    }
-    .brand { font-weight: 760; letter-spacing: -.02em; text-decoration: none; margin-right: auto; }
-    .brand span { color: var(--accent); }
-    .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .92rem; }
-    .nav-links a:hover { color: var(--text); }
-    main { overflow: hidden; }
-    section {
-      min-height: 92vh; padding: 112px 0 72px; display: grid; align-items: center;
-      scroll-snap-align: start;
-    }
-    .wrap { width: min(var(--max), calc(100% - 32px)); margin: auto; }
-    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .13em; font-weight: 760; font-size: .78rem; }
-    h1, h2, h3 { line-height: 1.08; margin: 0; letter-spacing: -.035em; }
-    h1 { font-size: clamp(3.2rem, 8vw, 7rem); max-width: 980px; }
-    h2 { font-size: clamp(2.3rem, 5.6vw, 4.8rem); max-width: 850px; }
-    h3 { font-size: 1.25rem; }
-    .lead { font-size: clamp(1.15rem, 2vw, 1.55rem); color: var(--muted); max-width: 780px; margin: 28px 0 0; }
-    .hero-line { color: var(--accent); display: block; }
-    .actions { margin-top: 34px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .button {
-      display: inline-flex; align-items: center; justify-content: center; min-height: 46px;
-      padding: 0 18px; border: 1px solid var(--border); border-radius: 999px;
-      text-decoration: none; font-weight: 700; background: rgba(255,255,255,.05);
-    }
-    .button.primary { color: #07111f; background: var(--accent); border-color: transparent; }
-    .button:hover { transform: translateY(-1px); }
-    .grid { display: grid; gap: 18px; margin-top: 40px; }
-    .grid.three { grid-template-columns: repeat(3, 1fr); }
-    .grid.two { grid-template-columns: repeat(2, 1fr); }
-    .card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 22px;
-      padding: 24px; box-shadow: var(--shadow);
-    }
-    .card p { color: var(--muted); margin: 10px 0 0; }
-    .big-number { font-size: 2.8rem; font-weight: 780; color: var(--accent); line-height: 1; }
-    .flow {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 42px;
-    }
-    .node {
-      padding: 13px 16px; border-radius: 14px; background: var(--panel-strong); border: 1px solid var(--border); font-weight: 700;
-    }
-    .arrow { color: var(--accent); font-size: 1.4rem; }
-    .quote {
-      margin-top: 44px; padding: 28px 30px; border-left: 4px solid var(--accent);
-      background: linear-gradient(90deg, rgba(102,217,198,.12), transparent); font-size: clamp(1.35rem, 2.5vw, 2rem);
-      max-width: 900px;
-    }
-    .architecture {
-      margin-top: 38px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch;
-    }
-    .stack { display: grid; gap: 12px; }
-    .stack .node { text-align: center; padding: 20px; }
-    .bridge { display: grid; place-items: center; color: var(--accent); font-weight: 800; writing-mode: vertical-rl; letter-spacing: .08em; text-transform: uppercase; }
-    ul.clean { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 12px; }
-    ul.clean li { color: var(--muted); padding-left: 24px; position: relative; }
-    ul.clean li::before { content: "✓"; color: var(--accent); position: absolute; left: 0; font-weight: 800; }
-    .timeline { margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .timeline .card { min-height: 180px; }
-    .timeline strong { color: var(--accent); display: block; margin-bottom: 12px; }
-    footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(--muted); }
-    .progress { position: fixed; left: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 0; z-index: 30; }
-    @media (max-width: 820px) {
-      .nav-links { display: none; }
-      section { min-height: auto; padding: 104px 0 64px; }
-      .grid.three, .grid.two, .timeline, .architecture { grid-template-columns: 1fr; }
-      .bridge { writing-mode: horizontal-tb; min-height: 40px; }
-      h1 { font-size: clamp(3rem, 14vw, 5.2rem); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .button:hover { transform: none; }
-    }
-  </style>
-</head>
-<body>
-  <div class="progress" id="progress"></div>
-  <nav>
-    <div class="nav-inner">
-      <a class="brand" href="#top">Agent Experience <span>Graph</span></a>
-      <div class="nav-links" aria-label="Pitch navigation">
-        <a href="#problem">Problem</a><a href="#solution">Solution</a><a href="#architecture">Architecture</a>
-        <a href="#product">Product</a><a href="#traction">Traction</a><a href="#roadmap">Roadmap</a><a href="#founder">Founder</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A concise technical pitch for Agent Experience Graph, the evidence layer for reusable agent experience."
+    />
+    <meta name="theme-color" content="#121b18" />
+    <title>AEG Technical Pitch — Agent Experience Intelligence</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="../site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="../" aria-label="Agent Experience Graph home"
+          ><span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i></span
+          ><span>Agent Experience Graph</span></a
+        ><button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          ☰
+        </button>
+        <nav
+          class="site-nav"
+          id="site-nav"
+          aria-label="Primary navigation"
+          data-site-nav
+        >
+          <a href="../">Product</a><a href="./" aria-current="page">Pitch</a
+          ><a href="../docs/install-vscode-extension.html">Install</a
+          ><a href="../docs/60-second-demo.html">Demo</a
+          ><a
+            class="nav-github"
+            href="https://github.com/yao23/agent-experience-graph"
+            >GitHub ↗</a
+          >
+        </nav>
       </div>
-    </div>
-  </nav>
-
-  <main id="top">
-    <section>
-      <div class="wrap">
-        <div class="eyebrow">Living Pitch · 2026</div>
-        <h1>Experience infrastructure <span class="hero-line">for AI agents.</span></h1>
-        <p class="lead">AI models learn from data. AI agents should be able to retrieve verified experience. AEG v0.1.5 tests whether compact debugging lessons, failed approaches, constraints, and provenance can improve a coding agent's starting context.</p>
-        <div class="actions">
-          <a class="button primary" href="https://github.com/yao23/agent-experience-graph">View GitHub</a>
-          <a class="button" href="../docs/60-second-demo.html">60-second demo</a>
-          <a class="button" href="../docs/install-vscode-extension.html">Install extension</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="problem">
-      <div class="wrap">
-        <div class="eyebrow">The problem</div>
-        <h2>AI agents forget what worked.</h2>
-        <p class="lead">Agents can reason, retrieve documents, and use tools—but they rarely accumulate reusable execution experience. Teams pay repeatedly for the same discovery, failures, and recovery work.</p>
-        <div class="grid three">
-          <div class="card"><div class="big-number">01</div><h3>Repeated work</h3><p>Similar tasks are decomposed and solved from scratch across sessions, agents, and teams.</p></div>
-          <div class="card"><div class="big-number">02</div><h3>Lost lessons</h3><p>Failure modes, tool choices, recovery paths, latency, and cost are rarely preserved as reusable knowledge.</p></div>
-          <div class="card"><div class="big-number">03</div><h3>Brittle systems</h3><p>Without outcome-driven experience, agent quality depends too heavily on prompts and one-off context.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="why-now">
-      <div class="wrap">
-        <div class="eyebrow">Why now</div>
-        <h2>The agent stack is maturing. One layer is still missing.</h2>
-        <div class="flow" aria-label="Agent stack">
-          <div class="node">Foundation models</div><div class="arrow">→</div>
-          <div class="node">Context</div><div class="arrow">→</div>
-          <div class="node">Tools & MCP</div><div class="arrow">→</div>
-          <div class="node">Applications</div>
-        </div>
-        <div class="quote">The missing layer is <strong>experience</strong>: what worked, what failed, under which conditions, and what the next agent should do differently.</div>
-      </div>
-    </section>
-
-    <section id="solution">
-      <div class="wrap">
-        <div class="eyebrow">The solution</div>
-        <h2>Verified outcomes can become reusable experience.</h2>
-        <div class="flow">
-          <div class="node">Task</div><div class="arrow">→</div><div class="node">Execution trace</div><div class="arrow">→</div>
-          <div class="node">Evaluation</div><div class="arrow">→</div><div class="node">Experience graph</div><div class="arrow">→</div>
-          <div class="node">Future recommendation</div>
-        </div>
-        <div class="grid two">
-          <div class="card"><h3>Capture</h3><p>Record sanitized task structure, tool usage, skills, outcomes, latency, cost, guardrails, and recovery lessons.</p></div>
-          <div class="card"><h3>Reuse</h3><p>Retrieve bounded, verified lessons and warnings when a new agent encounters a similar task or subtask.</p></div>
-          <div class="card"><h3>Evaluate</h3><p>Use explicit and implicit outcome signals to distinguish successful patterns from plausible-looking failures.</p></div>
-          <div class="card"><h3>Improve</h3><p>Turn production execution into a compounding data flywheel for agents, teams, and enterprises.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="architecture">
-      <div class="wrap">
-        <div class="eyebrow">Architecture</div>
-        <h2>A shared experience layer between applications and agent infrastructure.</h2>
-        <div class="architecture">
-          <div class="stack">
-            <div class="node">Developer & enterprise applications</div>
-            <div class="node">Coding agents and workflows</div>
-            <div class="node">VS Code extension</div>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <p class="kicker">Technical founder brief · 3–5 minutes</p>
+            <h1>
+              Agent Experience
+              <span class="accent-underline">Intelligence.</span>
+            </h1>
+            <p class="lede">
+              An evidence layer that turns real agent runs into verified,
+              reusable skill intelligence—starting with coding agents.
+            </p>
+            <div class="actions">
+              <a class="button primary" href="#evidence"
+                >Inspect the evidence ↓</a
+              ><a class="button" href="../docs/60-second-demo.html"
+                >Run the demo</a
+              >
+            </div>
           </div>
-          <div class="bridge">Experience layer</div>
-          <div class="stack">
-            <div class="node">Agent Experience Graph</div>
-            <div class="node">Context providers & knowledge</div>
-            <div class="node">Models, tools, and MCP servers</div>
+          <aside class="loop-panel" aria-label="AEG thesis">
+            <div class="loop-top">
+              <span class="loop-status">THESIS</span><span>NOT YET PROVEN</span>
+            </div>
+            <ol class="loop-list">
+              <li>
+                <div>
+                  <strong>Experience is generated</strong
+                  ><span>every agent run creates execution signal</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Most signal is lost</strong
+                  ><span>especially failures and recovery paths</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Verified retrieval may help</strong
+                  ><span>when the next task is relevant enough</span>
+                </div>
+              </li>
+            </ol>
+            <div class="loop-foot">Measure before claiming benefit.</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="problem">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">01 / Problem</p>
+              <h2>
+                Agents rediscover solutions and lose execution experience.
+              </h2>
+            </div>
+            <p>
+              Teams retain code and final answers, but rarely retain a
+              trustworthy account of attempts, failures, recovery, cost, and the
+              conditions under which a result was reproduced.
+            </p>
+          </div>
+          <div class="grid three">
+            <article class="card">
+              <span class="card-number">REPEAT</span>
+              <h3>Execution resets</h3>
+              <p>
+                New sessions repeat exploration that a previous run already paid
+                for.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">FLATTEN</span>
+              <h3>Outcomes hide the path</h3>
+              <p>
+                A merged fix does not explain the failed attempt, the recovery,
+                or the guardrail.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">GUESS</span>
+              <h3>Advice outruns evidence</h3>
+              <p>
+                Unverified tips can look as credible as reproducible experience.
+              </p>
+            </article>
           </div>
         </div>
-        <p class="lead">Context answers <em>what should the agent know?</em> AEG answers <em>what has worked before in a similar situation?</em></p>
-      </div>
-    </section>
+      </section>
 
-    <section id="product">
-      <div class="wrap">
-        <div class="eyebrow">Initial product</div>
-        <h2>Start where experience is created: the developer workflow.</h2>
-        <div class="grid two">
+      <section class="section dark" id="thesis">
+        <div class="shell">
+          <p class="kicker">02 / Thesis</p>
+          <h2>
+            Put verified experience between agent execution and the next
+            decision.
+          </h2>
+          <p class="section-intro">
+            Capture the run, normalize the reusable signal, verify the outcome,
+            recommend only relevant experience, and feed the new result back
+            into the system.
+          </p>
+          <div class="flow">
+            <article>
+              <small>CAPTURE</small>
+              <h3>Run receipt</h3>
+              <p>Attempts, failures, recovery, outcome, cost.</p>
+            </article>
+            <article>
+              <small>NORMALIZE</small>
+              <h3>Safe record</h3>
+              <p>Portable structure, sanitized content.</p>
+            </article>
+            <article>
+              <small>VERIFY</small>
+              <h3>Evidence</h3>
+              <p>Oracle, provenance, limitations.</p>
+            </article>
+            <article>
+              <small>RECOMMEND</small>
+              <h3>Match</h3>
+              <p>Explain relevance or abstain.</p>
+            </article>
+            <article>
+              <small>REUSE</small>
+              <h3>Guidance</h3>
+              <p>Apply, test, rate, recapture.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="architecture">
+        <div class="shell">
+          <p class="kicker">03 / Product boundary</p>
+          <h2>A focused evidence layer for coding-agent workflows.</h2>
+          <p class="section-intro">
+            AEG complements runtimes, tools, models, and observability. It is
+            not a generic marketplace, an agent orchestrator, or a replacement
+            for LangSmith.
+          </p>
+          <div class="architecture-map">
+            <div class="architecture-stack">
+              <div>Coding agents & IDE workflows</div>
+              <div>Tasks, traces & test artifacts</div>
+              <div>Developer feedback</div>
+            </div>
+            <div class="architecture-core">
+              <strong>AEG</strong><span>verified experience layer</span>
+            </div>
+            <div class="architecture-stack">
+              <div>Evidence schema & provenance</div>
+              <div>Retrieval & explanations</div>
+              <div>Guarded recovery capsules</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="evidence">
+        <div class="shell">
+          <div class="heading-row">
+            <div>
+              <p class="kicker">04 / Evidence</p>
+              <h2>Shipped artifacts are real. Benefit remains bounded.</h2>
+            </div>
+            <p>
+              The repository is the evidence ledger: claims link to reproducible
+              artifacts, and negative results stay visible.
+            </p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Claim</th>
+                  <th>Status</th>
+                  <th>Repository evidence</th>
+                  <th>Boundary</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AEG can capture and retrieve structured experience.</td>
+                  <td><span class="tag good">Shipped</span></td>
+                  <td>VS Code v0.1.5, schema, validator, recommender</td>
+                  <td>Developer preview; local-first</td>
+                </tr>
+                <tr>
+                  <td>Verified experiences can be reproduced and audited.</td>
+                  <td><span class="tag good">Verified</span></td>
+                  <td>Two records in <code>experiences/verified.json</code></td>
+                  <td>Objective outcome ≠ causal AEG benefit</td>
+                </tr>
+                <tr>
+                  <td>Retrieval reduced tool cycles in one repair family.</td>
+                  <td><span class="tag limit">Bounded</span></td>
+                  <td>
+                    Five pairs; median assisted runs used one fewer completed
+                    command
+                  </td>
+                  <td>No success gain; median latency regressed</td>
+                </tr>
+                <tr>
+                  <td>Experience retrieval improves fresh tasks broadly.</td>
+                  <td><span class="tag limit">Hypothesis</span></td>
+                  <td>Natural-transfer benchmark preregistered</td>
+                  <td>Not yet established</td>
+                </tr>
+                <tr>
+                  <td>Customer demand or product-market fit exists.</td>
+                  <td><span class="tag limit">Unproven</span></td>
+                  <td>Phase 0 service package only</td>
+                  <td>No external recruitment or adoption evidence</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark" id="limitations">
+        <div class="shell grid two">
+          <div>
+            <p class="kicker">05 / Limitations</p>
+            <h2>What the evidence does not say.</h2>
+          </div>
           <div class="card">
-            <h3>Verified Experience Challenge</h3>
-            <ul class="clean">
-              <li>Describe a task or use selected error text</li><li>Rank only bundled verified records</li><li>Explain the match and show public provenance</li><li>Copy a guarded capsule and rate it locally</li>
+            <ul class="clean-list">
+              <li>No demonstrated success-rate improvement</li>
+              <li>No generalized cross-project transfer claim</li>
+              <li>No proven reduction in retries, tokens, cost, or latency</li>
+              <li>
+                No customer, production-adoption, or product-market-fit evidence
+              </li>
+              <li>
+                One transfer pair and one failed-path prevention pair were not
+                positive
+              </li>
             </ul>
-            <div class="actions"><a class="button primary" href="https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph">Open Marketplace</a></div>
-          </div>
-          <div class="card">
-            <h3>Open experience schema</h3>
-            <ul class="clean">
-              <li>Runtime-neutral trace format</li><li>Task, subtask, skill, tool, and outcome relationships</li><li>Privacy-first sanitized summaries</li><li>Portable across agent frameworks</li>
-            </ul>
-            <div class="actions"><a class="button" href="https://github.com/yao23/agent-experience-graph/blob/main/references/trace_schema.md">View schema</a></div>
           </div>
         </div>
-        <p class="lead">Current evidence is intentionally narrow. The public library has two verified records; existing controlled transfer pairs did not improve correctness and do not establish cross-project or generalized benefit. The immediate goal is 5–10 seed users reporting real helpful, neutral, irrelevant, and harmful outcomes.</p>
-      </div>
-    </section>
+      </section>
 
-    <section id="traction">
-      <div class="wrap">
-        <div class="eyebrow">Early progress</div>
-        <h2>From idea to working open-source product.</h2>
-        <div class="grid three">
-          <div class="card"><h3>Open source</h3><p>Public repository, reusable skill instructions, trace schema, recommendation script, and example traces.</p></div>
-          <div class="card"><h3>Shipped product</h3><p>Published VS Code extension, installation guide, public website, and a browser-based 60-second demo.</p></div>
-          <div class="card"><h3>Customer discovery</h3><p>Ongoing conversations with AI builders, enterprise engineers, and developer-platform teams to validate data, workflow, and adoption needs.</p></div>
+      <section class="section" id="next">
+        <div class="shell">
+          <p class="kicker">06 / Next validation</p>
+          <h2>Test retrieval on fresh, blinded coding tasks.</h2>
+          <p class="lede">
+            Compare baseline and AEG-assisted runs where retrieval is the
+            intentional difference. Measure success, retries, commands, tests,
+            non-cached tokens, wall time, regressions, and abstention quality.
+          </p>
+          <div class="callout top-gap">
+            <h3>Decision rule</h3>
+            <p>
+              Relevant prior experience should reduce retries, token usage, or
+              execution time without lowering task success. Negative and neutral
+              outcomes remain part of the product evidence.
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="business">
-      <div class="wrap">
-        <div class="eyebrow">Business model</div>
-        <h2>Open developer utility first. Team intelligence next.</h2>
-        <div class="grid three">
-          <div class="card"><h3>Open-source foundation</h3><p>Portable schema, local capture, developer integrations, and community-contributed skills.</p></div>
-          <div class="card"><h3>Team platform</h3><p>Private experience graph, shared recommendations, quality analytics, and workflow governance.</p></div>
-          <div class="card"><h3>Enterprise intelligence</h3><p>Secure deployment, policy controls, evaluation, provenance, and cross-team agent performance insights.</p></div>
+      <section class="meeting-strip">
+        <div class="shell meeting-grid">
+          <div>
+            <p class="kicker">Design-partner question</p>
+            <h2>Where does lost agent experience hurt enough to measure?</h2>
+          </div>
+          <div class="actions">
+            <a
+              class="button primary"
+              href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+              >Discuss a validation task</a
+            ><a
+              class="button"
+              href="https://github.com/yao23/agent-experience-graph"
+              >Inspect the repository ↗</a
+            >
+          </div>
         </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <span>AEG · Evidence before claims</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="../">Product</a><a href="../docs/60-second-demo.html">Demo</a
+          ><a href="../docs/install-vscode-extension.html">Install</a
+          ><a
+            href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+            >Contact</a
+          >
+        </nav>
       </div>
-    </section>
-
-    <section id="roadmap">
-      <div class="wrap">
-        <div class="eyebrow">Roadmap</div>
-        <h2>Build the experience-data flywheel in focused stages.</h2>
-        <div class="timeline">
-          <div class="card"><strong>Now</strong><h3>Developer utility</h3><p>Make capture and recommendations intuitive inside the IDE.</p></div>
-          <div class="card"><strong>Next</strong><h3>Coding agents</h3><p>Integrate with agent runtimes and measure improvements in success, latency, and cost.</p></div>
-          <div class="card"><strong>Then</strong><h3>Team experience</h3><p>Enable private shared graphs, evaluation, and reusable organizational workflows.</p></div>
-          <div class="card"><strong>Long term</strong><h3>Experience network</h3><p>Create interoperable infrastructure for trusted agent-experience exchange.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="founder">
-      <div class="wrap">
-        <div class="eyebrow">Founder</div>
-        <h2>Built by a systems engineer focused on production AI.</h2>
-        <p class="lead">Yao Li is a senior software engineer with more than 10 years of experience building distributed systems and developer platforms at eBay, AWS, and Sazze, including services used by hundreds of millions of users and an AI chatbot supporting more than 40,000 eBay developers.</p>
-        <div class="actions">
-          <a class="button primary" href="https://www.linkedin.com/in/liyao13/">LinkedIn</a>
-          <a class="button" href="https://github.com/yao23">GitHub profile</a>
-          <a class="button" href="mailto:realcybermatrix@gmail.com">Contact</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="ask">
-      <div class="wrap">
-        <div class="eyebrow">Join us</div>
-        <h2>Help agents learn from experience—not repeat it.</h2>
-        <p class="lead">We are looking for design partners, early users, open-source contributors, and collaborators who are building agent platforms, developer tools, and production AI systems.</p>
-        <div class="actions">
-          <a class="button primary" href="https://github.com/yao23/agent-experience-graph">Explore the project</a>
-          <a class="button" href="mailto:realcybermatrix@gmail.com?subject=Agent%20Experience%20Graph">Start a conversation</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer><div class="wrap">Agent Experience Graph · Open-source experience infrastructure for AI agents.</div></footer>
-  <script>
-    const bar = document.getElementById('progress');
-    const update = () => {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      bar.style.width = `${max > 0 ? (scrollY / max) * 100 : 0}%`;
-    };
-    addEventListener('scroll', update, { passive: true });
-    update();
-  </script>
-</body>
+    </footer>
+  </body>
 </html>
