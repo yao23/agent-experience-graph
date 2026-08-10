@@ -96,16 +96,60 @@ class SiteSmokeTest(unittest.TestCase):
         self.assertTrue((ROOT / "favicon.svg").is_file())
 
     def test_design_partnership_contacts_use_reviewed_destination(self):
-        destination = (
-            "mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
-        )
-        expected_counts = {
-            ROOT / "index.html": 2,
-            ROOT / "pitch" / "index.html": 2,
+        homepage = ROOT / "index.html"
+        pitch = ROOT / "pitch" / "index.html"
+        expected_destinations = {
+            homepage: (
+                "mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+            ),
+            pitch: (
+                "mailto:realcybermatrix@gmail.com?subject="
+                "AEG%20Design%20Partner%20Experiment"
+            ),
         }
-        for page, expected_count in expected_counts.items():
+        for page, destination in expected_destinations.items():
             with self.subTest(page=page.relative_to(ROOT)):
-                self.assertEqual(self.parse(page).links.count(destination), expected_count)
+                self.assertEqual(self.parse(page).links.count(destination), 2)
+
+    def test_pitch_preserves_required_evidence_and_thesis_boundaries(self):
+        pitch_html = (ROOT / "pitch" / "index.html").read_text(encoding="utf-8")
+        pitch_copy = " ".join(pitch_html.split())
+        required_copy = (
+            "Verified experience for the",
+            "AEG helps agents repeatedly improve through verified execution",
+            "Median assisted runs used one fewer completed command.",
+            "Five pairs; all ten arms passed objective verification",
+            "No success gain; median latency regressed 18,235 ms",
+            "From Superintelligence to Distributed Intelligence",
+            "learning locally and sharing selectively",
+            "Verified situated experience",
+            "THESIS, NOT YET PRODUCT EVIDENCE",
+            "0 invitations and 0 enrolled participants",
+            "Bring one reproducible task",
+            "Not a generic marketplace or agent orchestrator",
+            "No LangSmith replacement claim",
+        )
+        for copy in required_copy:
+            with self.subTest(copy=copy):
+                self.assertIn(copy, pitch_copy)
+
+        distributed = pitch_html.index('id="distributed-intelligence"')
+        evidence = pitch_html.index('id="evidence"')
+        self.assertLess(distributed, evidence)
+
+    def test_pitch_avoids_unsupported_public_claims(self):
+        pitch = (ROOT / "pitch" / "index.html").read_text(encoding="utf-8").lower()
+        unsupported_copy = (
+            "billions of users",
+            "proven cross-project",
+            "proven customer demand",
+            "product-market fit exists",
+            "replaces langsmith",
+            "global reputation score",
+        )
+        for copy in unsupported_copy:
+            with self.subTest(copy=copy):
+                self.assertNotIn(copy, pitch)
 
     def test_fragment_targets_clear_sticky_header(self):
         css = (ROOT / "site.css").read_text(encoding="utf-8")
