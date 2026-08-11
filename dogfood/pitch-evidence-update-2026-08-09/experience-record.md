@@ -157,7 +157,7 @@ Success within the requested local scope.
 
 ## Validation
 
-- Repository script suite: 18 tests passed, including 7 site tests.
+- Repository script suite: 19 tests passed, including 8 site tests.
 - Autonomous-lab regression suite: 64 tests passed.
 - Autonomous-lab schema, ledger, state, status, next-action, report, Phase 1
   protocol, and Python compilation checks passed.
@@ -172,6 +172,56 @@ Success within the requested local scope.
 - VS Code extension: 20 tests passed; TypeScript compilation and v0.1.5 VSIX
   packaging passed.
 - Pitch HTML and shared CSS passed Prettier checks; `git diff --check` passed.
+
+## Human pre-publication review corrections
+
+The final human product, editorial, and evidence review identified five focused
+publication risks without requesting a redesign:
+
+1. The design-partner invitation did not state every acceptable task-authorization
+   route or the sanitation boundary precisely enough.
+2. The pitch distinguished AEG from observability and documentation, but its
+   difference from generic memory and RAG remained implicit.
+3. “The infrastructure works” was broader than the repository evidence needed
+   to support.
+4. The market-status language needed to attribute Stage A authorization to the
+   merged approval record and keep participant execution explicitly unauthorized.
+5. The evidence table required horizontal scrolling on a 375px viewport, which
+   made claim boundaries easier to miss.
+
+The correction pass therefore:
+
+- replaced the CTA copy with the approved public/license-compatible,
+  explicitly-authorized, or synthetic task boundary; added the sanitation
+  statement; and preserved the existing reviewed email destination and subject;
+- added an explicit generic-memory distinction and labeled the current-task
+  layer “Context / RAG,” while preserving Models → Context → AEG and the full
+  distributed-intelligence thesis language;
+- replaced the broad infrastructure heading with the narrower shipped claim:
+  “Capture, validation, and retrieval are shipped. Benefit remains bounded.”;
+- sourced recruitment copy to the merged Stage A approval record and public
+  zero-use budget, including the three-participant Stage A cap and the continuing
+  prohibition on task execution and AEG-assisted testing; and
+- converted only the mobile evidence table into labeled, accessible stacked
+  cards. The semantic table header remains available to assistive technology,
+  every card repeats Claim, Status, Repository evidence, and Boundary labels,
+  and the normal table remains unchanged at tablet and desktop widths.
+
+The deterministic report command was run before this correction. It regenerated
+the existing reports byte-for-byte, and `report --check` passed. The generated
+`current-status.md`, `current-status.json`, and `next-human-action.md` still
+project the completed Phase 0 experiment and do not incorporate the separately
+merged Stage A approval record. They were not manually edited. Aligning that
+generator with the approval registry is a maintenance item; the merged approval
+record and Stage A budget remain the authoritative sources for the pitch copy.
+
+Post-correction browser review at 375px, 768px, and 1280px found no page-level
+horizontal overflow. The evidence fragment settled below the 69px sticky header,
+the thesis order remained Models → Context → AEG, and claim boundaries remained
+visually prominent at every width. The evidence claims remain bounded: this pass
+does not establish retrieval benefit, success-rate improvement, generalized
+transfer, customer adoption, active partnerships, theoretical proof, or product-
+market fit.
 
 ## Reusable experience
 

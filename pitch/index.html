@@ -134,7 +134,9 @@
               <span class="card-number">AEG</span>
               <h3>Tests what transfers</h3>
               <p>
-                AEG tests whether what worked before should guide the next run.
+                Unlike generic memory, AEG keeps provenance and a verified
+                outcome attached, then tests whether the experience should guide
+                the next run.
               </p>
             </article>
           </div>
@@ -267,7 +269,7 @@
               <p>What can an intelligent system broadly do?</p>
             </article>
             <article>
-              <small>CONTEXT</small>
+              <small>CONTEXT / RAG</small>
               <h3>Current task knowledge</h3>
               <p>What does this task need to know now?</p>
             </article>
@@ -298,7 +300,10 @@
           <div class="heading-row">
             <div>
               <p class="kicker">05 / Shipped and measured</p>
-              <h2>The infrastructure works. The benefit remains bounded.</h2>
+              <h2>
+                Capture, validation, and retrieval are shipped. Benefit remains
+                bounded.
+              </h2>
             </div>
             <p>
               Repository evidence keeps shipped facts, positive results,
@@ -323,8 +328,11 @@
             Median assisted runs used one fewer completed command. This bounded
             five-pair result did not improve success, and latency regressed.
           </p>
-          <div class="table-wrap">
-            <table>
+          <div class="table-wrap evidence-table-wrap">
+            <table
+              class="evidence-table"
+              aria-label="AEG evidence and claim boundaries"
+            >
               <thead>
                 <tr>
                   <th>Claim</th>
@@ -335,43 +343,71 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>AEG can capture, validate, and retrieve experience.</td>
-                  <td><span class="tag good">Shipped</span></td>
-                  <td>VS Code v0.1.5, schemas, validator, recommender</td>
-                  <td>Developer preview; local-first</td>
+                  <td data-label="Claim">
+                    AEG can capture, validate, and retrieve experience.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag good">Shipped</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    VS Code v0.1.5, schemas, validator, recommender
+                  </td>
+                  <td data-label="Boundary">Developer preview; local-first</td>
                 </tr>
                 <tr>
-                  <td>Verified records can preserve auditable outcomes.</td>
-                  <td><span class="tag good">Verified</span></td>
-                  <td>Two records in <code>experiences/verified.json</code></td>
-                  <td>Outcome evidence ≠ causal AEG benefit</td>
+                  <td data-label="Claim">
+                    Verified records can preserve auditable outcomes.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag good">Verified</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    Two records in <code>experiences/verified.json</code>
+                  </td>
+                  <td data-label="Boundary">
+                    Outcome evidence ≠ causal AEG benefit
+                  </td>
                 </tr>
                 <tr>
-                  <td>A bounded repair run used fewer median commands.</td>
-                  <td><span class="tag limit">Bounded</span></td>
-                  <td>
+                  <td data-label="Claim">
+                    A bounded repair run used fewer median commands.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag limit">Bounded</span>
+                  </td>
+                  <td data-label="Repository evidence">
                     Five pairs; all ten arms passed objective verification
                   </td>
-                  <td>No success gain; median latency regressed 18,235 ms</td>
+                  <td data-label="Boundary">
+                    No success gain; median latency regressed 18,235 ms
+                  </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td data-label="Claim">
                     Related transfer pairs produced positive retrieval evidence.
                   </td>
-                  <td><span class="tag limit">No</span></td>
-                  <td>
+                  <td data-label="Status"><span class="tag limit">No</span></td>
+                  <td data-label="Repository evidence">
                     One neutral pair; one preregistered result not positive
                   </td>
-                  <td>Negative and neutral evidence stays visible</td>
+                  <td data-label="Boundary">
+                    Negative and neutral evidence stays visible
+                  </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td data-label="Claim">
                     The autonomous loop follows bounded state and approval
                     rules.
                   </td>
-                  <td><span class="tag good">Validated</span></td>
-                  <td>Hash-chained transitions and approval-gate stop</td>
-                  <td>Workflow validation only; not retrieval benefit</td>
+                  <td data-label="Status">
+                    <span class="tag good">Validated</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    Hash-chained transitions and approval-gate stop
+                  </td>
+                  <td data-label="Boundary">
+                    Workflow validation only; not retrieval benefit
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -403,14 +439,14 @@
         <div class="shell">
           <p class="kicker">07 / Current market status</p>
           <h2>
-            Recruitment is authorized. Public outreach evidence is still zero.
+            Stage A outreach is authorized. The public budget remains at zero.
           </h2>
           <p class="lede">
-            Stage A permits individually reviewed outreach for up to three
-            voluntary seed participants. Public repository budget records
-            currently show 0 invitations and 0 enrolled participants.
-            Participant task execution and AEG-assisted testing remain
-            unauthorized pending later approval.
+            Under the merged Stage A approval record, individually reviewed
+            outreach is authorized for up to three voluntary seed participants.
+            The public recruitment budget currently records 0 invitations and 0
+            enrolled participants. Task execution and AEG-assisted testing
+            remain unauthorized.
           </p>
         </div>
       </section>
@@ -442,9 +478,11 @@
             <p class="kicker">Design-partner experiment</p>
             <h2>Bring one reproducible task.</h2>
             <p class="partner-copy">
-              Contribute a licensed, reproducible failure with an objective
-              success check. AEG will run a bounded baseline-versus-experience
-              test and return an auditable result.
+              Bring a reproducible task that is public and license-compatible,
+              explicitly authorized, or synthetic, with an objective success
+              check. Any retained evidence will be sanitized. AEG will run a
+              bounded baseline-versus-experience test and return an auditable
+              result.
             </p>
             <p class="partner-detail">
               AEG contributes experiment design and implementation, the

@@ -1100,6 +1100,54 @@ pre {
   table {
     min-width: 620px;
   }
+  .evidence-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .evidence-table {
+    min-width: 0;
+    border-collapse: separate;
+    background: transparent;
+  }
+  .evidence-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .evidence-table tbody {
+    display: grid;
+    gap: 14px;
+  }
+  .evidence-table tr {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .evidence-table td {
+    display: grid;
+    grid-template-columns: minmax(104px, 0.42fr) minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px 16px;
+    overflow-wrap: anywhere;
+  }
+  .evidence-table td:last-child {
+    border-bottom: 0;
+  }
+  .evidence-table td::before {
+    content: attr(data-label);
+    color: #41524c;
+    font: 800 0.67rem/1.5 monospace;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
