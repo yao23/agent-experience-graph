@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="A concise technical pitch for Agent Experience Graph, the evidence layer for reusable agent experience."
+      content="The technical pitch for Agent Experience Graph: verified execution experience for the next agent run."
     />
     <meta name="theme-color" content="#121b18" />
     <title>AEG Technical Pitch — Agent Experience Intelligence</title>
@@ -52,48 +52,56 @@
       <section class="hero">
         <div class="shell hero-grid">
           <div>
-            <p class="kicker">Technical founder brief · 3–5 minutes</p>
+            <p class="kicker">Agent Experience Intelligence · 5-minute brief</p>
             <h1>
-              Agent Experience
-              <span class="accent-underline">Intelligence.</span>
+              Verified experience for the
+              <span class="accent-underline">next agent run.</span>
             </h1>
             <p class="lede">
-              An evidence layer that turns real agent runs into verified,
-              reusable skill intelligence—starting with coding agents.
+              AEG turns real execution into reusable guidance—and tests whether
+              that guidance actually improves the next task.
             </p>
             <div class="actions">
               <a class="button primary" href="#evidence"
                 >Inspect the evidence ↓</a
-              ><a class="button" href="../docs/60-second-demo.html"
-                >Run the demo</a
-              >
+              ><a class="button" href="#partner">Bring a task</a>
             </div>
           </div>
-          <aside class="loop-panel" aria-label="AEG thesis">
+          <aside class="loop-panel" aria-label="AEG north-star hypothesis">
             <div class="loop-top">
-              <span class="loop-status">THESIS</span><span>NOT YET PROVEN</span>
+              <span class="loop-status">NORTH-STAR HYPOTHESIS</span
+              ><span>NOT YET PROVEN</span>
             </div>
             <ol class="loop-list">
               <li>
                 <div>
-                  <strong>Experience is generated</strong
-                  ><span>every agent run creates execution signal</span>
+                  <strong>Real execution</strong
+                  ><span>observe attempts, failures, and recovery</span>
                 </div>
               </li>
               <li>
                 <div>
-                  <strong>Most signal is lost</strong
-                  ><span>especially failures and recovery paths</span>
+                  <strong>Structured evidence</strong
+                  ><span>preserve outcome, cost, and provenance</span>
                 </div>
               </li>
               <li>
                 <div>
-                  <strong>Verified retrieval may help</strong
-                  ><span>when the next task is relevant enough</span>
+                  <strong>Verified reuse</strong
+                  ><span>apply only when conditions are comparable</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Measured outcome</strong
+                  ><span>compare, learn, and retain negative results</span>
                 </div>
               </li>
             </ol>
-            <div class="loop-foot">Measure before claiming benefit.</div>
+            <div class="loop-foot">
+              AEG helps agents repeatedly improve through verified execution
+              experience.
+            </div>
           </aside>
         </div>
       </section>
@@ -102,111 +110,188 @@
         <div class="shell">
           <div class="heading-row">
             <div>
-              <p class="kicker">01 / Problem</p>
-              <h2>
-                Agents rediscover solutions and lose execution experience.
-              </h2>
+              <p class="kicker">01 / Repeated-learning problem</p>
+              <h2>Every new run starts too close to zero.</h2>
             </div>
             <p>
-              Teams retain code and final answers, but rarely retain a
-              trustworthy account of attempts, failures, recovery, cost, and the
-              conditions under which a result was reproduced.
+              Teams keep code, traces, and documentation. They rarely keep a
+              trustworthy account of which recovery worked, under what
+              conditions, and whether reusing it helped.
             </p>
           </div>
           <div class="grid three">
             <article class="card">
-              <span class="card-number">REPEAT</span>
-              <h3>Execution resets</h3>
-              <p>
-                New sessions repeat exploration that a previous run already paid
-                for.
-              </p>
+              <span class="card-number">OBSERVABILITY</span>
+              <h3>Shows what happened</h3>
+              <p>Useful traces do not decide what should guide the next run.</p>
             </article>
             <article class="card">
-              <span class="card-number">FLATTEN</span>
-              <h3>Outcomes hide the path</h3>
-              <p>
-                A merged fix does not explain the failed attempt, the recovery,
-                or the guardrail.
-              </p>
+              <span class="card-number">DOCUMENTATION</span>
+              <h3>Says what should happen</h3>
+              <p>General guidance rarely carries run-level outcome evidence.</p>
             </article>
             <article class="card">
-              <span class="card-number">GUESS</span>
-              <h3>Advice outruns evidence</h3>
+              <span class="card-number">AEG</span>
+              <h3>Tests what transfers</h3>
               <p>
-                Unverified tips can look as credible as reproducible experience.
+                Unlike generic memory, AEG keeps provenance and a verified
+                outcome attached, then tests whether the experience should guide
+                the next run.
               </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section dark" id="thesis">
+      <section class="section dark" id="loop">
         <div class="shell">
-          <p class="kicker">02 / Thesis</p>
-          <h2>
-            Put verified experience between agent execution and the next
-            decision.
-          </h2>
+          <p class="kicker">02 / Operating loop</p>
+          <h2>Turn execution into evidence, then test the reuse.</h2>
           <p class="section-intro">
-            Capture the run, normalize the reusable signal, verify the outcome,
-            recommend only relevant experience, and feed the new result back
-            into the system.
+            The cross-platform layer sits beside agents, models, tools, and
+            observability. It captures a run, sanitizes the reusable signal,
+            verifies the outcome, retrieves relevant experience or abstains, and
+            measures what happens next.
           </p>
           <div class="flow">
             <article>
               <small>CAPTURE</small>
               <h3>Run receipt</h3>
-              <p>Attempts, failures, recovery, outcome, cost.</p>
+              <p>Attempts, failures, recovery, and outcome.</p>
             </article>
             <article>
-              <small>NORMALIZE</small>
+              <small>STRUCTURE</small>
               <h3>Safe record</h3>
-              <p>Portable structure, sanitized content.</p>
+              <p>Portable fields and sanitized content.</p>
             </article>
             <article>
               <small>VERIFY</small>
               <h3>Evidence</h3>
-              <p>Oracle, provenance, limitations.</p>
-            </article>
-            <article>
-              <small>RECOMMEND</small>
-              <h3>Match</h3>
-              <p>Explain relevance or abstain.</p>
+              <p>Oracle, provenance, applicability, limits.</p>
             </article>
             <article>
               <small>REUSE</small>
               <h3>Guidance</h3>
-              <p>Apply, test, rate, recapture.</p>
+              <p>Explain relevance—or correctly abstain.</p>
+            </article>
+            <article>
+              <small>MEASURE</small>
+              <h3>Comparison</h3>
+              <p>Success, commands, tests, tokens, latency.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section" id="architecture">
+      <section class="section" id="record">
         <div class="shell">
-          <p class="kicker">03 / Product boundary</p>
-          <h2>A focused evidence layer for coding-agent workflows.</h2>
-          <p class="section-intro">
-            AEG complements runtimes, tools, models, and observability. It is
-            not a generic marketplace, an agent orchestrator, or a replacement
-            for LangSmith.
-          </p>
-          <div class="architecture-map">
-            <div class="architecture-stack">
-              <div>Coding agents & IDE workflows</div>
-              <div>Tasks, traces & test artifacts</div>
-              <div>Developer feedback</div>
+          <div class="heading-row">
+            <div>
+              <p class="kicker">03 / Unit of learning</p>
+              <h2>
+                The experience record preserves the path, not just the answer.
+              </h2>
             </div>
-            <div class="architecture-core">
-              <strong>AEG</strong><span>verified experience layer</span>
-            </div>
-            <div class="architecture-stack">
-              <div>Evidence schema & provenance</div>
-              <div>Retrieval & explanations</div>
-              <div>Guarded recovery capsules</div>
-            </div>
+            <p>
+              A verified record is situated evidence. It is useful only when its
+              provenance, applicability, and limitations remain attached.
+            </p>
           </div>
+          <div class="record-grid" aria-label="Experience record fields">
+            <article><small>01</small><strong>Attempt</strong></article>
+            <article><small>02</small><strong>Failure</strong></article>
+            <article><small>03</small><strong>Recovery</strong></article>
+            <article>
+              <small>04</small><strong>Verified outcome</strong>
+            </article>
+            <article>
+              <small>05</small><strong>Cost &amp; latency</strong>
+            </article>
+            <article><small>06</small><strong>Provenance</strong></article>
+            <article><small>07</small><strong>Applicability</strong></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="wedge">
+        <div class="shell">
+          <p class="kicker">04 / Initial wedge</p>
+          <h2>Start where transfer can be tested cleanly.</h2>
+          <p class="section-intro">
+            The first tasks are reproducible failures with an objective success
+            check, comparable baseline and assisted runs, and low privacy or IP
+            risk.
+          </p>
+          <div class="grid three top-gap">
+            <article class="card">
+              <span class="card-number">NOW</span>
+              <h3>Engineers using coding agents</h3>
+              <p>
+                Real repositories, bounded failures, objective verification.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">NEXT</span>
+              <h3>AI dev-tool and OSS maintainers</h3>
+              <p>
+                Repeatable task families where recovery knowledge gets lost.
+              </p>
+            </article>
+            <article class="card">
+              <span class="card-number">LATER</span>
+              <h3>Enterprise AI-platform teams</h3>
+              <p>
+                Governed reuse across internal agent workflows—if transfer
+                holds.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section intelligence-thesis"
+        id="distributed-intelligence"
+      >
+        <div class="shell">
+          <p class="kicker">Long-term thesis</p>
+          <h2>From Superintelligence to Distributed Intelligence</h2>
+          <p class="thesis-lede">
+            The future may not be one agent knowing everything. One possible
+            topology is billions of human-agent systems learning locally and
+            sharing selectively—when evidence, permission, and context support
+            the transfer.
+          </p>
+          <div class="intelligence-layers" aria-label="Intelligence layers">
+            <article>
+              <small>MODELS</small>
+              <h3>General capability</h3>
+              <p>What can an intelligent system broadly do?</p>
+            </article>
+            <article>
+              <small>CONTEXT / RAG</small>
+              <h3>Current task knowledge</h3>
+              <p>What does this task need to know now?</p>
+            </article>
+            <article class="aeg-layer">
+              <small>AEG</small>
+              <h3>Verified situated experience</h3>
+              <p>What worked before under comparable conditions?</p>
+              <ul>
+                <li>attempts, failures, and recovery</li>
+                <li>verified outcome and cost/latency</li>
+                <li>provenance and applicability</li>
+              </ul>
+            </article>
+          </div>
+          <aside class="thesis-boundary">
+            <strong>THESIS, NOT YET PRODUCT EVIDENCE</strong>
+            <p>
+              This direction is informed by distributed cognition and situated
+              knowledge. Product value must be tested through controlled
+              transfer experiments and real developer workflows.
+            </p>
+          </aside>
         </div>
       </section>
 
@@ -214,16 +299,40 @@
         <div class="shell">
           <div class="heading-row">
             <div>
-              <p class="kicker">04 / Evidence</p>
-              <h2>Shipped artifacts are real. Benefit remains bounded.</h2>
+              <p class="kicker">05 / Shipped and measured</p>
+              <h2>
+                Capture, validation, and retrieval are shipped. Benefit remains
+                bounded.
+              </h2>
             </div>
             <p>
-              The repository is the evidence ledger: claims link to reproducible
-              artifacts, and negative results stay visible.
+              Repository evidence keeps shipped facts, positive results,
+              negative results, and unanswered questions separate.
             </p>
           </div>
-          <div class="table-wrap">
-            <table>
+          <div class="metric-strip" aria-label="Bounded Phase 0 result">
+            <div class="metric">
+              <strong>5 pairs</strong><span>one repair family</span>
+            </div>
+            <div class="metric">
+              <strong>10 / 10</strong><span>arms passed</span>
+            </div>
+            <div class="metric">
+              <strong>1 fewer</strong><span>median completed command</span>
+            </div>
+            <div class="metric">
+              <strong>+18.2 s</strong><span>median assisted latency</span>
+            </div>
+          </div>
+          <p class="evidence-note">
+            Median assisted runs used one fewer completed command. This bounded
+            five-pair result did not improve success, and latency regressed.
+          </p>
+          <div class="table-wrap evidence-table-wrap">
+            <table
+              class="evidence-table"
+              aria-label="AEG evidence and claim boundaries"
+            >
               <thead>
                 <tr>
                   <th>Claim</th>
@@ -234,37 +343,71 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>AEG can capture and retrieve structured experience.</td>
-                  <td><span class="tag good">Shipped</span></td>
-                  <td>VS Code v0.1.5, schema, validator, recommender</td>
-                  <td>Developer preview; local-first</td>
-                </tr>
-                <tr>
-                  <td>Verified experiences can be reproduced and audited.</td>
-                  <td><span class="tag good">Verified</span></td>
-                  <td>Two records in <code>experiences/verified.json</code></td>
-                  <td>Objective outcome ≠ causal AEG benefit</td>
-                </tr>
-                <tr>
-                  <td>Retrieval reduced tool cycles in one repair family.</td>
-                  <td><span class="tag limit">Bounded</span></td>
-                  <td>
-                    Five pairs; median assisted runs used one fewer completed
-                    command
+                  <td data-label="Claim">
+                    AEG can capture, validate, and retrieve experience.
                   </td>
-                  <td>No success gain; median latency regressed</td>
+                  <td data-label="Status">
+                    <span class="tag good">Shipped</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    VS Code v0.1.5, schemas, validator, recommender
+                  </td>
+                  <td data-label="Boundary">Developer preview; local-first</td>
                 </tr>
                 <tr>
-                  <td>Experience retrieval improves fresh tasks broadly.</td>
-                  <td><span class="tag limit">Hypothesis</span></td>
-                  <td>Natural-transfer benchmark preregistered</td>
-                  <td>Not yet established</td>
+                  <td data-label="Claim">
+                    Verified records can preserve auditable outcomes.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag good">Verified</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    Two records in <code>experiences/verified.json</code>
+                  </td>
+                  <td data-label="Boundary">
+                    Outcome evidence ≠ causal AEG benefit
+                  </td>
                 </tr>
                 <tr>
-                  <td>Customer demand or product-market fit exists.</td>
-                  <td><span class="tag limit">Unproven</span></td>
-                  <td>Phase 0 service package only</td>
-                  <td>No external recruitment or adoption evidence</td>
+                  <td data-label="Claim">
+                    A bounded repair run used fewer median commands.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag limit">Bounded</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    Five pairs; all ten arms passed objective verification
+                  </td>
+                  <td data-label="Boundary">
+                    No success gain; median latency regressed 18,235 ms
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Claim">
+                    Related transfer pairs produced positive retrieval evidence.
+                  </td>
+                  <td data-label="Status"><span class="tag limit">No</span></td>
+                  <td data-label="Repository evidence">
+                    One neutral pair; one preregistered result not positive
+                  </td>
+                  <td data-label="Boundary">
+                    Negative and neutral evidence stays visible
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Claim">
+                    The autonomous loop follows bounded state and approval
+                    rules.
+                  </td>
+                  <td data-label="Status">
+                    <span class="tag good">Validated</span>
+                  </td>
+                  <td data-label="Repository evidence">
+                    Hash-chained transitions and approval-gate stop
+                  </td>
+                  <td data-label="Boundary">
+                    Workflow validation only; not retrieval benefit
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -275,62 +418,112 @@
       <section class="section dark" id="limitations">
         <div class="shell grid two">
           <div>
-            <p class="kicker">05 / Limitations</p>
+            <p class="kicker">06 / Evidence boundary</p>
             <h2>What the evidence does not say.</h2>
           </div>
           <div class="card">
             <ul class="clean-list">
               <li>No demonstrated success-rate improvement</li>
-              <li>No generalized cross-project transfer claim</li>
+              <li>No reliable cross-project learning claim</li>
               <li>No proven reduction in retries, tokens, cost, or latency</li>
-              <li>
-                No customer, production-adoption, or product-market-fit evidence
-              </li>
-              <li>
-                One transfer pair and one failed-path prevention pair were not
-                positive
-              </li>
+              <li>No customer adoption or product-market-fit evidence</li>
+              <li>No global reputation, popularity, or safety scoring</li>
+              <li>Not a generic marketplace or agent orchestrator</li>
+              <li>No LangSmith replacement claim</li>
             </ul>
           </div>
         </div>
       </section>
 
+      <section class="section" id="market-status">
+        <div class="shell">
+          <p class="kicker">07 / Current market status</p>
+          <h2>
+            Stage A outreach is authorized. The public budget remains at zero.
+          </h2>
+          <p class="lede">
+            Under the merged Stage A approval record, individually reviewed
+            outreach is authorized for up to three voluntary seed participants.
+            The public recruitment budget currently records 0 invitations and 0
+            enrolled participants. Task execution and AEG-assisted testing
+            remain unauthorized.
+          </p>
+        </div>
+      </section>
+
       <section class="section" id="next">
         <div class="shell">
-          <p class="kicker">06 / Next validation</p>
-          <h2>Test retrieval on fresh, blinded coding tasks.</h2>
+          <p class="kicker">08 / Next falsifiable milestone</p>
+          <h2>Earn one controlled transfer result in a real workflow.</h2>
           <p class="lede">
-            Compare baseline and AEG-assisted runs where retrieval is the
-            intentional difference. Measure success, retries, commands, tests,
-            non-cached tokens, wall time, regressions, and abstention quality.
+            Recruit a small seed cohort, accept only reproducible low-risk
+            tasks, then compare baseline and AEG-assisted runs with retrieval as
+            the intentional difference.
           </p>
           <div class="callout top-gap">
             <h3>Decision rule</h3>
             <p>
-              Relevant prior experience should reduce retries, token usage, or
-              execution time without lowering task success. Negative and neutral
-              outcomes remain part of the product evidence.
+              Relevant prior experience must improve at least one preregistered
+              efficiency measure—retries, commands, tests, tokens, or
+              time—without lowering objective task success. Correct abstention,
+              neutral results, and regressions remain evidence.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="meeting-strip">
+      <section class="meeting-strip" id="partner">
         <div class="shell meeting-grid">
           <div>
-            <p class="kicker">Design-partner question</p>
-            <h2>Where does lost agent experience hurt enough to measure?</h2>
+            <p class="kicker">Design-partner experiment</p>
+            <h2>Bring one reproducible task.</h2>
+            <p class="partner-copy">
+              Bring a reproducible task that is public and license-compatible,
+              explicitly authorized, or synthetic, with an objective success
+              check. Any retained evidence will be sanitized. AEG will run a
+              bounded baseline-versus-experience test and return an auditable
+              result.
+            </p>
+            <p class="partner-detail">
+              AEG contributes experiment design and implementation, the
+              comparison, a sanitized record, and a clear result with limits.
+            </p>
           </div>
           <div class="actions">
             <a
               class="button primary"
-              href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
-              >Discuss a validation task</a
-            ><a
-              class="button"
-              href="https://github.com/yao23/agent-experience-graph"
-              >Inspect the repository ↗</a
+              href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partner%20Experiment"
+              >Bring one reproducible task</a
+            ><a class="button" href="../docs/60-second-demo.html"
+              >Run the demo</a
             >
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="architecture">
+        <div class="shell">
+          <p class="kicker">09 / Technical architecture</p>
+          <h2>A cross-platform execution-evidence layer.</h2>
+          <p class="section-intro">
+            AEG complements agent runtimes and observability. It connects
+            execution inputs to governed experience records, retrieval with
+            explanations or abstention, and measured outcomes.
+          </p>
+          <div class="architecture-map">
+            <div class="architecture-stack">
+              <div>Coding agents &amp; IDE workflows</div>
+              <div>Tasks, traces &amp; test artifacts</div>
+              <div>Developer feedback</div>
+            </div>
+            <div class="architecture-core">
+              <strong>AEG</strong><span>verified experience layer</span>
+            </div>
+            <div class="architecture-stack">
+              <div>Evidence schema &amp; provenance</div>
+              <div>Retrieval, explanation &amp; abstention</div>
+              <div>Outcome comparison &amp; recapture</div>
+            </div>
           </div>
         </div>
       </section>
@@ -342,7 +535,7 @@
           <a href="../">Product</a><a href="../docs/60-second-demo.html">Demo</a
           ><a href="../docs/install-vscode-extension.html">Install</a
           ><a
-            href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partnership"
+            href="mailto:realcybermatrix@gmail.com?subject=AEG%20Design%20Partner%20Experiment"
             >Contact</a
           >
         </nav>

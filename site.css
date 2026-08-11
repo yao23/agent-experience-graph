@@ -544,6 +544,111 @@ h3 {
   font-size: 0.88rem;
 }
 
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+.record-grid article {
+  min-height: 118px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.record-grid small {
+  color: #507067;
+  font: 800 0.68rem monospace;
+}
+.record-grid strong {
+  line-height: 1.2;
+}
+
+.intelligence-thesis {
+  overflow: hidden;
+  color: #f7f8f4;
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(124, 215, 196, 0.15),
+      transparent 28%
+    ),
+    var(--ink);
+  border-color: #33413c;
+}
+.intelligence-thesis .kicker {
+  color: var(--lime);
+}
+.thesis-lede {
+  max-width: 900px;
+  margin: 26px 0 0;
+  color: #c5d0cb;
+  font-size: clamp(1.12rem, 2vw, 1.42rem);
+}
+.intelligence-layers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 42px;
+}
+.intelligence-layers article {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid #3d4e47;
+  border-radius: var(--radius);
+  background: #192620;
+}
+.intelligence-layers small {
+  color: var(--mint);
+  font: 800 0.7rem monospace;
+  letter-spacing: 0.12em;
+}
+.intelligence-layers h3 {
+  margin-top: 36px;
+  font-size: 1.4rem;
+}
+.intelligence-layers p,
+.intelligence-layers li {
+  color: #bbc7c2;
+}
+.intelligence-layers p {
+  margin: 12px 0 0;
+}
+.intelligence-layers ul {
+  margin: 22px 0 0;
+  padding-left: 20px;
+}
+.intelligence-layers .aeg-layer {
+  border-color: var(--lime);
+  background: #203029;
+  box-shadow: inset 0 5px 0 var(--lime);
+}
+.intelligence-layers .aeg-layer small {
+  color: var(--lime);
+}
+.thesis-boundary {
+  margin-top: 16px;
+  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: minmax(210px, 0.35fr) 1fr;
+  gap: 26px;
+  border: 1px solid #43554d;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.thesis-boundary strong {
+  color: var(--amber);
+  font: 800 0.72rem/1.5 monospace;
+  letter-spacing: 0.08em;
+}
+.thesis-boundary p {
+  margin: 0;
+  color: #bbc7c2;
+}
+
 .architecture-map {
   margin-top: 40px;
   display: grid;
@@ -810,6 +915,17 @@ pre {
 .meeting-grid h2 {
   font-size: clamp(2rem, 4.5vw, 4rem);
 }
+.partner-copy {
+  max-width: 760px;
+  margin: 20px 0 0;
+  font-size: 1.05rem;
+}
+.partner-detail {
+  max-width: 760px;
+  margin: 10px 0 0;
+  color: #34443e;
+  font-size: 0.9rem;
+}
 
 .site-footer {
   padding: 34px 0;
@@ -889,6 +1005,19 @@ pre {
   .architecture-map {
     grid-template-columns: 1fr;
   }
+  .record-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .intelligence-layers {
+    grid-template-columns: 1fr;
+  }
+  .intelligence-layers h3 {
+    margin-top: 22px;
+  }
+  .thesis-boundary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
   .architecture-core {
     width: 100%;
   }
@@ -939,6 +1068,12 @@ pre {
   .metric-strip {
     grid-template-columns: 1fr 1fr;
   }
+  .record-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .record-grid article {
+    min-height: 96px;
+  }
   .metric:nth-child(2) {
     border-right: 0;
   }
@@ -964,6 +1099,54 @@ pre {
   }
   table {
     min-width: 620px;
+  }
+  .evidence-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .evidence-table {
+    min-width: 0;
+    border-collapse: separate;
+    background: transparent;
+  }
+  .evidence-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .evidence-table tbody {
+    display: grid;
+    gap: 14px;
+  }
+  .evidence-table tr {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .evidence-table td {
+    display: grid;
+    grid-template-columns: minmax(104px, 0.42fr) minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px 16px;
+    overflow-wrap: anywhere;
+  }
+  .evidence-table td:last-child {
+    border-bottom: 0;
+  }
+  .evidence-table td::before {
+    content: attr(data-label);
+    color: #41524c;
+    font: 800 0.67rem/1.5 monospace;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
   }
 }
 
