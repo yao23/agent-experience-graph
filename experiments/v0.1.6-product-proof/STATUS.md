@@ -4,7 +4,7 @@ Last updated: 2026-08-11 (America/Los_Angeles).
 
 ## Current phase
 
-Implementation and local validation complete; ready for the founder usability gate. Publication handoff is pending. Experiment status remains **prepared-not-frozen; 0/3 arms executed**.
+Implementation and local validation complete; ready for the founder usability gate. Branch pushed and Draft PR #28 open. Experiment status remains **prepared-not-frozen; 0/3 arms executed**.
 
 ## Completed work
 
@@ -32,8 +32,15 @@ Implementation and local validation complete; ready for the founder usability ga
 
 ## Blockers
 
-- GitHub CLI authentication is invalid. Public read access worked; push and Draft PR creation may require `gh auth login` unless Git credentials independently permit the push.
-- No product or experiment-design blocker is open.
+- No product, experiment-design, packaging, or publication blocker is open.
+- GitHub CLI authentication is invalid, but Git credentials pushed the branch and the connected GitHub app created the Draft PR.
+
+## Publication handoff
+
+- Branch: `codex/v0.1.6-founder-ready-proof-loop`
+- Commits: `f8835c0` plus the status-only handoff update
+- Draft PR: <https://github.com/yao23/agent-experience-graph/pull/28>
+- Release/merge/Marketplace publication: not performed
 
 ## Decisions
 
