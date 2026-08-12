@@ -1,0 +1,142 @@
+{
+  "$schema": "./protocol.schema.json",
+  "schemaVersion": "1.0.0",
+  "protocolId": "aeg-v0.1.6-product-proof",
+  "status": "prepared-not-frozen",
+  "executionAuthorized": false,
+  "evidenceBoundary": {
+    "verifiedRecordCount": 2,
+    "verifiedLibraryMutable": false,
+    "challengeEvidence": "interaction-only",
+    "priorTransferEvidence": "neutral-or-negative",
+    "claimsExcluded": [
+      "improved-success",
+      "improved-speed",
+      "improved-cost",
+      "product-market-fit",
+      "adoption",
+      "generalization"
+    ]
+  },
+  "arms": [
+    {
+      "id": "baseline",
+      "label": "Baseline",
+      "additionalContext": null,
+      "aegLibraryAccess": false,
+      "targetInputs": "identical-frozen",
+      "objectiveOracle": "identical-frozen"
+    },
+    {
+      "id": "fixed-generic",
+      "label": "Fixed generic debugging advice",
+      "additionalContext": "generic-advice.txt",
+      "aegLibraryAccess": false,
+      "targetInputs": "identical-frozen",
+      "objectiveOracle": "identical-frozen"
+    },
+    {
+      "id": "aeg-top-1",
+      "label": "AEG top-1 verified capsule",
+      "additionalContext": "frozen-top-1-guarded-capsule",
+      "aegLibraryAccess": "top-1-only",
+      "targetInputs": "identical-frozen",
+      "objectiveOracle": "identical-frozen"
+    }
+  ],
+  "eligibility": {
+    "publicRepository": true,
+    "explicitLicense": true,
+    "excludedSources": [
+      "ebay",
+      "private",
+      "internal",
+      "proprietary"
+    ],
+    "sourcePredatesTarget": true,
+    "targetFrozenBeforeHumanPatch": true,
+    "syntheticTargetForbidden": true,
+    "candidatePoolFrozenBeforeRetrieval": true
+  },
+  "freeze": {
+    "requiredBeforeExecution": true,
+    "target": {
+      "repository": null,
+      "license": null,
+      "buggyCommitSha": null,
+      "taskHash": null,
+      "focusedTestHash": null,
+      "regressionTestHash": null,
+      "frozenAt": null
+    },
+    "sourceExperience": {
+      "id": null,
+      "recordedAt": null,
+      "librarySha256": null,
+      "retrievalScore": null,
+      "retrievalThreshold": 0.05,
+      "capsuleSha256": null
+    },
+    "controls": {
+      "model": null,
+      "settingsSha256": null,
+      "promptTemplateSha256": null,
+      "budgetSha256": null,
+      "oracleSha256": null,
+      "genericAdviceSha256": "8d90bc397194fa3a6c146914e36860ffe887a77fb8de63ed9e5212099fdbd022"
+    }
+  },
+  "execution": {
+    "isolation": "separate sanitized repositories and worktree directories with no shared Git metadata or writable caches",
+    "freshContextPerArm": true,
+    "sharedCaches": false,
+    "armOrder": null,
+    "maxAttemptsPerArm": 3,
+    "maxDurationSecondsPerArm": 1500,
+    "humanPatchAvailableDuringArms": false,
+    "executeInThisRelease": false
+  },
+  "measurements": [
+    "success",
+    "attempts",
+    "commands",
+    "tests",
+    "nonCachedTokens",
+    "durationMs",
+    "filesInspected",
+    "filesChanged",
+    "patchHash"
+  ],
+  "evaluation": {
+    "focusedTestsRequired": true,
+    "regressionTestsRequired": true,
+    "sameOracleAcrossArms": true,
+    "thresholdChangesAfterResults": false,
+    "blindArmEvaluation": true,
+    "successDefinition": "The unchanged focused and regression checks pass without test edits or a protocol violation."
+  },
+  "publication": {
+    "publishNegativeOutcomes": true,
+    "publishAbstentions": true,
+    "publishProtocolDeviations": true,
+    "forbiddenArtifacts": [
+      "code",
+      "prompts",
+      "task-text",
+      "raw-logs",
+      "ratings",
+      "receipts",
+      "private-data"
+    ]
+  },
+  "stopConditions": [
+    "No verified result clears the frozen threshold.",
+    "The target is synthetic or constructed from a capsule.",
+    "The source experience does not predate the frozen target.",
+    "A public explicit license cannot be confirmed.",
+    "The human patch or another arm becomes visible.",
+    "Identical settings, budget, or objective oracles cannot be maintained.",
+    "Isolation, credentials, privacy, or authorization boundaries fail.",
+    "An experiment arm is requested before a separate execution authorization."
+  ]
+}

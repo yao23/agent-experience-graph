@@ -1,8 +1,8 @@
 {
   "name": "agent-experience-graph",
   "displayName": "Agent Experience Graph",
-  "description": "Retrieve verified debugging experience before your coding agent starts from scratch, with local-only feedback and auditable evidence.",
-  "version": "0.1.5",
+  "description": "Search a small verified-experience library, inspect evidence and limitations, hand off guarded guidance, validate the outcome, and save local feedback.",
+  "version": "0.1.6",
   "publisher": "AgentExperienceGraph",
   "icon": "images/icon.png",
   "license": "MIT-0",
@@ -24,20 +24,24 @@
     "Other"
   ],
   "keywords": [
-    "playwright",
-    "testing",
     "debugging",
     "agent",
-    "skills",
-    "experience"
+    "experience",
+    "verified",
+    "playwright",
+    "testing"
   ],
   "activationEvents": [
     "onView:aeg.playwright",
+    "onCommand:aeg.startWithVerifiedExperience",
     "onCommand:aeg.tryVerifiedExperience",
+    "onCommand:aeg.showVerifiedCoverage",
+    "onCommand:aeg.openFounderWalkthrough",
     "onCommand:aeg.openVerifiedExperienceDemo",
     "onCommand:aeg.diagnosePlaywrightFailure",
     "onCommand:aeg.verifyLatestExperience",
     "onCommand:aeg.showExperiences",
+    "onCommand:aeg.openGettingStarted",
     "onCommand:aeg.runPublicRepairLab",
     "onCommand:aeg.discoverSkills",
     "onCommand:aeg.recommendSkill",
@@ -48,60 +52,84 @@
   "contributes": {
     "commands": [
       {
-        "command": "aeg.tryVerifiedExperience",
-        "title": "AEG: Try a Verified Experience",
+        "command": "aeg.startWithVerifiedExperience",
+        "title": "AEG: Start with Verified Experience",
         "icon": "$(library)"
       },
       {
+        "command": "aeg.tryVerifiedExperience",
+        "title": "AEG: Try a Verified Experience (Compatibility Alias)"
+      },
+      {
+        "command": "aeg.showVerifiedCoverage",
+        "title": "AEG: Show Verified Library Coverage",
+        "icon": "$(book)"
+      },
+      {
+        "command": "aeg.openFounderWalkthrough",
+        "title": "AEG: Open Founder Proof Walkthrough",
+        "icon": "$(map)"
+      },
+      {
         "command": "aeg.openVerifiedExperienceDemo",
-        "title": "AEG: Open Verified Experience Challenge",
+        "title": "AEG (Advanced): Open Bundled Transfer Challenge",
         "icon": "$(lightbulb-autofix)"
       },
       {
         "command": "aeg.diagnosePlaywrightFailure",
-        "title": "AEG: Diagnose Playwright Failure",
+        "title": "AEG (Advanced): Diagnose Playwright Failure",
         "icon": "$(debug-alt)"
       },
       {
         "command": "aeg.verifyLatestExperience",
-        "title": "AEG: Mark Latest Diagnosis Outcome",
+        "title": "AEG (Advanced): Mark Latest Playwright Outcome",
         "icon": "$(pass)"
       },
       {
         "command": "aeg.showExperiences",
-        "title": "AEG: Show Playwright Experiences",
+        "title": "AEG (Advanced): Show Playwright Experiences",
         "icon": "$(history)"
       },
       {
         "command": "aeg.openGettingStarted",
-        "title": "AEG: Playwright Getting Started"
+        "title": "AEG (Advanced): Open Legacy Getting Started"
       },
       {
         "command": "aeg.runPublicRepairLab",
-        "title": "AEG: Run Public Repair Lab",
+        "title": "AEG (Advanced): Run Public Repair Lab",
         "icon": "$(beaker)"
       },
       {
         "command": "aeg.discoverSkills",
-        "title": "AEG: Discover Workspace Skills"
+        "title": "AEG (Advanced): Discover Workspace Skills"
       },
       {
         "command": "aeg.recommendSkill",
-        "title": "AEG: Recommend Skill for Current Task"
+        "title": "AEG (Advanced): Recommend Skill for Current Task"
       },
       {
         "command": "aeg.rateSkill",
-        "title": "AEG: Rate a Skill"
+        "title": "AEG (Advanced): Rate a Skill"
       },
       {
         "command": "aeg.showSkillMetrics",
-        "title": "AEG: Show Skill Metrics"
+        "title": "AEG (Advanced): Show Skill Metrics"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "aeg.tryVerifiedExperience"
+          "command": "aeg.startWithVerifiedExperience"
+        },
+        {
+          "command": "aeg.tryVerifiedExperience",
+          "when": "false"
+        },
+        {
+          "command": "aeg.showVerifiedCoverage"
+        },
+        {
+          "command": "aeg.openFounderWalkthrough"
         },
         {
           "command": "aeg.openVerifiedExperienceDemo"
@@ -136,41 +164,21 @@
       ],
       "editor/context": [
         {
-          "command": "aeg.tryVerifiedExperience",
+          "command": "aeg.startWithVerifiedExperience",
           "when": "editorHasSelection",
           "group": "navigation@1"
-        },
-        {
-          "command": "aeg.diagnosePlaywrightFailure",
-          "when": "editorHasSelection",
-          "group": "navigation@2"
-        },
-        {
-          "command": "aeg.recommendSkill",
-          "when": "editorHasSelection",
-          "group": "navigation@3"
         }
       ],
       "view/title": [
         {
-          "command": "aeg.tryVerifiedExperience",
+          "command": "aeg.startWithVerifiedExperience",
           "when": "view == aeg.playwright",
           "group": "navigation@1"
         },
         {
-          "command": "aeg.diagnosePlaywrightFailure",
+          "command": "aeg.showVerifiedCoverage",
           "when": "view == aeg.playwright",
           "group": "navigation@2"
-        },
-        {
-          "command": "aeg.showExperiences",
-          "when": "view == aeg.playwright",
-          "group": "navigation@3"
-        },
-        {
-          "command": "aeg.runPublicRepairLab",
-          "when": "view == aeg.playwright",
-          "group": "navigation@4"
         }
       ]
     },
@@ -187,14 +195,79 @@
       "aeg": [
         {
           "id": "aeg.playwright",
-          "name": "Verified Experience & Playwright"
+          "name": "Verified Experience"
         }
       ]
     },
     "viewsWelcome": [
       {
         "view": "aeg.playwright",
-        "contents": "Retrieve verified debugging experience before your coding agent starts from scratch.\n[Try a verified experience](command:aeg.tryVerifiedExperience)\n[Open the bundled challenge](command:aeg.openVerifiedExperienceDemo)\n[Diagnose a Playwright failure](command:aeg.diagnosePlaywrightFailure)\n[Run public repair lab](command:aeg.runPublicRepairLab)\n[Open getting started](command:aeg.openGettingStarted)"
+        "contents": "Search two bundled verified records locally. AEG may correctly abstain.\n[Start with Verified Experience](command:aeg.startWithVerifiedExperience)\n[View coverage](command:aeg.showVerifiedCoverage)\n[Open guided walkthrough](command:aeg.openFounderWalkthrough)"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "aegFounderProofLoop",
+        "title": "AEG verified-experience proof loop",
+        "description": "Complete one honest path from task or error to local outcome feedback.",
+        "steps": [
+          {
+            "id": "start",
+            "title": "1. Start with a task or error",
+            "description": "Select an error first or enter a short task. Search stays local.\n[Start with Verified Experience](command:aeg.startWithVerifiedExperience)\n[Use the bundled guided task](command:aeg.openVerifiedExperienceDemo)",
+            "media": {
+              "markdown": "walkthrough/01-start.md"
+            },
+            "completionEvents": [
+              "onCommand:aeg.startWithVerifiedExperience",
+              "onCommand:aeg.openVerifiedExperienceDemo"
+            ]
+          },
+          {
+            "id": "inspect",
+            "title": "2. Inspect the match or abstention",
+            "description": "Read the matching phrases, provenance, constraints, and limitations. A clear abstention is a correct outcome.",
+            "media": {
+              "markdown": "walkthrough/02-inspect.md"
+            },
+            "completionEvents": [
+              "onContext:aeg.proofLoopInspected || aeg.proofLoopAbstained"
+            ]
+          },
+          {
+            "id": "handoff",
+            "title": "3. Copy and paste the guarded capsule",
+            "description": "Copy only an above-threshold capsule, then paste it into the normal chat input. AEG does not send or run it.",
+            "media": {
+              "markdown": "walkthrough/03-handoff.md"
+            },
+            "completionEvents": [
+              "onContext:aeg.proofLoopCopied"
+            ]
+          },
+          {
+            "id": "validate",
+            "title": "4. Validate the outcome",
+            "description": "Run focused and regression checks, then record the observed result in the proof-loop panel.",
+            "media": {
+              "markdown": "walkthrough/04-validate.md"
+            },
+            "completionEvents": [
+              "onContext:aeg.proofLoopValidated"
+            ]
+          },
+          {
+            "id": "rate",
+            "title": "5. Save local feedback",
+            "description": "Rate the selected experience as helpful, partially helpful, irrelevant, or harmful. The record stays in this workspace.",
+            "media": {
+              "markdown": "walkthrough/05-rate.md"
+            },
+            "completionEvents": [
+              "onContext:aeg.proofLoopRated"
+            ]
+          }
+        ]
       }
     ],
     "configuration": {
@@ -221,7 +294,7 @@
         "aeg.verifiedExperienceFeedbackFile": {
           "type": "string",
           "default": ".aeg/verified-experience-feedback.json",
-          "description": "Workspace-relative file for local usefulness ratings of retrieved verified experiences."
+          "description": "Workspace-relative file for local validation outcomes and usefulness ratings of retrieved verified experiences."
         },
         "aeg.playwrightArtifactGlobs": {
           "type": "array",
@@ -247,13 +320,14 @@
     "sync:repair-lab": "node scripts/sync-repair-lab.js",
     "compile": "npm run sync:repair-lab && tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "test": "npm run compile && node --test test/core.test.js",
+    "test": "npm run compile && node --test test/*.test.js",
     "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.90.0",
     "@vscode/vsce": "^3.6.2",
+    "ajv": "^8.20.0",
     "typescript": "^5.5.0"
   }
 }

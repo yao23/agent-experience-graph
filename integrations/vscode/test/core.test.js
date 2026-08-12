@@ -15,8 +15,14 @@ const {
   describeBelowThresholdMatch,
   generateRecoveryCapsule,
   loadVerifiedExperienceLibrary,
-  rankVerifiedExperiences
+  rankVerifiedExperiences,
+  summarizeVerifiedLibraryCoverage
 } = require('../out/verifiedExperience');
+const {
+  beginProofLoop,
+  proofLoopStep,
+  transitionProofLoop
+} = require('../out/proofLoop');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -240,14 +246,91 @@ test('handles malformed libraries and no-match queries', () => {
 
 test('appends local usefulness feedback and recovers from malformed feedback', () => {
   const feedback = {
-    schemaVersion: '1.0.0',
+    schemaVersion: '1.1.0',
     recordedAt: '2026-08-04T00:00:00Z',
+    proofLoopSessionId: 'proof-test',
     experienceId: 'trace-test',
+    experienceTask: 'test verified experience',
     taskSummary: 'test task',
     rating: 'helpful',
+    validationOutcome: 'passed',
     retrievalScore: 0.12,
     localOnly: true
   };
   assert.deepEqual(appendExperienceFeedback('', feedback), [feedback]);
   assert.deepEqual(appendExperienceFeedback('{broken', feedback), [feedback]);
+});
+
+test('verified coverage reports the two records and two narrow task families', () => {
+  const coverage = summarizeVerifiedLibraryCoverage(bundledLibrary().experiences);
+  assert.equal(coverage.verifiedRecordCount, 2);
+  assert.equal(coverage.families.length, 2);
+  assert.deepEqual(coverage.uncoveredExperienceIds, []);
+  assert.deepEqual(coverage.families.map(family => family.recordCount), [1, 1]);
+});
+
+test('proof loop enforces query, match, inspect, copy, validate, and rate order', () => {
+  const match = rankVerifiedExperiences(
+    'repair stale resource ownership behind a protocol',
+    bundledLibrary().experiences
+  )[0];
+  let session = beginProofLoop('  repair stale resource ownership  ', 'proof-1');
+  assert.equal(session.query, 'repair stale resource ownership');
+  assert.equal(session.stage, 'query-entered');
+  session = transitionProofLoop(session, {type: 'match', match});
+  assert.equal(session.experienceId, match.experience.id);
+  session = transitionProofLoop(session, {type: 'inspect'});
+  assert.equal(proofLoopStep(session.stage), 2);
+  session = transitionProofLoop(session, {type: 'copy'});
+  assert.equal(proofLoopStep(session.stage), 3);
+  session = transitionProofLoop(session, {type: 'validate', outcome: 'passed'});
+  assert.equal(session.validationOutcome, 'passed');
+  assert.equal(proofLoopStep(session.stage), 4);
+  session = transitionProofLoop(session, {type: 'rate', rating: 'helpful'});
+  assert.equal(session.rating, 'helpful');
+  assert.equal(proofLoopStep(session.stage), 5);
+});
+
+test('proof loop treats abstention as a valid terminal retrieval state', () => {
+  const session = transitionProofLoop(beginProofLoop('uncovered task', 'proof-2'), {type: 'abstain'});
+  assert.equal(session.stage, 'abstained');
+  assert.equal(proofLoopStep(session.stage), 2);
+  assert.throws(() => transitionProofLoop(session, {type: 'copy'}), /Invalid proof-loop transition/);
+});
+
+test('proof loop rejects rating before validation and validation before handoff', () => {
+  const match = rankVerifiedExperiences(
+    'repair stale resource ownership behind a protocol',
+    bundledLibrary().experiences
+  )[0];
+  const matched = transitionProofLoop(beginProofLoop('task', 'proof-3'), {type: 'match', match});
+  const inspected = transitionProofLoop(matched, {type: 'inspect'});
+  assert.throws(
+    () => transitionProofLoop(inspected, {type: 'validate', outcome: 'passed'}),
+    /Invalid proof-loop transition/
+  );
+  const copied = transitionProofLoop(inspected, {type: 'copy'});
+  assert.throws(
+    () => transitionProofLoop(copied, {type: 'rate', rating: 'helpful'}),
+    /Invalid proof-loop transition/
+  );
+});
+
+test('manifest exposes one dominant command, compatibility alias, advanced titles, and walkthrough assets', () => {
+  const extensionRoot = path.resolve(__dirname, '..');
+  const manifest = JSON.parse(fs.readFileSync(path.join(extensionRoot, 'package.json'), 'utf8'));
+  assert.equal(manifest.version, '0.1.6');
+  assert.equal(manifest.contributes.commands[0].command, 'aeg.startWithVerifiedExperience');
+  assert.equal(manifest.contributes.commands[0].title, 'AEG: Start with Verified Experience');
+  assert.ok(manifest.contributes.commands.some(command => command.command === 'aeg.tryVerifiedExperience'));
+  assert.ok(
+    manifest.contributes.commands
+      .filter(command => ['aeg.diagnosePlaywrightFailure', 'aeg.runPublicRepairLab', 'aeg.discoverSkills'].includes(command.command))
+      .every(command => command.title.startsWith('AEG (Advanced):'))
+  );
+  const walkthrough = manifest.contributes.walkthroughs.find(item => item.id === 'aegFounderProofLoop');
+  assert.equal(walkthrough.steps.length, 5);
+  for (const step of walkthrough.steps) {
+    assert.ok(fs.existsSync(path.join(extensionRoot, step.media.markdown)), step.media.markdown);
+  }
 });
