@@ -2,87 +2,114 @@
   "schema_version": "1.0.0",
   "benchmark_id": "situated-experience-benchmark-v1",
   "family": "S1",
-  "recorded_at": "2026-08-14T19:42:01Z",
-  "implementation_commit": "55a9edafdda8ef4b82fe643de17bd9054929adca",
+  "recorded_at": "2026-08-14T21:04:18Z",
+  "implementation_commit": "be072873311621bfc7f56606db70b2f8a40d5bb5",
   "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
   "execution_plan_sha256": "6e6a3b75102d03d804cf0b8e1f51b3b1194fe5e1c39802b9d0cc64043bb9582a",
   "status": "blocked",
-  "blocker_code": "disposable_substrate_and_credential_broker_unavailable",
-  "available_substrate": {
-    "kind": "controller_checkout_process",
-    "accepted": false,
-    "reason": "The available Codex process shares the controller host, readable controller checkout, process state, and caches. No disposable-runner coordinator or credential broker is configured in tracked repository state."
+  "blocker_code": "hosted_model_credential_and_encryption_recipient_unavailable",
+  "hosted_evidence": {
+    "workflow_run_id": 31840751530,
+    "workflow_job_id": 94896861841,
+    "run_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751530",
+    "job_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751530/job/94896861841",
+    "sanitized_artifact_id": 9234146186,
+    "sanitized_artifact_sha256": "3a515538ae715d82a3fee624a4a838b1a3ca0bdbe2eaa6fc65ab1bf90c2465ae"
   },
-  "requirements": [
-    {
-      "id": "fresh_disposable_runner_per_arm",
-      "status": "not_demonstrated",
-      "evidence": "No runner coordinator or runner-provider configuration exists in tracked repository state."
-    },
-    {
-      "id": "exactly_one_sanitized_envelope_per_runner",
-      "status": "packaging_only_passed",
-      "evidence": "The frozen scheduler emitted 12 separate one-arm bundles, but no real runner received one."
-    },
-    {
-      "id": "cross_arm_isolation",
-      "status": "not_demonstrated",
-      "evidence": "Controller bundle audits passed; no actual multi-runner substrate exists for the adversarial sentinel test."
-    },
-    {
-      "id": "controller_checkout_isolation",
-      "status": "failed_for_available_host",
-      "evidence": "The only available execution process runs on the controller host where the checkout is readable."
-    },
-    {
-      "id": "hidden_evaluator_isolation",
-      "status": "packaging_only_passed",
-      "evidence": "Hidden tests are absent from generated bundles, but end-to-end runner isolation was not demonstrated."
-    },
-    {
-      "id": "human_patch_and_future_history_isolation",
-      "status": "packaging_only_passed",
-      "evidence": "Human patches and Git remotes/future history are absent from generated bundles, but the available host can read the controller fixture tree."
-    },
-    {
-      "id": "model_credential_brokering",
-      "status": "not_demonstrated",
-      "evidence": "No authenticated broker that withholds model/API credentials from agent commands is configured."
-    },
-    {
-      "id": "cache_log_conversation_workspace_and_process_isolation",
-      "status": "failed_for_available_host",
-      "evidence": "The available process shares host process and cache state; fresh-runner isolation cannot be asserted."
-    },
-    {
-      "id": "evaluator_after_agent_termination",
-      "status": "implementation_present_not_exercised",
-      "evidence": "The controller has a separate evaluate-arm command, but no arm terminated and no evaluator ran."
-    },
-    {
-      "id": "private_raw_output_retention_and_sanitized_return",
-      "status": "not_demonstrated",
-      "evidence": "The worker can capture raw events locally, but no private artifact sink or sanitized return channel is configured."
-    },
-    {
-      "id": "token_telemetry_for_both_modes",
-      "status": "not_demonstrated",
-      "evidence": "The worker parses token usage events, but no brokered control or treatment model call was allowed."
-    }
-  ],
-  "canary": {
-    "status": "not_run",
-    "reason": "There is no actual compliant disposable substrate on which a canary result would be probative. Running it in the controller process would itself violate the preregistered isolation boundary.",
-    "attempts": [
-      "another_runner_sentinel",
-      "controller_files",
-      "hidden_evaluator_files",
-      "human_patch_files",
-      "environment_credentials",
-      "prior_model_conversation_state",
-      "shared_writable_caches"
+  "runner": {
+    "label": "ubuntu-24.04",
+    "image_os": "ubuntu24",
+    "image_version": "20260810.271.1"
+  },
+  "container": {
+    "base_image": "python:3.12.11-slim-bookworm@sha256:519591d6871b7bc437060736b9f7456b8731f1499a57e22e6c285135ae657bf7",
+    "runtime_image_id": "sha256:423c7064cc5a754bec9c1a40756a27bd1814f0ed428b6de68250bfbd6fe9f005",
+    "security_configuration_matches": true,
+    "host_bind_mounts": 0,
+    "workspace_storage": "size-limited-tmpfs"
+  },
+  "fixture_revalidation": {
+    "buggy_failures_matched": 4,
+    "human_patches_and_registered_suites_passed": 4,
+    "details": [
+      "s1-01-scrapy-cookiejar source",
+      "s1-01-scrapy-cookiejar transfer",
+      "s1-02-fastapi-pydantic source",
+      "s1-02-fastapi-pydantic transfer"
     ]
   },
+  "credential_boundary": {
+    "credential_present_in_controller": false,
+    "credential_present_in_repair": false,
+    "github_token_present_in_repair": false,
+    "configured_actions_secret_names": [],
+    "evidence_policy": "No credential value or credential hash was read or recorded."
+  },
+  "canary": {
+    "status": "blocked",
+    "attempts": 29,
+    "passed": 28,
+    "failed": 1,
+    "passed_attempt_ids": [
+      "controller_files",
+      "api_key",
+      "github_token",
+      "environment_allowlist",
+      "other_arm",
+      "docker_socket",
+      "network_tcp",
+      "network_dns",
+      "hidden_tests",
+      "human_patch",
+      "prior_cache_or_transcript",
+      "prior_model_conversation",
+      "symlink_escape",
+      "absolute_path_escape",
+      "proc_escape",
+      "subprocess_inheritance",
+      "container_security_configuration",
+      "process_limit",
+      "memory_limit",
+      "workspace_tmpfs_limit",
+      "wall_time_limit",
+      "command_limit",
+      "token_limit",
+      "cost_limit",
+      "disk_limit",
+      "patch_export_allowlist",
+      "repair_termination_before_evaluator",
+      "sanitizer_measurement_schema"
+    ],
+    "failed_attempt": {
+      "id": "model_or_encryption_boundary",
+      "reason": "host model credential is unavailable; raw-output public certificate is unavailable"
+    },
+    "plaintext_raw_output_removed": true,
+    "benchmark_arms_executed": 0
+  },
+  "model_and_cost": {
+    "model": "gpt-5.6-sol",
+    "model_calls": 0,
+    "control_token_telemetry": false,
+    "treatment_token_telemetry": false,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "reason": "The host model credential was absent, so no model request was attempted."
+  },
+  "requirements": [
+    {"id": "fresh_disposable_runner_per_arm", "status": "implemented", "evidence": "The frozen matrix assigns every coordinate to a distinct GitHub-hosted job."},
+    {"id": "exactly_one_sanitized_envelope_per_runner", "status": "passed", "evidence": "The controller accepts only arm.json plus task and streams that checked bundle into an empty tmpfs."},
+    {"id": "cross_arm_isolation", "status": "passed", "evidence": "The hosted other-arm sentinel was unreachable; arm jobs use fresh VMs and no shared artifact input."},
+    {"id": "controller_checkout_isolation", "status": "passed", "evidence": "The repair container has no host bind mount and the controller sentinel was unreachable."},
+    {"id": "hidden_evaluator_isolation", "status": "passed", "evidence": "Hidden files were absent before repair termination and present only in the distinct evaluator canary."},
+    {"id": "human_patch_and_future_history_isolation", "status": "passed", "evidence": "Human patches were absent and task packaging retains only the frozen one-commit seed with no remote."},
+    {"id": "model_credential_brokering", "status": "blocked", "evidence": "The repair boundary proves credentials are absent, but no OPENAI_API_KEY is configured for the host controller."},
+    {"id": "cache_log_conversation_workspace_and_process_isolation", "status": "passed", "evidence": "Hosted cache, transcript, conversation, sibling, namespace, and subprocess probes passed."},
+    {"id": "evaluator_after_agent_termination", "status": "passed", "evidence": "The hosted repair container was absent before the distinct evaluator container started."},
+    {"id": "private_raw_output_retention_and_sanitized_return", "status": "blocked", "evidence": "Sanitization passed and plaintext was removed; encryption could not run without AEG_RAW_OUTPUT_CERT_PEM."},
+    {"id": "token_telemetry_for_both_modes", "status": "blocked", "evidence": "Unit accounting passed, but live control and treatment calls were prohibited by the absent credential."}
+  ],
   "arms": {
     "planned": 12,
     "started": 0,
@@ -90,6 +117,6 @@
     "task_failed": 0,
     "infrastructure_failed": 0
   },
-  "stop_action": "Stop before every benchmark arm and do not run hidden evaluation.",
+  "stop_action": "Keep the S1 execution matrix disabled until both Actions secrets are configured and this same hosted canary passes.",
   "classification": "infrastructure-blocked"
 }

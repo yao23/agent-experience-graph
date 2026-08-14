@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "benchmark_id": "situated-experience-benchmark-v1",
   "family": "S1",
-  "implementation_commit": "55a9edafdda8ef4b82fe643de17bd9054929adca",
+  "implementation_commit": "be072873311621bfc7f56606db70b2f8a40d5bb5",
   "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
   "execution_plan": {
     "path": "execution/s1-execution-plan.json",
@@ -11,10 +11,10 @@
   },
   "hosted_ci": {
     "status": "success",
-    "run_id": 31834107919,
-    "job_id": 94876399615,
-    "run_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31834107919",
-    "job_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31834107919/job/94876399615",
+    "run_id": 31840751520,
+    "job_id": 94896861600,
+    "run_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751520",
+    "job_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751520/job/94896861600",
     "covered": [
       "public and benchmark schemas",
       "S1 fixture and human-patch preflight",
@@ -26,6 +26,26 @@
       "site regression suite",
       "autonomous-lab validation and regression suite"
     ]
+  },
+  "hosted_substrate": {
+    "status": "blocked_at_missing_host_inputs",
+    "run_id": 31840751530,
+    "job_id": 94896861841,
+    "run_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751530",
+    "job_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31840751530/job/94896861841",
+    "sanitized_artifact_id": 9234146186,
+    "sanitized_artifact_sha256": "3a515538ae715d82a3fee624a4a838b1a3ca0bdbe2eaa6fc65ab1bf90c2465ae",
+    "passed": [
+      "pinned image build",
+      "four buggy failure signatures",
+      "four human patches and registered suites",
+      "28 adversarial isolation and enforcement attempts"
+    ],
+    "blocked": [
+      "host model call and both-mode token telemetry",
+      "encrypted raw artifact retention"
+    ],
+    "reason": "OPENAI_API_KEY and AEG_RAW_OUTPUT_CERT_PEM are not configured as Actions secrets."
   },
   "local_validation": [
     {
@@ -46,6 +66,11 @@
       "command": "python3 -m unittest discover -s autonomous-lab/scripts/tests -p 'test_*.py' -v",
       "result": "passed",
       "tests": 64
+    },
+    {
+      "command": "python3 -m unittest discover -s infrastructure/aeg-arm-execution-substrate/tests -p 'test_*.py' -v",
+      "result": "passed",
+      "tests": 20
     },
     {
       "command": "git diff --check",

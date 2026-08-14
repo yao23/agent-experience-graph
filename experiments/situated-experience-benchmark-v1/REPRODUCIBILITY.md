@@ -80,3 +80,26 @@ recorded. See `execution/substrate-preflight.json` and
 The frozen `decision-ledger.jsonl` remains unchanged because its digest is a
 protected input in `freeze.json`. Post-freeze execution decisions continue its
 hash chain in `execution/decision-ledger.jsonl`.
+
+## 2026-08-14 arm-substrate deviation
+
+Because zero arms and zero outcomes existed, execution infrastructure moved to
+the tracked AEG Arm Execution Substrate without changing a frozen benchmark
+input. The workflow pins `ubuntu-24.04` and container manifest
+`sha256:519591d6871b7bc437060736b9f7456b8731f1499a57e22e6c285135ae657bf7`.
+Each future matrix coordinate has its own fresh VM. The host copies only a
+validated envelope and frozen one-commit task into a 32 MiB tmpfs repair
+workspace with no bind mount or network; the host model client exposes four
+strict functions whose operations run only through the container worker.
+
+Hosted run 31840751530 used runner image `ubuntu24` version
+`20260810.271.1` and produced container image
+`sha256:423c7064cc5a754bec9c1a40756a27bd1814f0ed428b6de68250bfbd6fe9f005`.
+All four registered failure signatures and all four human patches passed in
+that image. The canary passed 28 isolation and enforcement attempts, removed
+its plaintext raw file, and executed zero benchmark arms. It remained blocked
+before a model request because the repository had no Actions secrets named
+`OPENAI_API_KEY` or `AEG_RAW_OUTPUT_CERT_PEM`. Therefore live control and
+treatment telemetry, cost accounting, and encrypted artifact retention remain
+unverified. The exact sanitized record is tracked in
+`execution/substrate-preflight.json`.
