@@ -1,0 +1,20 @@
+diff --git a/field_classifier.py b/field_classifier.py
+--- a/field_classifier.py
++++ b/field_classifier.py
+@@ -24,9 +24,14 @@ class Field:
+ 
+ 
+ def is_scalar_field(field):
+-    return (
++    if not (
+         field.shape == SINGLETON
+         and not issubclass(field.type_, BaseModel)
+         and not issubclass(field.type_, SEQUENCE_TYPES)
+         and not isinstance(field.schema, Body)
+-    )
++    ):
++        return False
++    if field.sub_fields:
++        if not all(is_scalar_field(sub_field) for sub_field in field.sub_fields):
++            return False
++    return True

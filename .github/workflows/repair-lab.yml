@@ -6,6 +6,7 @@ on:
       - "experiences/**"
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
+      - "experiments/situated-experience-benchmark-v1/**"
       - "experiments/v0.1.6-product-proof/**"
       - "integrations/vscode/**"
       - "scripts/**"
@@ -23,6 +24,7 @@ on:
       - "experiences/**"
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
+      - "experiments/situated-experience-benchmark-v1/**"
       - "experiments/v0.1.6-product-proof/**"
       - "integrations/vscode/**"
       - "scripts/**"
@@ -82,6 +84,7 @@ jobs:
             experiments/natural-transfer-benchmark/manifest.json \
             >/dev/null
           python3 experiments/natural-transfer-benchmark/run_benchmark.py validate
+          python3 experiments/situated-experience-benchmark-v1/run_benchmark.py validate
 
       - name: Test retrieval, validation, telemetry, and task preparation
         run: |
@@ -96,6 +99,8 @@ jobs:
           python3 experiments/natural-transfer-benchmark/run_benchmark.py self-test
           python3 experiments/natural-transfer-benchmark/test_run_benchmark.py
           python3 experiments/natural-transfer-benchmark/test_isolation_controller.py
+          python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
+          python3 experiments/situated-experience-benchmark-v1/test_benchmark.py
 
       - name: Install extension dependencies
         working-directory: integrations/vscode

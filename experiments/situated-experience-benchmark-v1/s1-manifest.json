@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "name": "Situated Experience Benchmark v1",
+  "status": "frozen-before-arm-execution",
+  "family": "S1",
+  "frozen_at": "2026-08-14T18:46:10Z",
+  "protocol": {
+    "replicates_per_arm": 3,
+    "modes": ["control", "aeg-assisted"],
+    "randomization_seed": "situated-experience-benchmark-v1-s1-2026-08-14",
+    "model": "gpt-5.6-sol",
+    "task_input_policy": "The transfer task, one-commit agent fixture, model, budget, and structured-result contract are byte-identical across modes. AEG-assisted receives only the frozen eight-field source experience; control receives no substitute advice.",
+    "budget": {
+      "wall_time_seconds": 900,
+      "max_completed_commands": 40,
+      "max_attempts": 3
+    },
+    "evaluation_thresholds": {
+      "effort_change_fraction": 0.2,
+      "max_treatment_token_overhead_fraction": 0.3,
+      "minimum_interpretable_repair_path_improvements": 1,
+      "negative_transfer_effort_measure_count": 2
+    },
+    "measurement_contract": "MEASUREMENT-CONTRACT.md",
+    "arm_orders": {
+      "s1-01-scrapy-cookiejar": [
+        ["aeg-assisted", "control"],
+        ["aeg-assisted", "control"],
+        ["aeg-assisted", "control"]
+      ],
+      "s1-02-fastapi-pydantic": [
+        ["control", "aeg-assisted"],
+        ["control", "aeg-assisted"],
+        ["control", "aeg-assisted"]
+      ]
+    }
+  },
+  "promotion_criteria": [
+    "no reduction in regression-free success",
+    "at least one interpretable repair-path improvement",
+    "no leakage or contamination",
+    "treatment token overhead no greater than 30% at the median",
+    "wall-time improvement alone cannot qualify as positive evidence"
+  ],
+  "stop_conditions": [
+    "hidden evaluator data is reachable by an agent",
+    "one arm can read another arm's artifacts",
+    "treatment contains or reveals the transfer patch",
+    "task, thresholds, or metrics change after outcomes are observed",
+    "two accepted pairs are both trivial one-shot tasks with identical paths",
+    "treatment causes additional regressions"
+  ],
+  "pairs": [
+    {
+      "pair_id": "s1-01-scrapy-cookiejar",
+      "title": "Scrapy CookieJar adapter across Python 3 protocol changes",
+      "project": "scrapy",
+      "license": "BSD-3-Clause",
+      "fixture_kind": "dependency-free-public-extract",
+      "source": {
+        "bug_id": "BugsInPy scrapy-31",
+        "buggy_commit": "5f02ef82e8560242eb34b336f385addfdef3211d",
+        "fixed_commit": "dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2",
+        "fixed_at": "2015-08-03T10:53:40-03:00",
+        "evidence_url": "https://github.com/scrapy/scrapy/commit/dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2"
+      },
+      "transfer": {
+        "bug_id": "BugsInPy scrapy-19",
+        "buggy_commit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
+        "fixed_commit": "1f743996ff00a7b728d59b93d0967e1eb50072f0",
+        "fixed_at": "2016-02-07T14:19:27+09:00",
+        "evidence_url": "https://github.com/scrapy/scrapy/commit/1f743996ff00a7b728d59b93d0967e1eb50072f0"
+      },
+      "experience_path": "fixtures/s1-01-scrapy-cookiejar/experience.json",
+      "experience_sha256": "221248cb25176a82d1c225512fa975f2193211159e7c8f7fa99aa1ae48c29e9a",
+      "source_fixture_sha256": "98cc2b20f1d4442f784f9ea361663730c75545429c5a30fd071169ef641224e1",
+      "source_human_patch_sha256": "6245f6f03eb01ecadb7196ef78e4722e8e0d1504e6e47f26785e795f84e64cac",
+      "source_hidden_tests_sha256": "593092563f21a4f948b64743137d613bf7ddd0f82a99326b0575099b9798e7a5",
+      "agent_fixture_sha256": "a4fdf752291d311f49ab0f8dc4a5a9c1c183c13c77afb65fd39f13383e2b01c8",
+      "human_patch_sha256": "ee17730a3f55556209695c9313a94136de9dcd578540b3063203d973cde33010",
+      "hidden_tests_sha256": "cfa5201669d335e35fb7dd21d794000f0910206b09fc3e6ce9e8f7a3549af398",
+      "source_public_test_command": "python3 -m unittest -v test_public.py",
+      "public_test_command": "python3 -m unittest -v test_public.py",
+      "hidden_test_command": "python3 -m unittest -v test_public.py test_hidden.py",
+      "source_initial_failure_pattern": "UnicodeDecodeError",
+      "initial_failure_pattern": "AttributeError.*full_url",
+      "historical_failure_paths": [
+        {
+          "id": "patch_standard_library_cookiejar",
+          "description": "Modify or monkeypatch the standard-library CookieJar instead of the adapter boundary.",
+          "pattern": "(?:http\\.cookiejar|cookielib).{0,80}(?:patch|setattr|monkey)"
+        },
+        {
+          "id": "widen_core_request_model",
+          "description": "Add CookieJar-only compatibility members to the core Scrapy Request model.",
+          "pattern": "(?:class Request|core Request).{0,120}(?:full_url|origin_req_host)"
+        }
+      ],
+      "environment_assumptions": [
+        "Python 3 CookieJar consumes attribute-shaped request protocol members.",
+        "The adapter's legacy methods already return the correct underlying values.",
+        "The failure is inside the adapter boundary rather than cookie policy or URL parsing."
+      ]
+    },
+    {
+      "pair_id": "s1-02-fastapi-pydantic",
+      "title": "FastAPI request handling across Pydantic field representations",
+      "project": "fastapi",
+      "license": "MIT",
+      "fixture_kind": "dependency-free-public-extract",
+      "source": {
+        "bug_id": "BugsInPy fastapi-11",
+        "buggy_commit": "bf229ad5d830eb5320f966d51a55e590e8d57008",
+        "fixed_commit": "06eb4219345a77d23484528c9d164eb8d2097fec",
+        "fixed_at": "2019-08-07T13:55:33-05:00",
+        "evidence_url": "https://github.com/fastapi/fastapi/commit/06eb4219345a77d23484528c9d164eb8d2097fec"
+      },
+      "transfer": {
+        "bug_id": "BugsInPy fastapi-6",
+        "buggy_commit": "5db99a27cf640864b4793807811848698c5ff4a2",
+        "fixed_commit": "874d24181e779ebc6e1c52afb7d6598f863fd6a8",
+        "fixed_at": "2020-01-17T12:45:55+01:00",
+        "evidence_url": "https://github.com/fastapi/fastapi/commit/874d24181e779ebc6e1c52afb7d6598f863fd6a8"
+      },
+      "experience_path": "fixtures/s1-02-fastapi-pydantic/experience.json",
+      "experience_sha256": "3645fbb143a670e0ead1d4cbc540a865a50bf9ec8c91abb53a90582361e49d8a",
+      "source_fixture_sha256": "2c2b7c18668300a6cfcd1e39d7617a23242733dfdb799756a3c721de289a4976",
+      "source_human_patch_sha256": "4a82762478f56df4795c5ec2297675552cdd407091338fbd6b98cde032148f46",
+      "source_hidden_tests_sha256": "5f1bc4b426f5da56dcb50f6a7d0d8d3fc83f5db1a6ee117ca121876d5abf34a1",
+      "agent_fixture_sha256": "5046ac3d26ec6685e385191146b6b3f353f0fa787278f866fd5547a0344ff4f9",
+      "human_patch_sha256": "6f004132a1f1c8d5013290e61e6f915746e48f49901ba965ff00e99c6bbf27b9",
+      "hidden_tests_sha256": "1e5efeb50d47d2ccdb9f1731789d84cfc0cabeefeb9c25e899deeb3b0ff1a76f",
+      "source_public_test_command": "python3 -m unittest -v test_public.py",
+      "public_test_command": "python3 -m unittest -v test_public.py",
+      "hidden_test_command": "python3 -m unittest -v test_public.py test_hidden.py",
+      "source_initial_failure_pattern": "True is not false",
+      "initial_failure_pattern": "\\['first', 'second', 'third'\\]",
+      "historical_failure_paths": [
+        {
+          "id": "patch_multipart_parser",
+          "description": "Change raw multipart or FormData parsing even though submitted values are already complete.",
+          "pattern": "(?:multipart|formparsers|FormData parser).{0,100}(?:patch|change|edit)"
+        },
+        {
+          "id": "special_case_list_only",
+          "description": "Repair only built-in list while leaving equivalent set and tuple representations broken.",
+          "pattern": "field\\.type_\\s*(?:==|is)\\s*list"
+        }
+      ],
+      "environment_assumptions": [
+        "Pydantic 1.x can encode equivalent collection annotations through shape or concrete type.",
+        "FormData already retains every repeated submitted value.",
+        "Scalar and typing-shape extraction behavior must remain unchanged."
+      ]
+    }
+  ]
+}

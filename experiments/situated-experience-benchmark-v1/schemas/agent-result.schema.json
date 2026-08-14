@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "first_repair_location",
+    "proposed_approach",
+    "experience_disposition",
+    "experience_reason",
+    "environment_assumptions_checked"
+  ],
+  "properties": {
+    "summary": {"type": "string"},
+    "first_repair_location": {"type": "string"},
+    "proposed_approach": {"type": "string"},
+    "experience_disposition": {"enum": ["used", "rejected", "abstained"]},
+    "experience_reason": {"type": "string"},
+    "environment_assumptions_checked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assumption", "checked", "evidence"],
+        "properties": {
+          "assumption": {"type": "string"},
+          "checked": {"type": "boolean"},
+          "evidence": {"type": "string"}
+        }
+      }
+    }
+  }
+}

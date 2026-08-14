@@ -1,0 +1,14 @@
+diff --git a/form_extractor.py b/form_extractor.py
+--- a/form_extractor.py
++++ b/form_extractor.py
+@@ -29,7 +29,9 @@ class Field:
+ def request_body_to_args(required_params, received_body):
+     values = {}
+     for field in required_params:
+-        if field.shape in SEQUENCE_SHAPES and isinstance(received_body, FormData):
++        if (
++            field.shape in SEQUENCE_SHAPES or field.type_ in SEQUENCE_TYPES
++        ) and isinstance(received_body, FormData):
+             value = received_body.getlist(field.alias)
+         else:
+             value = received_body.get(field.alias)

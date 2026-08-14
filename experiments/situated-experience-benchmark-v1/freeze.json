@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "family": "S1",
+  "frozen_at": "2026-08-14T18:46:10Z",
+  "arms_executed_at_freeze": 0,
+  "protected_inputs": {
+    "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
+    "registry_sha256": "165767cde12f359b2bee9d43b6ea4ae3de9705d2a4d0f9773fec4f254ffce137",
+    "screening_sha256": "ced8f0eb25af8c05016a609d7645a246d26214cfd93d738c52720894d7ddd2a5",
+    "candidate_screening_contract_sha256": "575b2bfe6e9c9f0d1ed4a44c7a80eeb51735da67a3c819f576d29364cfffe88e",
+    "decision_ledger_sha256": "f0c0ac0a2b2f6485f074459e89c419efdb0423385925f5d23ed350f1112df509",
+    "measurement_contract_sha256": "6596698ee60d1d5b08de90eb3ad17386f7021a60f8f535570a2d55cf658b8324",
+    "controller_sha256": "1a06bb911c09823479d98bbc8d7bfa9aa77a99a78f43c98dbe02d7d5a9511116",
+    "worker_sha256": "2a9cdf2f3c0c9ea799eef6b31ffca5e911d746db1536841b4ebddcd8e0ed07af",
+    "schemas_tree_sha256": "31a435e4ded99b3e3179b6f072d8dc83d41070d7aa969d368fc580f41fe1362a",
+    "fixtures_tree_sha256": "0cd42cac9497c7e410b906a86108d4e21613ed8a6a25728994a4a1a43f22cddc"
+  }
+}

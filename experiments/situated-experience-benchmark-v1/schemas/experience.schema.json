@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/situated-experience-v1.json",
+  "title": "Situated Experience Benchmark compact experience",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "version_constraints",
+    "failed_approach",
+    "invalidating_evidence",
+    "recovery_principle",
+    "validated_outcome",
+    "applicability_conditions",
+    "known_invalidation_conditions"
+  ],
+  "properties": {
+    "context": {"type": "string", "minLength": 20},
+    "version_constraints": {"type": "string", "minLength": 20},
+    "failed_approach": {"type": "string", "minLength": 20},
+    "invalidating_evidence": {"type": "string", "minLength": 20},
+    "recovery_principle": {"type": "string", "minLength": 20},
+    "validated_outcome": {"type": "string", "minLength": 20},
+    "applicability_conditions": {"type": "string", "minLength": 20},
+    "known_invalidation_conditions": {"type": "string", "minLength": 20}
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "name": "Situated Experience Benchmark v1",
+  "purpose": "Test whether AEG provides value when successful repair depends on situated knowledge about version state, execution environment, historical failures, cross-module consequences, multi-agent handoffs, and experience applicability.",
+  "families": [
+    {
+      "order": 1,
+      "id": "S1",
+      "name": "dependency and version migration",
+      "status": "frozen_ready",
+      "situated_knowledge": ["version state", "dependency representation", "execution environment", "experience applicability"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s1-dependency-and-version-migration",
+      "manifest_path": "s1-manifest.json"
+    },
+    {
+      "order": 2,
+      "id": "S2",
+      "name": "CI and deployment failures",
+      "status": "design_only",
+      "situated_knowledge": ["runner image", "CI matrix", "deployment environment", "historical job failure"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s2-ci-and-deployment-failures"
+    },
+    {
+      "order": 3,
+      "id": "S3",
+      "name": "cross-module regressions",
+      "status": "design_only",
+      "situated_knowledge": ["module ownership", "downstream consumers", "cross-module consequences"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s3-cross-module-regressions"
+    },
+    {
+      "order": 4,
+      "id": "S4",
+      "name": "Planner-Coder-Tester-Reviewer collaboration",
+      "status": "design_only",
+      "situated_knowledge": ["role state", "handoff fidelity", "artifact provenance", "multi-agent coordination"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s4-planner-coder-tester-reviewer-collaboration"
+    },
+    {
+      "order": 5,
+      "id": "S5",
+      "name": "misleading repairs and repeated failure paths",
+      "status": "design_only",
+      "situated_knowledge": ["historical false positives", "invalidated repair paths", "negative evidence"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s5-misleading-repairs-and-repeated-failure-paths"
+    },
+    {
+      "order": 6,
+      "id": "S6",
+      "name": "experience invalidation under environment drift",
+      "status": "design_only",
+      "situated_knowledge": ["environment drift", "experience invalidation", "abstention", "version constraints"],
+      "screening_rules_path": "CANDIDATE-SCREENING.md#s6-experience-invalidation-under-environment-drift"
+    }
+  ]
+}

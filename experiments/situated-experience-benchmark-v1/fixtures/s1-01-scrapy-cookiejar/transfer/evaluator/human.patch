@@ -1,0 +1,32 @@
+diff --git a/cookie_adapter.py b/cookie_adapter.py
+--- a/cookie_adapter.py
++++ b/cookie_adapter.py
+@@ -23,6 +23,18 @@ class WrappedRequest:
+     def is_unverifiable(self):
+         return self.request.meta.get("is_unverifiable", False)
+ 
++    @property
++    def full_url(self):
++        return self.get_full_url()
++
++    @property
++    def host(self):
++        return self.get_host()
++
++    @property
++    def type(self):
++        return self.get_type()
++
+     @property
+     def unverifiable(self):
+         return self.is_unverifiable()
+@@ -30,5 +42,9 @@ class WrappedRequest:
+     def get_origin_req_host(self):
+         return urlparse(self.request.url).hostname
+ 
++    @property
++    def origin_req_host(self):
++        return self.get_origin_req_host()
++
+     def has_header(self, name):
+         return name in self.request.headers

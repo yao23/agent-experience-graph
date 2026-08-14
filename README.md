@@ -163,6 +163,25 @@ median and 732 fewer non-cached tokens, while wall time regressed by 18.2 second
 This is a bounded tool-cycle/cost signal on one task family, not a general speed
 or success-rate claim. See `experiments/public-repair-lab/RESULTS.md`.
 
+## Situated Experience Benchmark v1
+
+`experiments/situated-experience-benchmark-v1/` stages a broader, ordered test
+of whether AEG helps when repair depends on version state, execution environment,
+historical failures, cross-module consequences, multi-agent handoffs, and
+experience applicability. Its six families run from dependency migration (S1)
+through experience invalidation under environment drift (S6).
+
+Only S1 is implemented. Exactly two natural public source-transfer pairs,
+Scrapy/Python CookieJar and FastAPI/Pydantic field representations, are frozen
+with offline fixtures, hidden evaluators, deterministic three-replicate arm
+orders, common measurement rules, and fail-closed isolation/leakage preflights.
+No benchmark arm has run, and S2-S6 remain screening rules only.
+
+```bash
+python3 experiments/situated-experience-benchmark-v1/run_benchmark.py validate
+python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
+```
+
 In plain English, this repository contains:
 
 - a guide that tells an agent how to use prior experience

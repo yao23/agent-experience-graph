@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "screened_before_execution": true,
+  "candidates": [
+    {
+      "candidate_id": "cand-scrapy-cookiejar-python3",
+      "family": "S1",
+      "status": "accepted",
+      "title": "Scrapy CookieJar adapter across Python 3 protocol changes",
+      "public_evidence": [
+        "BugsInPy scrapy-31 and scrapy-19",
+        "https://github.com/scrapy/scrapy/commit/dba7e39f61cbe2c22d3c9064f32f6e36d74f14b2",
+        "https://github.com/scrapy/scrapy/commit/1f743996ff00a7b728d59b93d0967e1eb50072f0"
+      ],
+      "decision_reasons": [
+        "The source fix predates the transfer fix and both are natural public repairs.",
+        "The pair shares one Python 3 CookieJar adapter boundary but source decoding and transfer protocol-member patches are non-identical.",
+        "A dependency-free public extract reproduces the registered source and transfer failures offline, and hidden evaluator coverage is available."
+      ],
+      "pair_id": "s1-01-scrapy-cookiejar"
+    },
+    {
+      "candidate_id": "cand-fastapi-pydantic-representations",
+      "family": "S1",
+      "status": "accepted",
+      "title": "FastAPI request handling across Pydantic field representations",
+      "public_evidence": [
+        "BugsInPy fastapi-11 and fastapi-6",
+        "https://github.com/fastapi/fastapi/commit/06eb4219345a77d23484528c9d164eb8d2097fec",
+        "https://github.com/fastapi/fastapi/commit/874d24181e779ebc6e1c52afb7d6598f863fd6a8"
+      ],
+      "decision_reasons": [
+        "The source fix predates the transfer fix and both were independently repaired upstream.",
+        "Both require reasoning about Pydantic 1.x metadata representations, while source Union classification and transfer concrete-form extraction use non-identical code paths and patches.",
+        "Visible and hidden dependency-free tests preserve the upstream failing representation and execute offline."
+      ],
+      "pair_id": "s1-02-fastapi-pydantic"
+    },
+    {
+      "candidate_id": "cand-pine-checkout-v4-v6",
+      "family": "S1",
+      "status": "rejected",
+      "title": "Pine actions/checkout v4 to v6 workflow replacement",
+      "public_evidence": [
+        "dogfood/self-consumption-batch-01/candidates/02-api-dependency-migration.json",
+        "batonogov/pine issue 122"
+      ],
+      "decision_reasons": [
+        "The tracked evidence records only static reference and YAML checks, not GitHub-hosted Node 24 behavior.",
+        "The migration is an identical three-line version replacement and would add a trivial path with no blind behavioral evaluator."
+      ],
+      "rejection_code": "trivial_static_migration"
+    },
+    {
+      "candidate_id": "cand-sanic-asyncio-server",
+      "family": "S1",
+      "status": "rejected",
+      "title": "Sanic AsyncioServer parity with Python 3.7",
+      "public_evidence": [
+        "experiences/work-queue/runs/AM-01/STATUS.md",
+        "BugsInPy sanic-2"
+      ],
+      "decision_reasons": [
+        "The tracked record is partial: complete historical suite coverage and older asyncio or uvloop compatibility remain unverified.",
+        "The recorded candidate omits the human repair's compatibility behavior, so the current fixture cannot support regression-free blind evaluation."
+      ],
+      "rejection_code": "regression_coverage_incomplete"
+    },
+    {
+      "candidate_id": "cand-keras-tfoptimizer",
+      "family": "S1",
+      "status": "rejected",
+      "title": "Keras TFOptimizer named-argument contract",
+      "public_evidence": [
+        "experiences/work-queue/README.md#am-02--keras-tfoptimizer-named-argument-contract",
+        "BugsInPy keras-4"
+      ],
+      "decision_reasons": [
+        "The historical TensorFlow and Keras dependency stack was not staged and is not reproducible in the bounded offline environment.",
+        "No accepted, earlier non-identical source migration was established before freeze."
+      ],
+      "rejection_code": "oracle_not_reproducible_offline"
+    },
+    {
+      "candidate_id": "cand-ansible-numeric-version",
+      "family": "S1",
+      "status": "rejected",
+      "title": "Ansible resolver with numeric dependency versions",
+      "public_evidence": [
+        "experiences/work-queue/README.md#am-03--ansible-dependency-resolver-accepts-non-string-versions",
+        "BugsInPy ansible-6"
+      ],
+      "decision_reasons": [
+        "The task is a configuration-type normalization repair, but no source-before-transfer pair with a shared situated migration principle was verified.",
+        "Accepting a transfer-only task would violate the source-transfer design."
+      ],
+      "rejection_code": "source_transfer_relation_missing"
+    },
+    {
+      "candidate_id": "cand-scrapy-location-normalization",
+      "family": "S1",
+      "status": "rejected",
+      "title": "Scrapy redirect Location normalization",
+      "public_evidence": [
+        "experiments/natural-transfer-benchmark/manifest.json task nt-02",
+        "BugsInPy scrapy-10 and scrapy-3"
+      ],
+      "decision_reasons": [
+        "The task is a URL-semantics regression and does not depend on dependency or version migration state.",
+        "It remains eligible for a future cross-module or misleading-path family, but not S1."
+      ],
+      "rejection_code": "family_mismatch"
+    }
+  ]
+}

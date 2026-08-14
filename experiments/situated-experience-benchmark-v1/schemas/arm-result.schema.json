@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/situated-arm-result-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "benchmark_id", "family", "pair_id", "replicate", "mode", "evaluation_status",
+    "input_hashes", "budget", "regression_free_success", "attempts",
+    "completed_commands", "tests_run", "files_inspected", "files_changed",
+    "patch_size", "wall_time_ms", "tokens", "failed_historical_paths_repeated",
+    "environment_assumptions_checked", "experiences", "negative_transfer",
+    "evaluator_findings", "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "benchmark_id": {"const": "situated-experience-benchmark-v1"},
+    "family": {"const": "S1"},
+    "pair_id": {"type": "string"},
+    "replicate": {"type": "integer", "minimum": 1, "maximum": 3},
+    "mode": {"enum": ["control", "aeg-assisted"]},
+    "evaluation_status": {"enum": ["captured", "evaluated"]},
+    "input_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "minProperties": 3},
+    "budget": {"type": "object", "additionalProperties": false, "required": ["wall_time_seconds", "max_completed_commands", "max_attempts"], "properties": {"wall_time_seconds": {"type": "integer", "minimum": 1}, "max_completed_commands": {"type": "integer", "minimum": 1}, "max_attempts": {"type": "integer", "minimum": 1}}},
+    "regression_free_success": {"type": ["boolean", "null"]},
+    "attempts": {"type": "integer", "minimum": 0},
+    "completed_commands": {"type": "integer", "minimum": 0},
+    "tests_run": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["command", "scope", "passed"], "properties": {"command": {"type": "string"}, "scope": {"enum": ["agent", "focused", "hidden", "regression", "evaluator"]}, "passed": {"type": "boolean"}}}},
+    "files_inspected": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "files_changed": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "patch_size": {"type": "object", "additionalProperties": false, "required": ["added_lines", "deleted_lines", "files"], "properties": {"added_lines": {"type": "integer", "minimum": 0}, "deleted_lines": {"type": "integer", "minimum": 0}, "files": {"type": "integer", "minimum": 0}}},
+    "wall_time_ms": {"type": "integer", "minimum": 0},
+    "tokens": {"type": "object", "additionalProperties": false, "required": ["input", "output", "unavailable_reason"], "properties": {"input": {"type": ["integer", "null"], "minimum": 0}, "output": {"type": ["integer", "null"], "minimum": 0}, "unavailable_reason": {"type": ["string", "null"]}}},
+    "failed_historical_paths_repeated": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "environment_assumptions_checked": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["assumption", "checked", "evidence"], "properties": {"assumption": {"type": "string"}, "checked": {"type": "boolean"}, "evidence": {"type": "string"}}}},
+    "experiences": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["experience_id", "disposition", "reason"], "properties": {"experience_id": {"type": ["string", "null"]}, "disposition": {"enum": ["retrieved", "used", "rejected", "abstained"]}, "reason": {"type": "string"}}}},
+    "negative_transfer": {"type": ["boolean", "null"]},
+    "evaluator_findings": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
