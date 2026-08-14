@@ -50,3 +50,33 @@ and refuses an envelope whose `--mode` differs from `control` or
 `evaluate-arm` after the agent process has terminated.
 
 No arm has been executed while preparing this record.
+
+## 2026-08-14 execution continuation
+
+The continuation began from clean commit
+`55a9edafdda8ef4b82fe643de17bd9054929adca`. The manifest recomputed to
+`95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9`.
+Draft PR 28 hosted run 31834107919 passed schema, fixture, controller isolation,
+leakage, evaluator-access, extension, compilation, and packaging checks for
+that commit. The hosted workflow does not run the site or autonomous-lab
+suites; local runs passed 8 site tests and 64 autonomous-lab tests plus the
+lab's validation, status, next-action, and report checks.
+
+The frozen schedule command generated 12 bundles at
+`2026-08-14T19:39:06.329005+00:00`. Its exact tracked plan is
+`execution/s1-execution-plan.json`, SHA-256
+`6e6a3b75102d03d804cf0b8e1f51b3b1194fe5e1c39802b9d0cc64043bb9582a`.
+
+Execution then stopped before the non-benchmark canary and before every arm.
+Tracked repository state does not identify a disposable-runner provider or an
+authenticated model broker that withholds credentials from agent commands.
+The available Codex process shares the controller host and cannot satisfy the
+controller, evaluator, cache, conversation, workspace, or process-isolation
+requirements. It was not used as a substitute. Consequently zero model calls,
+zero input/output tokens, zero hidden evaluations, and zero arm outcomes were
+recorded. See `execution/substrate-preflight.json` and
+`execution/RESULTS.md`.
+
+The frozen `decision-ledger.jsonl` remains unchanged because its digest is a
+protected input in `freeze.json`. Post-freeze execution decisions continue its
+hash chain in `execution/decision-ledger.jsonl`.

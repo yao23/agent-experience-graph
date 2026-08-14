@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "family": "S1",
+  "recorded_at": "2026-08-14T19:42:01Z",
+  "implementation_commit": "55a9edafdda8ef4b82fe643de17bd9054929adca",
+  "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
+  "execution_plan_sha256": "6e6a3b75102d03d804cf0b8e1f51b3b1194fe5e1c39802b9d0cc64043bb9582a",
+  "status": "blocked",
+  "blocker_code": "disposable_substrate_and_credential_broker_unavailable",
+  "available_substrate": {
+    "kind": "controller_checkout_process",
+    "accepted": false,
+    "reason": "The available Codex process shares the controller host, readable controller checkout, process state, and caches. No disposable-runner coordinator or credential broker is configured in tracked repository state."
+  },
+  "requirements": [
+    {
+      "id": "fresh_disposable_runner_per_arm",
+      "status": "not_demonstrated",
+      "evidence": "No runner coordinator or runner-provider configuration exists in tracked repository state."
+    },
+    {
+      "id": "exactly_one_sanitized_envelope_per_runner",
+      "status": "packaging_only_passed",
+      "evidence": "The frozen scheduler emitted 12 separate one-arm bundles, but no real runner received one."
+    },
+    {
+      "id": "cross_arm_isolation",
+      "status": "not_demonstrated",
+      "evidence": "Controller bundle audits passed; no actual multi-runner substrate exists for the adversarial sentinel test."
+    },
+    {
+      "id": "controller_checkout_isolation",
+      "status": "failed_for_available_host",
+      "evidence": "The only available execution process runs on the controller host where the checkout is readable."
+    },
+    {
+      "id": "hidden_evaluator_isolation",
+      "status": "packaging_only_passed",
+      "evidence": "Hidden tests are absent from generated bundles, but end-to-end runner isolation was not demonstrated."
+    },
+    {
+      "id": "human_patch_and_future_history_isolation",
+      "status": "packaging_only_passed",
+      "evidence": "Human patches and Git remotes/future history are absent from generated bundles, but the available host can read the controller fixture tree."
+    },
+    {
+      "id": "model_credential_brokering",
+      "status": "not_demonstrated",
+      "evidence": "No authenticated broker that withholds model/API credentials from agent commands is configured."
+    },
+    {
+      "id": "cache_log_conversation_workspace_and_process_isolation",
+      "status": "failed_for_available_host",
+      "evidence": "The available process shares host process and cache state; fresh-runner isolation cannot be asserted."
+    },
+    {
+      "id": "evaluator_after_agent_termination",
+      "status": "implementation_present_not_exercised",
+      "evidence": "The controller has a separate evaluate-arm command, but no arm terminated and no evaluator ran."
+    },
+    {
+      "id": "private_raw_output_retention_and_sanitized_return",
+      "status": "not_demonstrated",
+      "evidence": "The worker can capture raw events locally, but no private artifact sink or sanitized return channel is configured."
+    },
+    {
+      "id": "token_telemetry_for_both_modes",
+      "status": "not_demonstrated",
+      "evidence": "The worker parses token usage events, but no brokered control or treatment model call was allowed."
+    }
+  ],
+  "canary": {
+    "status": "not_run",
+    "reason": "There is no actual compliant disposable substrate on which a canary result would be probative. Running it in the controller process would itself violate the preregistered isolation boundary.",
+    "attempts": [
+      "another_runner_sentinel",
+      "controller_files",
+      "hidden_evaluator_files",
+      "human_patch_files",
+      "environment_credentials",
+      "prior_model_conversation_state",
+      "shared_writable_caches"
+    ]
+  },
+  "arms": {
+    "planned": 12,
+    "started": 0,
+    "completed": 0,
+    "task_failed": 0,
+    "infrastructure_failed": 0
+  },
+  "stop_action": "Stop before every benchmark arm and do not run hidden evaluation.",
+  "classification": "infrastructure-blocked"
+}

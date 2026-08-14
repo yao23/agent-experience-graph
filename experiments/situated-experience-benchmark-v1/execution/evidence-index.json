@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark_id": "situated-experience-benchmark-v1",
+  "family": "S1",
+  "implementation_commit": "55a9edafdda8ef4b82fe643de17bd9054929adca",
+  "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
+  "execution_plan": {
+    "path": "execution/s1-execution-plan.json",
+    "sha256": "6e6a3b75102d03d804cf0b8e1f51b3b1194fe5e1c39802b9d0cc64043bb9582a",
+    "arms": 12
+  },
+  "hosted_ci": {
+    "status": "success",
+    "run_id": 31834107919,
+    "job_id": 94876399615,
+    "run_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31834107919",
+    "job_url": "https://github.com/yao23/agent-experience-graph/actions/runs/31834107919/job/94876399615",
+    "covered": [
+      "public and benchmark schemas",
+      "S1 fixture and human-patch preflight",
+      "S1 packaging, isolation, leakage, and evaluator-access controller tests",
+      "extension tests and compilation",
+      "extension packaging"
+    ],
+    "not_covered": [
+      "site regression suite",
+      "autonomous-lab validation and regression suite"
+    ]
+  },
+  "local_validation": [
+    {
+      "command": "python3 scripts/test_site.py",
+      "result": "passed",
+      "tests": 8
+    },
+    {
+      "command": "python3 autonomous-lab/scripts/lab.py validate --base-ref origin/main",
+      "result": "passed",
+      "ledger_events": 17
+    },
+    {
+      "command": "python3 autonomous-lab/scripts/lab.py status && python3 autonomous-lab/scripts/lab.py next && python3 autonomous-lab/scripts/lab.py report --check",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -m unittest discover -s autonomous-lab/scripts/tests -p 'test_*.py' -v",
+      "result": "passed",
+      "tests": 64
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "substrate_preflight": "execution/substrate-preflight.json",
+  "cost_ledger": "execution/cost-ledger.jsonl",
+  "execution_decision_ledger": "execution/decision-ledger.jsonl",
+  "result_summary": "execution/RESULTS.md"
+}
