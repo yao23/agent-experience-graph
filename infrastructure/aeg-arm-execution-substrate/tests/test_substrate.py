@@ -233,6 +233,25 @@ class WorkerBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(worker.WorkerError, "creation"):
             worker.export_workspace_patch(4096)
 
+    def test_sanitized_bundle_stream_imports_into_empty_tmpfs(self):
+        source = self.root / "source"
+        source.mkdir()
+        (source / "arm.json").write_text('{"public_test_command":"python3 --version"}\n', encoding="utf-8")
+        source_task = source / "task"
+        source_task.mkdir()
+        (source_task / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+        payload = controller.encoded_sanitized_bundle(source, 4096)
+        imported_root = self.root / "imported"
+        imported_root.mkdir()
+        current = worker.ROOT, worker.TASK, worker.ARM
+        worker.ROOT, worker.TASK, worker.ARM = imported_root, imported_root / "task", imported_root / "arm.json"
+        try:
+            result = worker.import_bundle(payload, 4096)
+        finally:
+            worker.ROOT, worker.TASK, worker.ARM = current
+        self.assertEqual(result["bytes"], 54)
+        self.assertEqual((imported_root / "task" / "module.py").read_text(encoding="utf-8"), "VALUE = 1\n")
+
 
 class ModelAndEncryptionTests(unittest.TestCase):
     def setUp(self):

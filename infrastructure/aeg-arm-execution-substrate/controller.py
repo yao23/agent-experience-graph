@@ -2,8 +2,10 @@
 """Host-only controller for disposable AEG repair and evaluator containers."""
 
 import argparse
+import base64
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import re
@@ -11,6 +13,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import time
 import urllib.error
@@ -86,6 +89,36 @@ def run(args, cwd=None, input_text=None, timeout=120, check=True, env=None):
     if check and result.returncode:
         raise ControllerError(result.stderr.strip() or result.stdout.strip() or f"command failed: {args[0]}")
     return result
+
+
+def encoded_sanitized_bundle(task_root, max_bytes):
+    task_root = Path(task_root)
+    entries = [task_root / "arm.json", task_root / "task"]
+    entries.extend(sorted((task_root / "task").rglob("*")))
+    total = 0
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w:gz", format=tarfile.PAX_FORMAT) as archive:
+        for path in entries:
+            if path.is_symlink():
+                raise ControllerError("container bundle contains a symlink")
+            if not path.is_dir() and not path.is_file():
+                raise ControllerError("container bundle contains a non-regular entry")
+            if path.is_file():
+                total += path.stat().st_size
+            if total > max_bytes:
+                raise ControllerError("container bundle exceeds the workspace ceiling")
+            relative = path.relative_to(task_root).as_posix()
+            info = archive.gettarinfo(str(path), arcname=relative)
+            info.uid = info.gid = 0
+            info.uname = info.gname = ""
+            info.mtime = 0
+            info.mode = 0o755 if path.is_dir() else 0o644
+            if path.is_file():
+                with path.open("rb") as handle:
+                    archive.addfile(info, handle)
+            else:
+                archive.addfile(info)
+    return base64.b64encode(buffer.getvalue()).decode("ascii")
 
 
 def expected_arm_ids(manifest):
@@ -237,8 +270,12 @@ class DockerRuntime:
         if not container_id:
             raise ControllerError("Docker did not return a container id")
         try:
-            run(["docker", "cp", "--archive", str(task_root / "arm.json"), f"{container_id}:/workspace/arm.json"])
-            run(["docker", "cp", "--archive", str(task_root / "task"), f"{container_id}:/workspace/task"])
+            payload = encoded_sanitized_bundle(task_root, self.policy["container"]["workspace_bytes"])
+            self.exec(
+                container_id,
+                ["import-bundle", "--max-bytes", str(self.policy["container"]["workspace_bytes"])],
+                input_text=payload,
+            )
             self.exec(container_id, ["baseline-create"])
         except Exception:
             self.remove(container_id)

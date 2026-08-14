@@ -2,8 +2,11 @@
 """Trusted in-container worker for the AEG arm execution substrate."""
 
 import argparse
+import base64
+import binascii
 import difflib
 import hashlib
+import io
 import json
 import os
 import shlex
@@ -11,8 +14,9 @@ import shutil
 import socket
 import subprocess
 import sys
+import tarfile
 import time
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 ROOT = Path("/workspace")
@@ -43,6 +47,50 @@ def emit(value):
 def load_arm():
     with ARM.open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def import_bundle(encoded, max_bytes):
+    try:
+        archive_bytes = base64.b64decode(encoded, validate=True)
+    except (ValueError, binascii.Error):
+        raise WorkerError("container bundle encoding is invalid") from None
+    if ROOT.exists() and any(ROOT.iterdir()):
+        raise WorkerError("workspace is not empty before bundle import")
+    ROOT.mkdir(parents=True, exist_ok=True)
+    seen = set()
+    total = 0
+    with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz") as archive:
+        members = archive.getmembers()
+        for member in members:
+            relative = PurePosixPath(member.name)
+            if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+                raise WorkerError("container bundle path is invalid")
+            if relative.parts[0] not in {"arm.json", "task"}:
+                raise WorkerError("container bundle has an unexpected top-level entry")
+            if relative.parts[0] == "arm.json" and len(relative.parts) != 1:
+                raise WorkerError("arm envelope path is invalid")
+            if member.name in seen or member.issym() or member.islnk() or member.isdev():
+                raise WorkerError("container bundle entry type is prohibited")
+            if not member.isdir() and not member.isfile():
+                raise WorkerError("container bundle entry is not regular")
+            seen.add(member.name)
+            total += member.size if member.isfile() else 0
+            if total > max_bytes:
+                raise WorkerError("container bundle exceeds workspace limit")
+            destination = ROOT.joinpath(*relative.parts)
+            if member.isdir():
+                destination.mkdir(parents=True, exist_ok=True, mode=0o755)
+                continue
+            destination.parent.mkdir(parents=True, exist_ok=True, mode=0o755)
+            source = archive.extractfile(member)
+            if source is None:
+                raise WorkerError("container bundle file has no payload")
+            with destination.open("wb") as handle:
+                shutil.copyfileobj(source, handle)
+            destination.chmod(0o644)
+    if {path.name for path in ROOT.iterdir()} != {"arm.json", "task"} or not ARM.is_file() or not TASK.is_dir():
+        raise WorkerError("container bundle entries differ from the allowlist")
+    return {"files": sum(1 for path in TASK.rglob("*") if path.is_file()), "bytes": total}
 
 
 def relative_path(value, allow_directory=False):
@@ -404,6 +452,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("hold")
+    bundle = sub.add_parser("import-bundle")
+    bundle.add_argument("--max-bytes", required=True, type=int)
     inspect = sub.add_parser("inspect")
     inspect.add_argument("--path", required=True)
     inspect.add_argument("--limit", required=True, type=int)
@@ -433,7 +483,9 @@ def main():
     if args.action == "hold":
         while True:
             time.sleep(60)
-    if args.action == "inspect":
+    if args.action == "import-bundle":
+        result = import_bundle(sys.stdin.read(), args.max_bytes)
+    elif args.action == "inspect":
         result = inspect_path(args.path, args.limit)
     elif args.action == "run":
         argv = json.loads(args.argv_json)
