@@ -106,6 +106,9 @@ class SubstrateConfigurationTests(unittest.TestCase):
             self.assertTrue(item["strict"])
             self.assertFalse(item["parameters"]["additionalProperties"])
 
+    def test_worker_environment_matches_the_explicit_policy_allowlist(self):
+        self.assertEqual(worker.ALLOWED_ENV, self.policy["container"]["allowed_process_environment"])
+
     def test_budget_guard_enforces_command_token_cost_and_disk_ceilings(self):
         guard = controller.BudgetGuard(
             self.policy,

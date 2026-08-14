@@ -24,6 +24,8 @@ TASK = ROOT / "task"
 ARM = ROOT / "arm.json"
 ALLOWED_ENV = {
     "HOME": "/nonexistent",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
     "PATH": "/usr/local/bin:/usr/bin:/bin",
     "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONHASHSEED": "0",
@@ -374,7 +376,7 @@ def canary_probe(forbidden_paths):
     secret_names = {name for name in os.environ if any(term in name.upper() for term in ("OPENAI", "API_KEY", "TOKEN", "SECRET", "PASSWORD", "ACTIONS_", "GITHUB_"))}
     add("api_key", not any("OPENAI" in name.upper() or "API_KEY" in name.upper() for name in secret_names), "no model credential name is present")
     add("github_token", not any("GITHUB" in name.upper() or "ACTIONS_" in name.upper() for name in secret_names), "no GitHub or Actions credential name is present")
-    add("environment_allowlist", os.environ == ALLOWED_ENV, "tool subprocess environment equals the four-name allowlist")
+    add("environment_allowlist", os.environ == ALLOWED_ENV, "tool process environment equals the explicit allowlist")
     add("other_arm", all(inaccessible(path) for path in other_paths), "another synthetic arm is absent from the container namespace")
     add("docker_socket", not Path("/var/run/docker.sock").exists(), "Docker socket is not mounted")
     tcp_failed = False

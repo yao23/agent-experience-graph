@@ -859,20 +859,20 @@ def canary(image, fixture_record_path, output, encrypted_output):
     modes = {"control": False, "treatment": False}
     tool_inside = False
     telemetry = {"input_tokens": 0, "output_tokens": 0, "estimated_cost_usd": 0.0}
-    model_error = None
+    boundary_errors = []
     if credential_present:
         try:
             modes, tool_inside, telemetry = live_model_canary(runtime, policy, os.environ["OPENAI_API_KEY"], raw_path)
         except ControllerError as error:
-            model_error = str(error)
+            boundary_errors.append(str(error))
     else:
-        model_error = "host model credential is unavailable"
+        boundary_errors.append("host model credential is unavailable")
     encrypted = False
     if raw_path.exists():
         try:
             encrypted = encrypted_raw_output(raw_path, encrypted_output, certificate)
         except ControllerError as error:
-            model_error = model_error or str(error)
+            boundary_errors.append(str(error))
     fixture_passed = fixture.get("buggy_failures") == 4 and fixture.get("human_patches_passed") == 4
     passed = (
         all(item["passed"] for item in attempts)
@@ -886,8 +886,8 @@ def canary(image, fixture_record_path, output, encrypted_output):
         and not raw_path.exists()
     )
     status = "passed" if passed else ("blocked" if not credential_present or not certificate else "failed")
-    if model_error:
-        attempts.append({"id": "model_or_encryption_boundary", "passed": False, "reason": model_error})
+    if boundary_errors:
+        attempts.append({"id": "model_or_encryption_boundary", "passed": False, "reason": "; ".join(boundary_errors)})
     attempt_evidence = {item["id"]: item["passed"] for item in attempts}
     record = {
         "schema_version": "1.0.0",

@@ -24,6 +24,8 @@
     "host_bind_mounts": 0,
     "allowed_process_environment": {
       "HOME": "/nonexistent",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
       "PATH": "/usr/local/bin:/usr/bin:/bin",
       "PYTHONDONTWRITEBYTECODE": "1",
       "PYTHONHASHSEED": "0"

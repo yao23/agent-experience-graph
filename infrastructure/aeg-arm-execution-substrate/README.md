@@ -7,7 +7,8 @@ Situated Experience Benchmark result.
 
 The host controller alone receives `OPENAI_API_KEY`. It sends strict function
 tools to the Responses API, validates every tool request, and invokes only the
-container worker through `docker exec` with an explicit `env -i` environment.
+container worker through `docker exec` with an explicit `env -i` environment
+containing only inert path, locale, home, and Python-runtime settings.
 The repair container receives one `arm.json`, one task directory, no controller
 checkout, no hidden evaluator files, no Git remote, no socket, and no secret.
 The controller copies those two inputs into a dedicated size-limited tmpfs;
