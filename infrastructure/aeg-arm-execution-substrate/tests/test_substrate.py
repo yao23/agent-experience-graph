@@ -80,6 +80,8 @@ class SubstrateConfigurationTests(unittest.TestCase):
         self.assertNotIn("docker.sock", joined)
         self.assertNotIn("OPENAI_API_KEY", joined)
         self.assertNotIn("GITHUB_TOKEN", joined)
+        worker_command = runtime.worker_command("container-id", ["snapshot"])
+        self.assertEqual(worker_command[:4], ["docker", "exec", "--interactive", "container-id"])
 
     def test_host_tool_subprocess_environment_is_credential_scrubbed(self):
         with mock.patch.dict(os.environ, {

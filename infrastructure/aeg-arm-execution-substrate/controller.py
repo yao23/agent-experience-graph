@@ -286,7 +286,7 @@ class DockerRuntime:
         env = self.policy["container"]["allowed_process_environment"]
         assignments = [f"{key}={value}" for key, value in sorted(env.items())]
         return [
-            "docker", "exec", container_id, "/usr/bin/env", "-i", *assignments,
+            "docker", "exec", "--interactive", container_id, "/usr/bin/env", "-i", *assignments,
             "python3", "/opt/aeg/container_worker.py", *arguments,
         ]
 

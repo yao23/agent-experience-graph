@@ -59,9 +59,12 @@ def import_bundle(encoded, max_bytes):
     ROOT.mkdir(parents=True, exist_ok=True)
     seen = set()
     total = 0
-    with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz") as archive:
-        members = archive.getmembers()
-        for member in members:
+    try:
+        archive = tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz")
+    except tarfile.TarError:
+        raise WorkerError("container bundle archive is invalid") from None
+    with archive:
+        for member in archive.getmembers():
             relative = PurePosixPath(member.name)
             if relative.is_absolute() or ".." in relative.parts or not relative.parts:
                 raise WorkerError("container bundle path is invalid")
