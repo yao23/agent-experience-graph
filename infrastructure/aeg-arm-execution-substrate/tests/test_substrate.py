@@ -65,6 +65,8 @@ class SubstrateConfigurationTests(unittest.TestCase):
             args = runtime.security_args(root, "test-container")
         joined = " ".join(args)
         self.assertIn("--network none", joined)
+        self.assertNotIn("--pid", args)
+        self.assertNotIn("--pid host", joined)
         self.assertIn("--read-only", args)
         self.assertIn("--cap-drop ALL", joined)
         self.assertIn("--security-opt no-new-privileges:true", joined)

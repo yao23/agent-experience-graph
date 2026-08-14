@@ -218,7 +218,6 @@ class DockerRuntime:
             "--cpus", str(limits["cpus"]),
             "--ulimit", "nofile=256:256",
             "--ipc", "private",
-            "--pid", "private",
             "--hostname", "aeg-repair",
             "--user", f"{os.getuid()}:{os.getgid()}",
             "--tmpfs", f"/tmp:rw,noexec,nosuid,nodev,size={limits['tmpfs_bytes']}",
@@ -274,6 +273,7 @@ class DockerRuntime:
         expected = self.policy["container"]
         passed = (
             host.get("NetworkMode") == "none"
+            and host.get("PidMode") in (None, "")
             and host.get("ReadonlyRootfs") is True
             and set(host.get("CapDrop") or []) == {"ALL"}
             and "no-new-privileges:true" in (host.get("SecurityOpt") or [])
