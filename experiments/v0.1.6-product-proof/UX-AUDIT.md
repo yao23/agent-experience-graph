@@ -1,4 +1,4 @@
-# v0.1.5 first-user UX audit
+# v0.1.5 audit and v0.1.6 founder-discovery incident
 
 Audit date: 2026-08-11. Baseline: `origin/main` at `544874c`, extension version 0.1.5.
 
@@ -14,3 +14,52 @@ The untouched baseline compiled, passed all 20 extension tests, and produced a l
 The v0.1.6 decision is one reversible path: **Start with Verified Experience → inspect match or abstention → copy with explicit paste instructions → record objective validation → save local rating**. Playwright, Repair Lab, skill discovery, and all legacy command IDs remain available under **Advanced**.
 
 The supported VS Code command list documents `vscode.editorChat.start`, which starts editor chat, but does not document a stable command for an extension to open and prefill the normal Chat view. v0.1.6 therefore uses the supported clipboard API and tells the user exactly how to open Chat, paste, and run; it does not depend on a private workbench command.
+
+## v0.1.6 founder result: discovery gate failed
+
+The founder installed the local v0.1.6 VSIX successfully. After receiving
+external Command Palette instructions, the founder completed the verified path
+end to end: match, evidence inspection, guarded capsule copy, validation, and a
+local feedback record. The saved row retained the query, experience ID, score,
+`validationOutcome: "not-applied"`, `rating: "Irrelevant"`, and
+`localOnly: true`.
+
+That functional result does not pass the usability gate. The first-install
+walkthrough did not appear, and no primary AEG action drew the founder into the
+flow. The overall founder gate is **failed; re-test required**.
+
+## Precise root cause
+
+The v0.1.6 package contributed a valid walkthrough, but relied entirely on VS
+Code's generic “open on install” behavior. In VS Code, that behavior is driven
+by an in-memory set populated by the focused window's extension-install event.
+Only a newly registered walkthrough whose extension ID is in that same-session
+set is selected for automatic opening. A command-line VSIX install performed
+while all VS Code windows are closed has no focused workbench session to receive
+the install event. On the next launch, the walkthrough is registered as new,
+but its extension ID is not in the session-install set, so it is not opened.
+
+AEG had no startup activation event and no first-run code of its own. Its only
+activation paths were the AEG view and AEG commands—the exact surfaces the
+founder did not yet know to use. Therefore neither the walkthrough nor the
+status-bar action was guaranteed to appear in the real install-then-launch path.
+
+## Minimal first-run fix
+
+- `onStartupFinished` activates AEG after startup without blocking the startup
+  path.
+- First activation in a normal workspace opens the founder walkthrough through
+  a fire-and-forget call.
+- A global, versioned marker records `opening`, `opened`, or `failed`. `opened`
+  suppresses later windows; `failed` retries; a one-minute stale `opening`
+  marker recovers from a killed or reloaded extension host without allowing two
+  simultaneous windows to race the walkthrough open.
+- Marker reads and writes are best effort. Any failure leaves startup running
+  and the visible fallback available.
+- **AEG: Start here** stays in the status bar after deferred activation and
+  invokes the primary verified-experience path. The AEG sidebar retains a
+  direct **Guided walkthrough** item and the manual reopen command remains
+  registered.
+
+This implementation checkpoint is not founder acceptance. A clean-profile
+first-window/second-window/manual-reopen test is still required.

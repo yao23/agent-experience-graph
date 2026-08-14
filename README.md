@@ -31,8 +31,14 @@ The pitch covers the vision, problem, architecture, initial product, early progr
 
 ## v0.1.6 VS Code quick start
 
-Install [AEG from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph),
-then use the first-run walkthrough or this quick start:
+The v0.1.6 checkpoint is still a Draft PR and requires a clean-profile founder
+re-test. Install the local VSIX for that test. On first activation in a normal
+workspace, AEG opens the founder walkthrough once. If opening is skipped or
+fails, the persistent **AEG: Start here** status-bar action is the primary entry
+without README or Command Palette knowledge. The walkthrough also remains
+available from the AEG sidebar.
+
+Then follow this quick start:
 
 1. Run **AEG: Start with Verified Experience** and describe a task or select an error.
 2. Inspect the score, matching phrases, provenance, constraints, and limitations—or accept **No relevant verified experience** as a correct outcome.
@@ -42,6 +48,12 @@ then use the first-run walkthrough or this quick start:
 The sidebar shows the honest boundary up front: **2 verified records · 2 task
 families**. Playwright diagnosis, Repair Lab, skill discovery, the synthetic
 challenge, and legacy commands remain available under **Advanced**.
+
+The manually completed founder proof loop passed functionally, but the original
+first-install discovery gate failed because the walkthrough did not open. This
+fix is not accepted until the clean-profile re-test in
+[`experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md`](experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md)
+passes.
 
 For zero-cold-start onboarding, use the walkthrough's bundled guided task. The
 Advanced **Open Bundled Transfer Challenge** command uses a synthetic fixture and reports
@@ -72,8 +84,8 @@ higher assisted token and wall-time cost. See
 
 ## 60-Second Demo
 
-Run **AEG: Start with Verified Experience** from the VS Code command palette
-and use the bundled task in the walkthrough. The demo shows task entry,
+Select the visible **AEG: Start here** status-bar action or use the bundled task
+in the walkthrough. The demo shows task entry,
 verified-only retrieval, weighted match evidence, a compact guarded capsule,
 explicit paste instructions, validation, and local usefulness feedback.
 

@@ -11,8 +11,11 @@
 - Add exact normal-Chat paste instructions without using undocumented APIs.
 - Move Playwright, Repair Lab, skill discovery, the bundled challenge, and
   legacy commands into an Advanced sidebar section.
-- Add a five-step first-install walkthrough, UX state-transition tests, and
+- Add a five-step founder walkthrough, UX state-transition tests, and
   non-executing three-arm protocol/result schema tests.
+- Fix the closed-window command-line VSIX install gap with deferred startup
+  activation, a versioned global first-run marker, retryable failure states,
+  manual reopen, and a persistent **AEG: Start here** status-bar fallback.
 
 ## 0.1.5
 

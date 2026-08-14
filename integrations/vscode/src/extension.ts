@@ -29,6 +29,14 @@ import {
   proofLoopStep,
   transitionProofLoop
 } from './proofLoop';
+import {
+  FOUNDER_FIRST_RUN_MARKER_KEY,
+  FOUNDER_WALKTHROUGH_ID,
+  PRIMARY_ENTRY_STATUS_TEXT,
+  FounderFirstRunStorage,
+  openFounderWalkthroughOnFirstRun,
+  reopenFounderWalkthrough
+} from './firstRun';
 
 const VERIFIED_EXPERIENCE_DEMO = 'Keepalive control fails after active stream ownership moved behind a protocol object; repair the public wrapper so it delegates through the protocol without using its stale socket field.';
 
@@ -197,10 +205,20 @@ class PlaywrightViewProvider implements vscode.TreeDataProvider<AegTreeItem> {
 
 export function activate(context: vscode.ExtensionContext): void {
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  status.text = '$(library) AEG Verified Experience';
+  status.text = PRIMARY_ENTRY_STATUS_TEXT;
   status.command = 'aeg.startWithVerifiedExperience';
-  status.tooltip = 'Search the two-record verified library; AEG may correctly abstain';
+  status.tooltip = 'Start with Verified Experience · 2 records · 2 task families · local only';
   status.show();
+
+  const firstRunStorage: FounderFirstRunStorage = {
+    get: () => context.globalState.get(FOUNDER_FIRST_RUN_MARKER_KEY),
+    update: marker => context.globalState.update(FOUNDER_FIRST_RUN_MARKER_KEY, marker)
+  };
+  const openFounderWalkthrough = () => vscode.commands.executeCommand(
+    'workbench.action.openWalkthrough',
+    FOUNDER_WALKTHROUGH_ID,
+    false
+  );
 
   const viewProvider = new PlaywrightViewProvider(context.extensionUri);
   const tree = vscode.window.createTreeView('aeg.playwright', {treeDataProvider: viewProvider});
@@ -246,11 +264,14 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand(
       'aeg.openFounderWalkthrough',
-      () => vscode.commands.executeCommand(
-        'workbench.action.openWalkthrough',
-        'AgentExperienceGraph.agent-experience-graph#aegFounderProofLoop',
-        false
-      )
+      async () => {
+        const result = await reopenFounderWalkthrough(firstRunStorage, openFounderWalkthrough);
+        if (result === 'failed') {
+          void vscode.window.showWarningMessage(
+            'AEG could not open the walkthrough. Use the visible “AEG: Start here” status-bar action to begin.'
+          );
+        }
+      }
     ),
     vscode.commands.registerCommand(
       'aeg.diagnosePlaywrightFailure',
@@ -268,6 +289,21 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('aeg.rateSkill', rateSkill),
     vscode.commands.registerCommand('aeg.showSkillMetrics', showSkillMetrics)
   );
+
+  // Deferred startup activation plus fire-and-forget opening keeps VS Code startup non-blocking.
+  void openFounderWalkthroughOnFirstRun({
+    hasWorkspace: Boolean(vscode.workspace.workspaceFolders?.length),
+    storage: firstRunStorage,
+    openSurface: openFounderWalkthrough
+  }).then(result => {
+    if (result === 'failed') {
+      console.warn('AEG first-run walkthrough did not open; the status-bar entry remains available.');
+    } else if (result === 'opened-unpersisted') {
+      console.warn('AEG first-run walkthrough opened, but its global first-run marker was not persisted.');
+    }
+  }).catch(error => {
+    console.warn('AEG first-run onboarding failed safely; the status-bar entry remains available.', error);
+  });
 }
 
 export function deactivate(): void {

@@ -16,7 +16,17 @@ npm run package
 code --install-extension agent-experience-graph-0.1.6.vsix --force
 ```
 
-Open any test workspace in a fresh VS Code window. The five-step walkthrough opens on first install and remains available as **AEG: Open Founder Proof Walkthrough**.
+Open any test workspace in a fresh VS Code window. On first activation in a
+normal workspace, the five-step walkthrough opens once and stores a versioned
+profile marker. Later windows do not force it open. It remains available from
+the AEG sidebar as **Guided walkthrough** and through **AEG: Open Founder Proof
+Walkthrough**. If automatic opening is skipped or fails, the status bar still
+shows **AEG: Start here**.
+
+The first founder run completed the proof loop manually but failed discovery:
+the contributed walkthrough did not auto-open after a command-line VSIX install
+performed while VS Code was closed. The Draft release remains unaccepted until
+the clean-profile re-test passes.
 
 ## Golden path
 
@@ -84,7 +94,10 @@ npm run compile
 npm run package
 ```
 
-`npm test` compiles TypeScript, runs the extension retrieval and UX state-transition tests, validates the product-proof protocol/result schemas, and verifies walkthrough assets. Packaging synchronizes the unchanged two-record verified library into the VSIX.
+`npm test` compiles TypeScript, runs extension retrieval, proof-loop, and
+first-run state-transition tests, validates the product-proof protocol/result
+schemas, and verifies walkthrough assets. Packaging synchronizes the unchanged
+two-record verified library into the VSIX.
 
 ## Current limitations
 
@@ -92,5 +105,7 @@ npm run package
 - Retrieval is lexical, not embedding-based semantic search.
 - The user confirms objective validation outcomes; AEG does not independently run or observe the checks.
 - The normal Chat handoff is manual because no documented stable prefilled-Chat API is used.
+- Automatic onboarding is scoped to the first activation with a workspace; an
+  empty window keeps the marker unset and exposes the status-bar fallback.
 - The bundled challenge demonstrates discoverability and interaction, not performance benefit.
 - Prior transfer evidence is neutral or negative and supports no claim of improved success, speed, cost, PMF, adoption, or generalization.

@@ -320,9 +320,30 @@ test('manifest exposes one dominant command, compatibility alias, advanced title
   const extensionRoot = path.resolve(__dirname, '..');
   const manifest = JSON.parse(fs.readFileSync(path.join(extensionRoot, 'package.json'), 'utf8'));
   assert.equal(manifest.version, '0.1.6');
+  assert.ok(manifest.activationEvents.includes('onStartupFinished'));
   assert.equal(manifest.contributes.commands[0].command, 'aeg.startWithVerifiedExperience');
   assert.equal(manifest.contributes.commands[0].title, 'AEG: Start with Verified Experience');
   assert.ok(manifest.contributes.commands.some(command => command.command === 'aeg.tryVerifiedExperience'));
+  assert.ok(manifest.contributes.commands.some(command => command.command === 'aeg.openFounderWalkthrough'));
+  const commandIds = new Set(manifest.contributes.commands.map(command => command.command));
+  for (const commandId of [
+    'aeg.startWithVerifiedExperience',
+    'aeg.tryVerifiedExperience',
+    'aeg.showVerifiedCoverage',
+    'aeg.openFounderWalkthrough',
+    'aeg.openVerifiedExperienceDemo',
+    'aeg.diagnosePlaywrightFailure',
+    'aeg.verifyLatestExperience',
+    'aeg.showExperiences',
+    'aeg.openGettingStarted',
+    'aeg.runPublicRepairLab',
+    'aeg.discoverSkills',
+    'aeg.recommendSkill',
+    'aeg.rateSkill',
+    'aeg.showSkillMetrics'
+  ]) {
+    assert.ok(commandIds.has(commandId), `${commandId} remains contributed`);
+  }
   assert.ok(
     manifest.contributes.commands
       .filter(command => ['aeg.diagnosePlaywrightFailure', 'aeg.runPublicRepairLab', 'aeg.discoverSkills'].includes(command.command))
