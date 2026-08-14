@@ -31,12 +31,13 @@ The pitch covers the vision, problem, architecture, initial product, early progr
 
 ## v0.1.6 VS Code quick start
 
-The v0.1.6 checkpoint is still a Draft PR and requires a clean-profile founder
-re-test. Install the local VSIX for that test. On first activation in a normal
-workspace, AEG opens the founder walkthrough once. If opening is skipped or
-fails, the persistent **AEG: Start here** status-bar action is the primary entry
-without README or Command Palette knowledge. The walkthrough also remains
-available from the AEG sidebar.
+The v0.1.6 clean-profile founder usability gate passed on 2026-08-14 using the
+local VSIX with SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+On first activation in a normal workspace, AEG opens the founder walkthrough
+once. If opening is skipped or fails, the persistent **AEG: Start here**
+status-bar action is the primary entry without README or Command Palette
+knowledge. The walkthrough also remains available from the AEG sidebar.
 
 Then follow this quick start:
 
@@ -49,11 +50,11 @@ The sidebar shows the honest boundary up front: **2 verified records · 2 task
 families**. Playwright diagnosis, Repair Lab, skill discovery, the synthetic
 challenge, and legacy commands remain available under **Advanced**.
 
-The manually completed founder proof loop passed functionally, but the original
-first-install discovery gate failed because the walkthrough did not open. This
-fix is not accepted until the clean-profile re-test in
-[`experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md`](experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md)
-passes.
+The founder pass validates usability and discoverability only. The product-proof
+experiment remains prepared, not frozen, with 0/3 arms executed; it supports no
+claim of better repair success, speed, cost, adoption, product-market fit, or
+generalization. See
+[`experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md`](experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md).
 
 For zero-cold-start onboarding, use the walkthrough's bundled guided task. The
 Advanced **Open Bundled Transfer Challenge** command uses a synthetic fixture and reports

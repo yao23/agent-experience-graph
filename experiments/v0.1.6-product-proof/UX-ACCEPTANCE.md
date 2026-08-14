@@ -1,23 +1,39 @@
-# v0.1.6 founder UX acceptance and re-test
+# v0.1.6 founder UX acceptance
 
 This is a usability gate, not an experiment arm and not evidence of repair
 benefit.
 
-## Recorded founder evidence
+## Acceptance record — PASS
 
-Status as of 2026-08-14:
+Founder test date: **2026-08-14** (America/Los_Angeles).
 
-- **Functional proof loop: passed manually.** After external instructions, the
-  founder completed match → inspect evidence → copy guarded capsule → record
-  validation → save local feedback. The feedback file retained the query,
-  experience ID, score, `validationOutcome: "not-applied"`,
-  `rating: "Irrelevant"`, and `localOnly: true`.
-- **First-run discovery: failed.** The walkthrough did not open after the real
-  VSIX install, and the founder needed Command Palette instructions.
-- **Overall founder gate: failed.** PR #28 is not accepted or passed. A clean
-  re-test of the onboarding fix is required.
+Tested VSIX SHA-256:
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
 
-## Clean-profile re-test precondition
+- **PASS — clean profile.** The founder tested with a fresh VS Code profile.
+- **PASS — first-run discovery.** The first empty workspace automatically
+  opened **AEG verified-experience proof loop** without manual command
+  discovery.
+- **PASS — complete proof loop.** The founder completed all five steps: task
+  entry → verified record inspection → capsule copy → validation outcome →
+  local feedback.
+- **PASS — local persistence.** The local feedback file was created
+  successfully.
+- **PASS — non-repeating behavior.** A second workspace using the same profile
+  did not force the walkthrough open.
+- **PASS — manual reopen.** **AEG: Open Founder Proof Walkthrough** reopened the
+  walkthrough successfully.
+- **PASS — experiment boundary.** No repair-performance experiment arm was
+  run.
+
+**Founder usability/discoverability gate: PASSED.** The product-proof
+experiment remains **prepared, not frozen; 0/3 arms executed**.
+
+This result validates onboarding usability and discoverability only. It is not
+evidence of better repair success, speed, cost, adoption, product-market fit,
+or generalization.
+
+## Clean-profile test precondition
 
 An uninstall is not sufficient because extension global state can survive in a
 VS Code profile. Use a disposable profile and extensions directory that have
@@ -35,7 +51,7 @@ Keep those two directories for both-window checks. Use a fresh disposable local
 workspace with at least one folder, and do not give the founder a README,
 command name, Command Palette instruction, or outside navigation hint.
 
-## Exact founder re-test
+## Founder test procedure
 
 1. Launch the fresh workspace with the same disposable `--user-data-dir` and
    `--extensions-dir`. Start a three-minute timer when the window is usable.
@@ -86,6 +102,6 @@ command name, Command Palette instruction, or outside navigation hint.
 - No network request, upload, model run, Repair Lab run, experiment arm,
   release, or Marketplace publish occurs.
 
-Any failed item keeps the release out of the founder usability gate. Do not
-reinterpret a usability pass as performance, adoption, PMF, or generalization
-evidence.
+Any future regression on these items reopens the founder usability gate. Do not
+reinterpret this usability pass as performance, adoption, product-market fit,
+or generalization evidence.

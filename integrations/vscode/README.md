@@ -23,10 +23,14 @@ the AEG sidebar as **Guided walkthrough** and through **AEG: Open Founder Proof
 Walkthrough**. If automatic opening is skipped or fails, the status bar still
 shows **AEG: Start here**.
 
-The first founder run completed the proof loop manually but failed discovery:
-the contributed walkthrough did not auto-open after a command-line VSIX install
-performed while VS Code was closed. The Draft release remains unaccepted until
-the clean-profile re-test passes.
+The initial founder run exposed a discovery failure, and the onboarding fix was
+then re-tested successfully in a clean profile on 2026-08-14 using VSIX
+SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+The founder usability/discoverability gate passed: first-workspace auto-open,
+all five steps, local feedback creation, second-workspace suppression, and
+manual reopen were confirmed. The product-proof experiment remains prepared,
+not frozen, with 0/3 arms executed.
 
 ## Golden path
 

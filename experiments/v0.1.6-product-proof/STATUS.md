@@ -4,12 +4,26 @@ Last updated: 2026-08-14 (America/Los_Angeles).
 
 ## Current phase
 
-The first founder usability gate **failed on discovery**: the manual proof loop
-worked, but the walkthrough did not open after the real VSIX install and the
-founder needed external Command Palette instructions. The onboarding fix is
-implemented and locally validated; a clean-profile founder re-test is required.
-PR #28 remains Draft. Experiment status remains **prepared-not-frozen; 0/3
-arms executed**.
+The clean-profile founder usability/discoverability gate **passed on
+2026-08-14** using VSIX SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+PR #28 remains Draft. The product-proof experiment remains **prepared, not
+frozen; 0/3 arms executed**.
+
+## Founder acceptance record — PASS
+
+- **Date:** 2026-08-14 (America/Los_Angeles).
+- **Artifact:** VSIX SHA-256
+  `18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+- **PASS:** the first empty workspace automatically opened **AEG
+  verified-experience proof loop**, and the founder completed all five steps
+  through local feedback creation.
+- **PASS:** the local feedback file was created successfully.
+- **PASS:** a second workspace using the same profile did not force the
+  walkthrough open.
+- **PASS:** **AEG: Open Founder Proof Walkthrough** manually reopened it.
+- **Boundary:** no repair-performance arm ran; this validates usability and
+  discoverability only.
 
 ## Completed work
 
@@ -53,15 +67,14 @@ arms executed**.
 
 ## Blockers
 
-- Founder discovery acceptance remains blocked pending the clean-profile
-  first-window, second-window, and manual-reopen re-test.
-- GitHub CLI authentication is invalid, but Git credentials pushed the branch and the connected GitHub app created the Draft PR.
+- No founder usability/discoverability blocker remains open.
+- Product-proof execution is intentionally not authorized in this checkpoint;
+  the protocol remains prepared, not frozen, with 0/3 arms executed.
 
 ## Publication handoff
 
 - Branch: `codex/v0.1.6-founder-ready-proof-loop`
-- Commit chain: `f8835c0`, status handoff `6e13568`, and this UX-fix checkpoint
-  on the same branch.
+- Commit chain through the onboarding fix: `f8835c0`, `6e13568`, and `5c0b010`.
 - Draft PR: <https://github.com/yao23/agent-experience-graph/pull/28>
 - Release/merge/Marketplace publication: not performed
 
@@ -73,12 +86,9 @@ arms executed**.
 - Keep all feedback and receipts local; upload nothing from the extension.
 - Do not select a target or execute an arm in v0.1.6.
 
-## Exact founder action required next
+## Next authorized decision
 
-Use a disposable profile that has never stored AEG global state, install the
-VSIX above, and perform the exact first-window, proof-loop, second-window, and
-manual-reopen test in [`UX-ACCEPTANCE.md`](UX-ACCEPTANCE.md). Do not give the
-founder a README, command name, Command Palette instruction, or navigation
-hint. Report each item as pass/fail on the Draft PR and keep the gate failed if
-any item misses. Do not run an experiment arm; target selection and protocol
-freeze require separate explicit authorization after the usability gate passes.
+The founder UX checkpoint is complete. Selecting a target, freezing the
+product-proof protocol, or executing any arm requires separate explicit
+authorization. Do not run D001 or another arm as part of this acceptance
+record.

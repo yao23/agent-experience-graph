@@ -61,5 +61,20 @@ status-bar action was guaranteed to appear in the real install-then-launch path.
   direct **Guided walkthrough** item and the manual reopen command remains
   registered.
 
-This implementation checkpoint is not founder acceptance. A clean-profile
-first-window/second-window/manual-reopen test is still required.
+## Follow-up founder acceptance — PASS
+
+On 2026-08-14, the founder re-tested VSIX SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`
+in a clean VS Code profile:
+
+- the first empty workspace automatically opened **AEG verified-experience
+  proof loop**;
+- all five steps completed and the local feedback file was created;
+- a second workspace using the same profile did not force the walkthrough
+  open; and
+- **AEG: Open Founder Proof Walkthrough** manually reopened it successfully.
+
+The founder usability/discoverability gate is therefore **passed**. No
+repair-performance arm ran. The product-proof experiment remains prepared, not
+frozen, with 0/3 arms, and this usability result supports no claim about repair
+success, speed, cost, adoption, product-market fit, or generalization.
