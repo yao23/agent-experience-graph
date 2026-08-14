@@ -18,6 +18,8 @@ on:
       - ".github/workflows/natural-transfer-isolation.yml"
       - ".github/workflows/model-cost-feasibility.yml"
       - "experiments/model-cost-feasibility/**"
+      - "infrastructure/aeg-arm-execution-substrate/**"
+      - ".github/workflows/aeg-arm-execution-substrate.yml"
   push:
     branches: [main]
     paths:
@@ -36,6 +38,8 @@ on:
       - ".github/workflows/natural-transfer-isolation.yml"
       - ".github/workflows/model-cost-feasibility.yml"
       - "experiments/model-cost-feasibility/**"
+      - "infrastructure/aeg-arm-execution-substrate/**"
+      - ".github/workflows/aeg-arm-execution-substrate.yml"
   workflow_dispatch:
 
 permissions:
@@ -101,6 +105,8 @@ jobs:
           python3 experiments/natural-transfer-benchmark/test_isolation_controller.py
           python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
           python3 experiments/situated-experience-benchmark-v1/test_benchmark.py
+          python3 infrastructure/aeg-arm-execution-substrate/controller.py validate
+          python3 -m unittest discover -s infrastructure/aeg-arm-execution-substrate/tests -p 'test_*.py' -v
 
       - name: Install extension dependencies
         working-directory: integrations/vscode

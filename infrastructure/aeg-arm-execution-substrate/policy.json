@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "substrate_id": "aeg-arm-execution-substrate-v1",
+  "runner_label": "ubuntu-24.04",
+  "base_image": "python:3.12.11-slim-bookworm@sha256:519591d6871b7bc437060736b9f7456b8731f1499a57e22e6c285135ae657bf7",
+  "runtime_image_tag": "aeg-arm-runner:python3.12.11-slim-bookworm-v1",
+  "benchmark": {
+    "id": "situated-experience-benchmark-v1",
+    "manifest_sha256": "95ce8de8aca5580c8be95613b6058baecf2d473d9241831657e2a939577919c9",
+    "execution_plan_sha256": "6e6a3b75102d03d804cf0b8e1f51b3b1194fe5e1c39802b9d0cc64043bb9582a",
+    "model": "gpt-5.6-sol"
+  },
+  "container": {
+    "network": "none",
+    "read_only_root": true,
+    "cap_drop": ["ALL"],
+    "no_new_privileges": true,
+    "pids_limit": 64,
+    "memory_bytes": 536870912,
+    "cpus": 1.0,
+    "tmpfs_bytes": 67108864,
+    "workspace_bytes": 33554432,
+    "workspace_storage": "tmpfs",
+    "host_bind_mounts": 0,
+    "allowed_process_environment": {
+      "HOME": "/nonexistent",
+      "PATH": "/usr/local/bin:/usr/bin:/bin",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0"
+    }
+  },
+  "bridge": {
+    "allowed_tools": ["inspect_file", "run_command", "apply_patch", "run_visible_tests"],
+    "max_file_read_bytes": 262144,
+    "max_patch_bytes": 262144,
+    "max_tool_output_bytes": 262144,
+    "max_model_turns": 160
+  },
+  "safety_ceiling": {
+    "max_total_tokens": 5000000,
+    "max_cost_usd": 50.0,
+    "max_output_tokens_per_response": 8192
+  },
+  "pricing_usd_per_million_tokens": {
+    "input": 5.0,
+    "cached_input": 0.5,
+    "output": 30.0
+  },
+  "raw_output": {
+    "format": "openssl-cms-der",
+    "cipher": "aes-256-cbc",
+    "public_certificate_environment": "AEG_RAW_OUTPUT_CERT_PEM"
+  }
+}
