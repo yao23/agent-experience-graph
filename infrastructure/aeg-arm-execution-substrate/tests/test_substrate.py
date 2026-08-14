@@ -215,6 +215,25 @@ class WorkerBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(worker.WorkerError, "only once"):
             worker.parse_and_apply_patch(duplicate, 4096)
 
+    def test_all_four_registered_human_patches_apply_to_frozen_seeds(self):
+        manifest = controller.load_json(controller.MANIFEST)
+        for pair in manifest["pairs"]:
+            for stage in ("source", "transfer"):
+                fixture = controller.BENCH / "fixtures" / pair["pair_id"] / stage
+                seed = "buggy" if stage == "source" else "agent"
+                case = self.root / f"{pair['pair_id']}-{stage}"
+                shutil.copytree(fixture / seed, case)
+                previous = worker.TASK
+                worker.TASK = case
+                try:
+                    changed = worker.parse_and_apply_patch(
+                        (fixture / "evaluator" / "human.patch").read_text(encoding="utf-8"),
+                        262144,
+                    )
+                finally:
+                    worker.TASK = previous
+                self.assertTrue(changed, f"{pair['pair_id']} {stage}")
+
     def test_command_allowlist_and_environment(self):
         result = worker.run_registered(["python3", "--version"], 10)
         self.assertEqual(result["exit_code"], 0)

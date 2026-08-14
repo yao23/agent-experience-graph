@@ -180,7 +180,19 @@ def apply_hunks(original, hunks):
     output = []
     cursor = 0
     for old_start, lines in hunks:
-        start = max(old_start - 1, 0)
+        old_sequence = [line[1:] for line in lines if line and line[0] in {" ", "-"}]
+        expected = max(old_start - 1, 0)
+        if source[expected:expected + len(old_sequence)] == old_sequence and expected >= cursor:
+            start = expected
+        else:
+            candidates = [
+                index
+                for index in range(cursor, len(source) - len(old_sequence) + 1)
+                if source[index:index + len(old_sequence)] == old_sequence
+            ]
+            if len(candidates) != 1:
+                raise WorkerError("patch hunk context is absent or ambiguous")
+            start = candidates[0]
         if start < cursor:
             raise WorkerError("patch hunks overlap")
         output.extend(source[cursor:start])
