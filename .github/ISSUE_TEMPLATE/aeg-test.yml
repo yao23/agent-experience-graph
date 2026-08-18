@@ -1,0 +1,106 @@
+name: Try AEG on one public failure
+description: Submit one licensed public failure and receive a compact AEG recovery capsule to test in your normal coding-agent workflow.
+title: "[AEG test]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping test AEG. This is a small, transparent developer experiment—not a promise that AEG improves repairs.
+
+        Submit one public issue or failed-CI run. We will first confirm scope and licensing, then aim to return a sanitized recovery capsule within 24 hours. You copy it into your normal coding-agent session and report a short test/CI result.
+
+        Do not submit private employer code, eBay material, credentials, personal data, proprietary logs, or embargoed/security-sensitive work.
+
+  - type: input
+    id: public_url
+    attributes:
+      label: Public issue or failed-CI URL
+      description: Link to the reproducible issue or CI failure in an explicitly licensed public repository.
+      placeholder: https://github.com/owner/repository/issues/123
+    validations:
+      required: true
+
+  - type: textarea
+    id: repeated_failure
+    attributes:
+      label: What did your coding agent repeat or keep getting wrong?
+      description: One or two sentences are enough. Do not paste raw private prompts or proprietary logs.
+      placeholder: It repeatedly edited the client wrapper even though the active resource had moved behind the protocol object.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Coding agent used
+      options:
+        - Codex
+        - Claude Code
+        - GitHub Copilot
+        - Cursor
+        - Gemini CLI
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often do you use a coding agent?
+      options:
+        - 3 or more days per week
+        - 1–2 days per week
+        - Less than weekly
+    validations:
+      required: true
+
+  - type: dropdown
+    id: recency
+    attributes:
+      label: When did this repeated failure last happen?
+      options:
+        - Within the last 7 days
+        - Within the last month
+        - More than one month ago
+    validations:
+      required: true
+
+  - type: input
+    id: verification
+    attributes:
+      label: Verification command or CI check
+      description: Optional. AEG will infer this from the repository when possible.
+      placeholder: pytest tests/test_example.py -q
+
+  - type: input
+    id: failing_commit
+    attributes:
+      label: Failing commit
+      description: Optional. Provide the SHA only if it is already known.
+
+  - type: checkboxes
+    id: participation
+    attributes:
+      label: Participation
+      options:
+        - label: I can try the returned capsule within 7 days and post a short result.
+          required: true
+
+  - type: checkboxes
+    id: safety_consent
+    attributes:
+      label: Public-data and consent boundary
+      options:
+        - label: The task is from a public, explicitly licensed repository, and I am authorized to share it.
+          required: true
+        - label: The submission contains no private employer/eBay code, credentials, personal data, proprietary logs, or embargoed vulnerability information.
+          required: true
+        - label: I understand this submission, a sanitized capsule, and an anonymized outcome may remain public in AEG.
+          required: true
+
+  - type: checkboxes
+    id: attribution
+    attributes:
+      label: Optional attribution
+      options:
+        - label: AEG may attribute the public result to my GitHub account. Leave unchecked for an anonymized result.
