@@ -1,0 +1,10 @@
+{
+  "context": "FastAPI classifies and extracts Pydantic request fields at a dependency boundary where equivalent annotations can appear in several metadata representations.",
+  "version_constraints": "The source and transfer use Pydantic 1.x-era Field metadata; shape, concrete type, and sub-fields vary with Python annotation syntax and Pydantic version.",
+  "failed_approach": "Inspecting only the top-level field shape classified a composite field as scalar even when nested metadata carried model or sequence semantics.",
+  "invalidating_evidence": "The wrong extraction/classification persisted while submitted form data was complete, showing that multipart parsing was not the failing layer and a global parser repair was unsupported.",
+  "recovery_principle": "At the Pydantic integration boundary, inspect every dependency representation that can encode the invariant—shape, concrete type, and sub-fields—then preserve existing scalar and sequence paths.",
+  "validated_outcome": "The source human repair recursively classified Union sub-fields and restored correct body handling without weakening scalar fields.",
+  "applicability_conditions": "Use when local evidence confirms Pydantic represents an equivalent collection or composite annotation outside the single metadata field the current predicate inspects.",
+  "known_invalidation_conditions": "Do not apply to raw multipart parsing failures, Pydantic 2 field APIs, response serialization, or cases where shape and concrete type already agree."
+}

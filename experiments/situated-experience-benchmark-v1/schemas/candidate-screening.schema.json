@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/situated-candidate-screening-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "benchmark_id", "screened_before_execution", "candidates"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "benchmark_id": {"const": "situated-experience-benchmark-v1"},
+    "screened_before_execution": {"const": true},
+    "candidates": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "family", "status", "title", "public_evidence", "decision_reasons"],
+        "properties": {
+          "candidate_id": {"type": "string", "minLength": 4},
+          "family": {"enum": ["S1", "S2", "S3", "S4", "S5", "S6"]},
+          "status": {"enum": ["accepted", "rejected"]},
+          "title": {"type": "string", "minLength": 8},
+          "public_evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "decision_reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "pair_id": {"type": "string"},
+          "rejection_code": {
+            "enum": [
+              "family_mismatch",
+              "trivial_static_migration",
+              "oracle_not_reproducible_offline",
+              "regression_coverage_incomplete",
+              "source_transfer_relation_missing",
+              "license_or_provenance_unresolved",
+              "fixture_too_large_or_unsafe"
+            ]
+          }
+        },
+        "allOf": [
+          {"if": {"properties": {"status": {"const": "accepted"}}}, "then": {"required": ["pair_id"], "not": {"required": ["rejection_code"]}}},
+          {"if": {"properties": {"status": {"const": "rejected"}}}, "then": {"required": ["rejection_code"], "not": {"required": ["pair_id"]}}}
+        ]
+      }
+    }
+  }
+}

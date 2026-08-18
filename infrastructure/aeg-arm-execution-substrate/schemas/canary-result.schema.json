@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/arm-substrate-canary-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "substrate_id",
+    "status",
+    "runner",
+    "container",
+    "credential_boundary",
+    "attempts",
+    "fixture_revalidation",
+    "model_boundary",
+    "raw_output",
+    "benchmark_arms_executed"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "substrate_id": {"const": "aeg-arm-execution-substrate-v1"},
+    "status": {"enum": ["passed", "failed", "blocked"]},
+    "runner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "image_os", "image_version"],
+      "properties": {
+        "label": {"type": "string"},
+        "image_os": {"type": ["string", "null"]},
+        "image_version": {"type": ["string", "null"]}
+      }
+    },
+    "container": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_image", "runtime_image_id", "security_configuration_matches"],
+      "properties": {
+        "base_image": {"type": "string"},
+        "runtime_image_id": {"type": ["string", "null"]},
+        "security_configuration_matches": {"type": "boolean"}
+      }
+    },
+    "credential_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["credential_present_in_controller", "credential_present_in_repair", "github_token_present_in_repair"],
+      "properties": {
+        "credential_present_in_controller": {"type": "boolean"},
+        "credential_present_in_repair": {"type": "boolean"},
+        "github_token_present_in_repair": {"type": "boolean"}
+      }
+    },
+    "attempts": {
+      "type": "array",
+      "minItems": 15,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "passed", "reason"],
+        "properties": {
+          "id": {"type": "string"},
+          "passed": {"type": "boolean"},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "fixture_revalidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buggy_failures", "human_patches_passed"],
+      "properties": {
+        "buggy_failures": {"type": "integer", "minimum": 0},
+        "human_patches_passed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "model_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "control_telemetry", "treatment_telemetry", "tool_call_executed_in_container", "input_tokens", "output_tokens", "estimated_cost_usd"],
+      "properties": {
+        "model": {"const": "gpt-5.6-sol"},
+        "control_telemetry": {"type": "boolean"},
+        "treatment_telemetry": {"type": "boolean"},
+        "tool_call_executed_in_container": {"type": "boolean"},
+        "input_tokens": {"type": "integer", "minimum": 0},
+        "output_tokens": {"type": "integer", "minimum": 0},
+        "estimated_cost_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "raw_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encrypted", "plaintext_removed", "format"],
+      "properties": {
+        "encrypted": {"type": "boolean"},
+        "plaintext_removed": {"type": "boolean"},
+        "format": {"const": "openssl-cms-der"}
+      }
+    },
+    "benchmark_arms_executed": {"const": 0}
+  }
+}

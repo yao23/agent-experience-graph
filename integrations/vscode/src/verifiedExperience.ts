@@ -56,14 +56,45 @@ export interface LibraryLoadResult {
 }
 
 export interface ExperienceFeedback {
-  schemaVersion: '1.0.0';
+  schemaVersion: '1.1.0';
   recordedAt: string;
+  proofLoopSessionId: string;
   experienceId: string;
+  experienceTask: string;
   taskSummary: string;
   rating: ExperienceRating;
+  validationOutcome: 'passed' | 'partially-passed' | 'failed' | 'not-applied';
   retrievalScore: number;
   localOnly: true;
 }
+
+export interface VerifiedTaskFamily {
+  id: string;
+  label: string;
+  description: string;
+  experienceIds: string[];
+}
+
+export interface VerifiedLibraryCoverage {
+  verifiedRecordCount: number;
+  families: Array<VerifiedTaskFamily & {recordCount: number}>;
+  uncoveredExperienceIds: string[];
+}
+
+export const VERIFIED_TASK_FAMILIES: VerifiedTaskFamily[] = [
+  {
+    id: 'agent-evaluation-integrity',
+    label: 'Agent evaluation and telemetry integrity',
+    description: 'Auditable repair experiments, event accounting, paired trials, and release validation.',
+    experienceIds: ['trace-2026-08-03-repair-lab-ci-v0.1.3']
+  },
+  {
+    id: 'delegation-api-contracts',
+    label: 'Delegation and API contract repair',
+    description: 'Stale resource ownership, thin proxy delegation, and focused public-surface contract tests.',
+    experienceIds: ['trace-2026-08-03-tr-04-tornado-nodelay']
+  }
+];
 
 const STOPWORDS = new Set(['a', 'an', 'and', 'build', 'create', 'for', 'from', 'in', 'into', 'of', 'or', 'run', 'the', 'to', 'while', 'with']);
 const GENERIC_REPAIR_TERMS = new Set(['agent', 'failure', 'repair', 'test', 'verification']);
@@ -154,6 +185,28 @@ export function loadVerifiedExperienceLibrary(raw: string): LibraryLoadResult {
     experiences.push(record);
   });
   return {experiences, malformed};
+}
+
+export function summarizeVerifiedLibraryCoverage(
+  experiences: VerifiedExperience[]
+): VerifiedLibraryCoverage {
+  const availableIds = new Set(experiences.map(experience => experience.id));
+  const coveredIds = new Set<string>();
+  const families = VERIFIED_TASK_FAMILIES
+    .map(family => {
+      const experienceIds = family.experienceIds.filter(id => availableIds.has(id));
+      experienceIds.forEach(id => coveredIds.add(id));
+      return {...family, experienceIds, recordCount: experienceIds.length};
+    })
+    .filter(family => family.recordCount > 0);
+  return {
+    verifiedRecordCount: experiences.length,
+    families,
+    uncoveredExperienceIds: experiences
+      .map(experience => experience.id)
+      .filter(id => !coveredIds.has(id))
+      .sort()
+  };
 }
 
 function tokenValues(value: string): string[] {

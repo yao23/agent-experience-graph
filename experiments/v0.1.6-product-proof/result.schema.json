@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/experiments/v0.1.6-product-proof/result.schema.json",
+  "title": "AEG v0.1.6 product-proof triad result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "protocolId",
+    "taskId",
+    "recordedAt",
+    "outcome",
+    "sourceExperience",
+    "retrieval",
+    "armResults",
+    "decision",
+    "limitations",
+    "privacy"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schemaVersion": {"const": "1.0.0"},
+    "protocolId": {"const": "aeg-v0.1.6-product-proof"},
+    "taskId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$"},
+    "recordedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T"},
+    "outcome": {"enum": ["completed", "retrieval-abstention", "protocol-deviation"]},
+    "sourceExperience": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "recordedAt", "predatesTarget", "librarySha256", "capsuleSha256"],
+          "properties": {
+            "id": {"type": "string", "pattern": "^trace-"},
+            "recordedAt": {"type": "string"},
+            "predatesTarget": {"const": true},
+            "librarySha256": {"$ref": "#/$defs/sha256"},
+            "capsuleSha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      ]
+    },
+    "retrieval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "score", "threshold", "matchedFields"],
+      "properties": {
+        "decision": {"enum": ["top-1", "abstain"]},
+        "score": {"type": ["number", "null"], "minimum": 0},
+        "threshold": {"const": 0.05},
+        "matchedFields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["task", "reuse.retrievalTags", "reuse.recommendedFor", "lessons", "subtasks.description", "subtasks.lessons"]}
+        }
+      }
+    },
+    "armResults": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/armResult"}
+    },
+    "decision": {"enum": ["supported", "neutral", "negative", "abstention", "protocol-deviation"]},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 10}
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["containsCode", "containsPrompts", "containsTaskText", "containsRawLogs", "containsRatings", "containsReceipts", "containsPrivateData"],
+      "properties": {
+        "containsCode": {"const": false},
+        "containsPrompts": {"const": false},
+        "containsTaskText": {"const": false},
+        "containsRawLogs": {"const": false},
+        "containsRatings": {"const": false},
+        "containsReceipts": {"const": false},
+        "containsPrivateData": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"outcome": {"const": "completed"}}},
+      "then": {
+        "properties": {
+          "sourceExperience": {"type": "object"},
+          "retrieval": {"properties": {"decision": {"const": "top-1"}, "score": {"type": "number", "minimum": 0.05}}},
+          "armResults": {
+            "minItems": 3,
+            "maxItems": 3,
+            "prefixItems": [
+              {"allOf": [{"$ref": "#/$defs/armResult"}, {"properties": {"arm": {"const": "baseline"}}}]},
+              {"allOf": [{"$ref": "#/$defs/armResult"}, {"properties": {"arm": {"const": "fixed-generic"}}}]},
+              {"allOf": [{"$ref": "#/$defs/armResult"}, {"properties": {"arm": {"const": "aeg-top-1"}}}]}
+            ],
+            "items": false
+          },
+          "decision": {"enum": ["supported", "neutral", "negative"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "retrieval-abstention"}}},
+      "then": {
+        "properties": {
+          "sourceExperience": {"type": "null"},
+          "retrieval": {"properties": {"decision": {"const": "abstain"}, "score": {"type": ["number", "null"], "exclusiveMaximum": 0.05}}},
+          "armResults": {"maxItems": 0},
+          "decision": {"const": "abstention"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "protocol-deviation"}}},
+      "then": {"properties": {"decision": {"const": "protocol-deviation"}}}
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "repoPath": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+    "checkResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandSha256", "status"],
+      "properties": {
+        "commandSha256": {"$ref": "#/$defs/sha256"},
+        "status": {"enum": ["passed", "failed", "not-run"]}
+      }
+    },
+    "armResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["arm", "success", "attempts", "commands", "tests", "nonCachedTokens", "durationMs", "files", "patchHash", "settings", "protocolDeviation"],
+      "properties": {
+        "arm": {"enum": ["baseline", "fixed-generic", "aeg-top-1"]},
+        "success": {"type": "boolean"},
+        "attempts": {"type": "integer", "minimum": 0},
+        "commands": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["completed", "sanitized"],
+          "properties": {
+            "completed": {"type": "integer", "minimum": 0},
+            "sanitized": {"type": "array", "items": {"type": "string", "minLength": 1}}
+          }
+        },
+        "tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["executions", "focused", "regression"],
+          "properties": {
+            "executions": {"type": "integer", "minimum": 0},
+            "focused": {"$ref": "#/$defs/checkResult"},
+            "regression": {"$ref": "#/$defs/checkResult"}
+          }
+        },
+        "nonCachedTokens": {"type": "integer", "minimum": 0},
+        "durationMs": {"type": "integer", "minimum": 0},
+        "files": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inspected", "changed"],
+          "properties": {
+            "inspected": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/repoPath"}},
+            "changed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/repoPath"}}
+          }
+        },
+        "patchHash": {"$ref": "#/$defs/sha256"},
+        "settings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model", "settingsSha256", "promptTemplateSha256", "budgetSha256", "oracleSha256"],
+          "properties": {
+            "model": {"type": "string", "minLength": 1},
+            "settingsSha256": {"$ref": "#/$defs/sha256"},
+            "promptTemplateSha256": {"$ref": "#/$defs/sha256"},
+            "budgetSha256": {"$ref": "#/$defs/sha256"},
+            "oracleSha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "protocolDeviation": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

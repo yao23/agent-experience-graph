@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.6
+
+- Make **AEG: Start with Verified Experience** the single dominant entry point
+  while preserving the previous command ID as a compatibility alias.
+- Show the two-record/two-family coverage boundary and render abstention as a
+  correct, explained outcome with no fallback injection.
+- Enforce evidence inspection, clipboard handoff, objective validation, and
+  query/experience-linked local feedback in order.
+- Add exact normal-Chat paste instructions without using undocumented APIs.
+- Move Playwright, Repair Lab, skill discovery, the bundled challenge, and
+  legacy commands into an Advanced sidebar section.
+- Add a five-step founder walkthrough, UX state-transition tests, and
+  non-executing three-arm protocol/result schema tests.
+- Fix the closed-window command-line VSIX install gap with deferred startup
+  activation, a versioned global first-run marker, retryable failure states,
+  manual reopen, and a persistent **AEG: Start here** status-bar fallback.
+
 ## 0.1.5
 
 - Rank verified experiences against top-level lessons, subtask descriptions,

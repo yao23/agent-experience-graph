@@ -1,0 +1,10 @@
+{
+  "context": "A framework request adapter sits between Scrapy's request model and the Python standard-library CookieJar protocol.",
+  "version_constraints": "The source is Scrapy's Python 3 path after urllib/cookiejar began consuming native text and request attributes differently from Python 2; confirm the active Python 3 CookieJar call surface.",
+  "failed_approach": "Strict default UTF-8 conversion inside the adapter treated the boundary as ordinary application text and allowed one non-UTF-8 header to abort cookie parsing.",
+  "invalidating_evidence": "The failure persisted while core request data remained correct, and changing the core Request model or the standard library would widen the repair beyond the compatibility boundary.",
+  "recovery_principle": "Treat the adapter as an explicit versioned protocol boundary: enumerate the dependency's required surface and implement tolerant, local translations without changing the underlying request model.",
+  "validated_outcome": "The source human repair made all adapter header conversions tolerant while preserving ordinary CookieJar behavior and the surrounding request contract.",
+  "applicability_conditions": "Use only when local evidence shows a Python 3 standard-library consumer calling a partially implemented Scrapy adapter and the equivalent values already exist behind older methods.",
+  "known_invalidation_conditions": "Do not apply when failure originates in cookie policy, URL parsing, the core Request model, or a Python/runtime version whose CookieJar contract does not require the observed member."
+}

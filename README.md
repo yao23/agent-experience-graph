@@ -3,11 +3,12 @@
 Agent Experience Graph helps coding agents retrieve verified debugging
 experience instead of solving every problem from scratch.
 
-The v0.1.5 developer preview turns a task or error into an explainable match
-from a small verified-only public library, then produces a compact recovery
-capsule for the coding agent. The capsule preserves lessons, failed approaches,
-constraints, limitations, and public provenance. It is guidance to validate,
-not a guaranteed answer.
+The v0.1.6 product-proof release gives the VS Code extension one honest path:
+a task or error becomes an explainable verified match or explicit abstention;
+an above-threshold match exposes evidence and limitations before a guarded
+capsule is copied; the user then records an objective validation outcome and
+local usefulness rating. It retrieves guidance and does not automatically
+solve, send, or run the task.
 
 Think of it like a shared memory of successful work patterns. When an agent starts a new task, it can look at previous tasks, see which parts were similar, and learn which tools, skills, and approaches helped before.
 
@@ -28,18 +29,35 @@ Open the investor- and partner-friendly living pitch:
 
 The pitch covers the vision, problem, architecture, initial product, early progress, business model, roadmap, founder, and current ask.
 
-## Try a Verified Experience in VS Code
+## v0.1.6 VS Code quick start
 
-Install [AEG from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=AgentExperienceGraph.agent-experience-graph),
-then use this three-step quick start:
+The v0.1.6 clean-profile founder usability gate passed on 2026-08-14 using the
+local VSIX with SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+On first activation in a normal workspace, AEG opens the founder walkthrough
+once. If opening is skipped or fails, the persistent **AEG: Start here**
+status-bar action is the primary entry without README or Command Palette
+knowledge. The walkthrough also remains available from the AEG sidebar.
 
-1. Run **AEG: Try a Verified Experience** and describe a task or select an error.
-2. Inspect why a verified record matched, then copy its guarded capsule before
-   the coding agent begins.
-3. Validate the repair and rate the retrieval locally.
+Then follow this quick start:
 
-For zero-cold-start onboarding, run **AEG: Open Verified Experience
-Challenge**. It uses a bundled synthetic transfer fixture and openly reports
+1. Run **AEG: Start with Verified Experience** and describe a task or select an error.
+2. Inspect the score, matching phrases, provenance, constraints, and limitations—or accept **No relevant verified experience** as a correct outcome.
+3. Copy an above-threshold guarded capsule. Open VS Code Chat, paste it into the chat input with the original task, and press Enter.
+4. Run focused and regression checks, record the observed outcome, then rate the selected experience locally.
+
+The sidebar shows the honest boundary up front: **2 verified records · 2 task
+families**. Playwright diagnosis, Repair Lab, skill discovery, the synthetic
+challenge, and legacy commands remain available under **Advanced**.
+
+The founder pass validates usability and discoverability only. The product-proof
+experiment remains prepared, not frozen, with 0/3 arms executed; it supports no
+claim of better repair success, speed, cost, adoption, product-market fit, or
+generalization. See
+[`experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md`](experiments/v0.1.6-product-proof/UX-ACCEPTANCE.md).
+
+For zero-cold-start onboarding, use the walkthrough's bundled guided task. The
+Advanced **Open Bundled Transfer Challenge** command uses a synthetic fixture and reports
 that its prior controlled pair found no repair-path or outcome improvement and
 higher assisted token and wall-time cost. See
 [`experiments/verified-experience-challenge/`](experiments/verified-experience-challenge/).
@@ -67,9 +85,10 @@ higher assisted token and wall-time cost. See
 
 ## 60-Second Demo
 
-Run **AEG: Open Verified Experience Challenge** from the VS Code command
-palette. The demo shows task entry, verified-only retrieval, weighted match
-evidence, a compact guarded capsule, and local usefulness feedback.
+Select the visible **AEG: Start here** status-bar action or use the bundled task
+in the walkthrough. The demo shows task entry,
+verified-only retrieval, weighted match evidence, a compact guarded capsule,
+explicit paste instructions, validation, and local usefulness feedback.
 
 Use [`docs/60-second-demo.md`](docs/60-second-demo.md) for a short meeting talk track.
 
@@ -85,7 +104,8 @@ Agent Experience Graph gives agents a way to ask:
 - Which tools failed or wasted time?
 - What should I watch out for?
 
-This can make agents more reliable, faster to start, and easier to improve over time.
+Whether this makes agents more reliable or efficient is an open question that
+requires controlled evidence beyond the current two-record library.
 
 ## A Non-Technical Example
 
@@ -112,8 +132,8 @@ It is intentionally runtime-neutral:
 - `scripts/recommend_traces.py` ranks similar traces and recommends reusable skills/tools.
 - `references/trace_schema.md` defines the trace data contract.
 - `experiences/verified.json` stores sanitized, executed, and objectively verified shared experiences.
-- `integrations/vscode/` exposes the verified-experience challenge and the
-  existing Playwright workflow.
+- `integrations/vscode/` exposes the v0.1.6 verified-experience golden path and
+  keeps prior Playwright, Repair Lab, and skill tools under Advanced.
 - `experiments/verified-experience-challenge/` supplies a transparent bundled
   transfer demo.
 - `experiments/public-repair-lab/` runs the first baseline-versus-AEG public bug repair experiment.
@@ -142,6 +162,25 @@ one-line fix. AEG-assisted runs used one fewer completed command in the paired
 median and 732 fewer non-cached tokens, while wall time regressed by 18.2 seconds.
 This is a bounded tool-cycle/cost signal on one task family, not a general speed
 or success-rate claim. See `experiments/public-repair-lab/RESULTS.md`.
+
+## Situated Experience Benchmark v1
+
+`experiments/situated-experience-benchmark-v1/` stages a broader, ordered test
+of whether AEG helps when repair depends on version state, execution environment,
+historical failures, cross-module consequences, multi-agent handoffs, and
+experience applicability. Its six families run from dependency migration (S1)
+through experience invalidation under environment drift (S6).
+
+Only S1 is implemented. Exactly two natural public source-transfer pairs,
+Scrapy/Python CookieJar and FastAPI/Pydantic field representations, are frozen
+with offline fixtures, hidden evaluators, deterministic three-replicate arm
+orders, common measurement rules, and fail-closed isolation/leakage preflights.
+No benchmark arm has run, and S2-S6 remain screening rules only.
+
+```bash
+python3 experiments/situated-experience-benchmark-v1/run_benchmark.py validate
+python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
+```
 
 In plain English, this repository contains:
 
@@ -183,10 +222,10 @@ This project may be useful for:
 
 Agent Experience Graph is designed around sanitized traces, not raw logs.
 
-The v0.1.5 extension bundles its public verified library and performs retrieval
-locally. It does not upload task text, code, logs, recovery capsules, receipts,
-or usefulness ratings. Local ratings are stored under `.aeg/`; review or ignore
-that directory before committing it.
+The v0.1.6 extension bundles its public verified library and performs retrieval
+locally. It does not upload task text, code, prompts, logs, recovery capsules,
+receipts, ratings, or private data. Local validation outcomes and ratings are
+stored under `.aeg/`; review or ignore that directory before committing it.
 
 That means shared traces should not contain:
 

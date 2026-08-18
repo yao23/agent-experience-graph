@@ -1,160 +1,115 @@
 # Agent Experience Graph for VS Code
 
-Retrieve verified debugging experience before your coding agent starts from
-scratch.
+AEG v0.1.6 is a local-first product-proof release with one primary workflow:
 
-AEG v0.1.5 is a local-first developer preview:
+**Task or error → verified match or explicit abstention → evidence and limitations → guarded capsule handoff → observed validation → local feedback**
 
-**Task or error → Explainable verified match → Guarded recovery capsule → Local rating**
+AEG retrieves guidance. It does not automatically solve, send, or run the task.
 
-## What is new in v0.1.5
+## Install a local build
 
-- Verified-experience retrieval now considers lessons and subtask evidence
-  without allowing long records to accumulate an unfair score advantage.
-- Match explanations show the query terms that actually overlap, and nonzero
-  near-matches are disclosed when AEG abstains below its retrieval threshold.
-
-## Marketplace icon restored in v0.1.4
-
-- Restore the original AEG Marketplace icon and package it explicitly.
-
-## Verified-experience workflow introduced in v0.1.3
-
-- **AEG: Try a Verified Experience** searches the bundled, validated public
-  library. Candidate and malformed records are not eligible.
-- Each card shows why it matched, the validated outcome, reusable lessons,
-  recommended use cases, constraints, limitations, and public provenance.
-- **Copy capsule** produces concise context for a coding agent with an explicit
-  instruction to inspect the local code and run focused and regression tests.
-- Helpful, partially helpful, irrelevant, and harmful ratings stay in
-  `.aeg/verified-experience-feedback.json`; task text and ratings are not
-  uploaded.
-- **AEG: Open Verified Experience Challenge** opens a bundled synthetic
-  transfer task so a new user can see the full product loop immediately.
-- **AEG: Run Public Repair Lab** launches isolated repairs of a real,
-  MIT-licensed FastAPI nested response-model bug by default.
-- The baseline and assisted arms receive identical issue text, code, and tests;
-  only the assisted arm receives a compact retrieved recovery capsule.
-- Repeated paired trials alternate execution order. Corrected telemetry captures
-  duration, completed commands, actual test runs, token usage, changed files, and
-  patches under `.aeg/repair-lab/`.
-- The runner uses `codex exec --ephemeral --sandbox workspace-write`; it never
-  pushes code or contacts the upstream project.
-- Verdicts require at least three trials and remain specific to the selected task.
-
-Run it from the AEG sidebar or command palette. The local `codex` executable
-must be available on `PATH`.
-
-## First verified-experience retrieval
-
-1. Open a project in VS Code.
-2. Select an error or describe a task with **AEG: Try a Verified Experience**.
-3. Choose a match and inspect **Why this matched** and its limitations.
-4. Copy the compact capsule into the coding-agent session before it begins the
-   repair.
-5. Validate the result locally, then record whether retrieval was helpful.
-
-For an immediate demo, run **AEG: Open Verified Experience Challenge**. This is
-a synthetic, non-identical transfer fixture. Its prior A/B pair produced the
-same successful patch in both arms; retrieval changed neither repair path nor
-outcome and increased token usage and wall time. It demonstrates the workflow,
-not an AEG benefit claim.
-
-## Playwright diagnosis (from v0.1.1)
-
-- A dedicated **AEG Playwright** sidebar and status-bar entry point.
-- Failure input from selected text, the latest Playwright artifact, the active file, a copied error, or a short description.
-- Ten bundled Playwright recovery playbooks:
-  - timeouts
-  - unstable selectors
-  - authentication and session state
-  - network and API mocking
-  - flaky tests
-  - browser-specific failures
-  - test-data isolation
-  - CI-only failures
-  - trace and artifact diagnosis
-  - accessibility failures
-- Local experience receipts using the minimum AEG structure:
-  - Intent
-  - Context
-  - Steps
-  - Skills
-  - Artifacts
-  - Failures
-  - Recovery
-  - Outcome
-  - Cost
-- Explicit resolved/unresolved verification after a recovery attempt.
-- Automatic detection of new text-based artifacts under `test-results`.
-
-## First diagnosis
-
-1. Open a project in VS Code.
-2. Run a Playwright test and copy its error, or select an error/stack trace in the editor.
-3. Click **AEG Playwright** in the Activity Bar or status bar.
-4. Choose **Diagnose Playwright failure**.
-5. Select a recommended playbook and try its recovery steps.
-6. Re-run the test and mark the outcome **Test passed** or **Still failing**.
-
-AEG stores the receipt under:
-
-```text
-.aeg/experiences/
+```bash
+cd integrations/vscode
+npm ci
+npm test
+npm run package
+code --install-extension agent-experience-graph-0.1.6.vsix --force
 ```
 
-Use **AEG: Show Playwright Experiences** to inspect prior receipts.
+Open any test workspace in a fresh VS Code window. On first activation in a
+normal workspace, the five-step walkthrough opens once and stores a versioned
+profile marker. Later windows do not force it open. It remains available from
+the AEG sidebar as **Guided walkthrough** and through **AEG: Open Founder Proof
+Walkthrough**. If automatic opening is skipped or fails, the status bar still
+shows **AEG: Start here**.
+
+The initial founder run exposed a discovery failure, and the onboarding fix was
+then re-tested successfully in a clean profile on 2026-08-14 using VSIX
+SHA-256
+`18ef493b9290e28832e54527d7fb92624387a17d749ec228b60087c3b6917224`.
+The founder usability/discoverability gate passed: first-workspace auto-open,
+all five steps, local feedback creation, second-workspace suppression, and
+manual reopen were confirmed. The product-proof experiment remains prepared,
+not frozen, with 0/3 arms executed.
+
+## Golden path
+
+1. Select error text or run **AEG: Start with Verified Experience** and enter a task.
+2. AEG searches the bundled verified-only library locally.
+3. If a result clears the fixed threshold, select it and inspect the exact matching phrases, weighted score, verified source outcome, provenance, constraints, and limitations.
+4. Select **Copy capsule**. Open VS Code Chat from the Chat menu (macOS: Control+Command+I; Windows/Linux: Ctrl+Alt+I), paste into the chat input with the original task, and press Enter. For another coding agent, paste into its normal task or prompt input before it starts.
+5. Run focused and regression checks. Record **Checks passed**, **Partially passed**, **Still failing**, or **Did not apply**.
+6. Rate the selected experience **Helpful**, **Partially helpful**, **Irrelevant**, or **Harmful**.
+
+The panel keeps the original query and selected experience ID visible through validation and rating. It will not enable validation before handoff or rating before validation.
+
+## Honest coverage and abstention
+
+The public library contains exactly two verified records in two narrow task families:
+
+- agent evaluation and telemetry integrity;
+- delegation and API contract repair.
+
+Retrieval is deterministic lexical ranking with a fixed 0.0500 threshold. **No relevant verified experience** is a correct outcome: AEG explains the best score or zero-score result, shows current coverage, and injects no candidate or generic fallback guidance.
+
+Verified means the recorded source outcome was objectively checked. It does not mean AEG retrieval improved correctness, success, speed, cost, or generalization.
+
+## Handoff API decision
+
+VS Code documents `vscode.editorChat.start` for editor chat, but no stable extension API to open and prefill the normal Chat view. v0.1.6 therefore uses the supported clipboard API plus explicit paste-and-run instructions. It does not call an undocumented or private workbench command and never submits the capsule automatically.
+
+## Local feedback
+
+Feedback is appended to:
+
+```text
+.aeg/verified-experience-feedback.json
+```
+
+Each row links a local proof-loop session, redacted query summary, selected experience ID and task, retrieval score, observed validation outcome, and rating. Review or ignore `.aeg/` before committing it.
+
+## Advanced capabilities
+
+The sidebar keeps prior capabilities under a collapsed **Advanced** section, and every existing command ID remains registered for backward compatibility:
+
+- bundled synthetic transfer challenge;
+- Playwright artifact diagnosis, local receipts, and outcome marking;
+- Public Repair Lab;
+- workspace skill discovery, recommendation, rating, and local metrics;
+- legacy getting-started content.
+
+The synthetic challenge demonstrates the interaction flow only. Its prior pair produced the same successful patch and repair path in both arms while assisted tokens and wall time were higher. The legacy Repair Lab and Playwright tools are not part of the default v0.1.6 path.
 
 ## Privacy
 
-Version 0.1.5 does not upload code, task descriptions, recovery capsules, logs,
-artifacts, ratings, or experience receipts.
+AEG v0.1.6 does not upload code, task descriptions, prompts, recovery capsules, logs, artifacts, ratings, receipts, or private data.
 
-- Receipts are local by default.
-- Common authorization headers, passwords, tokens, API keys, and credential-bearing URLs are redacted from captured failure signatures.
-- Artifact paths are recorded, but raw artifact contents are not written into receipts.
-- Sharing is intentionally excluded until AEG has an explicit preview, consent, and redaction flow.
-
-Review a receipt before committing `.aeg/` to source control. Add `.aeg/` to `.gitignore` if the repository should not retain local experience data.
-
-## Existing skill commands
-
-The v0.1.0 local-skill workflow remains available:
-
-- `AEG: Discover Workspace Skills`
-- `AEG: Recommend Skill for Current Task`
-- `AEG: Rate a Skill`
-- `AEG: Show Skill Metrics`
-
-These commands scan local `SKILL.md` and `capability.json` files. Skill metrics remain local in `.aeg/skill-metrics.json`.
+- Search, ranking, clipboard handoff, and feedback are local.
+- Common credentials are redacted from captured Playwright failure signatures.
+- Raw Playwright artifact content is not written into receipts.
+- There is no telemetry or sharing path in the verified-experience workflow.
 
 ## Development
 
 ```bash
-npm install
+npm ci
 npm test
+npm run compile
 npm run package
 ```
 
-Open the extension directory in VS Code and press `F5` to launch an Extension Development Host.
+`npm test` compiles TypeScript, runs extension retrieval, proof-loop, and
+first-run state-transition tests, validates the product-proof protocol/result
+schemas, and verifies walkthrough assets. Packaging synchronizes the unchanged
+two-record verified library into the VSIX.
 
 ## Current limitations
 
-- The verified public library contains only two records and supports no claim
-  of general coverage.
-- Verified means the recorded outcome was objectively checked; it does not mean
-  AEG retrieval caused an improvement.
-- Retrieval is deterministic lexical ranking, not embedding-based semantic
-  search. No match above the threshold means AEG abstains.
-- The bundled transfer challenge is synthetic and is not cross-project
-  validation. Its prior controlled pair found no correctness or efficiency
-  benefit.
-- Playbook ranking is deterministic keyword/signature matching, not semantic retrieval.
-- AEG cannot read arbitrary integrated-terminal output; use a selection, clipboard, file, or Playwright artifact.
-- Test outcome verification is user-confirmed in this release.
-- Token counts are estimates based on captured text length.
-
-These constraints keep the first data loop understandable and auditable while
-AEG recruits 5–10 seed users to test whether verified experience is useful on
-their real debugging tasks. Please report a concrete retrieval outcome through
-the repository issue tracker.
+- The verified library has only two records and does not provide broad coverage.
+- Retrieval is lexical, not embedding-based semantic search.
+- The user confirms objective validation outcomes; AEG does not independently run or observe the checks.
+- The normal Chat handoff is manual because no documented stable prefilled-Chat API is used.
+- Automatic onboarding is scoped to the first activation with a workspace; an
+  empty window keeps the marker unset and exposes the status-bar fallback.
+- The bundled challenge demonstrates discoverability and interaction, not performance benefit.
+- Prior transfer evidence is neutral or negative and supports no claim of improved success, speed, cost, PMF, adoption, or generalization.

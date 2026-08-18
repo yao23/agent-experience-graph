@@ -1,0 +1,220 @@
+name: AEG Arm Execution Substrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Run the canary or, after separate authorization, the frozen S1 matrix
+        required: true
+        type: choice
+        default: canary
+        options:
+          - canary
+          - execute-s1
+      confirmation:
+        description: Required only for execute-s1
+        required: false
+        type: string
+  pull_request:
+    paths:
+      - ".github/workflows/aeg-arm-execution-substrate.yml"
+      - "infrastructure/aeg-arm-execution-substrate/**"
+      - "experiments/situated-experience-benchmark-v1/execution/PROTOCOL-DEVIATION-ARM-SUBSTRATE.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aeg-arm-substrate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  AEG_SUBSTRATE_IMAGE: aeg-arm-runner:python3.12.11-slim-bookworm-v1
+  AEG_SUBSTRATE_DIR: infrastructure/aeg-arm-execution-substrate
+
+jobs:
+  hosted-canary:
+    name: Hosted substrate canary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out trusted controller source without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Validate frozen inputs and substrate policy
+        run: |
+          python3 "$AEG_SUBSTRATE_DIR/controller.py" validate
+          python3 -m unittest discover -s "$AEG_SUBSTRATE_DIR/tests" -p 'test_*.py' -v
+
+      - name: Build the digest-pinned repair image
+        run: docker build --pull --tag "$AEG_SUBSTRATE_IMAGE" "$AEG_SUBSTRATE_DIR"
+
+      - name: Revalidate every S1 fixture in the pinned image
+        run: |
+          python3 "$AEG_SUBSTRATE_DIR/controller.py" revalidate-fixtures \
+            --image "$AEG_SUBSTRATE_IMAGE" \
+            --output "$RUNNER_TEMP/aeg-fixture-revalidation.json"
+
+      - name: Run complete hosted adversarial canary
+        id: canary
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AEG_RAW_OUTPUT_CERT_PEM: ${{ secrets.AEG_RAW_OUTPUT_CERT_PEM }}
+        run: |
+          python3 "$AEG_SUBSTRATE_DIR/controller.py" canary \
+            --image "$AEG_SUBSTRATE_IMAGE" \
+            --fixture-record "$RUNNER_TEMP/aeg-fixture-revalidation.json" \
+            --output "$RUNNER_TEMP/aeg-substrate-canary.json" \
+            --encrypted-raw-output "$RUNNER_TEMP/aeg-substrate-canary-raw.p7m"
+
+      - name: Upload sanitized canary and fixture evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: aeg-substrate-canary-sanitized-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/aeg-substrate-canary.json
+            ${{ runner.temp }}/aeg-fixture-revalidation.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload encrypted raw canary output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: aeg-substrate-canary-encrypted-${{ github.run_id }}
+          path: ${{ runner.temp }}/aeg-substrate-canary-raw.p7m
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Enforce hosted readiness gate
+        if: always()
+        env:
+          CANARY_OUTCOME: ${{ steps.canary.outcome }}
+        run: test "$CANARY_OUTCOME" = success
+
+  arm-matrix:
+    name: Frozen S1 arm ${{ matrix.sequence }} ${{ matrix.arm_id }}
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.operation == 'execute-s1' &&
+      inputs.confirmation == 'EXECUTE_FROZEN_S1_95ce8de8_12_ARMS'
+    needs: hosted-canary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - sequence: 1
+            arm_id: s1-01-scrapy-cookiejar--r01--aeg-assisted
+            pair: s1-01-scrapy-cookiejar
+            replicate: 1
+            mode: aeg-assisted
+          - sequence: 2
+            arm_id: s1-01-scrapy-cookiejar--r01--control
+            pair: s1-01-scrapy-cookiejar
+            replicate: 1
+            mode: control
+          - sequence: 3
+            arm_id: s1-01-scrapy-cookiejar--r02--aeg-assisted
+            pair: s1-01-scrapy-cookiejar
+            replicate: 2
+            mode: aeg-assisted
+          - sequence: 4
+            arm_id: s1-01-scrapy-cookiejar--r02--control
+            pair: s1-01-scrapy-cookiejar
+            replicate: 2
+            mode: control
+          - sequence: 5
+            arm_id: s1-01-scrapy-cookiejar--r03--aeg-assisted
+            pair: s1-01-scrapy-cookiejar
+            replicate: 3
+            mode: aeg-assisted
+          - sequence: 6
+            arm_id: s1-01-scrapy-cookiejar--r03--control
+            pair: s1-01-scrapy-cookiejar
+            replicate: 3
+            mode: control
+          - sequence: 7
+            arm_id: s1-02-fastapi-pydantic--r01--control
+            pair: s1-02-fastapi-pydantic
+            replicate: 1
+            mode: control
+          - sequence: 8
+            arm_id: s1-02-fastapi-pydantic--r01--aeg-assisted
+            pair: s1-02-fastapi-pydantic
+            replicate: 1
+            mode: aeg-assisted
+          - sequence: 9
+            arm_id: s1-02-fastapi-pydantic--r02--control
+            pair: s1-02-fastapi-pydantic
+            replicate: 2
+            mode: control
+          - sequence: 10
+            arm_id: s1-02-fastapi-pydantic--r02--aeg-assisted
+            pair: s1-02-fastapi-pydantic
+            replicate: 2
+            mode: aeg-assisted
+          - sequence: 11
+            arm_id: s1-02-fastapi-pydantic--r03--control
+            pair: s1-02-fastapi-pydantic
+            replicate: 3
+            mode: control
+          - sequence: 12
+            arm_id: s1-02-fastapi-pydantic--r03--aeg-assisted
+            pair: s1-02-fastapi-pydantic
+            replicate: 3
+            mode: aeg-assisted
+    steps:
+      - name: Check out trusted controller source without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Validate frozen inputs and matrix coordinate
+        run: python3 "$AEG_SUBSTRATE_DIR/controller.py" validate
+
+      - name: Build the digest-pinned repair image
+        run: docker build --pull --tag "$AEG_SUBSTRATE_IMAGE" "$AEG_SUBSTRATE_DIR"
+
+      - name: Package exactly one frozen arm
+        run: |
+          python3 experiments/situated-experience-benchmark-v1/run_benchmark.py package-arm \
+            --pair "${{ matrix.pair }}" \
+            --replicate "${{ matrix.replicate }}" \
+            --mode "${{ matrix.mode }}" \
+            --output "$RUNNER_TEMP/one-arm"
+
+      - name: Execute repair, terminate it, then evaluate in a separate container
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AEG_RAW_OUTPUT_CERT_PEM: ${{ secrets.AEG_RAW_OUTPUT_CERT_PEM }}
+        run: |
+          python3 "$AEG_SUBSTRATE_DIR/controller.py" execute-arm \
+            --image "$AEG_SUBSTRATE_IMAGE" \
+            --bundle "$RUNNER_TEMP/one-arm" \
+            --arm-id "${{ matrix.arm_id }}" \
+            --sequence "${{ matrix.sequence }}" \
+            --sanitized-output "$RUNNER_TEMP/sanitized-arm-result.json" \
+            --encrypted-raw-output "$RUNNER_TEMP/encrypted-arm-raw.p7m"
+
+      - name: Upload sanitized arm metrics
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seb-s1-sanitized-${{ matrix.sequence }}-${{ matrix.arm_id }}
+          path: ${{ runner.temp }}/sanitized-arm-result.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload encrypted raw transcript and patch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seb-s1-encrypted-${{ matrix.sequence }}-${{ matrix.arm_id }}
+          path: ${{ runner.temp }}/encrypted-arm-raw.p7m
+          if-no-files-found: error
+          retention-days: 30

@@ -1,54 +1,43 @@
-# 60-Second Demo Talk Track
+# 60-second v0.1.6 demo
 
 ## Goal
 
-Show one memorable moment:
+Show one honest loop:
 
-> A developer gives AEG a debugging task and retrieves a verified, explainable
-> recovery capsule before the coding agent starts from scratch.
+> Task or error → verified match or abstention → inspect evidence → guarded handoff → validate → local feedback.
 
-This demo is intentionally lightweight. It is not meant to prove the final architecture. It is meant to make the product abstraction easy to understand in a short meeting.
+This is an interaction demo. It does not prove that retrieval improves correctness, success, speed, cost, adoption, or generalization.
 
-## Demo Script
+## Talk track
 
-Install AEG v0.1.5, open the repository in VS Code, and run **AEG: Open
-Verified Experience Challenge**.
+Install AEG v0.1.6, open a test workspace in VS Code, and run **AEG: Start with Verified Experience**.
 
-Say:
+Point out the sidebar first:
 
-> This public wrapper still uses a stale resource after ownership moved behind a
-> protocol layer. Before the coding agent starts, AEG searches only its bundled
-> verified records.
+> There is one primary action. Coverage is visible: two verified records in two narrow task families. Playwright, Repair Lab, skill discovery, the synthetic challenge, and legacy commands remain under Advanced.
 
-Select the TR-04 result and point to **Why this matched**.
+Use this task:
 
-Then say:
+```text
+Keepalive control fails after active stream ownership moved behind a protocol object; repair the public wrapper so it delegates through the protocol without using its stale socket field.
+```
 
-> AEG exposes the exact fields and weighted lexical evidence behind the match.
-> The experience records the original failed client-side approach, the recovery
-> principle, constraints, limitations, and public provenance.
+Select the TR-04 result and say:
 
-Click **Copy capsule**.
+> AEG exposes the exact matching phrases and weighted lexical score, then shows the objectively checked source outcome, public provenance, constraints, and limitations. Verified describes the source record; it does not guarantee this task.
 
-> The capsule is guidance, not an answer guarantee. It tells the agent to inspect
-> the local code, reproduce the failure, and validate the patch.
+Select **Copy capsule** and point to the instructions:
 
-Point to the rating buttons:
+> AEG copies guarded guidance and tells me exactly where to paste it. It does not call a private chat API, submit a prompt, or run an agent.
 
-> After validation, the developer records whether the experience was helpful,
-> partially helpful, irrelevant, or harmful. That feedback stays in `.aeg/`.
+Point to the disabled-then-enabled validation and rating steps:
 
-## Core Message
+> I must record an observed focused/regression-check outcome before I can rate this experience. The query, selected experience, validation result, and rating stay together in `.aeg/` and are not uploaded.
 
-AEG helps coding agents retrieve verified debugging experience instead of
-solving every problem from scratch. The current evidence is deliberately
-narrow: the prior pair for this synthetic challenge found the same successful
-repair in both arms and higher assisted token and wall-time cost.
+If time permits, start again with `Change the website navigation background from white to blue and increase the logo size.` Show **No relevant verified experience**:
 
-## Questions to Ask
+> Abstention is a correct outcome. AEG shows the score and threshold, discloses current coverage, and injects no generic fallback.
 
-- What is the right abstraction for reusable agent skills?
-- Are failure patterns more reusable than successful workflows?
-- Should skills be prompts, tools, workflows, policies, or all of the above?
-- Where would this fit in the current agent developer ecosystem?
-- What would make this useful for real developers rather than just an interesting demo?
+## Evidence boundary
+
+The bundled task is a synthetic transfer demonstration. Its prior controlled pair produced the same successful patch and repair path in both arms while assisted token use and wall time were higher. It demonstrates discoverability and interaction, not performance benefit.

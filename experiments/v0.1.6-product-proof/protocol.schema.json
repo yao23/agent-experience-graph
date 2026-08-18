@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.local/experiments/v0.1.6-product-proof/protocol.schema.json",
+  "title": "AEG v0.1.6 product-proof protocol",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "protocolId",
+    "status",
+    "executionAuthorized",
+    "evidenceBoundary",
+    "arms",
+    "eligibility",
+    "freeze",
+    "execution",
+    "measurements",
+    "evaluation",
+    "publication",
+    "stopConditions"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schemaVersion": {"const": "1.0.0"},
+    "protocolId": {"const": "aeg-v0.1.6-product-proof"},
+    "status": {"const": "prepared-not-frozen"},
+    "executionAuthorized": {"const": false},
+    "evidenceBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifiedRecordCount", "verifiedLibraryMutable", "challengeEvidence", "priorTransferEvidence", "claimsExcluded"],
+      "properties": {
+        "verifiedRecordCount": {"const": 2},
+        "verifiedLibraryMutable": {"const": false},
+        "challengeEvidence": {"const": "interaction-only"},
+        "priorTransferEvidence": {"enum": ["neutral-or-negative"]},
+        "claimsExcluded": {
+          "type": "array",
+          "minItems": 6,
+          "uniqueItems": true,
+          "items": {"enum": ["improved-success", "improved-speed", "improved-cost", "product-market-fit", "adoption", "generalization"]}
+        }
+      }
+    },
+    "arms": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"$ref": "#/$defs/baselineArm"},
+        {"$ref": "#/$defs/genericArm"},
+        {"$ref": "#/$defs/aegArm"}
+      ],
+      "items": false
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicRepository", "explicitLicense", "excludedSources", "sourcePredatesTarget", "targetFrozenBeforeHumanPatch", "syntheticTargetForbidden", "candidatePoolFrozenBeforeRetrieval"],
+      "properties": {
+        "publicRepository": {"const": true},
+        "explicitLicense": {"const": true},
+        "excludedSources": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["ebay", "private", "internal", "proprietary"]}
+        },
+        "sourcePredatesTarget": {"const": true},
+        "targetFrozenBeforeHumanPatch": {"const": true},
+        "syntheticTargetForbidden": {"const": true},
+        "candidatePoolFrozenBeforeRetrieval": {"const": true}
+      }
+    },
+    "freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredBeforeExecution", "target", "sourceExperience", "controls"],
+      "properties": {
+        "requiredBeforeExecution": {"const": true},
+        "target": {"$ref": "#/$defs/unfrozenTarget"},
+        "sourceExperience": {"$ref": "#/$defs/unfrozenSourceExperience"},
+        "controls": {"$ref": "#/$defs/unfrozenControls"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["isolation", "freshContextPerArm", "sharedCaches", "armOrder", "maxAttemptsPerArm", "maxDurationSecondsPerArm", "humanPatchAvailableDuringArms", "executeInThisRelease"],
+      "properties": {
+        "isolation": {"const": "separate sanitized repositories and worktree directories with no shared Git metadata or writable caches"},
+        "freshContextPerArm": {"const": true},
+        "sharedCaches": {"const": false},
+        "armOrder": {"type": "null"},
+        "maxAttemptsPerArm": {"type": "integer", "minimum": 1},
+        "maxDurationSecondsPerArm": {"type": "integer", "minimum": 1},
+        "humanPatchAvailableDuringArms": {"const": false},
+        "executeInThisRelease": {"const": false}
+      }
+    },
+    "measurements": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 9,
+      "items": {"enum": ["success", "attempts", "commands", "tests", "nonCachedTokens", "durationMs", "filesInspected", "filesChanged", "patchHash"]}
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focusedTestsRequired", "regressionTestsRequired", "sameOracleAcrossArms", "thresholdChangesAfterResults", "blindArmEvaluation", "successDefinition"],
+      "properties": {
+        "focusedTestsRequired": {"const": true},
+        "regressionTestsRequired": {"const": true},
+        "sameOracleAcrossArms": {"const": true},
+        "thresholdChangesAfterResults": {"const": false},
+        "blindArmEvaluation": {"const": true},
+        "successDefinition": {"type": "string", "minLength": 20}
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publishNegativeOutcomes", "publishAbstentions", "publishProtocolDeviations", "forbiddenArtifacts"],
+      "properties": {
+        "publishNegativeOutcomes": {"const": true},
+        "publishAbstentions": {"const": true},
+        "publishProtocolDeviations": {"const": true},
+        "forbiddenArtifacts": {
+          "type": "array",
+          "minItems": 7,
+          "uniqueItems": true,
+          "items": {"enum": ["code", "prompts", "task-text", "raw-logs", "ratings", "receipts", "private-data"]}
+        }
+      }
+    },
+    "stopConditions": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 8}
+    }
+  },
+  "$defs": {
+    "armBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "additionalContext", "aegLibraryAccess", "targetInputs", "objectiveOracle"],
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string", "minLength": 3},
+        "additionalContext": {"type": ["string", "null"]},
+        "aegLibraryAccess": {"type": ["boolean", "string"]},
+        "targetInputs": {"const": "identical-frozen"},
+        "objectiveOracle": {"const": "identical-frozen"}
+      }
+    },
+    "baselineArm": {
+      "allOf": [
+        {"$ref": "#/$defs/armBase"},
+        {"properties": {"id": {"const": "baseline"}, "additionalContext": {"type": "null"}, "aegLibraryAccess": {"const": false}}}
+      ]
+    },
+    "genericArm": {
+      "allOf": [
+        {"$ref": "#/$defs/armBase"},
+        {"properties": {"id": {"const": "fixed-generic"}, "additionalContext": {"const": "generic-advice.txt"}, "aegLibraryAccess": {"const": false}}}
+      ]
+    },
+    "aegArm": {
+      "allOf": [
+        {"$ref": "#/$defs/armBase"},
+        {"properties": {"id": {"const": "aeg-top-1"}, "additionalContext": {"const": "frozen-top-1-guarded-capsule"}, "aegLibraryAccess": {"const": "top-1-only"}}}
+      ]
+    },
+    "unfrozenTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "license", "buggyCommitSha", "taskHash", "focusedTestHash", "regressionTestHash", "frozenAt"],
+      "properties": {
+        "repository": {"type": "null"},
+        "license": {"type": "null"},
+        "buggyCommitSha": {"type": "null"},
+        "taskHash": {"type": "null"},
+        "focusedTestHash": {"type": "null"},
+        "regressionTestHash": {"type": "null"},
+        "frozenAt": {"type": "null"}
+      }
+    },
+    "unfrozenSourceExperience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "recordedAt", "librarySha256", "retrievalScore", "retrievalThreshold", "capsuleSha256"],
+      "properties": {
+        "id": {"type": "null"},
+        "recordedAt": {"type": "null"},
+        "librarySha256": {"type": "null"},
+        "retrievalScore": {"type": "null"},
+        "retrievalThreshold": {"const": 0.05},
+        "capsuleSha256": {"type": "null"}
+      }
+    },
+    "unfrozenControls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "settingsSha256", "promptTemplateSha256", "budgetSha256", "oracleSha256", "genericAdviceSha256"],
+      "properties": {
+        "model": {"type": "null"},
+        "settingsSha256": {"type": "null"},
+        "promptTemplateSha256": {"type": "null"},
+        "budgetSha256": {"type": "null"},
+        "oracleSha256": {"type": "null"},
+        "genericAdviceSha256": {"const": "8d90bc397194fa3a6c146914e36860ffe887a77fb8de63ed9e5212099fdbd022"}
+      }
+    }
+  }
+}
