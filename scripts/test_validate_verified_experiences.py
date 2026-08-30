@@ -9,7 +9,7 @@ SCRIPT_PATH = Path(__file__).with_name("validate_verified_experiences.py")
 SPEC = importlib.util.spec_from_file_location("aeg_experience_validator", SCRIPT_PATH)
 VALIDATOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VALIDATOR)
-LIBRARY_PATH = SCRIPT_PATH.parents[1] / "experiences" / "verified.json"
+LIBRARY_PATH = SCRIPT_PATH.parents[1] / "experiences" / "registry.json"
 
 
 class VerifiedExperienceSemanticTest(unittest.TestCase):

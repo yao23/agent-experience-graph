@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the human and machine Registry surfaces from verified.json."""
+"""Generate the human and machine Registry surfaces from registry.json."""
 
 import argparse
 import html
@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-LIBRARY = ROOT / "experiences" / "verified.json"
+LIBRARY = ROOT / "experiences" / "registry.json"
 OUTPUT = ROOT / "experiences"
 REPOSITORY = "https://github.com/yao23/agent-experience-graph"
 SUBMIT_URL = f"{REPOSITORY}/issues/new?template=candidate-experience.yml"

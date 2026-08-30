@@ -4,12 +4,15 @@ This directory is the public, reusable experience library for Agent Experience
 Graph. Unlike `assets/example_traces.json`, these records describe work that was
 actually executed and verified.
 
-The same canonical `verified.json` records generate the public
+The evolvable canonical `registry.json` records generate the public
 [`/experiences/`](index.html) Registry, its human detail pages, copyable
 Markdown and Agent instructions, the machine index at `index.json`, and one
 complete JSON endpoint per published Experience under `data/`. See
 [`docs/experience-registry.md`](../docs/experience-registry.md) for generation,
 measurement, and contribution boundaries.
+
+`verified.json` remains the byte-frozen library used by historical autonomous
+experiments. Public Registry evolution does not modify that immutable baseline.
 
 Each library file is a JSON array compatible with
 `references/trace_schema.md`. Records may add provenance, verification, metrics,
@@ -24,7 +27,7 @@ improvement.
 
 ## Evidence labels
 
-- **Candidate** records are sanitized but remain outside `verified.json` until
+- **Candidate** records are sanitized but remain outside `registry.json` until
   their outcome and provenance satisfy promotion validation.
 - **Verified experience** means the recorded repair or experiment has an
   objective, reproducible outcome. It does not by itself mean AEG caused an
@@ -43,7 +46,7 @@ improvement.
 
 ```bash
 python3 scripts/recommend_traces.py \
-  --traces experiences/verified.json \
+  --traces experiences/registry.json \
   --query '{"task":"repair duplicated JSONL event metrics"}'
 ```
 
@@ -57,7 +60,7 @@ ranking. Constraints contribute only when the query supplies constraints.
 ```bash
 npx --yes ajv-cli@5.0.0 validate --all-errors \
   -s experiences/verified-experience.schema.json \
-  -d experiences/verified.json
+  -d experiences/registry.json
 python3 scripts/validate_verified_experiences.py
 python3 experiments/public-repair-lab/validate_paired_results.py
 ```
@@ -68,7 +71,7 @@ observed workflow run and its exact validated commit. That commit must contain
 the promoted record; later wording or product changes do not rewrite the
 historical promotion event.
 
-For the canonical `experiences/verified.json` library, every declared evidence
+For the canonical `experiences/registry.json` library, every declared evidence
 artifact must be a repository-relative path that stays inside the repository
 and resolves to a regular file. Validation of a portable candidate supplied via
 `--library` checks record semantics without assuming the AEG repository layout.
@@ -87,6 +90,6 @@ Store an experience here only when it:
 - separates experiment evidence from CI promotion evidence;
 - uses `null` plus an explanation for metadata the original run did not capture.
 
-Use stable IDs and append new records to `verified.json`. A corrected record may
+Use stable IDs and append new records to `registry.json`. A corrected record may
 replace an older record with the same ID when its provenance and lessons remain
 the same logical experience.

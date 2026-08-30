@@ -187,7 +187,7 @@
     "quarantine": null,
     "evidence_provenance": [
       {
-        "artifact": "experiences/verified.json",
+        "artifact": "experiences/registry.json",
         "artifact_sha256": "d33310055942fea98ccacd581419dc7a3bf6645a5d972b54e22cd9e0d48c86ec",
         "supports": ["historical_verified_record_only"]
       }
@@ -239,7 +239,7 @@
     "quarantine": null,
     "evidence_provenance": [
       {
-        "artifact": "experiences/verified.json",
+        "artifact": "experiences/registry.json",
         "artifact_sha256": "d33310055942fea98ccacd581419dc7a3bf6645a5d972b54e22cd9e0d48c86ec",
         "supports": ["historical_verified_record_only"]
       }

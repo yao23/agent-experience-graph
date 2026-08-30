@@ -297,8 +297,8 @@ def _validate_with_schema(instance: Any, schema_path: Path, label: str) -> None:
         raise GateValidationError(f"{label} schema failure at {location}: {first.message}")
 
 
-def _canonical_verified_record_hash(experience_id: str) -> str | None:
-    for record in load_json(ROOT / "experiences" / "verified.json"):
+def _canonical_registry_record_hash(experience_id: str) -> str | None:
+    for record in load_json(ROOT / "experiences" / "registry.json"):
         if record.get("id") == experience_id:
             return sha256_bytes(canonical_json(record))
     return None
@@ -348,7 +348,7 @@ def validate_safety_artifacts() -> dict[str, Any]:
             _require(artifact.is_file(), f"profile evidence missing: {artifact}")
             _require(sha256_file(artifact) == evidence["artifact_sha256"], f"profile evidence hash mismatch: {experience_id}")
 
-        expected_version = _canonical_verified_record_hash(experience_id)
+        expected_version = _canonical_registry_record_hash(experience_id)
         if experience_id == "seb-requests-tls-efficiency-experience-v1":
             expected_version = sha256_file(
                 ROOT
@@ -359,8 +359,8 @@ def validate_safety_artifacts() -> dict[str, Any]:
             )
         _require(expected_version == profile["experience_version_sha256"], f"experience version hash mismatch: {experience_id}")
 
-    verified_ids = {record["id"] for record in load_json(ROOT / "experiences" / "verified.json")}
-    _require(verified_ids <= profile_ids, "one or more verified experiences lack a fail-closed safety profile")
+    registry_ids = {record["id"] for record in load_json(ROOT / "experiences" / "registry.json")}
+    _require(registry_ids <= profile_ids, "one or more Registry experiences lack a fail-closed safety profile")
 
     decision_examples = [
         _decision_not_retrieved(),
@@ -374,7 +374,7 @@ def validate_safety_artifacts() -> dict[str, Any]:
         "profiles": len(profiles),
         "known_partial_repairs": len(partials),
         "quarantined_experiences": sum(profile["quarantine"] is not None for profile in profiles),
-        "verified_experiences_profiled": len(verified_ids),
+        "verified_experiences_profiled": len(registry_ids),
         "publication_sanitization": sanitization,
         "worker_notice": WORKER_WITHHELD_NOTICE,
         "model_calls": 0,

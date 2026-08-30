@@ -14,7 +14,7 @@ SPEC.loader.exec_module(BUILDER)
 class ExperienceRegistryTest(unittest.TestCase):
     def setUp(self):
         self.records = json.loads(
-            (ROOT / "experiences" / "verified.json").read_text(encoding="utf-8")
+            (ROOT / "experiences" / "registry.json").read_text(encoding="utf-8")
         )
 
     def test_generated_outputs_match_canonical_records(self):

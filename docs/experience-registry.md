@@ -7,10 +7,13 @@ base. Applying an experience remains BYO-Agent/BYOK and local to the user.
 
 ## Canonical source and generated surfaces
 
-`experiences/verified.json` is the only canonical content source. Its schema is
+`experiences/registry.json` is the evolvable public Registry content source. Its schema is
 `experiences/verified-experience.schema.json`, and
 `scripts/validate_verified_experiences.py` enforces semantic, provenance,
 timestamp, URL, redaction, uniqueness, and internal-reference integrity.
+
+`experiences/verified.json` remains the byte-frozen library used by historical
+autonomous-lab evidence and is not modified when the public Registry evolves.
 
 `scripts/build_registry.py` safely escapes record content and generates:
 

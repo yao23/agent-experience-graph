@@ -73,7 +73,7 @@ jobs:
         run: |
           npx --yes ajv-cli@5.0.0 validate --all-errors \
             -s experiences/verified-experience.schema.json \
-            -d experiences/verified.json
+            -d experiences/registry.json
           npx --yes ajv-cli@5.0.0 validate --all-errors \
             -s experiments/public-repair-lab/paired-results.schema.json \
             -d experiments/public-repair-lab/results/v0.1.3-paired-results.json

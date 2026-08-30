@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-DEFAULT_LIBRARY = ROOT / "experiences" / "verified.json"
+DEFAULT_LIBRARY = ROOT / "experiences" / "registry.json"
 ID_RE = re.compile(r"^trace-[a-z0-9][a-z0-9.-]+$")
 COMMIT_RE = re.compile(r"^[a-f0-9]{40}$")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
