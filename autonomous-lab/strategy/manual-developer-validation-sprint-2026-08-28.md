@@ -21,6 +21,19 @@ another harness result. This sprint is manual product discovery and concierge
 validation. It is not an autonomous model experiment or a scientific
 experiment arm.
 
+## Registry launch alignment
+
+The AEG Verified Experience Registry is now the primary self-service surface
+for product-market-fit learning. Manual interviews and founder-led outreach
+remain active, but they are a post-launch distribution and evidence channel,
+not the product's critical path. After launch, each outreach message should
+point to one relevant Experience Card instead of describing an abstract product.
+
+The evidence thresholds below are unchanged. Two weeks after launch,
+founder-only retrieval, copying, downloads, or replay activity is insufficient
+evidence and must not justify expanding into community, social, reputation, or
+marketplace features.
+
 ## Two-week founder timebox
 
 Run the sprint for at most 14 calendar days from the human-selected start date

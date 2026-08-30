@@ -1,0 +1,248 @@
+[
+  {
+    "schema_version": "1.0.0",
+    "experience_id": "seb-requests-tls-efficiency-experience-v1",
+    "experience_version_sha256": "9b8a917d433c3876b00bb9701e64308c89a242348735b853a3a7415fdd70377b",
+    "recommendation_eligible": false,
+    "completeness_status": "partial",
+    "repair_components": [
+      {
+        "component_id": "ownership_inventory",
+        "source_evidence": "Frozen experience component retained verbatim in its historical source artifact."
+      },
+      {
+        "component_id": "mutability_and_cache_validity",
+        "source_evidence": "Frozen experience component retained verbatim in its historical source artifact."
+      },
+      {
+        "component_id": "configuration_branch_preservation",
+        "source_evidence": "Frozen experience component retained verbatim in its historical source artifact."
+      },
+      {
+        "component_id": "invalidated_architecture_decision",
+        "source_evidence": "Frozen experience component retained verbatim in its historical source artifact."
+      },
+      {
+        "component_id": "bounded_regression_verification",
+        "source_evidence": "Frozen experience component retained verbatim in its historical source artifact."
+      }
+    ],
+    "required_repair_components": [
+      "ownership_inventory",
+      "mutability_and_cache_validity",
+      "configuration_branch_preservation",
+      "invalidated_architecture_decision",
+      "bounded_regression_verification"
+    ],
+    "ownership_requirements": [
+      "Map every request, configuration, adapter, cache, and dependency owner before recommending a repair."
+    ],
+    "lifetime_requirements": [
+      "Verify that independent request-specific identities cannot mutate state owned by another lifetime."
+    ],
+    "representation_requirements": [
+      "Verify each locally supported configuration class retains its dependency-compatible representation."
+    ],
+    "required_local_checks": [
+      {
+        "check_id": "ownership_inventory_check",
+        "description": "Inspect worker-visible ownership paths and record every supported configuration class.",
+        "executable": false,
+        "worker_visible": true,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": ["security_configuration_ownership"],
+        "evidence_provenance": "Historical experience contains a natural-language obligation, not a source-verified executable procedure."
+      },
+      {
+        "check_id": "cross_lifetime_isolation_check",
+        "description": "Verify independent identities do not mutate state owned by another lifetime.",
+        "executable": false,
+        "worker_visible": true,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": ["request_lifetime_isolation"],
+        "evidence_provenance": "Historical experience contains a natural-language obligation, not a source-verified executable procedure."
+      },
+      {
+        "check_id": "representation_compatibility_check",
+        "description": "Verify every visible configuration class retains local representation and compatibility semantics.",
+        "executable": false,
+        "worker_visible": true,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": ["dependency_compatible_representation"],
+        "evidence_provenance": "No complete worker-visible executable disconfirmation procedure was validated before the harmful transfer."
+      }
+    ],
+    "known_partial_repair_ids": [
+      "kp-requests-tls-fresh-per-call-context-v1"
+    ],
+    "applicability_conditions": [
+      "The current local task independently establishes the same ownership and lifetime mechanism from worker-visible evidence.",
+      "Every required invariant has an executable worker-visible check."
+    ],
+    "abstention_conditions": [
+      "Applicability cannot be established from the current local task.",
+      "Any ownership, lifetime, representation, compatibility, or environment invariant is unresolved.",
+      "A known-partial signature cannot be disconfirmed using worker-visible executable checks."
+    ],
+    "failed_approaches": [
+      "Treat a successful special case as proof that the broader sharing architecture is safe.",
+      "Create a per-operation object without proving that configuration remains attached to the correct owner."
+    ],
+    "environment_assumptions": [
+      "The historical result used an offline faithful public extract rather than a full dependency stack.",
+      "The current worker bundle must expose all evidence needed for recommendation."
+    ],
+    "uncertainty": "The historical source artifact claimed bounded completeness, but the accepted transfer audit demonstrated an unresolved recommendation-safety gap. The source artifact remains immutable; this versioned safety profile governs prospective use only.",
+    "invariant_status": {
+      "ownership": "unresolved",
+      "lifetime": "verified",
+      "representation": "unresolved",
+      "compatibility": "unresolved",
+      "environment": "unresolved"
+    },
+    "applicability_status": "historical_only",
+    "negative_transfer_status": "unresolved",
+    "quarantine": {
+      "recommendation_eligible": false,
+      "quarantine_reason": "observed_harmful_transfer",
+      "originating_experiment": "seb-requests-tls-efficiency-transfer-smoke-v2",
+      "audit_hash": "4da25db054333414a2040e28fa82c3f2275cd84de96b737906f87a26bc443ac4",
+      "known_partial_repair_identifiers": [
+        "kp-requests-tls-fresh-per-call-context-v1",
+        "known-partial-patch-sha256:5a6a54bb4e8c30c3ede7d01fb550b293f4f80ae0032d8d7e610ebe6b6be23bda"
+      ],
+      "applicability_status": "Historical diagnosis only; safe applicability to a current task is unresolved.",
+      "safe_uses": [
+        "diagnosis",
+        "warning",
+        "negative_path_detection"
+      ]
+    },
+    "evidence_provenance": [
+      {
+        "artifact": "experiments/situated-experience-benchmark-v1/efficiency-transfer/requests-tls-efficiency-experience-v1.json",
+        "artifact_sha256": "9b8a917d433c3876b00bb9701e64308c89a242348735b853a3a7415fdd70377b",
+        "supports": [
+          "historical_experience_content",
+          "historical_generation_fields"
+        ]
+      },
+      {
+        "artifact": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/results/top-level-run-01/audit.json",
+        "artifact_sha256": "228909c4d931d7ccae25b9d8c3d4813e7354d245d8495568970118ac250a1321",
+        "supports": [
+          "observed_harmful_transfer",
+          "known_partial_semantic_path",
+          "unresolved_recommendation_safety"
+        ]
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0.0",
+    "experience_id": "trace-2026-08-03-repair-lab-ci-v0.1.3",
+    "experience_version_sha256": "7c039264bb30c45a01b18b2ab19261d57340a38167a2af0a4d3ac22f623491ee",
+    "recommendation_eligible": false,
+    "completeness_status": "unknown",
+    "repair_components": [
+      {
+        "component_id": "legacy_experience_component_inventory",
+        "source_evidence": "The historical verified record predates the versioned safety-field contract."
+      }
+    ],
+    "required_repair_components": ["legacy_experience_component_inventory"],
+    "ownership_requirements": ["No source-verified ownership requirement inventory is registered."],
+    "lifetime_requirements": ["No source-verified lifetime requirement inventory is registered."],
+    "representation_requirements": ["No source-verified representation requirement inventory is registered."],
+    "required_local_checks": [
+      {
+        "check_id": "legacy_safety_contract_missing",
+        "description": "Generate and verify an executable local safety contract before recommendation.",
+        "executable": false,
+        "worker_visible": false,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": ["complete_repair_contract"],
+        "evidence_provenance": "No versioned safety profile existed when this record was promoted."
+      }
+    ],
+    "known_partial_repair_ids": [],
+    "applicability_conditions": ["A future source review establishes complete and executable safety conditions."],
+    "abstention_conditions": ["Required recommendation-safety evidence is absent."],
+    "failed_approaches": ["Treat verification of the historical outcome as proof of safe current-task applicability."],
+    "environment_assumptions": ["Historical environment assumptions have not been normalized into the safety schema."],
+    "uncertainty": "The record remains retrievable for internal relevance evaluation but is non-recommendable until its source evidence supports the complete safety contract.",
+    "invariant_status": {
+      "ownership": "unresolved",
+      "lifetime": "unresolved",
+      "representation": "unresolved",
+      "compatibility": "unresolved",
+      "environment": "unresolved"
+    },
+    "applicability_status": "unresolved",
+    "negative_transfer_status": "none",
+    "quarantine": null,
+    "evidence_provenance": [
+      {
+        "artifact": "experiences/verified.json",
+        "artifact_sha256": "d33310055942fea98ccacd581419dc7a3bf6645a5d972b54e22cd9e0d48c86ec",
+        "supports": ["historical_verified_record_only"]
+      }
+    ]
+  },
+  {
+    "schema_version": "1.0.0",
+    "experience_id": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "experience_version_sha256": "2902747220c634f8c74264ced7bb0579c0870ec595c1c5ef709ebbebce36dc44",
+    "recommendation_eligible": false,
+    "completeness_status": "unknown",
+    "repair_components": [
+      {
+        "component_id": "legacy_experience_component_inventory",
+        "source_evidence": "The historical verified record predates the versioned safety-field contract."
+      }
+    ],
+    "required_repair_components": ["legacy_experience_component_inventory"],
+    "ownership_requirements": ["No source-verified ownership requirement inventory is registered."],
+    "lifetime_requirements": ["No source-verified lifetime requirement inventory is registered."],
+    "representation_requirements": ["No source-verified representation requirement inventory is registered."],
+    "required_local_checks": [
+      {
+        "check_id": "legacy_safety_contract_missing",
+        "description": "Generate and verify an executable local safety contract before recommendation.",
+        "executable": false,
+        "worker_visible": false,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": ["complete_repair_contract"],
+        "evidence_provenance": "No versioned safety profile existed when this record was promoted."
+      }
+    ],
+    "known_partial_repair_ids": [],
+    "applicability_conditions": ["A future source review establishes complete and executable safety conditions."],
+    "abstention_conditions": ["Required recommendation-safety evidence is absent."],
+    "failed_approaches": ["Treat verification of the historical outcome as proof of safe current-task applicability."],
+    "environment_assumptions": ["Historical environment assumptions have not been normalized into the safety schema."],
+    "uncertainty": "The record remains retrievable for internal relevance evaluation but is non-recommendable until its source evidence supports the complete safety contract.",
+    "invariant_status": {
+      "ownership": "unresolved",
+      "lifetime": "unresolved",
+      "representation": "unresolved",
+      "compatibility": "unresolved",
+      "environment": "unresolved"
+    },
+    "applicability_status": "unresolved",
+    "negative_transfer_status": "none",
+    "quarantine": null,
+    "evidence_provenance": [
+      {
+        "artifact": "experiences/verified.json",
+        "artifact_sha256": "d33310055942fea98ccacd581419dc7a3bf6645a5d972b54e22cd9e0d48c86ec",
+        "supports": ["historical_verified_record_only"]
+      }
+    ]
+  }
+]

@@ -4,6 +4,13 @@ This directory is the public, reusable experience library for Agent Experience
 Graph. Unlike `assets/example_traces.json`, these records describe work that was
 actually executed and verified.
 
+The same canonical `verified.json` records generate the public
+[`/experiences/`](index.html) Registry, its human detail pages, copyable
+Markdown and Agent instructions, the machine index at `index.json`, and one
+complete JSON endpoint per published Experience under `data/`. See
+[`docs/experience-registry.md`](../docs/experience-registry.md) for generation,
+measurement, and contribution boundaries.
+
 Each library file is a JSON array compatible with
 `references/trace_schema.md`. Records may add provenance, verification, metrics,
 and retrieval metadata when those fields make the experience easier to audit and

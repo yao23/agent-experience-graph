@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence." />
+    <meta name="theme-color" content="#121b18" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Repair misleading agent-benchmark telemetry before trusting the result — AEG Verified Experience" />
+    <meta property="og:description" content="Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Repair misleading agent-benchmark telemetry before trusting the result — AEG Verified Experience" />
+    <meta name="twitter:description" content="Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence." />
+    <title>Repair misleading agent-benchmark telemetry before trusting the result — AEG Verified Experience</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../../site.css?v=registry-mvp-2" />
+    <script src="../../site.js?v=registry-mvp-2" defer></script>
+  </head>
+  <body data-experience-detail data-experience-id="trace-2026-08-03-repair-lab-ci-v0.1.3">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="../../" aria-label="Agent Experience Graph home"
+          ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span
+          ><span>Agent Experience Graph</span></a
+        ><button class="nav-toggle" type="button" aria-label="Open navigation"
+          aria-expanded="false" aria-controls="site-nav" data-nav-toggle>☰</button>
+        <nav class="site-nav" id="site-nav" aria-label="Primary navigation" data-site-nav>
+          <a href="../../">Product</a
+          ><a href="../../experiences/" aria-current="page">Experiences</a
+          ><a href="../../pitch/">Pitch</a
+          ><a href="../../docs/install-vscode-extension.html">Install</a
+          ><a class="nav-github" href="https://github.com/yao23/agent-experience-graph">GitHub ↗</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <article>
+        <header class="experience-hero">
+          <div class="shell">
+            <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Experiences</a><span aria-hidden="true">/</span><span>trace-2026-08-03-repair-lab-ci-v0.1.3</span></nav>
+            <div class="experience-card-meta">
+              <span class="verification-badge status-cross_run_verified">CROSS RUN VERIFIED</span>
+              <span class="tag">Coding Agent CI</span>
+            </div>
+            <h1>Repair misleading agent-benchmark telemetry before trusting the result</h1>
+            <p class="lede">Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence.</p>
+            <div class="experience-primary-actions">
+              <button class="button accent" type="button" data-copy-target="#agent-instructions" data-copy-event="use_with_agent_copy">Use with Agent</button>
+              <a class="button" href="../data/repair-lab-telemetry-and-fixture-validation.json" download data-aeg-event="json_download">Download JSON ↓</a>
+              <a class="button" href="https://github.com/yao23/agent-experience-graph/issues/new?template=experience-replay-success.yml" data-aeg-event="replay_feedback_open">Report replay ↗</a>
+            </div>
+            <p class="copy-status" aria-live="polite" data-copy-status></p>
+          </div>
+        </header>
+
+        <section class="detail-section">
+          <div class="shell detail-layout">
+            <div class="detail-main">
+              <section aria-labelledby="problem-heading">
+                <p class="kicker">Problem</p><h2 id="problem-heading">Symptoms and error signature</h2>
+                <ul class="clean-list"><li>Command totals can be inflated when both started and completed lifecycle events are counted.</li><li>Test-execution totals can be inflated when a test filename is mentioned without an executable test command.</li><li>A benchmark can look favorable when token or command reductions are shown without the paired wall-time regression.</li></ul>
+                <div class="signature-block"><h3>Exact public-safe error</h3><p class="unknown-value">Unknown — no stable public-safe signature was recorded.</p></div>
+              </section>
+              <section aria-labelledby="applicability-heading">
+                <p class="kicker">Applicability</p><h2 id="applicability-heading">Check the boundary before reuse</h2>
+                <div class="boundary-grid"><div><h3>Apply when</h3><ul class="clean-list"><li>A coding-agent benchmark derives command or test counts from JSONL execution events.</li><li>Baseline and assisted repair arms can be paired and checked with the same objective oracle.</li><li>The experience is used to repair measurement, fixture, or CI validation—not to assume a repair answer.</li></ul></div>
+                <div class="boundary-warning"><h3>Do not apply when</h3><ul class="clean-list"><li>Do not generalize the efficiency result beyond the single FastAPI-derived task family.</li><li>Do not treat equal successful outcomes as evidence of a success-rate improvement.</li><li>Do not claim lower latency: paired median assisted wall time was 18,235 milliseconds higher.</li></ul></div>
+                <div class="boundary-limitations"><h3>Known limitations</h3><ul class="clean-list"><li>All ten arms succeeded, so this sample shows no success-rate improvement.</li><li>Paired median wall-clock duration regressed by 18235 milliseconds.</li><li>The exact runner source commit SHA, model identifier, and Codex CLI version are unavailable for the original five-pair run.</li><li>The five pairs cover one task family and do not support generalized success-rate or latency claims.</li></ul></div></div>
+              </section>
+              <section aria-labelledby="failed-heading">
+                <p class="kicker">Failed approaches</p><h2 id="failed-heading">What did not work—and why</h2>
+                <div class="attempt-grid"><article class="attempt-card"><span class="attempt-index">FAILED PATH 01</span>
+        <h3>Count every command lifecycle event as a completed command.</h3><p><strong>Observed:</strong> Started and completed events double-counted command activity.</p>
+        <p><strong>Why it failed:</strong> Lifecycle events describe state transitions; only completion events represent completed commands.</p></article><article class="attempt-card"><span class="attempt-index">FAILED PATH 02</span>
+        <h3>Detect tests by searching command text for a test filename.</h3><p><strong>Observed:</strong> Mentions and non-executable segments were counted as test runs.</p>
+        <p><strong>Why it failed:</strong> The metric did not parse executable shell segments or verify a test-runner invocation.</p></article><article class="attempt-card"><span class="attempt-index">FAILED PATH 03</span>
+        <h3>Use an overly obvious synthetic repair fixture.</h3><p><strong>Observed:</strong> The task did not provide a useful challenge for measuring recovery behavior.</p>
+        <p><strong>Why it failed:</strong> The fixture did not preserve a sufficiently realistic public failure mechanism.</p></article></div>
+              </section>
+              <section aria-labelledby="recovery-heading">
+                <p class="kicker">Verified recovery</p><h2 id="recovery-heading">Recovery steps</h2>
+                <ol class="recovery-list"><li><span>01</span><p>Define completed-command and actual-test-execution events before calculating any comparison.</p></li><li><span>02</span><p>Count only completed command events and parse executable shell segments for real test-runner invocations.</p></li><li><span>03</span><p>Use a public, license-compatible fixture that preserves the upstream failure mechanism and has an objective oracle.</p></li><li><span>04</span><p>Inject the sanitized experience directly into the assisted prompt so loading it does not add a tool call.</p></li><li><span>05</span><p>Alternate baseline and assisted order, run at least three pairs, and report success, commands, tests, tokens, and duration together.</p></li><li><span>06</span><p>Recompute the published metrics in CI and keep generalization limits beside the result.</p></li></ol>
+              </section>
+              <section aria-labelledby="verification-heading">
+                <p class="kicker">Verification</p><h2 id="verification-heading">Method and objective evidence</h2>
+                <p class="section-intro">Five paired baseline/assisted trials produced ten objectively verified repairs; repository validators recomputed the paired metrics and CI validated the Repair Lab and packaged extension.</p>
+                <ul class="clean-list"><li>5 baseline arms verified</li><li>5 assisted arms verified</li><li>paired-result recomputation passed</li><li>Repair Lab Python tests passed</li><li>extension tests, TypeScript compilation, and VSIX packaging passed</li></ul>
+                <details class="evidence-details"><summary>Evidence references</summary><ul><li><a href="../../experiments/public-repair-lab/results/v0.1.3-paired-results.json">experiments/public-repair-lab/results/v0.1.3-paired-results.json</a></li><li><a href="../../experiments/public-repair-lab/validate_paired_results.py">experiments/public-repair-lab/validate_paired_results.py</a></li><li><a href="../../.github/workflows/repair-lab.yml">.github/workflows/repair-lab.yml</a></li></ul></details>
+              </section>
+              <section aria-labelledby="metrics-heading">
+                <p class="kicker">Observed metrics</p><h2 id="metrics-heading">Measured values and explicit unknowns</h2>
+                <div class="registry-metric-grid"><article class="registry-metric"><span>tokens</span>
+        <strong>-732</strong><small>paired median non-cached tokens, assisted minus baseline</small>
+        <p>A negative value means the assisted arm used fewer non-cached tokens.</p></article><article class="registry-metric"><span>commands</span>
+        <strong>-1</strong><small>paired median completed commands, assisted minus baseline</small>
+        <p>A negative value means the assisted arm used fewer completed commands.</p></article><article class="registry-metric"><span>retries</span>
+        <strong>Unknown</strong><small>retries</small>
+        <p>Retry count was not recorded as a separate metric.</p></article><article class="registry-metric"><span>wall time</span>
+        <strong>+18235</strong><small>paired median milliseconds, assisted minus baseline</small>
+        <p>A positive value is a regression: the assisted arm took longer.</p></article></div>
+              </section>
+            </div>
+            <aside class="detail-sidebar" aria-label="Experience context">
+              <div class="sticky-evidence-card">
+                <span class="mono">trace-2026-08-03-repair-lab-ci-v0.1.3</span>
+                <dl class="context-list">
+                  <div><dt>Status</dt><dd>CROSS RUN VERIFIED</dd></div>
+                  <div><dt>Last verified</dt><dd><time datetime="2026-08-03T04:15:23Z">2026-08-03</time></dd></div>
+                  <div><dt>Language</dt><dd>Python and TypeScript</dd></div>
+                  <div><dt>Runtime</dt><dd>Exact Python, Node.js, and Codex CLI versions for the original five-pair run are unknown.</dd></div>
+                  <div><dt>OS</dt><dd>unknown</dd></div>
+                  <div><dt>Dependencies</dt><dd><ul class="context-dependencies"><li>FastAPI-derived dependency-free repair fixture</li><li>GitHub Actions validation</li><li>VS Code extension packaging</li></ul></dd></div>
+                  <div><dt>Agent</dt><dd>Codex</dd></div>
+                  <div><dt>Model</dt><dd>unknown</dd></div>
+                  <div><dt>Harness</dt><dd>codex-exec paired Repair Lab runner</dd></div>
+                  <div><dt>Reasoning</dt><dd>unknown</dd></div>
+                  <div><dt>Source version</dt><dd>0.1.3</dd></div>
+                  <div><dt>License</dt><dd>MIT</dd></div>
+                </dl>
+                <a class="text-link" href="https://github.com/yao23/agent-experience-graph">Open public source ↗</a>
+                <p class="revision">Revision <code>dca38fe9db4d463c5bb16f155dc033f8895e1439</code></p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="consumption-section" aria-labelledby="consumption-heading">
+          <div class="shell">
+            <p class="kicker">Agent consumption</p><h2 id="consumption-heading">Copy the evidence in the format you need</h2>
+            <p class="section-intro">The page, Markdown, and JSON are generated from the same canonical record. Applying an experience remains a local, BYO-Agent decision.</p>
+            <div class="format-tabs" data-tabs>
+              <div class="tab-list" role="tablist" aria-label="Experience formats">
+                <button type="button" role="tab" aria-selected="true" aria-controls="agent-panel" id="agent-tab" data-tab-target="#agent-panel">Agent instructions</button>
+                <button type="button" role="tab" aria-selected="false" aria-controls="markdown-panel" id="markdown-tab" data-tab-target="#markdown-panel" tabindex="-1">Markdown</button>
+                <button type="button" role="tab" aria-selected="false" aria-controls="json-panel" id="json-tab" data-tab-target="#json-panel" tabindex="-1">JSON</button>
+              </div>
+              <section role="tabpanel" id="agent-panel" aria-labelledby="agent-tab" data-tab-panel>
+                <div class="code-toolbar"><span>AGENT-READY INSTRUCTIONS</span><button type="button" data-copy-target="#agent-instructions" data-copy-event="use_with_agent_copy">Copy instructions</button></div>
+                <pre id="agent-instructions" tabindex="0"><code>Use this only when repairing or auditing a coding-agent benchmark with event-derived metrics. First reproduce the accounting discrepancy. Count completed commands from completion events only, and count tests only from executable test-runner segments. Keep the fixture public and license-compatible, use the same objective oracle for paired arms, alternate execution order, and report commands, test executions, non-cached tokens, and wall time together. Do not infer a success-rate gain or lower latency from this record.</code></pre>
+              </section>
+              <section role="tabpanel" id="markdown-panel" aria-labelledby="markdown-tab" data-tab-panel hidden>
+                <div class="code-toolbar"><span>MARKDOWN</span><button type="button" data-copy-target="#experience-markdown">Copy Markdown</button></div>
+                <pre id="experience-markdown" tabindex="0"><code># Repair misleading agent-benchmark telemetry before trusting the result
+
+- Experience ID: `trace-2026-08-03-repair-lab-ci-v0.1.3`
+- Verification: `CROSS_RUN_VERIFIED`
+- Category: Coding Agent CI
+- Last verified: 2026-08-03T04:15:23Z
+
+Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence.
+
+## Symptoms
+
+- Command totals can be inflated when both started and completed lifecycle events are counted.
+- Test-execution totals can be inflated when a test filename is mentioned without an executable test command.
+- A benchmark can look favorable when token or command reductions are shown without the paired wall-time regression.
+
+## Exact error signatures
+
+- Unknown: no stable public-safe error signature was recorded.
+
+## Apply when
+
+- A coding-agent benchmark derives command or test counts from JSONL execution events.
+- Baseline and assisted repair arms can be paired and checked with the same objective oracle.
+- The experience is used to repair measurement, fixture, or CI validation—not to assume a repair answer.
+
+## Do not apply when
+
+- Do not generalize the efficiency result beyond the single FastAPI-derived task family.
+- Do not treat equal successful outcomes as evidence of a success-rate improvement.
+- Do not claim lower latency: paired median assisted wall time was 18,235 milliseconds higher.
+
+## Known limitations
+
+- All ten arms succeeded, so this sample shows no success-rate improvement.
+- Paired median wall-clock duration regressed by 18235 milliseconds.
+- The exact runner source commit SHA, model identifier, and Codex CLI version are unavailable for the original five-pair run.
+- The five pairs cover one task family and do not support generalized success-rate or latency claims.
+
+## Environment and agent context
+
+- Language: Python and TypeScript
+- Runtime: Exact Python, Node.js, and Codex CLI versions for the original five-pair run are unknown.
+- Operating system: unknown
+- Dependencies: FastAPI-derived dependency-free repair fixture, GitHub Actions validation, VS Code extension packaging
+- Agent: Codex
+- Model: unknown
+- Harness: codex-exec paired Repair Lab runner
+- Reasoning context: unknown
+
+## Failed approaches
+
+1. **Count every command lifecycle event as a completed command.**
+   - Observed: Started and completed events double-counted command activity.
+   - Why it failed: Lifecycle events describe state transitions; only completion events represent completed commands.
+2. **Detect tests by searching command text for a test filename.**
+   - Observed: Mentions and non-executable segments were counted as test runs.
+   - Why it failed: The metric did not parse executable shell segments or verify a test-runner invocation.
+3. **Use an overly obvious synthetic repair fixture.**
+   - Observed: The task did not provide a useful challenge for measuring recovery behavior.
+   - Why it failed: The fixture did not preserve a sufficiently realistic public failure mechanism.
+
+## Verified recovery
+
+1. Define completed-command and actual-test-execution events before calculating any comparison.
+2. Count only completed command events and parse executable shell segments for real test-runner invocations.
+3. Use a public, license-compatible fixture that preserves the upstream failure mechanism and has an objective oracle.
+4. Inject the sanitized experience directly into the assisted prompt so loading it does not add a tool call.
+5. Alternate baseline and assisted order, run at least three pairs, and report success, commands, tests, tokens, and duration together.
+6. Recompute the published metrics in CI and keep generalization limits beside the result.
+
+## Verification
+
+Five paired baseline/assisted trials produced ten objectively verified repairs; repository validators recomputed the paired metrics and CI validated the Repair Lab and packaged extension.
+
+- 5 baseline arms verified
+- 5 assisted arms verified
+- paired-result recomputation passed
+- Repair Lab Python tests passed
+- extension tests, TypeScript compilation, and VSIX packaging passed
+
+## Metrics
+
+- Tokens: -732 paired median non-cached tokens, assisted minus baseline — A negative value means the assisted arm used fewer non-cached tokens.
+- Commands: -1 paired median completed commands, assisted minus baseline — A negative value means the assisted arm used fewer completed commands.
+- Retries: Unknown retries — Retry count was not recorded as a separate metric.
+- Wall Time: 18235 paired median milliseconds, assisted minus baseline — A positive value is a regression: the assisted arm took longer.
+
+## Agent-ready instructions
+
+Use this only when repairing or auditing a coding-agent benchmark with event-derived metrics. First reproduce the accounting discrepancy. Count completed commands from completion events only, and count tests only from executable test-runner segments. Keep the fixture public and license-compatible, use the same objective oracle for paired arms, alternate execution order, and report commands, test executions, non-cached tokens, and wall time together. Do not infer a success-rate gain or lower latency from this record.
+
+## Provenance
+
+- Source: https://github.com/yao23/agent-experience-graph
+- Revision: `dca38fe9db4d463c5bb16f155dc033f8895e1439`
+- License: MIT
+</code></pre>
+              </section>
+              <section role="tabpanel" id="json-panel" aria-labelledby="json-tab" data-tab-panel hidden>
+                <div class="code-toolbar"><span>MACHINE-READABLE JSON</span><div><button type="button" data-copy-target="#experience-json">Copy JSON</button><a href="../data/repair-lab-telemetry-and-fixture-validation.json" download data-aeg-event="json_download">Download</a></div></div>
+                <pre id="experience-json" tabindex="0"><code>{
+  &quot;schema_version&quot;: &quot;1.0.0&quot;,
+  &quot;id&quot;: &quot;trace-2026-08-03-repair-lab-ci-v0.1.3&quot;,
+  &quot;slug&quot;: &quot;repair-lab-telemetry-and-fixture-validation&quot;,
+  &quot;title&quot;: &quot;Repair misleading agent-benchmark telemetry before trusting the result&quot;,
+  &quot;summary&quot;: &quot;Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence.&quot;,
+  &quot;category&quot;: &quot;Coding Agent CI&quot;,
+  &quot;verification_status&quot;: &quot;CROSS_RUN_VERIFIED&quot;,
+  &quot;problem&quot;: {
+    &quot;symptoms&quot;: [
+      &quot;Command totals can be inflated when both started and completed lifecycle events are counted.&quot;,
+      &quot;Test-execution totals can be inflated when a test filename is mentioned without an executable test command.&quot;,
+      &quot;A benchmark can look favorable when token or command reductions are shown without the paired wall-time regression.&quot;
+    ],
+    &quot;error_signatures&quot;: []
+  },
+  &quot;applicability&quot;: {
+    &quot;applies_when&quot;: [
+      &quot;A coding-agent benchmark derives command or test counts from JSONL execution events.&quot;,
+      &quot;Baseline and assisted repair arms can be paired and checked with the same objective oracle.&quot;,
+      &quot;The experience is used to repair measurement, fixture, or CI validation—not to assume a repair answer.&quot;
+    ],
+    &quot;exclusions&quot;: [
+      &quot;Do not generalize the efficiency result beyond the single FastAPI-derived task family.&quot;,
+      &quot;Do not treat equal successful outcomes as evidence of a success-rate improvement.&quot;,
+      &quot;Do not claim lower latency: paired median assisted wall time was 18,235 milliseconds higher.&quot;
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;repository&quot;: &quot;https://github.com/yao23/agent-experience-graph&quot;,
+    &quot;source_revision&quot;: {
+      &quot;version&quot;: &quot;0.1.3&quot;,
+      &quot;commit_sha&quot;: &quot;dca38fe9db4d463c5bb16f155dc033f8895e1439&quot;
+    },
+    &quot;environment_fingerprint&quot;: {
+      &quot;language&quot;: &quot;Python and TypeScript&quot;,
+      &quot;runtime&quot;: &quot;Exact Python, Node.js, and Codex CLI versions for the original five-pair run are unknown.&quot;,
+      &quot;operating_system&quot;: &quot;unknown&quot;,
+      &quot;dependencies&quot;: [
+        &quot;FastAPI-derived dependency-free repair fixture&quot;,
+        &quot;GitHub Actions validation&quot;,
+        &quot;VS Code extension packaging&quot;
+      ]
+    },
+    &quot;agent_context&quot;: {
+      &quot;agent&quot;: &quot;Codex&quot;,
+      &quot;model&quot;: &quot;unknown&quot;,
+      &quot;harness&quot;: &quot;codex-exec paired Repair Lab runner&quot;,
+      &quot;reasoning&quot;: &quot;unknown&quot;
+    }
+  },
+  &quot;failed_attempts&quot;: [
+    {
+      &quot;approach&quot;: &quot;Count every command lifecycle event as a completed command.&quot;,
+      &quot;observed_result&quot;: &quot;Started and completed events double-counted command activity.&quot;,
+      &quot;why_failed&quot;: &quot;Lifecycle events describe state transitions; only completion events represent completed commands.&quot;
+    },
+    {
+      &quot;approach&quot;: &quot;Detect tests by searching command text for a test filename.&quot;,
+      &quot;observed_result&quot;: &quot;Mentions and non-executable segments were counted as test runs.&quot;,
+      &quot;why_failed&quot;: &quot;The metric did not parse executable shell segments or verify a test-runner invocation.&quot;
+    },
+    {
+      &quot;approach&quot;: &quot;Use an overly obvious synthetic repair fixture.&quot;,
+      &quot;observed_result&quot;: &quot;The task did not provide a useful challenge for measuring recovery behavior.&quot;,
+      &quot;why_failed&quot;: &quot;The fixture did not preserve a sufficiently realistic public failure mechanism.&quot;
+    }
+  ],
+  &quot;recovery_steps&quot;: [
+    &quot;Define completed-command and actual-test-execution events before calculating any comparison.&quot;,
+    &quot;Count only completed command events and parse executable shell segments for real test-runner invocations.&quot;,
+    &quot;Use a public, license-compatible fixture that preserves the upstream failure mechanism and has an objective oracle.&quot;,
+    &quot;Inject the sanitized experience directly into the assisted prompt so loading it does not add a tool call.&quot;,
+    &quot;Alternate baseline and assisted order, run at least three pairs, and report success, commands, tests, tokens, and duration together.&quot;,
+    &quot;Recompute the published metrics in CI and keep generalization limits beside the result.&quot;
+  ],
+  &quot;verification_method&quot;: {
+    &quot;summary&quot;: &quot;Five paired baseline/assisted trials produced ten objectively verified repairs; repository validators recomputed the paired metrics and CI validated the Repair Lab and packaged extension.&quot;,
+    &quot;checks&quot;: [
+      &quot;5 baseline arms verified&quot;,
+      &quot;5 assisted arms verified&quot;,
+      &quot;paired-result recomputation passed&quot;,
+      &quot;Repair Lab Python tests passed&quot;,
+      &quot;extension tests, TypeScript compilation, and VSIX packaging passed&quot;
+    ],
+    &quot;evidence_refs&quot;: [
+      &quot;experiments/public-repair-lab/results/v0.1.3-paired-results.json&quot;,
+      &quot;experiments/public-repair-lab/validate_paired_results.py&quot;,
+      &quot;.github/workflows/repair-lab.yml&quot;
+    ]
+  },
+  &quot;registry_metrics&quot;: {
+    &quot;tokens&quot;: {
+      &quot;value&quot;: -732,
+      &quot;unit&quot;: &quot;paired median non-cached tokens, assisted minus baseline&quot;,
+      &quot;status&quot;: &quot;measured&quot;,
+      &quot;note&quot;: &quot;A negative value means the assisted arm used fewer non-cached tokens.&quot;
+    },
+    &quot;commands&quot;: {
+      &quot;value&quot;: -1,
+      &quot;unit&quot;: &quot;paired median completed commands, assisted minus baseline&quot;,
+      &quot;status&quot;: &quot;measured&quot;,
+      &quot;note&quot;: &quot;A negative value means the assisted arm used fewer completed commands.&quot;
+    },
+    &quot;retries&quot;: {
+      &quot;value&quot;: null,
+      &quot;unit&quot;: &quot;retries&quot;,
+      &quot;status&quot;: &quot;unknown&quot;,
+      &quot;note&quot;: &quot;Retry count was not recorded as a separate metric.&quot;
+    },
+    &quot;wall_time&quot;: {
+      &quot;value&quot;: 18235,
+      &quot;unit&quot;: &quot;paired median milliseconds, assisted minus baseline&quot;,
+      &quot;status&quot;: &quot;measured&quot;,
+      &quot;note&quot;: &quot;A positive value is a regression: the assisted arm took longer.&quot;
+    }
+  },
+  &quot;last_verified_at&quot;: &quot;2026-08-03T04:15:23Z&quot;,
+  &quot;agent_ready_instructions&quot;: &quot;Use this only when repairing or auditing a coding-agent benchmark with event-derived metrics. First reproduce the accounting discrepancy. Count completed commands from completion events only, and count tests only from executable test-runner segments. Keep the fixture public and license-compatible, use the same objective oracle for paired arms, alternate execution order, and report commands, test executions, non-cached tokens, and wall time together. Do not infer a success-rate gain or lower latency from this record.&quot;,
+  &quot;license&quot;: &quot;MIT&quot;,
+  &quot;task&quot;: &quot;Make the AEG Public Repair Lab repeatable, trustworthy, and continuously validated&quot;,
+  &quot;outcome&quot;: &quot;success&quot;,
+  &quot;subtasks&quot;: [
+    {
+      &quot;description&quot;: &quot;Repair experiment telemetry before interpreting the A/B result&quot;,
+      &quot;skills&quot;: [
+        &quot;evaluation-harness&quot;,
+        &quot;event-stream-analysis&quot;
+      ],
+      &quot;tools&quot;: [
+        &quot;python&quot;,
+        &quot;codex-jsonl&quot;
+      ],
+      &quot;outcome&quot;: &quot;success&quot;,
+      &quot;lessons&quot;: [
+        &quot;Count only completed command events; started and completed lifecycle events otherwise double the metric.&quot;,
+        &quot;Count test executions by parsing executable shell segments, not by searching for a test filename substring.&quot;
+      ]
+    },
+    {
+      &quot;description&quot;: &quot;Replace an overly obvious repair fixture with a harder public, licensed failure&quot;,
+      &quot;skills&quot;: [
+        &quot;benchmark-design&quot;,
+        &quot;license-aware-fixture-design&quot;
+      ],
+      &quot;tools&quot;: [
+        &quot;BugsInPy&quot;,
+        &quot;FastAPI&quot;,
+        &quot;unittest&quot;
+      ],
+      &quot;outcome&quot;: &quot;success&quot;,
+      &quot;lessons&quot;: [
+        &quot;A fixture should preserve the upstream failure mechanism while remaining dependency-free and objectively verifiable.&quot;,
+        &quot;Record repository, buggy commit, fixed commit, license, and benchmark cross-reference next to the fixture.&quot;
+      ]
+    },
+    {
+      &quot;description&quot;: &quot;Deliver retrieved experience without adding artificial tool overhead&quot;,
+      &quot;skills&quot;: [
+        &quot;experience-retrieval-design&quot;,
+        &quot;prompt-injection-design&quot;
+      ],
+      &quot;tools&quot;: [
+        &quot;codex-exec&quot;
+      ],
+      &quot;outcome&quot;: &quot;success&quot;,
+      &quot;lessons&quot;: [
+        &quot;Inject a compact sanitized recovery capsule directly into the assisted prompt instead of requiring an agent to open a separate experience file.&quot;,
+        &quot;Treat retrieved experience as guidance that must match local evidence, not as an unverified answer.&quot;
+      ]
+    },
+    {
+      &quot;description&quot;: &quot;Run paired trials and report both improvements and regressions&quot;,
+      &quot;skills&quot;: [
+        &quot;paired-experiment-design&quot;,
+        &quot;cost-analysis&quot;
+      ],
+      &quot;tools&quot;: [
+        &quot;python&quot;,
+        &quot;codex-exec&quot;,
+        &quot;git&quot;
+      ],
+      &quot;outcome&quot;: &quot;success&quot;,
+      &quot;lessons&quot;: [
+        &quot;Alternate baseline and assisted execution order to reduce simple warm-cache and first-run bias.&quot;,
+        &quot;Require at least three paired trials before assigning an efficiency verdict.&quot;,
+        &quot;Preserve success, commands, test runs, tokens, duration, patches, and raw events; do not hide latency regressions behind token or command wins.&quot;
+      ]
+    },
+    {
+      &quot;description&quot;: &quot;Continuously validate the Repair Lab and packaged extension in GitHub Actions&quot;,
+      &quot;skills&quot;: [
+        &quot;github-actions&quot;,
+        &quot;release-validation&quot;
+      ],
+      &quot;tools&quot;: [
+        &quot;GitHub Actions&quot;,
+        &quot;python&quot;,
+        &quot;npm&quot;,
+        &quot;TypeScript&quot;,
+        &quot;VSCE&quot;
+      ],
+      &quot;outcome&quot;: &quot;success&quot;,
+      &quot;lessons&quot;: [
+        &quot;CI should validate telemetry tests, prepare every fixture, run extension tests, compile TypeScript, and package the VSIX without launching paid agent trials.&quot;,
+        &quot;A successful workflow run is promotion evidence for the experience, not proof that the experiment generalizes to other task families.&quot;
+      ]
+    }
+  ],
+  &quot;skills&quot;: [
+    &quot;evaluation-harness&quot;,
+    &quot;benchmark-design&quot;,
+    &quot;experience-retrieval-design&quot;,
+    &quot;paired-experiment-design&quot;,
+    &quot;github-actions&quot;,
+    &quot;release-validation&quot;
+  ],
+  &quot;tools&quot;: [
+    &quot;python&quot;,
+    &quot;codex-exec&quot;,
+    &quot;git&quot;,
+    &quot;GitHub Actions&quot;,
+    &quot;npm&quot;,
+    &quot;TypeScript&quot;,
+    &quot;VSCE&quot;
+  ],
+  &quot;constraints&quot;: [
+    &quot;Do not publish raw JSONL, stderr logs, local patches, credentials, or private workspace data.&quot;,
+    &quot;Keep agent trials isolated, ephemeral, workspace-scoped, and free of upstream repository side effects.&quot;,
+    &quot;Do not claim general success-rate or latency improvement from one task family.&quot;
+  ],
+  &quot;lessons&quot;: [
+    &quot;Measurement integrity comes before optimization: incorrect event accounting can make a neutral result look favorable.&quot;,
+    &quot;Retrieval delivery is part of system cost; avoid charging an extra tool call merely to load the recommendation.&quot;,
+    &quot;Verified negative evidence is reusable: the five-pair sample reduced median commands and paired non-cached tokens but regressed paired wall time.&quot;,
+    &quot;Store compact public experiences with provenance and explicit limitations so another agent can reuse the method without ingesting raw execution logs.&quot;
+  ],
+  &quot;provenance&quot;: {
+    &quot;repository&quot;: &quot;https://github.com/yao23/agent-experience-graph&quot;,
+    &quot;sourceVersion&quot;: &quot;0.1.3&quot;,
+    &quot;recordedAt&quot;: &quot;2026-08-03T04:15:23Z&quot;,
+    &quot;publicSource&quot;: {
+      &quot;repository&quot;: &quot;https://github.com/fastapi/fastapi&quot;,
+      &quot;buggyCommitSha&quot;: &quot;7cea84b74ca3106a7f861b774e9d215e5228728f&quot;,
+      &quot;fixedCommitSha&quot;: &quot;75a07f24bf01a31225ee687f3e2b3fc1981b67ab&quot;,
+      &quot;license&quot;: &quot;MIT&quot;,
+      &quot;benchmark&quot;: &quot;BugsInPy fastapi bug 5&quot;
+    },
+    &quot;experimentEvidence&quot;: {
+      &quot;artifact&quot;: &quot;experiments/public-repair-lab/results/v0.1.3-paired-results.json&quot;,
+      &quot;sourceReportCreatedAt&quot;: &quot;2026-08-03T00:38:20.080621+00:00&quot;,
+      &quot;runnerSourceCommitSha&quot;: null,
+      &quot;runnerSourceCommitStatus&quot;: &quot;unavailable: trials ran before the runner changes were committed&quot;
+    },
+    &quot;promotionEvidence&quot;: {
+      &quot;workflowName&quot;: &quot;Validate Repair Lab&quot;,
+      &quot;workflowFile&quot;: &quot;.github/workflows/repair-lab.yml&quot;,
+      &quot;validatedCommitSha&quot;: &quot;dca38fe9db4d463c5bb16f155dc033f8895e1439&quot;,
+      &quot;status&quot;: &quot;observed-passed&quot;,
+      &quot;runResolver&quot;: &quot;https://github.com/yao23/agent-experience-graph/actions/runs/30932880306&quot;
+    },
+    &quot;publication&quot;: {
+      &quot;pullRequest&quot;: &quot;https://github.com/yao23/agent-experience-graph/pull/6&quot;
+    }
+  },
+  &quot;verification&quot;: {
+    &quot;status&quot;: &quot;passed&quot;,
+    &quot;evidence&quot;: {
+      &quot;experimentArtifact&quot;: &quot;experiments/public-repair-lab/results/v0.1.3-paired-results.json&quot;,
+      &quot;experienceSchema&quot;: &quot;experiences/verified-experience.schema.json&quot;,
+      &quot;semanticValidator&quot;: &quot;scripts/validate_verified_experiences.py&quot;,
+      &quot;pairedResultsValidator&quot;: &quot;experiments/public-repair-lab/validate_paired_results.py&quot;
+    },
+    &quot;localChecks&quot;: {
+      &quot;repairLabPythonTests&quot;: &quot;passed&quot;,
+      &quot;retrievalTests&quot;: &quot;passed&quot;,
+      &quot;verifiedExperienceValidation&quot;: &quot;passed&quot;,
+      &quot;pairedResultRecomputation&quot;: &quot;passed&quot;,
+      &quot;extensionTests&quot;: &quot;passed&quot;,
+      &quot;fixturesPrepared&quot;: [
+        &quot;fastapi-nested-response&quot;,
+        &quot;pysnooper-path-output&quot;
+      ],
+      &quot;typescriptCompilation&quot;: &quot;passed&quot;,
+      &quot;vsixPackaging&quot;: &quot;passed&quot;
+    }
+  },
+  &quot;metrics&quot;: {
+    &quot;pairedTrials&quot;: 5,
+    &quot;baselineArms&quot;: 5,
+    &quot;assistedArms&quot;: 5,
+    &quot;baselineArmsVerified&quot;: 5,
+    &quot;assistedArmsVerified&quot;: 5,
+    &quot;pairedMedianAssistedMinusBaseline&quot;: {
+      &quot;completedCommands&quot;: -1,
+      &quot;actualTestExecutions&quot;: 0,
+      &quot;nonCachedTokens&quot;: -732,
+      &quot;durationMs&quot;: 18235
+    },
+    &quot;interpretation&quot;: &quot;Bounded tool-cycle and token improvement on one task family; no success-rate improvement and wall-clock latency regressed.&quot;
+  },
+  &quot;limitations&quot;: [
+    &quot;All ten arms succeeded, so this sample shows no success-rate improvement.&quot;,
+    &quot;Paired median wall-clock duration regressed by 18235 milliseconds.&quot;,
+    &quot;The exact runner source commit SHA, model identifier, and Codex CLI version are unavailable for the original five-pair run.&quot;,
+    &quot;The five pairs cover one task family and do not support generalized success-rate or latency claims.&quot;
+  ],
+  &quot;reuse&quot;: {
+    &quot;retrievalTags&quot;: [
+      &quot;agent evaluation&quot;,
+      &quot;A/B repair experiment&quot;,
+      &quot;telemetry correctness&quot;,
+      &quot;paired trials&quot;,
+      &quot;experience injection&quot;,
+      &quot;GitHub Actions&quot;,
+      &quot;VS Code extension release&quot;
+    ],
+    &quot;recommendedFor&quot;: [
+      &quot;building an auditable agent benchmark&quot;,
+      &quot;repairing duplicated JSONL event metrics&quot;,
+      &quot;adding CI for agent experiment fixtures&quot;,
+      &quot;publishing a verified reusable experience&quot;
+    ]
+  }
+}
+</code></pre>
+              </section>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <span>AEG · Evidence before reuse</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="../../">Product</a><a href="../../experiences/">Experiences</a
+          ><a href="https://github.com/yao23/agent-experience-graph/issues/new?template=candidate-experience.yml" data-aeg-event="experience_submission_open">Contribute ↗</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

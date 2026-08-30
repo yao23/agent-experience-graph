@@ -10,6 +10,8 @@ PAGES = (
     ROOT / "pitch" / "index.html",
     ROOT / "docs" / "install-vscode-extension.html",
     ROOT / "docs" / "60-second-demo.html",
+    ROOT / "experiences" / "index.html",
+    *sorted((ROOT / "experiences").glob("*/index.html")),
 )
 
 
@@ -74,9 +76,9 @@ class SiteSmokeTest(unittest.TestCase):
                 self.assertTrue(parsed.has_footer)
                 self.assertTrue(parsed.has_skip_link)
                 self.assertEqual(len(parsed.stylesheets), 1)
-                self.assertTrue(parsed.stylesheets[0].endswith("site.css"))
+                self.assertTrue(urlsplit(parsed.stylesheets[0]).path.endswith("site.css"))
                 self.assertEqual(len(parsed.scripts), 1)
-                self.assertTrue(parsed.scripts[0].endswith("site.js"))
+                self.assertTrue(urlsplit(parsed.scripts[0]).path.endswith("site.js"))
 
     def test_internal_links_and_fragments_resolve(self):
         for page in PAGES:
@@ -176,6 +178,15 @@ class SiteSmokeTest(unittest.TestCase):
     def test_fragment_targets_clear_sticky_header(self):
         css = (ROOT / "site.css").read_text(encoding="utf-8")
         self.assertIn("scroll-margin-top: 84px", css)
+
+    def test_primary_navigation_exposes_registry(self):
+        for page in PAGES:
+            with self.subTest(page=page.relative_to(ROOT)):
+                links = self.parse(page).links
+                self.assertTrue(
+                    any("experiences/" in link for link in links),
+                    f"Registry missing from {page}",
+                )
 
 
 if __name__ == "__main__":

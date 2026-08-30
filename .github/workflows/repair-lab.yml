@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "experiences/**"
+      - "docs/experience-registry.md"
+      - "index.html"
+      - "site.css"
+      - "site.js"
+      - ".github/ISSUE_TEMPLATE/**"
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
       - "experiments/situated-experience-benchmark-v1/**"
@@ -24,6 +29,11 @@ on:
     branches: [main]
     paths:
       - "experiences/**"
+      - "docs/experience-registry.md"
+      - "index.html"
+      - "site.css"
+      - "site.js"
+      - ".github/ISSUE_TEMPLATE/**"
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
       - "experiments/situated-experience-benchmark-v1/**"
@@ -74,6 +84,7 @@ jobs:
             -s experiments/public-repair-lab/paired-results.schema.json \
             -d experiments/public-repair-lab/results/tr-04-failed-path-prevention-pair.json
           python3 scripts/validate_verified_experiences.py
+          python3 scripts/build_registry.py --check
           python3 experiments/public-repair-lab/validate_paired_results.py
           python3 experiments/public-repair-lab/validate_paired_results.py \
             --results experiments/public-repair-lab/results/tr-04-protocol-transfer-pair.json \
@@ -94,6 +105,9 @@ jobs:
         run: |
           python3 scripts/test_recommend_traces.py
           python3 scripts/test_validate_verified_experiences.py
+          python3 scripts/test_experience_registry.py
+          python3 scripts/test_site.py
+          node scripts/test_registry_client.js
           python3 experiments/public-repair-lab/test_run_experiment.py
           python3 experiments/public-repair-lab/test_validate_paired_results.py
           python3 experiments/public-repair-lab/run_experiment.py --prepare-only --task fastapi-nested-response --trials 3 --output /tmp/aeg-fastapi

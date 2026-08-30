@@ -8,9 +8,123 @@
   "definitions": {
     "nonEmptyString": {"type": "string", "minLength": 1},
     "stringArray": {"type": "array", "items": {"$ref": "#/definitions/nonEmptyString"}},
+    "nonEmptyStringArray": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonEmptyString"}},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T"},
+    "safeUrl": {"type": "string", "pattern": "^https://"},
     "commitSha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
     "nullableCommitSha": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/commitSha"}]},
     "outcome": {"enum": ["success", "partial", "failure"]},
+    "verificationStatus": {
+      "enum": [
+        "LOCALLY_VERIFIED",
+        "CROSS_RUN_VERIFIED",
+        "CROSS_MODEL_TRANSFERRED",
+        "EXTERNALLY_REPRODUCED",
+        "STALE_OR_FAILED_REPLAY"
+      ]
+    },
+    "problem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symptoms", "error_signatures"],
+      "properties": {
+        "symptoms": {"$ref": "#/definitions/nonEmptyStringArray"},
+        "error_signatures": {"$ref": "#/definitions/stringArray"}
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applies_when", "exclusions"],
+      "properties": {
+        "applies_when": {"$ref": "#/definitions/nonEmptyStringArray"},
+        "exclusions": {"$ref": "#/definitions/nonEmptyStringArray"}
+      }
+    },
+    "sourceRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "commit_sha"],
+      "properties": {
+        "version": {"$ref": "#/definitions/nonEmptyString"},
+        "commit_sha": {"$ref": "#/definitions/commitSha"}
+      }
+    },
+    "environmentFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "runtime", "operating_system", "dependencies"],
+      "properties": {
+        "language": {"$ref": "#/definitions/nonEmptyString"},
+        "runtime": {"$ref": "#/definitions/nonEmptyString"},
+        "operating_system": {"$ref": "#/definitions/nonEmptyString"},
+        "dependencies": {"$ref": "#/definitions/nonEmptyStringArray"}
+      }
+    },
+    "agentContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent", "model", "harness", "reasoning"],
+      "properties": {
+        "agent": {"$ref": "#/definitions/nonEmptyString"},
+        "model": {"$ref": "#/definitions/nonEmptyString"},
+        "harness": {"$ref": "#/definitions/nonEmptyString"},
+        "reasoning": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "source_revision", "environment_fingerprint", "agent_context"],
+      "properties": {
+        "repository": {"$ref": "#/definitions/safeUrl"},
+        "source_revision": {"$ref": "#/definitions/sourceRevision"},
+        "environment_fingerprint": {"$ref": "#/definitions/environmentFingerprint"},
+        "agent_context": {"$ref": "#/definitions/agentContext"}
+      }
+    },
+    "failedAttempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approach", "observed_result", "why_failed"],
+      "properties": {
+        "approach": {"$ref": "#/definitions/nonEmptyString"},
+        "observed_result": {"$ref": "#/definitions/nonEmptyString"},
+        "why_failed": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "verificationMethod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "checks", "evidence_refs"],
+      "properties": {
+        "summary": {"$ref": "#/definitions/nonEmptyString"},
+        "checks": {"$ref": "#/definitions/nonEmptyStringArray"},
+        "evidence_refs": {"$ref": "#/definitions/nonEmptyStringArray"}
+      }
+    },
+    "registryMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit", "status", "note"],
+      "properties": {
+        "value": {"anyOf": [{"type": "null"}, {"type": "number"}]},
+        "unit": {"$ref": "#/definitions/nonEmptyString"},
+        "status": {"enum": ["measured", "unknown"]},
+        "note": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "registryMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tokens", "commands", "retries", "wall_time"],
+      "properties": {
+        "tokens": {"$ref": "#/definitions/registryMetric"},
+        "commands": {"$ref": "#/definitions/registryMetric"},
+        "retries": {"$ref": "#/definitions/registryMetric"},
+        "wall_time": {"$ref": "#/definitions/registryMetric"}
+      }
+    },
     "subtask": {
       "type": "object",
       "additionalProperties": false,
@@ -157,9 +271,25 @@
     "experience": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "task", "outcome", "subtasks", "skills", "tools", "constraints", "lessons", "provenance", "verification", "metrics", "limitations", "reuse"],
+      "required": ["schema_version", "id", "slug", "title", "summary", "category", "verification_status", "problem", "applicability", "context", "failed_attempts", "recovery_steps", "verification_method", "registry_metrics", "last_verified_at", "agent_ready_instructions", "license", "task", "outcome", "subtasks", "skills", "tools", "constraints", "lessons", "provenance", "verification", "metrics", "limitations", "reuse"],
       "properties": {
+        "schema_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
         "id": {"type": "string", "pattern": "^trace-[a-z0-9][a-z0-9.-]+$"},
+        "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "title": {"$ref": "#/definitions/nonEmptyString"},
+        "summary": {"$ref": "#/definitions/nonEmptyString"},
+        "category": {"$ref": "#/definitions/nonEmptyString"},
+        "verification_status": {"$ref": "#/definitions/verificationStatus"},
+        "problem": {"$ref": "#/definitions/problem"},
+        "applicability": {"$ref": "#/definitions/applicability"},
+        "context": {"$ref": "#/definitions/context"},
+        "failed_attempts": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/failedAttempt"}},
+        "recovery_steps": {"$ref": "#/definitions/nonEmptyStringArray"},
+        "verification_method": {"$ref": "#/definitions/verificationMethod"},
+        "registry_metrics": {"$ref": "#/definitions/registryMetrics"},
+        "last_verified_at": {"$ref": "#/definitions/timestamp"},
+        "agent_ready_instructions": {"$ref": "#/definitions/nonEmptyString"},
+        "license": {"$ref": "#/definitions/nonEmptyString"},
         "task": {"$ref": "#/definitions/nonEmptyString"},
         "outcome": {"$ref": "#/definitions/outcome"},
         "subtasks": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/subtask"}},
