@@ -1,0 +1,80 @@
+name: Report replay failure, staleness, or incompatibility
+description: Report evidence that a Registry experience no longer reproduces or does not apply.
+title: "[Replay failure]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Failure and staleness evidence is valuable. Do not include credentials, proprietary code, personal data, customer data, private paths, raw prompts, or other secrets. Submitted code is not executed automatically.
+  - type: input
+    id: experience_id
+    attributes:
+      label: Experience ID
+      placeholder: trace-2026-08-03-tr-04-tornado-nodelay
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and version context
+      description: Include OS, runtime, framework, dependency, CI, and source revision details.
+    validations:
+      required: true
+  - type: textarea
+    id: agent_context
+    attributes:
+      label: Agent, model, harness, and reasoning context
+      description: Provide each value when known; use `unknown` instead of guessing.
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Replay outcome
+      options:
+        - Recovery failed
+        - Experience appears stale
+        - Environment is incompatible
+        - Applicability boundary was unclear or incorrect
+        - Verification could not be completed
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened
+      description: Include the sanitized symptom or exact public-safe error and where the documented path diverged.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Objective verification evidence
+      description: List attempted checks, failures, and public-safe links or artifacts that support this report.
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Token, command, retry, and wall-time metrics
+      description: Report measured values and units; mark unavailable values `unknown` with a reason.
+    validations:
+      required: true
+  - type: dropdown
+    id: permission
+    attributes:
+      label: Permission to retain and publish sanitized information
+      options:
+        - Yes — AEG may retain, review, sanitize, and publish this replay evidence
+        - No — do not retain or publish this replay evidence
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I removed credentials, proprietary code, personal data, customer data, private paths, and other secrets.
+          required: true
+        - label: I understand that submitted code will not be executed automatically.
+          required: true

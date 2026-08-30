@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "record_id": "seb-requests-tls-efficiency-transfer-smoke-v2-publication-sanitization-v1",
+  "sanitization_policy": {
+    "id": "aeg-publication-sanitization-v1",
+    "version": "1.0.0"
+  },
+  "derivatives": [
+    {
+      "path": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/manifest.json",
+      "publication_status": "DERIVED_PUBLIC_SAFE",
+      "original_git_blob_sha": "53c6e43be8e0b8a7c155fdea71ef8cba973fb83c",
+      "original_sha256": "1fca863aa91361ad17a0aaf79b9292a0663967a528d4baf2082ca568fd750fe0",
+      "derived_sha256": "db9a9378d95300fc26ce891c015200ef6f9fe0f92d456c542f13abebc224506b",
+      "removed_field_categories": [
+        "host-local executable paths",
+        "absolute command paths",
+        "authentication and environment details",
+        "prompt paths and prompt material",
+        "runtime configuration not needed for the public safety decision"
+      ],
+      "preserved_semantic_fields": [
+        "experiment identifier",
+        "frozen protocol status",
+        "design kind and arm identities",
+        "registered classification rules",
+        "claim boundary",
+        "stop conditions"
+      ]
+    },
+    {
+      "path": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/results/top-level-run-01/audit.json",
+      "publication_status": "DERIVED_PUBLIC_SAFE",
+      "original_git_blob_sha": "c5ec00614471c5155d5812dfc965d8bae00b26fd",
+      "original_sha256": "bd11eb884470f73ff9aec44007786cde7ef5859ccf3691b8e74bc1dc97765c7e",
+      "derived_sha256": "228909c4d931d7ccae25b9d8c3d4813e7354d245d8495568970118ac250a1321",
+      "removed_field_categories": [
+        "host-local executable paths",
+        "absolute and raw terminal commands",
+        "per-arm process transcripts",
+        "environment and runtime details",
+        "model-generated approach narratives",
+        "prompt paths and prompt material",
+        "workspace identifiers and process-only telemetry"
+      ],
+      "preserved_semantic_fields": [
+        "audit and experiment identifiers",
+        "terminal harmful-transfer classification",
+        "classification predicate",
+        "aggregate arm accounting",
+        "aggregate comparison metrics",
+        "fail-closed safety decision",
+        "scientific limitations",
+        "source evidence hashes"
+      ]
+    }
+  ],
+  "raw_originals_in_release": false,
+  "raw_originals_statement": "The raw original manifest and audit blobs remain outside the release branch.",
+  "scientific_confidence_statement": "This derivation removes publication-unsafe process material and does not upgrade scientific confidence, transfer evidence, or product-market-fit evidence.",
+  "runtime_dependency": {
+    "name": "jsonschema",
+    "version": "4.25.1",
+    "existing_pin": "autonomous-lab/requirements.txt",
+    "installed_or_downloaded_for_derivation": false
+  },
+  "deterministic_verification": {
+    "algorithm": "sha256",
+    "instructions": [
+      "Compute SHA-256 for each derivative path and compare it with derivatives[].derived_sha256.",
+      "Confirm each derivative declares DERIVED_PUBLIC_SAFE and references this provenance record.",
+      "Confirm each derivative source_binding matches the corresponding original Git blob SHA and original SHA-256 in this record.",
+      "Run experiences/safety/known_partial_gate.py validate to verify hashes, required limitations, prohibited fields, and fail-closed safety policy."
+    ]
+  }
+}

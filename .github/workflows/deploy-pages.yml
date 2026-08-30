@@ -11,6 +11,7 @@ on:
       - ".nojekyll"
       - "docs/**"
       - "pitch/**"
+      - "experiences/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -51,10 +52,19 @@ jobs:
           done
 
           # These directories are canonical on main and are fully synchronized.
-          rm -rf public/docs public/pitch
-          mkdir -p public/docs public/pitch
+          rm -rf public/docs public/pitch public/experiences
+          mkdir -p public/docs public/pitch public/experiences
           cp -R source/docs/. public/docs/
           cp -R source/pitch/. public/pitch/
+          cp source/experiences/index.html source/experiences/index.json public/experiences/
+          cp -R source/experiences/data public/experiences/data
+          for directory in source/experiences/*/; do
+            if [[ -f "$directory/index.html" ]]; then
+              slug="$(basename "$directory")"
+              mkdir -p "public/experiences/$slug"
+              cp -R "$directory/." "public/experiences/$slug/"
+            fi
+          done
 
           touch public/.nojekyll
 

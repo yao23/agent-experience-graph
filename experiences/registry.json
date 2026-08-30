@@ -1,0 +1,494 @@
+[
+  {
+    "schema_version": "1.0.0",
+    "id": "trace-2026-08-03-repair-lab-ci-v0.1.3",
+    "slug": "repair-lab-telemetry-and-fixture-validation",
+    "title": "Repair misleading agent-benchmark telemetry before trusting the result",
+    "summary": "Count only completed commands, parse real test executions, and pair honest efficiency metrics with their regressions before treating an agent repair benchmark as evidence.",
+    "category": "Coding Agent CI",
+    "verification_status": "CROSS_RUN_VERIFIED",
+    "problem": {
+      "symptoms": [
+        "Command totals can be inflated when both started and completed lifecycle events are counted.",
+        "Test-execution totals can be inflated when a test filename is mentioned without an executable test command.",
+        "A benchmark can look favorable when token or command reductions are shown without the paired wall-time regression."
+      ],
+      "error_signatures": []
+    },
+    "applicability": {
+      "applies_when": [
+        "A coding-agent benchmark derives command or test counts from JSONL execution events.",
+        "Baseline and assisted repair arms can be paired and checked with the same objective oracle.",
+        "The experience is used to repair measurement, fixture, or CI validation—not to assume a repair answer."
+      ],
+      "exclusions": [
+        "Do not generalize the efficiency result beyond the single FastAPI-derived task family.",
+        "Do not treat equal successful outcomes as evidence of a success-rate improvement.",
+        "Do not claim lower latency: paired median assisted wall time was 18,235 milliseconds higher."
+      ]
+    },
+    "context": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "source_revision": {
+        "version": "0.1.3",
+        "commit_sha": "dca38fe9db4d463c5bb16f155dc033f8895e1439"
+      },
+      "environment_fingerprint": {
+        "language": "Python and TypeScript",
+        "runtime": "Exact Python, Node.js, and Codex CLI versions for the original five-pair run are unknown.",
+        "operating_system": "unknown",
+        "dependencies": [
+          "FastAPI-derived dependency-free repair fixture",
+          "GitHub Actions validation",
+          "VS Code extension packaging"
+        ]
+      },
+      "agent_context": {
+        "agent": "Codex",
+        "model": "unknown",
+        "harness": "codex-exec paired Repair Lab runner",
+        "reasoning": "unknown"
+      }
+    },
+    "failed_attempts": [
+      {
+        "approach": "Count every command lifecycle event as a completed command.",
+        "observed_result": "Started and completed events double-counted command activity.",
+        "why_failed": "Lifecycle events describe state transitions; only completion events represent completed commands."
+      },
+      {
+        "approach": "Detect tests by searching command text for a test filename.",
+        "observed_result": "Mentions and non-executable segments were counted as test runs.",
+        "why_failed": "The metric did not parse executable shell segments or verify a test-runner invocation."
+      },
+      {
+        "approach": "Use an overly obvious synthetic repair fixture.",
+        "observed_result": "The task did not provide a useful challenge for measuring recovery behavior.",
+        "why_failed": "The fixture did not preserve a sufficiently realistic public failure mechanism."
+      }
+    ],
+    "recovery_steps": [
+      "Define completed-command and actual-test-execution events before calculating any comparison.",
+      "Count only completed command events and parse executable shell segments for real test-runner invocations.",
+      "Use a public, license-compatible fixture that preserves the upstream failure mechanism and has an objective oracle.",
+      "Inject the sanitized experience directly into the assisted prompt so loading it does not add a tool call.",
+      "Alternate baseline and assisted order, run at least three pairs, and report success, commands, tests, tokens, and duration together.",
+      "Recompute the published metrics in CI and keep generalization limits beside the result."
+    ],
+    "verification_method": {
+      "summary": "Five paired baseline/assisted trials produced ten objectively verified repairs; repository validators recomputed the paired metrics and CI validated the Repair Lab and packaged extension.",
+      "checks": [
+        "5 baseline arms verified",
+        "5 assisted arms verified",
+        "paired-result recomputation passed",
+        "Repair Lab Python tests passed",
+        "extension tests, TypeScript compilation, and VSIX packaging passed"
+      ],
+      "evidence_refs": [
+        "experiments/public-repair-lab/results/v0.1.3-paired-results.json",
+        "experiments/public-repair-lab/validate_paired_results.py",
+        ".github/workflows/repair-lab.yml"
+      ]
+    },
+    "registry_metrics": {
+      "tokens": {
+        "value": -732,
+        "unit": "paired median non-cached tokens, assisted minus baseline",
+        "status": "measured",
+        "note": "A negative value means the assisted arm used fewer non-cached tokens."
+      },
+      "commands": {
+        "value": -1,
+        "unit": "paired median completed commands, assisted minus baseline",
+        "status": "measured",
+        "note": "A negative value means the assisted arm used fewer completed commands."
+      },
+      "retries": {
+        "value": null,
+        "unit": "retries",
+        "status": "unknown",
+        "note": "Retry count was not recorded as a separate metric."
+      },
+      "wall_time": {
+        "value": 18235,
+        "unit": "paired median milliseconds, assisted minus baseline",
+        "status": "measured",
+        "note": "A positive value is a regression: the assisted arm took longer."
+      }
+    },
+    "last_verified_at": "2026-08-03T04:15:23Z",
+    "agent_ready_instructions": "Use this only when repairing or auditing a coding-agent benchmark with event-derived metrics. First reproduce the accounting discrepancy. Count completed commands from completion events only, and count tests only from executable test-runner segments. Keep the fixture public and license-compatible, use the same objective oracle for paired arms, alternate execution order, and report commands, test executions, non-cached tokens, and wall time together. Do not infer a success-rate gain or lower latency from this record.",
+    "license": "MIT",
+    "task": "Make the AEG Public Repair Lab repeatable, trustworthy, and continuously validated",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Repair experiment telemetry before interpreting the A/B result",
+        "skills": ["evaluation-harness", "event-stream-analysis"],
+        "tools": ["python", "codex-jsonl"],
+        "outcome": "success",
+        "lessons": [
+          "Count only completed command events; started and completed lifecycle events otherwise double the metric.",
+          "Count test executions by parsing executable shell segments, not by searching for a test filename substring."
+        ]
+      },
+      {
+        "description": "Replace an overly obvious repair fixture with a harder public, licensed failure",
+        "skills": ["benchmark-design", "license-aware-fixture-design"],
+        "tools": ["BugsInPy", "FastAPI", "unittest"],
+        "outcome": "success",
+        "lessons": [
+          "A fixture should preserve the upstream failure mechanism while remaining dependency-free and objectively verifiable.",
+          "Record repository, buggy commit, fixed commit, license, and benchmark cross-reference next to the fixture."
+        ]
+      },
+      {
+        "description": "Deliver retrieved experience without adding artificial tool overhead",
+        "skills": ["experience-retrieval-design", "prompt-injection-design"],
+        "tools": ["codex-exec"],
+        "outcome": "success",
+        "lessons": [
+          "Inject a compact sanitized recovery capsule directly into the assisted prompt instead of requiring an agent to open a separate experience file.",
+          "Treat retrieved experience as guidance that must match local evidence, not as an unverified answer."
+        ]
+      },
+      {
+        "description": "Run paired trials and report both improvements and regressions",
+        "skills": ["paired-experiment-design", "cost-analysis"],
+        "tools": ["python", "codex-exec", "git"],
+        "outcome": "success",
+        "lessons": [
+          "Alternate baseline and assisted execution order to reduce simple warm-cache and first-run bias.",
+          "Require at least three paired trials before assigning an efficiency verdict.",
+          "Preserve success, commands, test runs, tokens, duration, patches, and raw events; do not hide latency regressions behind token or command wins."
+        ]
+      },
+      {
+        "description": "Continuously validate the Repair Lab and packaged extension in GitHub Actions",
+        "skills": ["github-actions", "release-validation"],
+        "tools": ["GitHub Actions", "python", "npm", "TypeScript", "VSCE"],
+        "outcome": "success",
+        "lessons": [
+          "CI should validate telemetry tests, prepare every fixture, run extension tests, compile TypeScript, and package the VSIX without launching paid agent trials.",
+          "A successful workflow run is promotion evidence for the experience, not proof that the experiment generalizes to other task families."
+        ]
+      }
+    ],
+    "skills": [
+      "evaluation-harness",
+      "benchmark-design",
+      "experience-retrieval-design",
+      "paired-experiment-design",
+      "github-actions",
+      "release-validation"
+    ],
+    "tools": [
+      "python",
+      "codex-exec",
+      "git",
+      "GitHub Actions",
+      "npm",
+      "TypeScript",
+      "VSCE"
+    ],
+    "constraints": [
+      "Do not publish raw JSONL, stderr logs, local patches, credentials, or private workspace data.",
+      "Keep agent trials isolated, ephemeral, workspace-scoped, and free of upstream repository side effects.",
+      "Do not claim general success-rate or latency improvement from one task family."
+    ],
+    "lessons": [
+      "Measurement integrity comes before optimization: incorrect event accounting can make a neutral result look favorable.",
+      "Retrieval delivery is part of system cost; avoid charging an extra tool call merely to load the recommendation.",
+      "Verified negative evidence is reusable: the five-pair sample reduced median commands and paired non-cached tokens but regressed paired wall time.",
+      "Store compact public experiences with provenance and explicit limitations so another agent can reuse the method without ingesting raw execution logs."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-03T04:15:23Z",
+      "publicSource": {
+        "repository": "https://github.com/fastapi/fastapi",
+        "buggyCommitSha": "7cea84b74ca3106a7f861b774e9d215e5228728f",
+        "fixedCommitSha": "75a07f24bf01a31225ee687f3e2b3fc1981b67ab",
+        "license": "MIT",
+        "benchmark": "BugsInPy fastapi bug 5"
+      },
+      "experimentEvidence": {
+        "artifact": "experiments/public-repair-lab/results/v0.1.3-paired-results.json",
+        "sourceReportCreatedAt": "2026-08-03T00:38:20.080621+00:00",
+        "runnerSourceCommitSha": null,
+        "runnerSourceCommitStatus": "unavailable: trials ran before the runner changes were committed"
+      },
+      "promotionEvidence": {
+        "workflowName": "Validate Repair Lab",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": "dca38fe9db4d463c5bb16f155dc033f8895e1439",
+        "status": "observed-passed",
+        "runResolver": "https://github.com/yao23/agent-experience-graph/actions/runs/30932880306"
+      },
+      "publication": {
+        "pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"
+      }
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "experiments/public-repair-lab/results/v0.1.3-paired-results.json",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py",
+        "pairedResultsValidator": "experiments/public-repair-lab/validate_paired_results.py"
+      },
+      "localChecks": {
+        "repairLabPythonTests": "passed",
+        "retrievalTests": "passed",
+        "verifiedExperienceValidation": "passed",
+        "pairedResultRecomputation": "passed",
+        "extensionTests": "passed",
+        "fixturesPrepared": ["fastapi-nested-response", "pysnooper-path-output"],
+        "typescriptCompilation": "passed",
+        "vsixPackaging": "passed"
+      }
+    },
+    "metrics": {
+      "pairedTrials": 5,
+      "baselineArms": 5,
+      "assistedArms": 5,
+      "baselineArmsVerified": 5,
+      "assistedArmsVerified": 5,
+      "pairedMedianAssistedMinusBaseline": {
+        "completedCommands": -1,
+        "actualTestExecutions": 0,
+        "nonCachedTokens": -732,
+        "durationMs": 18235
+      },
+      "interpretation": "Bounded tool-cycle and token improvement on one task family; no success-rate improvement and wall-clock latency regressed."
+    },
+    "limitations": [
+      "All ten arms succeeded, so this sample shows no success-rate improvement.",
+      "Paired median wall-clock duration regressed by 18235 milliseconds.",
+      "The exact runner source commit SHA, model identifier, and Codex CLI version are unavailable for the original five-pair run.",
+      "The five pairs cover one task family and do not support generalized success-rate or latency claims."
+    ],
+    "reuse": {
+      "retrievalTags": [
+        "agent evaluation",
+        "A/B repair experiment",
+        "telemetry correctness",
+        "paired trials",
+        "experience injection",
+        "GitHub Actions",
+        "VS Code extension release"
+      ],
+      "recommendedFor": [
+        "building an auditable agent benchmark",
+        "repairing duplicated JSONL event metrics",
+        "adding CI for agent experiment fixtures",
+        "publishing a verified reusable experience"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0.0",
+    "id": "trace-2026-08-03-tr-04-tornado-nodelay",
+    "slug": "tornado-websocket-nodelay-delegation",
+    "title": "Restore WebSocket TCP_NODELAY delegation after stream ownership moved",
+    "summary": "Trace the public wrapper through the protocol ownership boundary, reject a suite-green wrong-surface patch, and delegate TCP_NODELAY to the active stream.",
+    "category": "Framework Regression",
+    "verification_status": "LOCALLY_VERIFIED",
+    "problem": {
+      "symptoms": [
+        "WebSocketHandler.set_nodelay no longer reaches the active network stream after stream ownership moves behind the protocol object.",
+        "A plausible proxy repair can pass the existing suite while changing the wrong client-side API surface.",
+        "The focused public caller contract fails even though legacy tests can remain green."
+      ],
+      "error_signatures": [
+        "AssertionError on the obsolete handler stream"
+      ]
+    },
+    "applicability": {
+      "applies_when": [
+        "A public wrapper delegates a control to a resource whose ownership moved behind another abstraction.",
+        "The issue names a public entry point whose full delegation chain can be tested.",
+        "A focused contract test can assert the call on the currently active resource."
+      ],
+      "exclusions": [
+        "Do not reuse when the wrapper intentionally owns an independent stream.",
+        "Do not accept a green suite without a focused assertion beginning at the public caller named in the issue.",
+        "Do not treat this collection run as causal evidence that AEG retrieval improves repairs."
+      ]
+    },
+    "context": {
+      "repository": "https://github.com/tornadoweb/tornado",
+      "source_revision": {
+        "version": "BugsInPy Tornado bug 1",
+        "commit_sha": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa"
+      },
+      "environment_fingerprint": {
+        "language": "Python",
+        "runtime": "CPython 3.8.20 used in place of unavailable CPython 3.7",
+        "operating_system": "macOS arm64",
+        "dependencies": [
+          "Tornado historical test suite",
+          "temporary cancellation-only Python 3.7 compatibility shim removed before candidate hash verification"
+        ]
+      },
+      "agent_context": {
+        "agent": "Codex",
+        "model": "unknown",
+        "harness": "bounded BugsInPy work-queue collection",
+        "reasoning": "unknown"
+      }
+    },
+    "failed_attempts": [
+      {
+        "approach": "Add delegation on a plausible client-side WebSocket surface.",
+        "observed_result": "The existing suite passed, but evaluator comparison showed that the patch targeted the wrong public surface.",
+        "why_failed": "The repair did not begin at WebSocketHandler.set_nodelay or follow the current server-side ownership chain."
+      }
+    ],
+    "recovery_steps": [
+      "Start at the exact public method named in the issue and identify the resource it is expected to control.",
+      "Trace ownership through each abstraction until the currently active stream is found.",
+      "Add a focused contract test that calls the public wrapper and asserts delegation on the active stream.",
+      "Route the wrapper through the protocol object instead of retaining the stale direct stream reference.",
+      "Run the focused regression, related WebSocket tests, and the complete historical suite.",
+      "Keep environment-only compatibility shims outside the candidate patch and recheck the candidate hash after removing them."
+    ],
+    "verification_method": {
+      "summary": "The corrected regression failed before repair and passed after repair; 46 WebSocket tests passed with one skip, and the complete historical suite passed 1,146 tests with 50 skips.",
+      "checks": [
+        "corrected regression before repair: 1 AssertionError failure",
+        "corrected regression after repair: 1 test passed",
+        "upstream WebSocket suite: 46 passed, 1 skipped",
+        "complete historical suite: 1,146 passed, 50 skipped, exit code 0"
+      ],
+      "evidence_refs": [
+        "experiences/work-queue/runs/TR-04/result.json",
+        ".github/workflows/repair-lab.yml"
+      ]
+    },
+    "registry_metrics": {
+      "tokens": {
+        "value": null,
+        "unit": "non-cached tokens",
+        "status": "unknown",
+        "note": "Token telemetry was not captured."
+      },
+      "commands": {
+        "value": 24,
+        "unit": "completed commands across collection",
+        "status": "measured",
+        "note": "This is an absolute collection count, not a baseline comparison."
+      },
+      "retries": {
+        "value": null,
+        "unit": "retries",
+        "status": "unknown",
+        "note": "The record captured two attempts but did not define retry count separately."
+      },
+      "wall_time": {
+        "value": null,
+        "unit": "milliseconds",
+        "status": "unknown",
+        "note": "End-to-end wall time was not captured; the complete suite itself ran in 9.481 seconds."
+      }
+    },
+    "last_verified_at": "2026-08-03T06:53:21Z",
+    "agent_ready_instructions": "Use this only when a public wrapper controls a resource whose ownership has moved behind another abstraction. Reproduce the failure at the named public entry point, trace the current ownership chain, and verify that the wrapper reaches the active resource. Reject a suite-green patch that targets a different surface. Add a focused delegation contract test, then run related and full regression checks. Keep environment compatibility shims separate from the repair. Abstain if the wrapper is supposed to own an independent resource.",
+    "license": "Apache-2.0",
+    "task": "Restore Tornado WebSocket TCP_NODELAY delegation after stream ownership moved behind the protocol",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Detect a green-suite false positive by checking the real public delegation path",
+        "skills": ["contract-testing", "historical-test-audit"],
+        "tools": ["python", "unittest", "git"],
+        "outcome": "success",
+        "lessons": ["A proxy repair can pass the existing suite while targeting the wrong public surface; the contract test must begin at the caller named in the issue."]
+      },
+      {
+        "description": "Route WebSocketHandler set_nodelay through the protocol to the active stream",
+        "skills": ["delegation-repair", "api-contract-repair"],
+        "tools": ["python", "unittest", "Tornado test runner"],
+        "outcome": "success",
+        "lessons": ["When resource ownership moves behind an abstraction, public controls must follow the ownership chain instead of retaining a stale direct reference."]
+      }
+    ],
+    "skills": ["contract-testing", "historical-test-audit", "delegation-repair", "api-contract-repair"],
+    "tools": ["python", "unittest", "git", "Tornado test runner", "BugsInPy"],
+    "constraints": [
+      "CPython 3.7 was unavailable on macOS arm64; the complete suite used isolated CPython 3.8.20 with a temporary cancellation-only compatibility shim that was removed after testing.",
+      "The first frozen candidate targeted the wrong client surface and was rejected after evaluator comparison; the successful second attempt was therefore evaluator-informed.",
+      "No raw logs, prompts, source patches, credentials, or private workspace paths are published."
+    ],
+    "lessons": [
+      "Trace delegation from the issue's public entry point through every ownership boundary before choosing where to add a proxy.",
+      "A full green legacy suite cannot validate behavior that has no regression test; add a focused contract test that asserts the exact delegate call.",
+      "Reject a green patch when evaluator comparison proves that it repaired a plausible but different API surface.",
+      "Keep runtime-compatibility shims separate from the candidate patch and recheck the candidate hash after removing them."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "0.1.3",
+      "recordedAt": "2026-08-03T06:53:21Z",
+      "publicSource": {
+        "repository": "https://github.com/tornadoweb/tornado",
+        "buggyCommitSha": "6a5a0bfa370b6c0d3dbbf9589a560a98202d2baa",
+        "fixedCommitSha": "4677c54cc18bbfbdf0f4dadf11610fab6203fd63",
+        "license": "Apache-2.0",
+        "benchmark": "BugsInPy Tornado bug 1"
+      },
+      "experimentEvidence": {
+        "artifact": "experiences/work-queue/runs/TR-04/result.json",
+        "sourceReportCreatedAt": "2026-08-03T06:53:21Z",
+        "runnerSourceCommitSha": "c277a931248ad503c0864bdc3ace2e04336a4403",
+        "runnerSourceCommitStatus": "available: collection began from the published AM-01 checkpoint"
+      },
+      "promotionEvidence": {
+        "workflowName": "Validate Repair Lab",
+        "workflowFile": ".github/workflows/repair-lab.yml",
+        "validatedCommitSha": "dca38fe9db4d463c5bb16f155dc033f8895e1439",
+        "status": "observed-passed",
+        "runResolver": "https://github.com/yao23/agent-experience-graph/actions/runs/30932880306"
+      },
+      "publication": {"pullRequest": "https://github.com/yao23/agent-experience-graph/pull/6"}
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "experiences/work-queue/runs/TR-04/result.json",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "correctedRegressionBeforeRepair": "1 failure with AssertionError on the obsolete handler stream",
+        "correctedRegressionAfterRepair": "1 test passed",
+        "upstreamWebSocketSuite": "46 tests passed, 1 skipped",
+        "completeHistoricalSuite": "1,146 tests passed, 50 skipped, exit code 0 in 9.481 seconds",
+        "candidatePatchSha256": "afa36076a2784cd709991c585d09afb0be997c2303e8f36cd13dc220856700a4",
+        "changedFiles": ["tornado/websocket.py"]
+      }
+    },
+    "metrics": {
+      "attempts": 2,
+      "completedCommands": 24,
+      "actualTestExecutions": 12,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "The first green patch was rejected as a false positive; the second, evaluator-informed repair passed the focused, related, and complete historical suites."
+    },
+    "limitations": [
+      "The successful second attempt was evaluator-informed because comparison occurred after the first frozen candidate targeted the wrong API surface.",
+      "Historical CPython 3.7 was unavailable; CPython 3.8.20 required a temporary cancellation compatibility shim for four unrelated timeout-cancellation logs.",
+      "This collection run is not causal evidence that AEG retrieval improves repairs."
+    ],
+    "reuse": {
+      "retrievalTags": ["thin proxy delegation", "WebSocket set_nodelay", "stale resource ownership", "TCP_NODELAY", "green test false positive"],
+      "recommendedFor": [
+        "repairing a public wrapper method after resource ownership moves behind a protocol object",
+        "testing delegation through multiple abstraction layers",
+        "rejecting a suite-green repair that targets the wrong public surface"
+      ]
+    }
+  }
+]

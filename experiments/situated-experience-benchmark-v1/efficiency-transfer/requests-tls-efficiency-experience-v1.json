@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0.0",
+  "experience_id": "seb-requests-tls-efficiency-experience-v1",
+  "repair_components": [
+    {
+      "component": "ownership_inventory",
+      "guidance": "Map which request, adapter, cache, and dependency lifetime owns each security-sensitive value before editing."
+    },
+    {
+      "component": "mutability_and_cache_validity",
+      "guidance": "For every reused object, check mutability, complete cache keys, lifecycle, and whether independent identities can observe one another's state."
+    },
+    {
+      "component": "configuration_branch_preservation",
+      "guidance": "Derive the locally supported verification and identity classes from worker-visible code, then preserve their distinct ownership semantics."
+    },
+    {
+      "component": "invalidated_architecture_decision",
+      "guidance": "If later evidence disproves safe sharing, prefer removing the unsafe ownership assumption over adding another narrow exception."
+    },
+    {
+      "component": "bounded_regression_verification",
+      "guidance": "Run each check only when it covers a new branch, ownership boundary, or failure hypothesis; stop repeating compatibility scans once the local contract is covered."
+    }
+  ],
+  "required_local_checks": [
+    "Reproduce the visible cross-lifetime failure once before editing.",
+    "Inspect the local request, adapter, cache, and dependency ownership paths once and record the supported configuration classes they expose.",
+    "After repair, verify that independent request-specific identities do not mutate state owned by another lifetime.",
+    "Confirm that distinct verification classes and adapter-owned state retain their local semantics without relying on hidden tests.",
+    "Run the visible suite and one final changed-file and protected-input audit."
+  ],
+  "known_partial_repairs": [
+    "Exclude only one custom-context shape while retaining the same unverified shared mutable object elsewhere.",
+    "Add synchronization without proving that sharing state across distinct identities is semantically valid.",
+    "Repair only the visible sequential identity example and skip the ownership inventory.",
+    "Create another per-call object without checking whether request-specific configuration is still applied to the correct owner."
+  ],
+  "completeness_status": "complete_for_recommendation_within_the_verified_faithful_extract_scope",
+  "source_patch_coverage": {
+    "covered_source_lessons": [
+      "adapter-owned context must not be overridden by a default cache",
+      "one exception does not validate every remaining cache path",
+      "later identity, trust, runtime, and concurrency evidence can invalidate an optimization",
+      "verification should be bounded by new branches and hypotheses"
+    ],
+    "transfer_patch_details_included": false,
+    "coverage_limit": "The source repair did not itself cover the final transfer architecture; the experience carries principles and obligations, not implementation."
+  },
+  "applicability_conditions": [
+    "The failure involves a cached security configuration object reused across request or adapter lifetimes.",
+    "Worker-visible code exposes ownership, supported configuration branches, and a reproducible cross-lifetime mutation symptom.",
+    "The task can be repaired and checked offline without controller-only artifacts."
+  ],
+  "abstention_conditions": [
+    "Abstain if the object is proven immutable and completely keyed by all identity and verification inputs.",
+    "Abstain if the local code does not expose enough supported branches to assess ownership safely.",
+    "Abstain if applying the guidance would require a target diff, hidden assertion, evaluator result, or public future patch not present in the worker bundle.",
+    "Abstain if the failure is unrelated to cross-lifetime mutable security state."
+  ],
+  "environment_assumptions": [
+    "The task is an offline faithful extract rather than a full Requests dependency stack.",
+    "No live TLS connection, private certificate, or real concurrency reproduction is required.",
+    "The visible local modules are the authoritative inventory available to the worker.",
+    "Network access and repository history are unavailable."
+  ],
+  "failed_approaches": [
+    "Treat a successful special case as proof the cache architecture is safe.",
+    "Inspect broad compatibility history or synthetic Git objects after the local ownership contract is already established.",
+    "Repeat public and ad hoc compatibility checks without adding a new branch, assumption, or failure hypothesis.",
+    "Optimize for a small diff while leaving the invalidated sharing premise intact."
+  ],
+  "efficiency_hazards": [
+    "Unbounded repository-history inspection that cannot change the local repair decision.",
+    "Repeated full compatibility matrices after all worker-visible ownership branches have one explicit check.",
+    "Multiple diff audits or test reruns with no intervening code or hypothesis change.",
+    "Exploring unavailable runtimes, network behavior, or external dependency internals outside the frozen extract."
+  ],
+  "minimum_regression_evidence": [
+    "The original visible failure is reproduced before editing and passes afterward.",
+    "Every worker-visible ownership/configuration class is mapped to one post-repair check or explicit unchanged argument.",
+    "No request-specific identity mutates state owned by another request or adapter lifetime.",
+    "Only allowed production files changed; task prompt, visible tests, and dependency metadata remain unchanged."
+  ],
+  "uncertainty": {
+    "level": "bounded",
+    "statement": "The experience is complete for the deterministic ownership contract in this faithful extract, not for every behavior of the full Requests and urllib3 historical stacks."
+  },
+  "provenance": {
+    "repository": "psf/requests",
+    "license": "Apache-2.0",
+    "source_commit": "b1d73ddb509a3a2d3e10744e85f9cdebdbde90f0",
+    "source_parent": "6badbac6e0d6b5a53872f26401761ad37a9002b8",
+    "public_transfer_evidence_reviewed_controller_side": true,
+    "transfer_patch_included": false,
+    "controller_audit_id": "seb-requests-tls-source-transfer-fidelity-audit-v1"
+  }
+}

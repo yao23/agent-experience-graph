@@ -1,0 +1,104 @@
+name: Submit a candidate experience
+description: Propose one sanitized, evidence-backed recovery path for Registry review.
+title: "[Experience candidate]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit only public-safe evidence you have permission to share. Do not include credentials, proprietary code, personal data, customer data, private paths, raw prompts, or other secrets. AEG maintainers review and sanitize submissions; submitted code is never executed automatically.
+  - type: input
+    id: experience_id
+    attributes:
+      label: Proposed Experience ID
+      description: Use a stable proposed ID, or write `unknown-new` if one has not been assigned.
+      placeholder: trace-YYYY-MM-DD-short-name
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Recovery title
+      placeholder: What failed and what recovery worked?
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Failure category
+      options:
+        - Coding Agent CI
+        - Dependency Upgrade
+        - Test Migration
+        - Framework Regression
+        - Environment Regression
+        - Other developer failure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem, symptoms, and public-safe error signature
+      description: Include exact sanitized error text when safe. State `unknown` for anything not recorded.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and version context
+      description: Include relevant OS, runtime, framework, dependency, CI, and immutable revision details.
+    validations:
+      required: true
+  - type: textarea
+    id: agent_context
+    attributes:
+      label: Agent, model, harness, and reasoning context
+      description: Provide each value when known; write `unknown` instead of guessing.
+    validations:
+      required: true
+  - type: textarea
+    id: attempts
+    attributes:
+      label: Failed approaches and why they failed
+      description: Preserve material dead ends, partial repairs, and suite-green false positives.
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Recovery steps and applicability limits
+      description: Give ordered reusable steps, when they apply, and when an agent should abstain.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Objective verification evidence
+      description: Link public revisions, tests, CI runs, or sanitized artifacts and explain what each proves.
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Token, command, retry, and wall-time metrics
+      description: Report measured values and units. Write `unknown` with a reason for every unavailable metric.
+    validations:
+      required: true
+  - type: dropdown
+    id: permission
+    attributes:
+      label: Permission to retain and publish sanitized information
+      description: Confirm that you are authorized to share this material under the stated public license or permission.
+      options:
+        - Yes — AEG may retain, review, sanitize, and publish this submission
+        - No — do not retain or publish this submission
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I removed credentials, proprietary code, personal data, customer data, private paths, and other secrets.
+          required: true
+        - label: I understand that submitted code will not be executed automatically.
+          required: true

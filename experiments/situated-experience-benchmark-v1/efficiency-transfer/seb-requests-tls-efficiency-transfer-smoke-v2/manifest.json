@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "publication_status": "DERIVED_PUBLIC_SAFE",
+  "sanitization_policy": "aeg-publication-sanitization-v1",
+  "source_binding": {
+    "original_git_blob_sha": "53c6e43be8e0b8a7c155fdea71ef8cba973fb83c",
+    "original_sha256": "1fca863aa91361ad17a0aaf79b9292a0663967a528d4baf2082ca568fd750fe0",
+    "provenance_record": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/publication-sanitization-v1.json"
+  },
+  "experiment_id": "seb-requests-tls-efficiency-transfer-smoke-v2",
+  "status": "frozen_before_execution",
+  "design_kind": "matched_control_vs_verified_experience_efficiency_smoke",
+  "relationship_to_v1": "Replacement after v1 stopped before canaries and arms; sole protocol deviation is atomic session-scoped substrate binding.",
+  "arms": [
+    {
+      "sequence": 1,
+      "arm_label": "A",
+      "arm_id": "seb-requests-tls-efficiency-transfer-smoke-v2--a-control",
+      "condition": "control_no_retrieval",
+      "retrieval_recommendation_state": "not_applicable_no_retrieval",
+      "experience_exposed": false
+    },
+    {
+      "sequence": 2,
+      "arm_label": "B",
+      "arm_id": "seb-requests-tls-efficiency-transfer-smoke-v2--b-aeg-assisted",
+      "condition": "aeg_assisted_verified_experience",
+      "retrieval_recommendation_state": "retrieved_and_recommended",
+      "experience_exposed": true
+    }
+  ],
+  "classification_rules": {
+    "promising_efficiency_transfer": "Both arms are regression-free; treatment uses at most 250000 input tokens; treatment commands and attempts do not exceed control; and control either exceeds 250000 or treatment reduces input tokens by at least 10 percent.",
+    "neutral_transfer": "Both arms are regression-free with no registered material efficiency difference.",
+    "harmful_transfer": "Treatment introduces a regression or loses regression-free correctness achieved by control.",
+    "safe_abstention": "The gate withholds the experience and treatment matches control without a material efficiency difference.",
+    "inconclusive": "Infrastructure, evaluator, integrity, provenance, complete-token-telemetry, or matched-correctness requirements prevent the registered comparison."
+  },
+  "claim_boundary": "One faithful-public-extract matched smoke can authorize only a separately preregistered replication. It cannot establish general AEG effectiveness, full-stack behavior, or publication-grade causality.",
+  "stop_conditions": [
+    "input_artifact_exposure",
+    "forbidden_filesystem_access",
+    "cross_arm_exposure",
+    "hidden_evaluator_exposure",
+    "human_patch_exposure",
+    "unknown_provenance_risk",
+    "failed_isolation_or_attribution",
+    "infrastructure_or_evaluator_failure"
+  ]
+}
