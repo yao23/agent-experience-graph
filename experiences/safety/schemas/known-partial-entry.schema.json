@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/known-partial-entry-v1.json",
+  "title": "AEG known-partial repair entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "partial_repair_id",
+    "semantic_signature",
+    "affected_components",
+    "preserved_invariants",
+    "violated_or_unverified_invariants",
+    "failure_mode",
+    "applicable_environment",
+    "required_disconfirmation_checks",
+    "acceptance_predicate",
+    "abstention_predicate",
+    "evidence_provenance",
+    "confidence",
+    "negative_transfer_links"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "partial_repair_id": {"type": "string", "pattern": "^kp-[a-z0-9][a-z0-9.-]+-v[0-9]+$"},
+    "semantic_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normalization_version", "required_concepts", "minimum_concept_coverage"],
+      "properties": {
+        "normalization_version": {"const": "aeg-semantic-concepts-v1"},
+        "required_concepts": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"}
+        },
+        "minimum_concept_coverage": {"type": "number", "minimum": 0.5, "maximum": 1}
+      }
+    },
+    "affected_components": {"$ref": "#/$defs/nonEmptyStrings"},
+    "preserved_invariants": {"$ref": "#/$defs/nonEmptyStrings"},
+    "violated_or_unverified_invariants": {"$ref": "#/$defs/nonEmptyStrings"},
+    "failure_mode": {"$ref": "#/$defs/nonEmptyString"},
+    "applicable_environment": {"$ref": "#/$defs/nonEmptyStrings"},
+    "required_disconfirmation_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/disconfirmationCheck"}
+    },
+    "acceptance_predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all_of"],
+      "properties": {"all_of": {"$ref": "#/$defs/nonEmptyStrings"}}
+    },
+    "abstention_predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["any_of"],
+      "properties": {"any_of": {"$ref": "#/$defs/nonEmptyStrings"}}
+    },
+    "evidence_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "artifact_sha256", "evidence_class"],
+      "properties": {
+        "artifact": {"type": "string", "pattern": "^[^/].+"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "evidence_class": {"enum": ["audited_harmful_transfer", "verified_source", "product_regression"]}
+      }
+    },
+    "confidence": {"enum": ["low", "bounded", "high"]},
+    "negative_transfer_links": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["experiment_id", "audit_sha256", "status"],
+        "properties": {
+          "experiment_id": {"$ref": "#/$defs/nonEmptyString"},
+          "audit_sha256": {"$ref": "#/$defs/sha256"},
+          "status": {"const": "unresolved"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "disconfirmationCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "description",
+        "executable",
+        "command",
+        "worker_visible_paths",
+        "demonstrates_invariants",
+        "unavailable_reason"
+      ],
+      "properties": {
+        "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]+$"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "executable": {"type": "boolean"},
+        "command": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "array",
+              "minItems": 2,
+              "items": {"$ref": "#/$defs/nonEmptyString"}
+            }
+          ]
+        },
+        "worker_visible_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\.).+$"}
+        },
+        "demonstrates_invariants": {"$ref": "#/$defs/nonEmptyStrings"},
+        "unavailable_reason": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"executable": {"const": true}}},
+          "then": {
+            "properties": {
+              "command": {"type": "array", "minItems": 2},
+              "worker_visible_paths": {"minItems": 1},
+              "unavailable_reason": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "command": {"type": "null"},
+              "unavailable_reason": {"$ref": "#/$defs/nonEmptyString"}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "publication_status": "DERIVED_PUBLIC_SAFE",
+  "sanitization_policy": "aeg-publication-sanitization-v1",
+  "source_binding": {
+    "original_git_blob_sha": "c5ec00614471c5155d5812dfc965d8bae00b26fd",
+    "original_sha256": "bd11eb884470f73ff9aec44007786cde7ef5859ccf3691b8e74bc1dc97765c7e",
+    "provenance_record": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/publication-sanitization-v1.json"
+  },
+  "audit_id": "seb-requests-tls-efficiency-transfer-smoke-v2-top-level-run-01-audit",
+  "experiment_id": "seb-requests-tls-efficiency-transfer-smoke-v2",
+  "design_commit": "05566a6c7c81c4e99b7d5095c2e2bd2a428d867e",
+  "audited_at": "2026-08-16T16:51:02Z",
+  "terminal_classification": {
+    "validation_status": "valid_frozen_requests_tls_efficiency_smoke_v2_not_executed",
+    "audit_verdict": "harmful_transfer",
+    "runner_classification": "harmful_transfer",
+    "classification_predicate": {
+      "control_regression_free_success": true,
+      "correctness_precedes_secondary_efficiency": true,
+      "definition": "control is regression-free and treatment is not regression-free",
+      "matched": true,
+      "treatment_regression_free_success": false
+    }
+  },
+  "verified_outcome": {
+    "arm_accounting": {
+      "condition_attribution_verified": true,
+      "controller_evaluated": 2,
+      "frozen_order_verified": true,
+      "infrastructure_failed": 0,
+      "planned": 2,
+      "started": 2,
+      "terminated": 2,
+      "unstarted_not_model_failures": 0
+    },
+    "comparison": {
+      "actual_unittest_invocations": {
+        "control": 4,
+        "treatment": 2
+      },
+      "attempts": {
+        "control": 2,
+        "delta": -1,
+        "treatment": 1
+      },
+      "completed_commands": {
+        "control": 18,
+        "delta": -3,
+        "treatment": 15
+      },
+      "files_changed": {
+        "control": 1,
+        "treatment": 1
+      },
+      "files_inspected": {
+        "control": 6,
+        "treatment": 6
+      },
+      "frozen_test_records": {
+        "control": 6,
+        "treatment": 6
+      },
+      "input_tokens": {
+        "control": 143304,
+        "delta": 56367,
+        "percent_delta": 39.334,
+        "treatment": 199671
+      },
+      "output_tokens": {
+        "control": 9362,
+        "delta": -1495,
+        "percent_delta": -15.969,
+        "treatment": 7867
+      },
+      "patches_differ": true,
+      "public_only_false_success": {
+        "control": 0,
+        "treatment": 1
+      },
+      "regression_free_success": {
+        "control": 1,
+        "treatment": 0
+      },
+      "repair_paths_differ": true,
+      "repeated_compatibility_scans": {
+        "control": 3,
+        "treatment": 1
+      },
+      "wall_time_ms": {
+        "control": 202242,
+        "delta": -46061,
+        "percent_delta": -22.775,
+        "treatment": 156181
+      }
+    },
+    "safety_decision": "Quarantine this experience from recommendation until a fail-closed known-partial disconfirmation gate requires a worker-visible falsifying check for every proposed repair matching a registered known-partial path; do not rerun this smoke."
+  },
+  "scientific_limitations": [
+    "two-arm smoke with one run per condition",
+    "faithful public extract rather than a full historical Requests and urllib3 stack",
+    "fixed A-then-B order with no replication",
+    "process-level deny rules rather than disposable-VM or cryptographic isolation",
+    "model input attribution was inferred from the frozen runner and private bundle rather than a cryptographic prompt receipt",
+    "runner wall time cannot be independently reconstructed from the deleted temporary workspaces",
+    "candidate-solution overlap is not evidence of hidden-patch exposure under the frozen prospective policy"
+  ],
+  "source_hashes": {
+    "source_result_tree_sha256": "a9fbd705d8c58ac911f3b67be6d1179bcb1a3fa78f968436d57263a67e4af1d4",
+    "freeze_sha256": "848e4d71812a818acf5bd3f5609e2a8f3104729777d3925b8ec50dd7a7eb892d",
+    "original_manifest_sha256": "1fca863aa91361ad17a0aaf79b9292a0663967a528d4baf2082ca568fd750fe0",
+    "preregistration_sha256": "b7d0f861d3700c66514c0e5b09bdba15b42b9cc5e0e7ae63172195c2dcd454f2",
+    "original_audit_payload_sha256": "4da25db054333414a2040e28fa82c3f2275cd84de96b737906f87a26bc443ac4"
+  }
+}

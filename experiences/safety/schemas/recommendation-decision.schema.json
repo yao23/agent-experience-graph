@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/recommendation-decision-v1.json",
+  "title": "AEG retrieval and recommendation decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "state",
+    "retrieval_decision",
+    "recommendation_decision",
+    "worker_payload",
+    "private_evidence"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "state": {
+      "enum": [
+        "not_retrieved_irrelevant",
+        "retrieved_but_recommendation_withheld",
+        "retrieved_and_recommended"
+      ]
+    },
+    "retrieval_decision": {"enum": ["not_retrieved", "retrieved"]},
+    "recommendation_decision": {"enum": ["not_applicable", "withheld", "recommended"]},
+    "worker_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "notice": {"type": "string", "minLength": 1},
+        "recommendation_authorized": {"const": true},
+        "experience_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "private_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experience_id",
+        "precedence",
+        "reasons",
+        "known_partial_matches",
+        "output_similarity_is_leakage"
+      ],
+      "properties": {
+        "experience_id": {"type": ["string", "null"]},
+        "precedence": {"type": ["integer", "null"], "minimum": 1},
+        "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "known_partial_matches": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "output_similarity_is_leakage": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "retrieved_but_recommendation_withheld"}}},
+      "then": {
+        "properties": {
+          "retrieval_decision": {"const": "retrieved"},
+          "recommendation_decision": {"const": "withheld"},
+          "worker_payload": {
+            "required": ["notice"],
+            "maxProperties": 1
+          }
+        }
+      }
+    }
+  ]
+}

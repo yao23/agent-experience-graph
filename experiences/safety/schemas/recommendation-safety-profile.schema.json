@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.dev/schemas/recommendation-safety-profile-v1.json",
+  "title": "AEG recommendation safety profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experience_id",
+    "experience_version_sha256",
+    "recommendation_eligible",
+    "completeness_status",
+    "repair_components",
+    "required_repair_components",
+    "ownership_requirements",
+    "lifetime_requirements",
+    "representation_requirements",
+    "required_local_checks",
+    "known_partial_repair_ids",
+    "applicability_conditions",
+    "abstention_conditions",
+    "failed_approaches",
+    "environment_assumptions",
+    "uncertainty",
+    "invariant_status",
+    "applicability_status",
+    "negative_transfer_status",
+    "quarantine",
+    "evidence_provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "experience_id": {"type": "string", "minLength": 1},
+    "experience_version_sha256": {"$ref": "#/$defs/sha256"},
+    "recommendation_eligible": {"type": "boolean"},
+    "completeness_status": {"enum": ["complete", "partial", "unknown"]},
+    "repair_components": {"$ref": "#/$defs/componentRecords"},
+    "required_repair_components": {"$ref": "#/$defs/nonEmptyStrings"},
+    "ownership_requirements": {"$ref": "#/$defs/nonEmptyStrings"},
+    "lifetime_requirements": {"$ref": "#/$defs/nonEmptyStrings"},
+    "representation_requirements": {"$ref": "#/$defs/nonEmptyStrings"},
+    "required_local_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "description", "executable", "worker_visible", "command", "worker_visible_paths", "demonstrates_invariants", "evidence_provenance"],
+        "properties": {
+          "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]+$"},
+          "description": {"$ref": "#/$defs/nonEmptyString"},
+          "executable": {"type": "boolean"},
+          "worker_visible": {"type": "boolean"},
+          "command": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/nonEmptyString"}}
+            ]
+          },
+          "worker_visible_paths": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\.).+$"}
+          },
+          "demonstrates_invariants": {"$ref": "#/$defs/nonEmptyStrings"},
+          "evidence_provenance": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"executable": {"const": true}}},
+            "then": {
+              "properties": {
+                "command": {"type": "array", "minItems": 2},
+                "worker_visible": {"const": true},
+                "worker_visible_paths": {"minItems": 1}
+              }
+            },
+            "else": {"properties": {"command": {"type": "null"}}}
+          }
+        ]
+      }
+    },
+    "known_partial_repair_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^kp-[a-z0-9][a-z0-9.-]+-v[0-9]+$"}
+    },
+    "applicability_conditions": {"$ref": "#/$defs/nonEmptyStrings"},
+    "abstention_conditions": {"$ref": "#/$defs/nonEmptyStrings"},
+    "failed_approaches": {"$ref": "#/$defs/nonEmptyStrings"},
+    "environment_assumptions": {"$ref": "#/$defs/nonEmptyStrings"},
+    "uncertainty": {"$ref": "#/$defs/nonEmptyString"},
+    "invariant_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ownership", "lifetime", "representation", "compatibility", "environment"],
+      "properties": {
+        "ownership": {"$ref": "#/$defs/invariantState"},
+        "lifetime": {"$ref": "#/$defs/invariantState"},
+        "representation": {"$ref": "#/$defs/invariantState"},
+        "compatibility": {"$ref": "#/$defs/invariantState"},
+        "environment": {"$ref": "#/$defs/invariantState"}
+      }
+    },
+    "applicability_status": {"enum": ["verified", "unresolved", "historical_only"]},
+    "negative_transfer_status": {"enum": ["none", "resolved", "unresolved"]},
+    "quarantine": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recommendation_eligible",
+            "quarantine_reason",
+            "originating_experiment",
+            "audit_hash",
+            "known_partial_repair_identifiers",
+            "applicability_status",
+            "safe_uses"
+          ],
+          "properties": {
+            "recommendation_eligible": {"const": false},
+            "quarantine_reason": {"const": "observed_harmful_transfer"},
+            "originating_experiment": {"$ref": "#/$defs/nonEmptyString"},
+            "audit_hash": {"$ref": "#/$defs/sha256"},
+            "known_partial_repair_identifiers": {"$ref": "#/$defs/nonEmptyStrings"},
+            "applicability_status": {"$ref": "#/$defs/nonEmptyString"},
+            "safe_uses": {
+              "type": "array",
+              "minItems": 3,
+              "uniqueItems": true,
+              "items": {"enum": ["diagnosis", "warning", "negative_path_detection"]}
+            }
+          }
+        }
+      ]
+    },
+    "evidence_provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact", "artifact_sha256", "supports"],
+        "properties": {
+          "artifact": {"$ref": "#/$defs/nonEmptyString"},
+          "artifact_sha256": {"$ref": "#/$defs/sha256"},
+          "supports": {"$ref": "#/$defs/nonEmptyStrings"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "invariantState": {"enum": ["verified", "unresolved", "not_applicable"]},
+    "componentRecords": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component_id", "source_evidence"],
+        "properties": {
+          "component_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+          "source_evidence": {"$ref": "#/$defs/nonEmptyString"}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "schema_version": "1.0.0",
+    "partial_repair_id": "kp-requests-tls-fresh-per-call-context-v1",
+    "semantic_signature": {
+      "normalization_version": "aeg-semantic-concepts-v1",
+      "required_concepts": [
+        "instantiate_new_object",
+        "per_operation_lifetime",
+        "security_context"
+      ],
+      "minimum_concept_coverage": 1.0
+    },
+    "affected_components": [
+      "request_lifetime_isolation",
+      "security_configuration_ownership",
+      "dependency_compatible_representation"
+    ],
+    "preserved_invariants": [
+      "Distinct operations no longer share one mutable context instance."
+    ],
+    "violated_or_unverified_invariants": [
+      "Request-specific security identity remains owned by request configuration.",
+      "The resulting representation remains compatible with every worker-visible verification branch."
+    ],
+    "failure_mode": "Creating a fresh object per operation can remove shared mutation while still assigning security-sensitive values to the wrong owner or representation.",
+    "applicable_environment": [
+      "A repair creates a fresh security context for each request, call, or invocation.",
+      "Worker-visible code contains distinct request, configuration, adapter, or dependency ownership boundaries."
+    ],
+    "required_disconfirmation_checks": [
+      {
+        "check_id": "configuration_ownership_contract",
+        "description": "Exercise every worker-visible configuration branch and prove that request-specific security values remain owned by request configuration.",
+        "executable": false,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": [
+          "security_configuration_ownership",
+          "dependency_compatible_representation"
+        ],
+        "unavailable_reason": "No source-verified worker-visible executable procedure has yet been registered for these invariants."
+      },
+      {
+        "check_id": "lifetime_isolation_contract",
+        "description": "Exercise independent operation lifetimes and prove that one operation cannot mutate state owned by another.",
+        "executable": false,
+        "command": null,
+        "worker_visible_paths": [],
+        "demonstrates_invariants": [
+          "request_lifetime_isolation"
+        ],
+        "unavailable_reason": "The historical public check did not independently establish the complete ownership contract."
+      }
+    ],
+    "acceptance_predicate": {
+      "all_of": [
+        "all_disconfirmation_checks_executable",
+        "all_disconfirmation_inputs_worker_visible",
+        "all_disconfirmation_checks_pass",
+        "all_required_invariants_demonstrated"
+      ]
+    },
+    "abstention_predicate": {
+      "any_of": [
+        "disconfirmation_procedure_missing",
+        "disconfirmation_input_not_worker_visible",
+        "disconfirmation_check_failed",
+        "required_invariant_not_demonstrated"
+      ]
+    },
+    "evidence_provenance": {
+      "artifact": "experiments/situated-experience-benchmark-v1/efficiency-transfer/seb-requests-tls-efficiency-transfer-smoke-v2/results/top-level-run-01/audit.json",
+      "artifact_sha256": "228909c4d931d7ccae25b9d8c3d4813e7354d245d8495568970118ac250a1321",
+      "evidence_class": "audited_harmful_transfer"
+    },
+    "confidence": "bounded",
+    "negative_transfer_links": [
+      {
+        "experiment_id": "seb-requests-tls-efficiency-transfer-smoke-v2",
+        "audit_sha256": "4da25db054333414a2040e28fa82c3f2275cd84de96b737906f87a26bc443ac4",
+        "status": "unresolved"
+      }
+    ]
+  }
+]

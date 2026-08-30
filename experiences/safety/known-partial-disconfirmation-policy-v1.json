@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "aeg-known-partial-disconfirmation-gate-v1",
+  "scope": "Prospective product recommendation decisions only; historical experiment evidence is immutable.",
+  "retrieval_and_recommendation_separate": true,
+  "fail_closed": true,
+  "decision_states": [
+    "not_retrieved_irrelevant",
+    "retrieved_but_recommendation_withheld",
+    "retrieved_and_recommended"
+  ],
+  "withhold_precedence": [
+    "irrelevant",
+    "quarantined_harmful_transfer",
+    "administratively_ineligible",
+    "unresolved_negative_transfer",
+    "partial_or_unknown_completeness",
+    "known_partial_without_executable_disconfirmation",
+    "missing_or_ambiguous_local_checks",
+    "incomplete_repair_component_coverage",
+    "unresolved_invariants",
+    "environment_mismatch",
+    "applicability_unverified",
+    "known_partial_disconfirmation_failed"
+  ],
+  "worker_notice": "Experience found, but recommendation withheld because its safe applicability could not be verified.",
+  "withheld_worker_payload_allowed_fields": ["notice"],
+  "forbidden_worker_sources": [
+    "hidden_tests",
+    "human_patch",
+    "evaluator_code",
+    "sibling_results",
+    "prior_conversations",
+    "controller_private_evidence"
+  ],
+  "output_similarity_policy": "Semantic or exact candidate-output similarity is not leakage without verified input-side exposure.",
+  "generation_preservation_requirements": [
+    "repair_components",
+    "ownership_requirements",
+    "lifetime_requirements",
+    "representation_requirements",
+    "required_local_checks",
+    "known_partial_repair_ids",
+    "completeness_status",
+    "applicability_conditions",
+    "abstention_conditions",
+    "failed_approaches",
+    "environment_assumptions",
+    "uncertainty"
+  ],
+  "unsupported_generation_action": "Set recommendation_eligible to false and completeness_status to unknown or partial.",
+  "historical_replay_label": "product_regression_validation_not_new_pmf_or_causal_evidence"
+}
