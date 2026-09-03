@@ -89,7 +89,20 @@ def validate_repository_reference(value, path, root=ROOT):
     require(isinstance(value, str) and value, f"{path} must be a non-empty path")
     relative = Path(value)
     require(not relative.is_absolute() and ".." not in relative.parts, f"{path} must stay repository-relative")
-    require((Path(root).resolve() / relative).is_file(), f"{path} does not resolve to a file: {value}")
+    try:
+        resolved_root = Path(root).resolve(strict=True)
+    except (OSError, RuntimeError) as error:
+        raise ValidationError(f"{path} repository root cannot be resolved") from error
+    require(resolved_root.is_dir(), f"{path} repository root must resolve to a directory")
+    try:
+        resolved_candidate = (resolved_root / relative).resolve(strict=True)
+    except (OSError, RuntimeError) as error:
+        raise ValidationError(f"{path} does not resolve to a file: {value}") from error
+    try:
+        resolved_candidate.relative_to(resolved_root)
+    except ValueError as error:
+        raise ValidationError(f"{path} resolves outside the repository: {value}") from error
+    require(resolved_candidate.is_file(), f"{path} does not resolve to a file: {value}")
 
 
 def validate_json_schema(library, schema_path=None):

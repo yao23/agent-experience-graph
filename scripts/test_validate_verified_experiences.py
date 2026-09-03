@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import importlib.util
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -72,6 +73,39 @@ class VerifiedExperienceSemanticTest(unittest.TestCase):
         self.library[0]["lessons"].append("Read /Users/example/private/report.json")
         with self.assertRaisesRegex(VALIDATOR.ValidationError, "private workspace path"):
             VALIDATOR.validate_library(self.library)
+
+    def test_repository_reference_confinement_and_symlink_policy(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary_root = Path(temporary)
+            repository_root = temporary_root / "repository"
+            repository_root.mkdir()
+            regular_file = repository_root / "evidence.json"
+            regular_file.write_text("{}\n", encoding="utf-8")
+            outside_file = temporary_root / "outside.json"
+            outside_file.write_text("{}\n", encoding="utf-8")
+            inside_link = repository_root / "inside-link.json"
+            outside_link = repository_root / "outside-link.json"
+            dangling_link = repository_root / "dangling-link.json"
+            try:
+                inside_link.symlink_to(regular_file)
+                outside_link.symlink_to(outside_file)
+                dangling_link.symlink_to(repository_root / "missing-target.json")
+            except (NotImplementedError, OSError) as error:
+                self.skipTest(f"symlink creation is unavailable: {error}")
+
+            VALIDATOR.validate_repository_reference("evidence.json", "regular", repository_root)
+            VALIDATOR.validate_repository_reference("inside-link.json", "inside-link", repository_root)
+
+            for value, label in (
+                ("missing.json", "missing"),
+                (str(regular_file.resolve()), "absolute"),
+                ("../outside.json", "parent traversal"),
+                ("outside-link.json", "outside-link"),
+                ("dangling-link.json", "dangling-link"),
+            ):
+                with self.subTest(label=label):
+                    with self.assertRaises(VALIDATOR.ValidationError):
+                        VALIDATOR.validate_repository_reference(value, label, repository_root)
 
 
 if __name__ == "__main__":
