@@ -9,6 +9,10 @@
   ],
   "source": {
     "repository": "https://github.com/yao23/agent-experience-graph",
+    "runtime_required_sources": [
+      "baseline",
+      "published_fix"
+    ],
     "baseline": {
       "commit": "f985424fed493c52f9686bdd3feff33f28b2d400",
       "tree": "e68fb35e90f8f2cee820f5cba7ca905c22ab6322",
@@ -41,9 +45,15 @@
     },
     "original_target": {
       "commit": "4f1d26e80a4fba7460cfb2523905fb08619bd08d",
-      "tree": "c54f10fb82e5ea293286250e666214d37b7819d4",
-      "parent": "f985424fed493c52f9686bdd3feff33f28b2d400",
-      "content_identity": "The original target and published fix have the same tree and relevant source hashes."
+      "recorded_tree": "c54f10fb82e5ea293286250e666214d37b7819d4",
+      "recorded_parent": "f985424fed493c52f9686bdd3feff33f28b2d400",
+      "role": "HISTORICAL_PROVENANCE_ONLY",
+      "runtime_required": false,
+      "verified_by_replay": false,
+      "loaded_by_replay": false,
+      "executed_by_replay": false,
+      "automatic_acquisition": false,
+      "status_note": "Recorded historical metadata is retained without claiming that this replay verifies the object or compares it with the published fix."
     }
   },
   "applicability": [
@@ -62,10 +72,12 @@
     "entrypoint": "python3 examples/evidence-path-confinement/replay.py --json",
     "prerequisites": [
       "Python 3 with the standard library",
-      "Git with the pinned commits available in local history",
+      "Git with the baseline and published-fix commits available in local history",
       "A filesystem and account permitted to create and follow symbolic links"
     ],
     "fixture_policy": "Only inert files inside disposable replay-owned temporary directories are used.",
+    "coverage": "FOCUSED_PRODUCTION_FUNCTION_REPLAY",
+    "full_registry_cli_validation": false,
     "committed_expectations": [
       {"id": "ordinary_in_root_file", "baseline": "ACCEPTED", "fixed": "ACCEPTED"},
       {"id": "in_root_symlink", "baseline": "ACCEPTED", "fixed": "ACCEPTED"},
@@ -84,7 +96,8 @@
     "success_definition": "PASS requires all essential cases to execute against both hash-verified production validators, all observations to match the committed matrix, the baseline escape defect to be observed, the fixed escape cases to be rejected, legitimate in-root cases to remain accepted, and temporary artifacts to be removed."
   },
   "evidence_provenance": {
-    "historical": "PR #30 and its source commits establish the known solution and committed before/after expectations.",
+    "historical": "PR #30 and the recorded original-target identity provide historical provenance. The replay does not require, load, execute, verify, or compare the original-target object.",
+    "runtime_verified_sources": "Only the baseline and published-fix source identities are verified and executed by the replay.",
     "new_replay_output": "Each invocation independently records newly observed decisions from disposable fixtures. Output is not committed by this package.",
     "separation": "Committed expectations are emitted separately from observed_replay results."
   },

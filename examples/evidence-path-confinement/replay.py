@@ -56,9 +56,24 @@ FIXED = {
 
 ORIGINAL_TARGET = {
     "commit": "4f1d26e80a4fba7460cfb2523905fb08619bd08d",
-    "tree": FIXED["tree"],
-    "parent": BASELINE["commit"],
-    "sources": FIXED["sources"],
+    "recorded_tree": "c54f10fb82e5ea293286250e666214d37b7819d4",
+    "recorded_parent": "f985424fed493c52f9686bdd3feff33f28b2d400",
+    "recorded_sources": {
+        VALIDATOR_PATH: {
+            "git_blob": "a64feaa6912379fba25ba396bb3113c88453d70b",
+            "sha256": "7a26f365bf28bc08a9007d38b047ca7236059116aef898bffd61c9e117419dc1",
+        },
+        TEST_PATH: {
+            "git_blob": "10c37546228a8641909618a6d8eacd7b8dce479f",
+            "sha256": "f67b2806711b37892f7fb6937b94ebaa3583301e373a0bfdc1f5512e36082c82",
+        },
+    },
+    "role": "HISTORICAL_PROVENANCE_ONLY",
+    "runtime_required": False,
+    "verified_this_run": False,
+    "loaded_this_run": False,
+    "executed_this_run": False,
+    "automatic_acquisition": False,
 }
 
 EXPECTED_CASES = (
@@ -236,7 +251,6 @@ def verify_source_history(repo_root: Path) -> tuple[dict[str, Any], dict[str, di
     for label, expected in (
         ("baseline", BASELINE),
         ("fixed", FIXED),
-        ("original_target", ORIGINAL_TARGET),
     ):
         identity, source_bytes = _source_identity(repo_root, label, expected)
         observed[label] = identity
@@ -374,18 +388,27 @@ def _empty_report() -> dict[str, Any]:
             "platform": platform.system() or "UNKNOWN",
         },
         "source_identity": {
-            "committed_expectations": {
+            "runtime_required_expectations": {
                 "baseline": BASELINE,
                 "fixed": FIXED,
+            },
+            "historical_provenance_only": {
                 "original_target": ORIGINAL_TARGET,
             },
-            "observed": {},
+            "runtime_observed": {},
         },
         "prerequisites": {
             "git_available": shutil.which("git") is not None,
             "pinned_history_available": False,
             "source_hashes_verified": False,
+            "required_runtime_sources": ["baseline", "fixed"],
+            "verified_runtime_sources": [],
             "symlinks_supported": False,
+        },
+        "coverage": {
+            "kind": "FOCUSED_PRODUCTION_FUNCTION_REPLAY",
+            "production_function": "validate_repository_reference",
+            "full_registry_cli_validation": False,
         },
         "committed_expectations": {
             "cases": _expected_case_projection(),
@@ -434,9 +457,10 @@ def build_report(repo_root: Path | None = None) -> dict[str, Any]:
         report["message"] = error.public_message
         return report
 
-    report["source_identity"]["observed"] = identities
+    report["source_identity"]["runtime_observed"] = identities
     report["prerequisites"]["pinned_history_available"] = True
     report["prerequisites"]["source_hashes_verified"] = True
+    report["prerequisites"]["verified_runtime_sources"] = ["baseline", "fixed"]
 
     temporary_path: Path | None = None
     observations: list[dict[str, Any]] = []

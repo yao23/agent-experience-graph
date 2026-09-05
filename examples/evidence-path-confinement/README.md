@@ -18,9 +18,11 @@ From a checkout containing the pinned Git history, run:
 python3 examples/evidence-path-confinement/replay.py --json
 ```
 
-Prerequisites are Python 3, Git, both pinned commits in local history, and local symbolic-link support. The replay uses only the Python standard library. It does not install dependencies or access the network.
+Prerequisites are Python 3, Git, the pinned baseline and published-fix commits in local history, and local symbolic-link support. The replay uses only the Python standard library. It does not install dependencies or access the network. A normal checkout whose history contains public `main` is sufficient.
 
-The driver verifies the expected commit, tree, Git blob, and SHA-256 identities before use. It exports each pinned production validator into a disposable directory, imports the source verbatim, and calls its `validate_repository_reference` function with inert task-owned fixtures. It never reads a real secret or an unrelated host file.
+The driver verifies the expected commit, tree, parent, Git blob, and SHA-256 identities of the baseline and published fix before use. It exports those two production validators into disposable directories, imports each source verbatim, and calls its `validate_repository_reference` function with inert task-owned fixtures. This is `FOCUSED_PRODUCTION_FUNCTION_REPLAY`, not full Registry CLI validation. It never reads a real secret or an unrelated host file.
+
+The original target commit `4f1d26e80a4fba7460cfb2523905fb08619bd08d` is retained only as historical provenance. It is not a runtime prerequisite and is not automatically acquired, verified, loaded, executed, or compared with the published fix by this replay. Its absence does not skip a case or prevent execution.
 
 Exit codes are:
 
@@ -30,7 +32,7 @@ Exit codes are:
 
 `PASS` is not inferred from a successful process alone. It requires all 13 cases to run against both validators, the baseline to accept all four escape cases, the fixed source to reject them, all legitimate in-root cases to remain accepted, every other invalid case to be rejected, and the temporary directory to be removed.
 
-The JSON keeps `committed_expectations` separate from `observed_replay`. Inspect `status`, `reason_codes`, `source_identity`, `prerequisites`, `summary`, and the per-case decisions. No host-local fixture path is emitted.
+The JSON keeps `committed_expectations` separate from `observed_replay`. Under `source_identity`, `runtime_required_expectations` and `runtime_observed` cover only baseline and published-fix sources, while `historical_provenance_only` records the unverified original-target identity separately. Inspect `status`, `reason_codes`, `coverage`, `source_identity`, `prerequisites`, `summary`, and the per-case decisions. No host-local fixture path is emitted.
 
 ## Expected behavior
 
