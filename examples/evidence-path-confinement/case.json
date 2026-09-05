@@ -1,0 +1,105 @@
+{
+  "case_version": "1.0.0",
+  "case_id": "PUBLIC_REPLAY_01",
+  "title": "Evidence-path symlink confinement",
+  "classifications": [
+    "RETROSPECTIVE_REGRESSION_REPLAY",
+    "FOUNDER_OWNED_REPOSITORY",
+    "KNOWN_SOLUTION_AVAILABLE"
+  ],
+  "source": {
+    "repository": "https://github.com/yao23/agent-experience-graph",
+    "baseline": {
+      "commit": "f985424fed493c52f9686bdd3feff33f28b2d400",
+      "tree": "e68fb35e90f8f2cee820f5cba7ca905c22ab6322",
+      "files": {
+        "scripts/validate_verified_experiences.py": {
+          "git_blob": "7f20fa6177b442225d6314e33787f57c0b07e18b",
+          "sha256": "f18709b3af1b0cfe3ff1e4c240b71c907e4a29bb0b95d585de4d2f7f29bb7b4e"
+        },
+        "scripts/test_validate_verified_experiences.py": {
+          "git_blob": "4ace98604a5446e268768ad617e3ddb36c4a9b21",
+          "sha256": "f59cfa374a1f9f1cb5148f5300d5057bd1e3c726553405ac7eb91d3a51cd4e7a"
+        }
+      }
+    },
+    "published_fix": {
+      "commit": "ee6ed853c1c8e93541d0b38ac5e46b4bdd9146c1",
+      "tree": "c54f10fb82e5ea293286250e666214d37b7819d4",
+      "parent": "f985424fed493c52f9686bdd3feff33f28b2d400",
+      "pull_request": "https://github.com/yao23/agent-experience-graph/pull/30",
+      "files": {
+        "scripts/validate_verified_experiences.py": {
+          "git_blob": "a64feaa6912379fba25ba396bb3113c88453d70b",
+          "sha256": "7a26f365bf28bc08a9007d38b047ca7236059116aef898bffd61c9e117419dc1"
+        },
+        "scripts/test_validate_verified_experiences.py": {
+          "git_blob": "10c37546228a8641909618a6d8eacd7b8dce479f",
+          "sha256": "f67b2806711b37892f7fb6937b94ebaa3583301e373a0bfdc1f5512e36082c82"
+        }
+      }
+    },
+    "original_target": {
+      "commit": "4f1d26e80a4fba7460cfb2523905fb08619bd08d",
+      "tree": "c54f10fb82e5ea293286250e666214d37b7819d4",
+      "parent": "f985424fed493c52f9686bdd3feff33f28b2d400",
+      "content_identity": "The original target and published fix have the same tree and relevant source hashes."
+    }
+  },
+  "applicability": [
+    "A repository validator accepts repository-relative evidence file references.",
+    "Referenced paths may contain file or directory symlinks.",
+    "Legitimate symlinks whose final target remains inside the repository must continue to work.",
+    "Containment must be checked after strict path resolution, including prefix-collision cases."
+  ],
+  "exclusions": [
+    "General filesystem sandboxing or authorization.",
+    "Concurrent malicious path replacement after validation.",
+    "Network filesystems, mount-point attacks, or operating-system access-control enforcement.",
+    "Fresh bug discovery, cross-project transfer, demand validation, or effectiveness measurement."
+  ],
+  "replay": {
+    "entrypoint": "python3 examples/evidence-path-confinement/replay.py --json",
+    "prerequisites": [
+      "Python 3 with the standard library",
+      "Git with the pinned commits available in local history",
+      "A filesystem and account permitted to create and follow symbolic links"
+    ],
+    "fixture_policy": "Only inert files inside disposable replay-owned temporary directories are used.",
+    "committed_expectations": [
+      {"id": "ordinary_in_root_file", "baseline": "ACCEPTED", "fixed": "ACCEPTED"},
+      {"id": "in_root_symlink", "baseline": "ACCEPTED", "fixed": "ACCEPTED"},
+      {"id": "multi_hop_in_root_symlink", "baseline": "ACCEPTED", "fixed": "ACCEPTED"},
+      {"id": "direct_outside_symlink", "baseline": "ACCEPTED", "fixed": "REJECTED"},
+      {"id": "multi_hop_outside_symlink", "baseline": "ACCEPTED", "fixed": "REJECTED"},
+      {"id": "symlinked_directory_escape", "baseline": "ACCEPTED", "fixed": "REJECTED"},
+      {"id": "prefix_collision_escape", "baseline": "ACCEPTED", "fixed": "REJECTED"},
+      {"id": "dangling_symlink", "baseline": "REJECTED", "fixed": "REJECTED"},
+      {"id": "symlink_loop", "baseline": "REJECTED", "fixed": "REJECTED"},
+      {"id": "missing_path", "baseline": "REJECTED", "fixed": "REJECTED"},
+      {"id": "absolute_path", "baseline": "REJECTED", "fixed": "REJECTED"},
+      {"id": "lexical_parent_traversal", "baseline": "REJECTED", "fixed": "REJECTED"},
+      {"id": "directory_instead_of_file", "baseline": "REJECTED", "fixed": "REJECTED"}
+    ],
+    "success_definition": "PASS requires all essential cases to execute against both hash-verified production validators, all observations to match the committed matrix, the baseline escape defect to be observed, the fixed escape cases to be rejected, legitimate in-root cases to remain accepted, and temporary artifacts to be removed."
+  },
+  "evidence_provenance": {
+    "historical": "PR #30 and its source commits establish the known solution and committed before/after expectations.",
+    "new_replay_output": "Each invocation independently records newly observed decisions from disposable fixtures. Output is not committed by this package.",
+    "separation": "Committed expectations are emitted separately from observed_replay results."
+  },
+  "limitations": [
+    "The replay imports and calls the pinned production path validator but does not execute the complete Registry validation CLI.",
+    "A containment check can race with a later consumer if an attacker can replace filesystem components concurrently.",
+    "Only platforms on which the replay is actually run are observed; other platforms remain untested.",
+    "The case does not establish universal protection for every filesystem API or path representation."
+  ],
+  "governance": {
+    "capture_candidate": false,
+    "registry_experience": false,
+    "execution_authorized_by_case": false,
+    "recommendation_eligible": false,
+    "automatic_publication": false,
+    "public_confidence_changed": false
+  }
+}
