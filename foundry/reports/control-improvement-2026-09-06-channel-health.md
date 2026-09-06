@@ -110,6 +110,17 @@
   It retries only the identical intent-bearing committed checkpoint from a
   clean worktree, only across a fast-forward ancestry, never force-pushes, and
   requires a second remote read before clearing the intent.
+- Rejected maintenance hypothesis: an audit initially treated qualified
+  `AEG-C-010` as missing reproduction work. Its family is
+  `PLAYWRIGHT_STRICT_LOCATOR_AMBIGUITY`, not the selected
+  `PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT` family, so generating that task
+  would have violated the single-subdomain focus. The proposed behavior and
+  test were removed before checkpointing; no candidate or result was changed.
+- Hard round-time enforcement: `finish-round` now rejects a completion after
+  the exact 45-minute lease without changing the checkpoint, active leases must
+  encode the fixed duration, and completed ledger timestamps/elapsed seconds
+  must agree and remain within the same cap. An exact-deadline completion is
+  accepted; expired work is left for the existing next-invocation recovery.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

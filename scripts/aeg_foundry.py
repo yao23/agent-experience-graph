@@ -2063,6 +2063,15 @@ def validate(
     if active is None and in_progress:
         errors.append("in-progress task exists without active round")
     if active is not None:
+        try:
+            active_claimed_at = parse_time(active.get("claimed_at", ""))
+            active_expires_at = parse_time(active.get("expires_at", ""))
+            if active_expires_at - active_claimed_at != timedelta(
+                seconds=budgets.get("max_round_seconds", -1)
+            ):
+                errors.append("active round lease does not match the fixed time budget")
+        except ConfigError:
+            errors.append("active round has invalid lease timing")
         if len(in_progress) != 1 or in_progress[0].get("task_id") != active.get("task_id"):
             errors.append("active round and claimed task disagree")
         bound_runtime_environment_ids = active.get("runtime_environment_ids", [])
@@ -2408,6 +2417,18 @@ def validate(
                     parse_time(record.get(field, ""))
                 except ConfigError:
                     errors.append(f"invalid {field} at rounds line {number}")
+        try:
+            started_at = parse_time(record.get("started_at", ""))
+            completed_at = parse_time(record.get("completed_at", ""))
+            measured_elapsed = int((completed_at - started_at).total_seconds())
+            if measured_elapsed < 0:
+                errors.append(f"round timing is reversed at line {number}")
+            if record.get("elapsed_seconds") != measured_elapsed:
+                errors.append(f"round elapsed time disagrees with timestamps at line {number}")
+            if measured_elapsed > budgets.get("max_round_seconds", -1):
+                errors.append(f"round exceeded the fixed time budget at line {number}")
+        except ConfigError:
+            errors.append(f"invalid round timing at line {number}")
         if round_id in seen_rounds:
             errors.append(f"duplicate completed round ID {round_id}")
         seen_rounds.add(round_id)
@@ -3721,6 +3742,14 @@ def finish_round(
         active = state.get("active_round")
         if not active or active["round_id"] != round_id:
             raise LeaseError("round does not own the active lease")
+        claimed_at = parse_time(active["claimed_at"])
+        expires_at = parse_time(active["expires_at"])
+        if now < claimed_at:
+            raise ConfigError("round completion time precedes its claim")
+        if now > expires_at:
+            raise BudgetError(
+                "round time budget exhausted; leave the lease for checkpoint recovery"
+            )
         task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
         finish_transaction = _prepare_finish_transaction(root, pilot, round_id, now)
         if state.get("pending_effect"):

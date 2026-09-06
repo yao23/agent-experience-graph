@@ -756,6 +756,69 @@ class FoundryTests(FoundryFixture):
             2,
         )
 
+    def test_finish_after_deadline_is_rejected_without_checkpoint_change(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        before = {
+            name: (self.root / "foundry" / name).read_text(encoding="utf-8")
+            for name in ("backlog.json", "state.json", "rounds.jsonl")
+        }
+        with self.assertRaisesRegex(foundry.BudgetError, "time budget exhausted"):
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(minutes=46),
+            )
+        after = {
+            name: (self.root / "foundry" / name).read_text(encoding="utf-8")
+            for name in ("backlog.json", "state.json", "rounds.jsonl")
+        }
+        self.assertEqual(after, before)
+        self.assertEqual(self.load("state")["active_round"]["round_id"], claim["round_id"])
+        self.assertEqual(self.load("state")["rounds_completed"], 0)
+
+    def test_finish_at_exact_deadline_is_allowed(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        record = foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=45),
+        )
+        self.assertEqual(record["elapsed_seconds"], 2700)
+
+    def test_validate_rejects_extended_active_round_lease(self) -> None:
+        foundry.begin_round(self.root, now=self.start, check_git=False)
+        state = self.load("state")
+        state["active_round"]["expires_at"] = foundry.format_time(
+            self.start + timedelta(minutes=46)
+        )
+        self.write("state", state)
+        with self.assertRaisesRegex(foundry.ConfigError, "fixed time budget"):
+            foundry.validate(self.root, check_git=False)
+
+    def test_validate_rejects_completed_round_over_time_budget(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        rounds_path = self.root / "foundry" / "rounds.jsonl"
+        record = json.loads(rounds_path.read_text(encoding="utf-8"))
+        record["completed_at"] = foundry.format_time(self.start + timedelta(minutes=46))
+        record["elapsed_seconds"] = 2760
+        foundry.atomic_write(rounds_path, json.dumps(record) + "\n")
+        with self.assertRaisesRegex(foundry.ConfigError, "fixed time budget"):
+            foundry.validate(self.root, check_git=False)
+
     def test_pause_and_expiry_block_new_work(self) -> None:
         foundry.pause(self.root, "OPERATOR_REQUEST", now=self.start)
         with self.assertRaises(foundry.PausedError):

@@ -19,7 +19,9 @@ record a policy proposal instead of altering the active pilot's scoring rules.
 Start one round with `python3 scripts/aeg_foundry.py begin-round
 --reconcile-push`. If it reports paused, expired, budget-blocked, lease-held,
 uncertain effect, or no ready work, do not invent work or retry a blocked
-channel.
+channel. Reach `finish-round` no later than the claimed `expires_at`; a result
+after the fixed 45-minute lease is rejected and must be recovered by a later
+invocation rather than recorded as success.
 
 For an active, non-expired pilot, budget gates run before prior-push
 reconciliation. If the current UTC-day or total budget is exhausted, leave the

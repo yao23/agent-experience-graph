@@ -49,6 +49,10 @@ the charter's clean disposable-environment gate is already satisfied. Never
 read historical `.aeg` content. Keep raw logs and model output only in
 `.aeg-foundry-private/`.
 
+Finish no later than the claim's `expires_at`. The controller rejects any result
+after the fixed 45-minute lease; leave that lease for the next invocation's
+checkpoint recovery instead of recording late success.
+
 For `CLONE_PUBLIC_REPOSITORY`, `INSTALL_PINNED_DEPENDENCIES`, or
 `RUN_FROZEN_ORACLE`, the claimed task must use the `DISPOSABLE_RUNTIME` channel
 and `record-intent` must receive `--environment-id <AEG-E-NNN>`. The controller
