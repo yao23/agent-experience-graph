@@ -92,6 +92,13 @@ output, patches under evaluation, and sensitive material belong only in the new
 ignored `.aeg-foundry-private/` directory. Historical `.aeg` content is outside
 this pilot and must not be read or exported.
 
+`foundry/pilot.json` is the exact machine-readable control contract. Its fixed
+activation timestamps, authorization and zero-spend boundaries, budgets,
+execution and model policy, cadence, source identity, and target/gate values are
+validated as one closed schema. A worker cannot edit, omit, add, or relax one of
+those fields and still pass the controller preflight; an authorized policy
+change would require an explicit reviewed controller-and-contract revision.
+
 Public state is generated from a fixed field allowlist. Passing a scanner is
 defense in depth, not permission to upload arbitrary free text. Intent is
 persisted before an external effect. An unresolved effect is verified before it

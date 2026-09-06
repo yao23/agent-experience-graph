@@ -37,6 +37,74 @@ BOOTSTRAP_PATHS = PUBLIC_RUNTIME_PATHS | {
     "scripts/aeg_foundry.py",
     "scripts/test_aeg_foundry.py",
 }
+PILOT_CONTRACT = {
+    "activation": {
+        "ends_at": "2026-10-18T07:22:29Z",
+        "starts_at": "2026-09-06T07:22:29Z",
+    },
+    "authorization": {
+        "additional_credits_usd": 0,
+        "codex_ruleset": "PRESERVE_UNCHANGED",
+        "external_communication": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "host_privilege_expansion": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "new_paid_api_usd": 0,
+        "new_paid_cloud_usd": 0,
+        "private_material_export": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "production_deployment": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "production_merge": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "registry_promotion": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "repository_ruleset_change": "REQUIRES_SEPARATE_AUTHORIZATION",
+        "subscription_upgrade_usd": 0,
+    },
+    "budgets": {
+        "max_round_seconds": 2700,
+        "max_rounds_per_day": 2,
+        "max_rounds_total": 84,
+        "max_worker_starts_per_day": 6,
+    },
+    "config_version": "0.1.1",
+    "execution": {
+        "cleanup_after_checkpoint_only": True,
+        "concurrency": 1,
+        "controls_enforcement_level": "CONVENTION_LEVEL",
+        "historical_state_policy": "DO_NOT_READ_DOT_AEG",
+        "private_directory": ".aeg-foundry-private",
+        "required_branch": "codex/aeg-experience-foundry-pilot-v0.1",
+        "runtime_class": "LOCAL_PROJECT",
+        "untrusted_execution_gate": "BLOCKED_ENVIRONMENT",
+    },
+    "model_policy": {
+        "automation_model": "gpt-5.6-terra",
+        "automation_reasoning_effort": "low",
+        "discovery_preference": "gpt-5.6-luna",
+        "repair_preference": "gpt-5.6-terra",
+        "server_attestation": "UNKNOWN_UNLESS_REPORTED_BY_CLIENT",
+    },
+    "pilot_id": "AEG-EXPERIENCE-FOUNDRY-PILOT-V0.1",
+    "schedule": {
+        "cadence": "PT12H",
+        "notification_policy": "MEANINGFUL_CHANGE_OR_ACTION_ONLY",
+    },
+    "schema_version": 2,
+    "source": {
+        "bootstrap_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+        "charter_path": "foundry/CHARTER.md",
+        "remote": "origin",
+        "remote_ref": "refs/remotes/origin/main",
+        "remote_url": "https://github.com/yao23/agent-experience-graph.git",
+    },
+    "targets": {
+        "deduplicated_external_candidates": 30,
+        "external_users_with_strong_evidence": 1,
+        "held_out_positive_transfers": 3,
+        "independently_behavior_verified_tasks": 10,
+        "max_uncontrolled_incidents": 0,
+        "qualified_tasks": 15,
+        "release_review_experiences_max": 8,
+        "release_review_experiences_min": 5,
+        "verified_external_users": 3,
+    },
+}
 TASK_STATUSES = {
     "READY",
     "IN_PROGRESS",
@@ -746,8 +814,8 @@ def validate_committed_foundry_history(
 def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     pilot, backlog, state = load_all(root)
     errors: list[str] = []
-    if pilot.get("schema_version") != 1 or pilot.get("config_version") != "0.1.0":
-        errors.append("unsupported pilot schema or config version")
+    if pilot != PILOT_CONTRACT:
+        raise ConfigError("fixed pilot control contract changed")
     try:
         starts = parse_time(pilot["activation"]["starts_at"])
         ends = parse_time(pilot["activation"]["ends_at"])
@@ -756,16 +824,6 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     except (KeyError, ConfigError) as error:
         errors.append(str(error))
     budgets = pilot.get("budgets", {})
-    expected_budgets = {
-        "max_round_seconds": 2700,
-        "max_rounds_per_day": 2,
-        "max_rounds_total": 84,
-        "max_worker_starts_per_day": 6,
-    }
-    if budgets != expected_budgets:
-        errors.append("fixed budget values changed")
-    if pilot.get("authorization", {}).get("new_paid_api_usd") != 0:
-        errors.append("new paid API budget must remain zero")
     try:
         source_remote_head_ref(pilot)
     except (KeyError, ConfigError) as error:
@@ -2986,9 +3044,9 @@ def render_status(
         f"- Qualified tasks: `{counts['qualified']} / {pilot['targets']['qualified_tasks']}`",
         f"- Independently behavior-verified tasks: `{counts['behavior_verified']} / {pilot['targets']['independently_behavior_verified_tasks']}`",
         f"- Release-review Experiences: `{counts['release_review_experiences']} / {pilot['targets']['release_review_experiences_min']}-{pilot['targets']['release_review_experiences_max']}`",
-        f"- Held-out positive transfers: `{counts['held_out_positive_transfers']} / 3`",
-        f"- Verified external users: `{verified_users} / 3`",
-        f"- External users with strong evidence: `{strong_user_evidence} / 1`",
+        f"- Held-out positive transfers: `{counts['held_out_positive_transfers']} / {pilot['targets']['held_out_positive_transfers']}`",
+        f"- Verified external users: `{verified_users} / {pilot['targets']['verified_external_users']}`",
+        f"- External users with strong evidence: `{strong_user_evidence} / {pilot['targets']['external_users_with_strong_evidence']}`",
         f"- Independently verified external successful reuses: `{verified_external_reuse}`",
         f"- Integrity incident counts: `{json.dumps(_integrity_incident_counts(state), sort_keys=True, separators=(',', ':'))}`",
         f"- Rounds: `{state['rounds_completed']} completed / {state['rounds_started']} started / {pilot['budgets']['max_rounds_total']} max`",
@@ -3134,10 +3192,20 @@ def _continuation_gates(
             <= counts["release_review_experiences"]
             <= pilot["targets"]["release_review_experiences_max"]
         ),
-        "HELD_OUT_POSITIVE_TRANSFERS": counts["held_out_positive_transfers"] >= 3,
-        "NO_UNCONTROLLED_INCIDENTS": uncontrolled_incidents == 0,
-        "THREE_VERIFIED_EXTERNAL_USERS": verified_users >= 3,
-        "EXTERNAL_USER_STRONG_EVIDENCE": strong_user_evidence >= 1,
+        "HELD_OUT_POSITIVE_TRANSFERS": (
+            counts["held_out_positive_transfers"]
+            >= pilot["targets"]["held_out_positive_transfers"]
+        ),
+        "NO_UNCONTROLLED_INCIDENTS": (
+            uncontrolled_incidents <= pilot["targets"]["max_uncontrolled_incidents"]
+        ),
+        "THREE_VERIFIED_EXTERNAL_USERS": (
+            verified_users >= pilot["targets"]["verified_external_users"]
+        ),
+        "EXTERNAL_USER_STRONG_EVIDENCE": (
+            strong_user_evidence
+            >= pilot["targets"]["external_users_with_strong_evidence"]
+        ),
     }
 
 
@@ -3238,9 +3306,9 @@ def generate_due_reports(
                 f"- Qualification rate: `{_qualification_rate(counts)}`",
                 f"- Behavior verified: `{counts['behavior_verified']} / {pilot['targets']['independently_behavior_verified_tasks']}`",
                 f"- Release-review Experiences: `{counts['release_review_experiences']} / {pilot['targets']['release_review_experiences_min']}-{pilot['targets']['release_review_experiences_max']}`",
-                f"- Positive held-out transfers: `{counts['held_out_positive_transfers']} / 3`",
-                f"- Verified external users: `{verified_users} / 3`",
-                f"- External users with strong evidence: `{strong_user_evidence} / 1`",
+                f"- Positive held-out transfers: `{counts['held_out_positive_transfers']} / {pilot['targets']['held_out_positive_transfers']}`",
+                f"- Verified external users: `{verified_users} / {pilot['targets']['verified_external_users']}`",
+                f"- External users with strong evidence: `{strong_user_evidence} / {pilot['targets']['external_users_with_strong_evidence']}`",
                 f"- Independently verified external successful reuses: `{verified_external_reuse}`",
                 f"- Most important recorded outcome: `{highlight}`",
                 f"- Weekly outcome counts: `{json.dumps(outcome_counts, sort_keys=True, separators=(',', ':'))}`",

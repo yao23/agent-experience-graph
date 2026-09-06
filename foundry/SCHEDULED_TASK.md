@@ -15,6 +15,9 @@ pause, expiry, budget, lease, unresolved-effect, and no-work exits. If no work
 or no meaningful change exists, remain quiet. An active-run budget exit occurs
 before push reconciliation and intentionally preserves the committed pending
 intent for the next eligible invocation; expiry still reconciles first.
+Treat `foundry/pilot.json` as a closed, immutable control contract. Never edit
+its activation, authorization, budget, execution, model, schedule, source, or
+target/gate fields to make a run start or a result pass.
 
 If `begin-round` reports `EXPIRED`, inspect the state it just wrote. When no
 effect remains pending, run `audit-public` and persist the generated terminal

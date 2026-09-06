@@ -60,6 +60,15 @@
   when a non-push effect cannot be verified or an active round must reach a safe
   checkpoint, and reports that persistence is deferred instead of claiming a
   remote pause.
+- Control-contract immutability: `pilot.json` is now a closed v2 schema. The
+  controller fixes the original activation timestamps, all zero-spend and
+  separate-authorization boundaries, cadence, concurrency, model policy,
+  source identity, six-week targets, and continuation gates as one exact
+  contract. Shifting the whole 42-day window, lowering a target, expanding an
+  authorization, changing model/schedule/execution policy, or adding an
+  unreviewed field all fail before a round can start. Report denominators and
+  terminal gates read the same machine values instead of parallel hard-coded
+  numbers.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

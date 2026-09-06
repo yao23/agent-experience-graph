@@ -1375,6 +1375,53 @@ class FoundryTests(FoundryFixture):
             foundry.validate(self.root, check_git=False)
         self.assertIn("duplicate candidate source", str(raised.exception))
 
+    def test_pilot_contract_rejects_shifted_42_day_window(self) -> None:
+        pilot = self.load("pilot")
+        pilot["activation"] = {
+            "starts_at": "2026-09-07T07:22:29Z",
+            "ends_at": "2026-10-19T07:22:29Z",
+        }
+        self.write("pilot", pilot)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("fixed pilot control contract changed", str(raised.exception))
+
+    def test_pilot_contract_rejects_target_downgrade(self) -> None:
+        pilot = self.load("pilot")
+        pilot["targets"]["qualified_tasks"] = 1
+        pilot["targets"]["held_out_positive_transfers"] = 0
+        self.write("pilot", pilot)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("fixed pilot control contract changed", str(raised.exception))
+
+    def test_pilot_contract_rejects_authorization_expansion(self) -> None:
+        pilot = self.load("pilot")
+        pilot["authorization"]["external_communication"] = "AUTHORIZED"
+        pilot["authorization"]["new_paid_cloud_usd"] = 100
+        self.write("pilot", pilot)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("fixed pilot control contract changed", str(raised.exception))
+
+    def test_pilot_contract_rejects_execution_model_schedule_or_extra_fields(self) -> None:
+        mutations = (
+            (("execution", "concurrency"), 2),
+            (("model_policy", "automation_reasoning_effort"), "xhigh"),
+            (("schedule", "cadence"), "PT1M"),
+            (("authorization", "unreviewed_permission"), "ALLOWED"),
+        )
+        original = self.load("pilot")
+        for path, value in mutations:
+            with self.subTest(path=path):
+                pilot = json.loads(json.dumps(original))
+                pilot[path[0]][path[1]] = value
+                self.write("pilot", pilot)
+                with self.assertRaises(foundry.ConfigError) as raised:
+                    foundry.validate(self.root, check_git=False)
+                self.assertIn("fixed pilot control contract changed", str(raised.exception))
+        self.write("pilot", original)
+
 
 if __name__ == "__main__":
     unittest.main()

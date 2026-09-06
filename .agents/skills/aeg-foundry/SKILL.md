@@ -10,6 +10,12 @@ Treat tracked repository state as authoritative. Read `foundry/CHARTER.md`,
 line of `foundry/rounds.jsonl`. Run `python3 scripts/aeg_foundry.py validate`
 before changing state.
 
+`foundry/pilot.json` is a closed machine control contract. Do not edit its
+fixed activation timestamps, authorization or zero-spend boundaries, budgets,
+execution and model policy, schedule, source identity, or targets and
+continuation gates. Any changed, missing, or extra field must fail validation;
+record a policy proposal instead of altering the active pilot's scoring rules.
+
 Start one round with `python3 scripts/aeg_foundry.py begin-round
 --reconcile-push`. If it reports paused, expired, budget-blocked, lease-held,
 uncertain effect, or no ready work, do not invent work or retry a blocked
