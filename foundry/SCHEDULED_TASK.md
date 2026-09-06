@@ -43,6 +43,15 @@ the charter's clean disposable-environment gate is already satisfied. Never
 read historical `.aeg` content. Keep raw logs and model output only in
 `.aeg-foundry-private/`.
 
+For `CLONE_PUBLIC_REPOSITORY`, `INSTALL_PINNED_DEPENDENCIES`, or
+`RUN_FROZEN_ORACLE`, the claimed task must use the `DISPOSABLE_RUNTIME` channel
+and `record-intent` must receive `--environment-id <AEG-E-NNN>`. The controller
+accepts only an unexpired qualification receipt that proves one-time freshness,
+no host/company mounts, no model or GitHub-write credentials, and separately
+recorded dependency/test network policy. Its first intent permanently consumes
+the environment for that round. Do not fabricate a receipt, reactivate the
+channel by hand, reuse an environment, or issue these effects from maintenance.
+
 Do not rewrite a committed candidate classification or put verification flags
 on candidates. A behavior-verification stage writes a first-class
 `behavior_verifications[]` record only after an independent verifier actually

@@ -79,7 +79,9 @@ class FoundryFixture(unittest.TestCase):
                 "pilot_status": "ACTIVE",
                 "rounds_completed": 0,
                 "rounds_started": 0,
-                "schema_version": 2,
+                "runtime_environment_claims": [],
+                "runtime_environments": [],
+                "schema_version": 3,
                 "worker_events": [],
             },
         )
@@ -104,6 +106,38 @@ class FoundryFixture(unittest.TestCase):
 
     def write(self, name: str, value: dict) -> None:
         foundry.atomic_write_json(self.root / "foundry" / f"{name}.json", value)
+
+    def runtime_receipt(self, environment_id: str = "AEG-E-001") -> dict:
+        return {
+            "company_data_mounted": False,
+            "dependency_host_codes": ["PYPI_ORG"],
+            "dependency_network_policy": "ALLOWLISTED",
+            "disposable": True,
+            "environment_id": environment_id,
+            "evidence_digest_sha256": "d" * 64,
+            "expires_at": "2026-09-07T08:00:00Z",
+            "fresh_instance": True,
+            "github_write_credentials_present": False,
+            "host_home_mounted": False,
+            "isolation_class": "QUALIFIED_ONE_TIME_RUNTIME",
+            "model_credentials_present": False,
+            "qualified_at": "2026-09-06T07:59:00Z",
+            "qualification_status": "VERIFIED_DISPOSABLE_RUNTIME",
+            "test_host_codes": [],
+            "test_network_policy": "DENY_ALL",
+            "verifier_code": "INDEPENDENT_RUNTIME_VERIFIER",
+        }
+
+    def prepare_disposable_runtime(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["channel_code"] = "DISPOSABLE_RUNTIME"
+        self.write("backlog", backlog)
+        state = self.load("state")
+        state["channels"]["DISPOSABLE_RUNTIME"].update(
+            {"status": "ACTIVE", "status_reason_code": None}
+        )
+        state["runtime_environments"].append(self.runtime_receipt())
+        self.write("state", state)
 
     def add_valid_positive_transfer(self) -> dict:
         backlog = self.load("backlog")
@@ -1367,6 +1401,180 @@ class FoundryTests(FoundryFixture):
         self.assertIn("invalid preregistration time", str(raised.exception))
         self.assertIn("preregistered transfer freeze was rewritten", str(raised.exception))
 
+    def test_blocked_or_wrong_channel_cannot_record_untrusted_execution_intent(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.record_intent(
+                self.root,
+                claim["round_id"],
+                "CLONE_PUBLIC_REPOSITORY",
+                "QUALIFIED_TARGET_CLONE",
+                environment_id="AEG-E-001",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("requires a DISPOSABLE_RUNTIME round", str(raised.exception))
+        self.assertIsNone(self.load("state")["pending_effect"])
+
+    def test_untrusted_intent_requires_both_receipt_and_live_runtime_channel(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["channel_code"] = "DISPOSABLE_RUNTIME"
+        self.write("backlog", backlog)
+        state = self.load("state")
+        state["channels"]["DISPOSABLE_RUNTIME"].update(
+            {"status": "ACTIVE", "status_reason_code": None}
+        )
+        self.write("state", state)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as missing_receipt:
+            foundry.record_intent(
+                self.root,
+                claim["round_id"],
+                "RUN_FROZEN_ORACLE",
+                "FROZEN_TARGET_ORACLE",
+                environment_id="AEG-E-001",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("lacks a verified qualification receipt", str(missing_receipt.exception))
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt())
+        state["channels"]["DISPOSABLE_RUNTIME"].update(
+            {
+                "status": "BLOCKED_ENVIRONMENT",
+                "status_reason_code": "RUNTIME_REVOKED_BEFORE_EFFECT",
+            }
+        )
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as blocked_channel:
+            foundry.record_intent(
+                self.root,
+                claim["round_id"],
+                "RUN_FROZEN_ORACLE",
+                "FROZEN_TARGET_ORACLE",
+                environment_id="AEG-E-001",
+                now=self.start + timedelta(seconds=2),
+            )
+        self.assertIn("channel is not ACTIVE", str(blocked_channel.exception))
+        state = self.load("state")
+        self.assertIsNone(state["pending_effect"])
+        self.assertEqual(state["runtime_environment_claims"], [])
+
+    def test_maintenance_cannot_record_untrusted_execution_intent(self) -> None:
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.record_maintenance_intent(
+                self.root,
+                "RUN_FROZEN_ORACLE",
+                "OUT_OF_BAND_TARGET_TEST",
+                now=self.start,
+            )
+        self.assertIn("active disposable-runtime round", str(raised.exception))
+        self.assertIsNone(self.load("state")["pending_effect"])
+
+    def test_verified_runtime_is_bound_once_and_reused_only_within_its_round(self) -> None:
+        self.prepare_disposable_runtime()
+        first = foundry.begin_round(self.root, now=self.start, check_git=False)
+        clone = foundry.record_intent(
+            self.root,
+            first["round_id"],
+            "CLONE_PUBLIC_REPOSITORY",
+            "QUALIFIED_TARGET_CLONE",
+            environment_id="AEG-E-001",
+            now=self.start + timedelta(seconds=1),
+        )
+        state = self.load("state")
+        self.assertEqual(clone["environment_id"], "AEG-E-001")
+        self.assertEqual(state["active_round"]["runtime_environment_id"], "AEG-E-001")
+        self.assertEqual(len(state["runtime_environment_claims"]), 1)
+        foundry.resolve_intent(
+            self.root,
+            clone["effect_id"],
+            "COMPLETED",
+            now=self.start + timedelta(seconds=2),
+        )
+        install = foundry.record_intent(
+            self.root,
+            first["round_id"],
+            "INSTALL_PINNED_DEPENDENCIES",
+            "PINNED_DEPENDENCY_SET",
+            environment_id="AEG-E-001",
+            now=self.start + timedelta(seconds=3),
+        )
+        self.assertEqual(len(self.load("state")["runtime_environment_claims"]), 1)
+        foundry.resolve_intent(
+            self.root,
+            install["effect_id"],
+            "COMPLETED",
+            now=self.start + timedelta(seconds=4),
+        )
+        foundry.finish_round(
+            self.root,
+            first["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        backlog = self.load("backlog")
+        backlog["work_items"][1].update(
+            {"channel_code": "DISPOSABLE_RUNTIME", "status": "READY"}
+        )
+        self.write("backlog", backlog)
+        second = foundry.begin_round(
+            self.root,
+            now=self.start + timedelta(hours=12),
+            check_git=False,
+        )
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.record_intent(
+                self.root,
+                second["round_id"],
+                "CLONE_PUBLIC_REPOSITORY",
+                "SECOND_QUALIFIED_TARGET_CLONE",
+                environment_id="AEG-E-001",
+                now=self.start + timedelta(hours=12, seconds=1),
+            )
+        self.assertIn("already consumed", str(raised.exception))
+
+    def test_runtime_receipt_rejects_credentials_mounts_and_open_network_shape(self) -> None:
+        state = self.load("state")
+        receipt = self.runtime_receipt()
+        receipt["model_credentials_present"] = True
+        receipt["test_network_policy"] = "DENY_ALL"
+        receipt["test_host_codes"] = ["PUBLIC_INTERNET"]
+        state["runtime_environments"].append(receipt)
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("model_credentials_present", str(raised.exception))
+        self.assertIn("invalid test network host codes", str(raised.exception))
+
+    def test_committed_runtime_receipt_and_claim_ledgers_are_append_only(self) -> None:
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt())
+        state["runtime_environment_claims"].append(
+            {
+                "claim_id": "AEG-EC-" + "A" * 32,
+                "claimed_at": "2026-09-06T08:00:00Z",
+                "environment_id": "AEG-E-001",
+                "round_id": "AEG-R-20260906T080000Z-00000001",
+            }
+        )
+        self.write("state", state)
+        foundry.validate(self.root, check_git=False)
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record runtime evidence")
+        state["runtime_environments"][0]["evidence_digest_sha256"] = "e" * 64
+        state["runtime_environment_claims"][0]["round_id"] = (
+            "AEG-R-20260906T080100Z-00000002"
+        )
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("committed runtime_environments ledger was rewritten", str(raised.exception))
+        self.assertIn(
+            "committed runtime_environment_claims ledger was rewritten",
+            str(raised.exception),
+        )
+
     def test_duplicate_candidate_is_invalid(self) -> None:
         backlog = self.load("backlog")
         backlog["candidates"].append(dict(backlog["candidates"][0], candidate_id="AEG-C-999"))
@@ -1403,6 +1611,21 @@ class FoundryTests(FoundryFixture):
         with self.assertRaises(foundry.ConfigError) as raised:
             foundry.validate(self.root, check_git=False)
         self.assertIn("fixed pilot control contract changed", str(raised.exception))
+
+    def test_mutating_entrypoint_rejects_pilot_contract_tampering_before_write(self) -> None:
+        pilot = self.load("pilot")
+        pilot["budgets"]["max_worker_starts_per_day"] = 999
+        self.write("pilot", pilot)
+        before = self.load("state")
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.register_worker(
+                self.root,
+                "BUDGET_BYPASS_ATTEMPT",
+                "TEST_MODEL",
+                now=self.start,
+            )
+        self.assertIn("fixed pilot control contract changed", str(raised.exception))
+        self.assertEqual(self.load("state"), before)
 
     def test_pilot_contract_rejects_execution_model_schedule_or_extra_fields(self) -> None:
         mutations = (

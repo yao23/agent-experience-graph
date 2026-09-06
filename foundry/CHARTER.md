@@ -49,10 +49,14 @@ One scheduled invocation may claim one work unit and perform one stage. External
 repository code, installers, and tests may run only in a verified disposable
 environment without model credentials, GitHub write credentials, host home, or
 company data. Dependency-fetch networking and test networking are separate
-recorded grants. A Git worktree is not a sandbox. The current local host has no
-qualified disposable runtime, so external execution is `BLOCKED_ENVIRONMENT`;
-read-only discovery, public-material preparation, and trusted repository tests
-may continue.
+recorded grants. A Git worktree is not a sandbox. Before any clone, install, or
+frozen-oracle intent, the controller requires an immutable qualification
+receipt and permanently binds its one-time environment ID to that round; a
+claimed or expired environment cannot be reused. Maintenance mode cannot issue
+untrusted-execution intents. The current local host has no qualified disposable
+runtime receipt, so external execution is `BLOCKED_ENVIRONMENT`; read-only
+discovery, public-material preparation, and trusted repository tests may
+continue.
 
 Repository leases and policy files are convention-level controls. They prevent
 duplicate work in this selected local checkout but are not an unbypassable

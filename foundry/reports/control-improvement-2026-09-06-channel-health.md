@@ -69,6 +69,13 @@
   unreviewed field all fail before a round can start. Report denominators and
   terminal gates read the same machine values instead of parallel hard-coded
   numbers.
+- Disposable-runtime enforcement: state schema v3 adds immutable, exact-shape
+  qualification receipts and permanent one-time environment claims. Clone,
+  install, and frozen-oracle intents now require an active
+  `DISPOSABLE_RUNTIME` task, an unexpired receipt proving no sensitive mounts or
+  credentials and separately bounded dependency/test networking, and an
+  environment ID not claimed by another round. Maintenance mode cannot create
+  these intents, and status reports both receipt and available-runtime counts.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

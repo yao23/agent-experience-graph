@@ -290,6 +290,15 @@
       "outcome": "COMPLETED_VERIFIED",
       "remote_sha": "4504ba189c37e38231b5436c51ed085a3c296b2f",
       "verified_at": "2026-09-06T09:19:42Z"
+    },
+    {
+      "effect_id": "AEG-I-bc03229ba15140fbb36fcd24e8f8fb4a",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:20:36Z",
+      "resolved_at": "2026-09-06T09:20:58Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_RUNTIME_GATE_V3"
     }
   ],
   "external_reuse_events": [],
@@ -311,11 +320,19 @@
   "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
   "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
-  "pending_effect": null,
+  "pending_effect": {
+    "effect_id": "AEG-I-90124cf802d84098b8452ad06b868b67",
+    "effect_type": "PUSH_PILOT_BRANCH",
+    "recorded_at": "2026-09-06T09:21:10Z",
+    "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+    "target_code": "ORIGIN_PILOT_BRANCH"
+  },
   "pilot_status": "ACTIVE",
   "rounds_completed": 2,
   "rounds_started": 2,
-  "schema_version": 2,
+  "runtime_environment_claims": [],
+  "runtime_environments": [],
+  "schema_version": 3,
   "worker_events": [
     {
       "completed_at": "2026-09-06T07:32:28Z",

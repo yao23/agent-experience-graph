@@ -1,6 +1,6 @@
 # AEG Experience Foundry Pilot status
 
-Generated: `2026-09-06T09:19:42Z`
+Generated: `2026-09-06T09:21:10Z`
 
 - Pilot: `ACTIVE`
 - Automation: `ACTIVE`
@@ -32,6 +32,8 @@ Generated: `2026-09-06T09:19:42Z`
 - Ready work: `0`
 - Environment-blocked work: `1`
 - Approval-blocked work: `0`
+- Verified disposable-runtime receipts: `0`
+- Available unclaimed disposable runtimes: `0`
 - Primary block code: `BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME`
 - Next step code: `PROVISION_CLEAN_ONE_TIME_EXECUTION_ENVIRONMENT`
 

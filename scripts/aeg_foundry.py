@@ -62,7 +62,7 @@ PILOT_CONTRACT = {
         "max_rounds_total": 84,
         "max_worker_starts_per_day": 6,
     },
-    "config_version": "0.1.1",
+    "config_version": "0.1.2",
     "execution": {
         "cleanup_after_checkpoint_only": True,
         "concurrency": 1,
@@ -71,7 +71,7 @@ PILOT_CONTRACT = {
         "private_directory": ".aeg-foundry-private",
         "required_branch": "codex/aeg-experience-foundry-pilot-v0.1",
         "runtime_class": "LOCAL_PROJECT",
-        "untrusted_execution_gate": "BLOCKED_ENVIRONMENT",
+        "untrusted_execution_gate": "REQUIRES_VERIFIED_DISPOSABLE_RUNTIME",
     },
     "model_policy": {
         "automation_model": "gpt-5.6-terra",
@@ -127,6 +127,11 @@ EFFECT_TYPES = {
     "CREATE_OR_UPDATE_DRAFT_PR",
     "UPDATE_NATIVE_AUTOMATION",
 }
+UNTRUSTED_EXECUTION_EFFECT_TYPES = {
+    "CLONE_PUBLIC_REPOSITORY",
+    "INSTALL_PINNED_DEPENDENCIES",
+    "RUN_FROZEN_ORACLE",
+}
 GITHUB_ISSUE_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 CHANNEL_RE = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
@@ -137,6 +142,8 @@ BEHAVIOR_ID_RE = re.compile(r"^AEG-V-[0-9]{3}$")
 EXTERNAL_USER_ID_RE = re.compile(r"^AEG-U-[0-9]{3}$")
 EXTERNAL_REUSE_ID_RE = re.compile(r"^AEG-ER-[0-9]{3}$")
 INTEGRITY_INCIDENT_ID_RE = re.compile(r"^AEG-II-[0-9]{3}$")
+RUNTIME_ENVIRONMENT_ID_RE = re.compile(r"^AEG-E-[0-9]{3}$")
+RUNTIME_CLAIM_ID_RE = re.compile(r"^AEG-EC-[0-9A-F]{32}$")
 CODE_VALUE_RE = re.compile(r"^[A-Z0-9][A-Z0-9_.:-]{0,127}$")
 CANDIDATE_KEYS = {
     "candidate_id",
@@ -216,6 +223,31 @@ INTEGRITY_INCIDENT_KEYS = {
     "incident_id",
     "observed_at",
     "status",
+}
+RUNTIME_ENVIRONMENT_KEYS = {
+    "company_data_mounted",
+    "dependency_host_codes",
+    "dependency_network_policy",
+    "disposable",
+    "environment_id",
+    "evidence_digest_sha256",
+    "expires_at",
+    "fresh_instance",
+    "github_write_credentials_present",
+    "host_home_mounted",
+    "isolation_class",
+    "model_credentials_present",
+    "qualified_at",
+    "qualification_status",
+    "test_host_codes",
+    "test_network_policy",
+    "verifier_code",
+}
+RUNTIME_CLAIM_KEYS = {
+    "claim_id",
+    "claimed_at",
+    "environment_id",
+    "round_id",
 }
 EXPERIENCE_ARTIFACT_KEYS = {
     "schema_version",
@@ -545,7 +577,10 @@ def paths(root: Path) -> dict[str, Path]:
 
 def load_all(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     located = paths(root)
-    return load_json(located["pilot"]), load_json(located["backlog"]), load_json(located["state"])
+    pilot = load_json(located["pilot"])
+    if pilot != PILOT_CONTRACT:
+        raise ConfigError("fixed pilot control contract changed")
+    return pilot, load_json(located["backlog"]), load_json(located["state"])
 
 
 def _walk_public(value: Any, location: str = "root") -> list[str]:
@@ -808,6 +843,13 @@ def validate_committed_foundry_history(
         current_incidents[: len(prior_incidents)] != prior_incidents
     ):
         errors.append("committed integrity incident ledger was rewritten")
+    for list_name in ("runtime_environments", "runtime_environment_claims"):
+        prior_records = previous_state.get(list_name, [])
+        current_records = state.get(list_name, [])
+        if isinstance(prior_records, list) and isinstance(current_records, list) and (
+            current_records[: len(prior_records)] != prior_records
+        ):
+            errors.append(f"committed {list_name} ledger was rewritten")
     return errors
 
 
@@ -828,7 +870,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         source_remote_head_ref(pilot)
     except (KeyError, ConfigError) as error:
         errors.append(str(error))
-    if backlog.get("schema_version") != 2 or state.get("schema_version") != 2:
+    if backlog.get("schema_version") != 2 or state.get("schema_version") != 3:
         errors.append("unsupported backlog or state schema")
 
     channels = state.get("channels")
@@ -847,6 +889,118 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append(f"invalid infrastructure failure streak: {channel_code}")
         if channel.get("status") == "QUARANTINED" and streak < 2:
             errors.append(f"quarantined channel lacks two consecutive failures: {channel_code}")
+
+    runtime_environment_ids: set[str] = set()
+    runtime_environment_by_id: dict[str, dict[str, Any]] = {}
+    runtime_windows: dict[str, tuple[datetime, datetime]] = {}
+    runtime_environments = state.get("runtime_environments")
+    if not isinstance(runtime_environments, list):
+        errors.append("runtime_environments must be a list")
+        runtime_environments = []
+    for environment in runtime_environments:
+        if not isinstance(environment, dict):
+            errors.append("runtime environment records must be objects")
+            continue
+        environment_id = environment.get("environment_id")
+        if set(environment) != RUNTIME_ENVIRONMENT_KEYS:
+            errors.append(
+                f"runtime environment fields are not allowlisted for {environment_id}"
+            )
+        if (
+            not isinstance(environment_id, str)
+            or not RUNTIME_ENVIRONMENT_ID_RE.fullmatch(environment_id)
+            or environment_id in runtime_environment_ids
+        ):
+            errors.append("runtime environment IDs must be unique and well formed")
+        else:
+            runtime_environment_ids.add(environment_id)
+            runtime_environment_by_id[environment_id] = environment
+        if environment.get("qualification_status") != "VERIFIED_DISPOSABLE_RUNTIME":
+            errors.append(f"runtime environment is not verified for {environment_id}")
+        if environment.get("isolation_class") != "QUALIFIED_ONE_TIME_RUNTIME":
+            errors.append(f"runtime environment has invalid isolation class for {environment_id}")
+        for field, required in (
+            ("disposable", True),
+            ("fresh_instance", True),
+            ("host_home_mounted", False),
+            ("company_data_mounted", False),
+            ("model_credentials_present", False),
+            ("github_write_credentials_present", False),
+        ):
+            if environment.get(field) is not required:
+                errors.append(f"runtime environment violates isolation field {field}: {environment_id}")
+        for prefix in ("dependency", "test"):
+            policy = environment.get(f"{prefix}_network_policy")
+            hosts = environment.get(f"{prefix}_host_codes")
+            if policy not in {"DENY_ALL", "ALLOWLISTED"}:
+                errors.append(f"invalid {prefix} network policy for {environment_id}")
+            if (
+                not isinstance(hosts, list)
+                or any(
+                    not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                    for item in hosts
+                )
+                or len(set(hosts)) != len(hosts)
+                or (policy == "DENY_ALL" and hosts)
+                or (policy == "ALLOWLISTED" and not hosts)
+            ):
+                errors.append(f"invalid {prefix} network host codes for {environment_id}")
+        if not isinstance(environment.get("verifier_code"), str) or not CODE_VALUE_RE.fullmatch(
+            environment.get("verifier_code", "")
+        ):
+            errors.append(f"invalid runtime verifier for {environment_id}")
+        if not isinstance(environment.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+            environment.get("evidence_digest_sha256", "")
+        ):
+            errors.append(f"invalid runtime evidence digest for {environment_id}")
+        try:
+            qualified_at = parse_time(environment.get("qualified_at", ""))
+            expires_at = parse_time(environment.get("expires_at", ""))
+            if expires_at <= qualified_at:
+                errors.append(f"runtime qualification window is empty for {environment_id}")
+            elif isinstance(environment_id, str):
+                runtime_windows[environment_id] = (qualified_at, expires_at)
+        except ConfigError:
+            errors.append(f"invalid runtime qualification timing for {environment_id}")
+
+    runtime_claim_ids: set[str] = set()
+    claimed_runtime_environment_ids: set[str] = set()
+    runtime_claims = state.get("runtime_environment_claims")
+    if not isinstance(runtime_claims, list):
+        errors.append("runtime_environment_claims must be a list")
+        runtime_claims = []
+    for claim in runtime_claims:
+        if not isinstance(claim, dict):
+            errors.append("runtime environment claim records must be objects")
+            continue
+        claim_id = claim.get("claim_id")
+        environment_id = claim.get("environment_id")
+        if set(claim) != RUNTIME_CLAIM_KEYS:
+            errors.append(f"runtime claim fields are not allowlisted for {claim_id}")
+        if (
+            not isinstance(claim_id, str)
+            or not RUNTIME_CLAIM_ID_RE.fullmatch(claim_id)
+            or claim_id in runtime_claim_ids
+        ):
+            errors.append("runtime claim IDs must be unique and well formed")
+        else:
+            runtime_claim_ids.add(claim_id)
+        if environment_id not in runtime_environment_ids:
+            errors.append(f"runtime claim references unknown environment for {claim_id}")
+        elif environment_id in claimed_runtime_environment_ids:
+            errors.append(f"disposable runtime environment was claimed more than once: {environment_id}")
+        else:
+            claimed_runtime_environment_ids.add(environment_id)
+        round_id = claim.get("round_id")
+        if not isinstance(round_id, str) or not round_id.startswith("AEG-R-"):
+            errors.append(f"runtime claim has invalid round ID for {claim_id}")
+        try:
+            claimed_at = parse_time(claim.get("claimed_at", ""))
+            window = runtime_windows.get(environment_id)
+            if window is not None and not (window[0] <= claimed_at < window[1]):
+                errors.append(f"runtime claim falls outside qualification window for {claim_id}")
+        except ConfigError:
+            errors.append(f"runtime claim has invalid time for {claim_id}")
 
     worker_event_ids: set[str] = set()
     worker_events = state.get("worker_events")
@@ -1581,6 +1735,20 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     if active is not None:
         if len(in_progress) != 1 or in_progress[0].get("task_id") != active.get("task_id"):
             errors.append("active round and claimed task disagree")
+        runtime_environment_id = active.get("runtime_environment_id")
+        if runtime_environment_id is not None:
+            matching_claims = [
+                claim
+                for claim in runtime_claims
+                if claim.get("environment_id") == runtime_environment_id
+                and claim.get("round_id") == active.get("round_id")
+            ]
+            if (
+                active.get("channel_code") != "DISPOSABLE_RUNTIME"
+                or runtime_environment_id not in runtime_environment_ids
+                or len(matching_claims) != 1
+            ):
+                errors.append("active round has an invalid disposable runtime binding")
     if state.get("rounds_completed", 0) > state.get("rounds_started", 0):
         errors.append("completed round count exceeds started round count")
     daily_counters = state.get("counters_by_utc_day")
@@ -2403,6 +2571,7 @@ def begin_round(
             "qualified_count_at_start": sum(
                 item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
             ),
+            "runtime_environment_id": None,
             "scheduled_worker_start_counted": True,
             "acquisition_strategy_version_at_start": backlog["discovery"].get(
                 "acquisition_strategy_version", 1
@@ -2434,13 +2603,78 @@ def begin_round(
         }
 
 
+def _bind_disposable_runtime(
+    state: dict[str, Any],
+    active: dict[str, Any],
+    environment_id: str | None,
+    now: datetime,
+) -> None:
+    if active.get("channel_code") != "DISPOSABLE_RUNTIME":
+        raise ConfigError("untrusted execution effect requires a DISPOSABLE_RUNTIME round")
+    channel = _channel(state, "DISPOSABLE_RUNTIME")
+    if channel.get("status") != "ACTIVE":
+        raise ConfigError("disposable runtime channel is not ACTIVE")
+    if not isinstance(environment_id, str) or not RUNTIME_ENVIRONMENT_ID_RE.fullmatch(
+        environment_id
+    ):
+        raise ConfigError("untrusted execution effect requires a verified environment ID")
+    environments = state.get("runtime_environments", [])
+    environment = next(
+        (
+            item
+            for item in environments
+            if isinstance(item, dict) and item.get("environment_id") == environment_id
+        ),
+        None,
+    )
+    if environment is None or environment.get(
+        "qualification_status"
+    ) != "VERIFIED_DISPOSABLE_RUNTIME":
+        raise ConfigError("disposable runtime lacks a verified qualification receipt")
+    if not (
+        parse_time(environment["qualified_at"])
+        <= now
+        < parse_time(environment["expires_at"])
+    ):
+        raise ConfigError("disposable runtime qualification is not currently valid")
+    bound_environment_id = active.get("runtime_environment_id")
+    if bound_environment_id not in {None, environment_id}:
+        raise ConfigError("active round cannot switch disposable runtime environments")
+    claims = state.setdefault("runtime_environment_claims", [])
+    existing = [
+        claim
+        for claim in claims
+        if isinstance(claim, dict) and claim.get("environment_id") == environment_id
+    ]
+    if existing and any(claim.get("round_id") != active.get("round_id") for claim in existing):
+        raise ConfigError("disposable runtime environment was already consumed by another round")
+    if not existing:
+        claims.append(
+            {
+                "claim_id": f"AEG-EC-{uuid.uuid4().hex.upper()}",
+                "claimed_at": format_time(now),
+                "environment_id": environment_id,
+                "round_id": active["round_id"],
+            }
+        )
+    active["runtime_environment_id"] = environment_id
+
+
 def record_intent(
-    root: Path, round_id: str, effect_type: str, target_code: str, now: datetime | None = None
+    root: Path,
+    round_id: str,
+    effect_type: str,
+    target_code: str,
+    environment_id: str | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
-    pilot, backlog, state = load_all(root)
-    del backlog
+    pilot, _, _ = load_all(root)
+    if pilot != PILOT_CONTRACT:
+        raise ConfigError("fixed pilot control contract changed")
     with control_lock(root, pilot):
+        validate(root, check_git=False)
+        _, _, state = load_all(root)
         active = state.get("active_round")
         if not active or active["round_id"] != round_id:
             raise LeaseError("intent round does not own the active lease")
@@ -2448,6 +2682,12 @@ def record_intent(
             raise LeaseError("another external effect is unresolved")
         if effect_type not in EFFECT_TYPES or effect_type == "PUSH_PILOT_BRANCH":
             raise ConfigError("invalid stage effect type")
+        if not isinstance(target_code, str) or not CODE_VALUE_RE.fullmatch(target_code):
+            raise ConfigError("invalid external effect target code")
+        if effect_type in UNTRUSTED_EXECUTION_EFFECT_TYPES:
+            _bind_disposable_runtime(state, active, environment_id, now)
+        elif environment_id is not None:
+            raise ConfigError("environment ID is valid only for untrusted execution effects")
         effect = {
             "effect_id": f"AEG-I-{uuid.uuid4().hex}",
             "effect_type": effect_type,
@@ -2455,6 +2695,8 @@ def record_intent(
             "round_id": round_id,
             "target_code": target_code,
         }
+        if environment_id is not None:
+            effect["environment_id"] = environment_id
         state["pending_effect"] = effect
         atomic_write_json(paths(root)["state"], state)
         return effect
@@ -2464,13 +2706,20 @@ def record_maintenance_intent(
     root: Path, effect_type: str, target_code: str, now: datetime | None = None
 ) -> dict[str, Any]:
     now = now or utc_now()
-    pilot, backlog, state = load_all(root)
-    del backlog
+    pilot, _, _ = load_all(root)
+    if pilot != PILOT_CONTRACT:
+        raise ConfigError("fixed pilot control contract changed")
     with control_lock(root, pilot):
+        validate(root, check_git=False)
+        _, _, state = load_all(root)
         if state.get("active_round") or state.get("pending_effect"):
             raise LeaseError("maintenance intent requires no active or unresolved work")
         if effect_type not in EFFECT_TYPES or effect_type == "PUSH_PILOT_BRANCH":
             raise ConfigError("invalid maintenance effect type")
+        if effect_type in UNTRUSTED_EXECUTION_EFFECT_TYPES:
+            raise ConfigError("untrusted execution effects require an active disposable-runtime round")
+        if not isinstance(target_code, str) or not CODE_VALUE_RE.fullmatch(target_code):
+            raise ConfigError("invalid external effect target code")
         effect = {
             "effect_id": f"AEG-I-{uuid.uuid4().hex}",
             "effect_type": effect_type,
@@ -3008,6 +3257,19 @@ def render_status(
     counts = _counts(backlog)
     verified_users, strong_user_evidence = _external_user_evidence(state)
     verified_external_reuse = _verified_external_reuse_count(state)
+    runtime_environments = state.get("runtime_environments", [])
+    claimed_runtime_ids = {
+        claim.get("environment_id")
+        for claim in state.get("runtime_environment_claims", [])
+        if isinstance(claim, dict)
+    }
+    available_runtime_count = sum(
+        environment.get("qualification_status") == "VERIFIED_DISPOSABLE_RUNTIME"
+        and environment.get("environment_id") not in claimed_runtime_ids
+        and parse_time(environment["qualified_at"]) <= now < parse_time(environment["expires_at"])
+        for environment in runtime_environments
+        if isinstance(environment, dict)
+    )
     active = state.get("active_round")
     next_items = sorted(
         (item for item in backlog["work_items"] if item["status"] != "COMPLETED"),
@@ -3057,6 +3319,8 @@ def render_status(
         f"- Ready work: `{counts['ready_work']}`",
         f"- Environment-blocked work: `{counts['blocked_environment']}`",
         f"- Approval-blocked work: `{counts['blocked_approval']}`",
+        f"- Verified disposable-runtime receipts: `{len(runtime_environments)}`",
+        f"- Available unclaimed disposable runtimes: `{available_runtime_count}`",
         f"- Primary block code: `{blocked_code or 'NONE'}`",
         f"- Next step code: `{next_code}`",
         "",
@@ -3490,6 +3754,7 @@ def parser() -> argparse.ArgumentParser:
     intent.add_argument("--round-id", required=True)
     intent.add_argument("--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"}))
     intent.add_argument("--target-code", required=True)
+    intent.add_argument("--environment-id")
     observe_source = commands.add_parser("observe-source-ref")
     observe_source.add_argument("--round-id", required=True)
     observe_source.add_argument("--effect-id", required=True)
@@ -3586,7 +3851,15 @@ def main(argv: list[str] | None = None) -> int:
         elif arguments.command == "begin-round":
             output(begin_round(root, reconcile_prior_push=arguments.reconcile_push))
         elif arguments.command == "record-intent":
-            output(record_intent(root, arguments.round_id, arguments.effect_type, arguments.target_code))
+            output(
+                record_intent(
+                    root,
+                    arguments.round_id,
+                    arguments.effect_type,
+                    arguments.target_code,
+                    environment_id=arguments.environment_id,
+                )
+            )
         elif arguments.command == "observe-source-ref":
             output(observe_source_ref(root, arguments.round_id, arguments.effect_id))
         elif arguments.command == "record-maintenance-intent":

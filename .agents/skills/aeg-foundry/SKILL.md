@@ -47,6 +47,16 @@ completed. Untrusted code, installation, and tests require the charter's clean
 disposable-environment gate. Keep raw logs and model output only in
 `.aeg-foundry-private/`; never read historical `.aeg` state.
 
+Clone, install, and frozen-oracle effects require a `DISPOSABLE_RUNTIME` task
+and `record-intent --environment-id <AEG-E-NNN>`. The referenced immutable
+receipt must be unexpired and prove a fresh one-time runtime with no host or
+company-data mounts, no model or GitHub-write credentials, and distinct
+dependency/test network policies. The first untrusted effect permanently binds
+and consumes that environment for the round; later effects in the same round
+must name the same ID. Never fabricate a receipt, manually unlock the channel,
+reuse a claimed environment, or create an untrusted-execution maintenance
+intent.
+
 Candidate records use the controller's exact field shape. Once committed, their
 identity, category, contamination and qualification are immutable; add a new
 candidate instead of reclassifying history. Independently verified behavior is

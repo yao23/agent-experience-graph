@@ -23,7 +23,7 @@
     "max_rounds_total": 84,
     "max_worker_starts_per_day": 6
   },
-  "config_version": "0.1.1",
+  "config_version": "0.1.2",
   "execution": {
     "cleanup_after_checkpoint_only": true,
     "concurrency": 1,
@@ -32,7 +32,7 @@
     "private_directory": ".aeg-foundry-private",
     "required_branch": "codex/aeg-experience-foundry-pilot-v0.1",
     "runtime_class": "LOCAL_PROJECT",
-    "untrusted_execution_gate": "BLOCKED_ENVIRONMENT"
+    "untrusted_execution_gate": "REQUIRES_VERIFIED_DISPOSABLE_RUNTIME"
   },
   "model_policy": {
     "automation_model": "gpt-5.6-terra",
