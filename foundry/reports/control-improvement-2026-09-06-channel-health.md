@@ -121,6 +121,15 @@
   encode the fixed duration, and completed ledger timestamps/elapsed seconds
   must agree and remain within the same cap. An exact-deadline completion is
   accepted; expired work is left for the existing next-invocation recovery.
+- Controlled runtime-receipt ingestion: a verified runtime can now enter state
+  through `register-runtime` instead of a hand edit. The command accepts only a
+  direct non-symlink JSON file from the ignored private directory, reuses the
+  controller's exact receipt validator, requires a unique currently valid ID,
+  and rejects credential/mount/network-policy violations. Registration is not
+  represented as provisioning or independent attestation; actual channel/task
+  activation remains derived at the next eligible round start, after the
+  receipt checkpoint is audited and persisted through the normal push-intent
+  workflow.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

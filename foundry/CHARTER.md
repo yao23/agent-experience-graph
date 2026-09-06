@@ -64,6 +64,12 @@ A round may claim multiple environments for isolated experimental arms, but a
 claimed or expired environment cannot be used by another round. The controller
 reactivates no-runtime-blocked work only when enough current, unclaimed receipts
 exist, and blocks it again when those receipts are consumed or expire.
+Qualification receipts enter public state only through a controller command
+that reads a direct non-symlink JSON file from the ignored private directory,
+checks the exact allowlist, isolation claims, non-placeholder verifier code, digest,
+unique ID, and current validity window. Registration does not provision or
+independently attest the environment; truthful qualification evidence remains
+a convention-level prerequisite.
 Maintenance mode cannot issue untrusted-execution intents. The current local
 host has no qualified disposable runtime receipt, so external execution is
 `BLOCKED_ENVIRONMENT`; read-only

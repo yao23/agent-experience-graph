@@ -406,6 +406,23 @@
       "resolved_at": "2026-09-06T10:17:33Z",
       "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
       "target_code": "GITHUB_DRAFT_PR_32"
+    },
+    {
+      "effect_id": "AEG-I-d4344f4da74e4c29955e0741d08da100",
+      "initial_remote_sha": "290edf9a207d9d55ce064b937b3f62b8d418c3fc",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "290edf9a207d9d55ce064b937b3f62b8d418c3fc",
+      "resolution_code": "REMOTE_ALREADY_CONTAINED_INTENT",
+      "verified_at": "2026-09-06T10:23:24Z"
+    },
+    {
+      "effect_id": "AEG-I-c5f01223f2464c9288028c800b7c5ba1",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:23:33Z",
+      "resolved_at": "2026-09-06T10:23:49Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
     }
   ],
   "external_reuse_events": [],
@@ -428,9 +445,9 @@
   "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-d4344f4da74e4c29955e0741d08da100",
+    "effect_id": "AEG-I-bedd1d34ab69472893240b6eb0054962",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T10:17:39Z",
+    "recorded_at": "2026-09-06T10:23:55Z",
     "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },

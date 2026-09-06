@@ -72,6 +72,15 @@ no-runtime-blocked task; an expired or consumed receipt cannot do so. When no
 qualified runtime remains, the controller returns affected work to
 `BLOCKED_ENVIRONMENT` without pausing public-read or model-worker work.
 
+Register a legitimately independent qualification receipt only through
+`python3 scripts/aeg_foundry.py register-runtime --receipt-json
+.aeg-foundry-private/<FILE>.json`. The receipt must be a direct, non-symlink
+JSON file in that ignored directory and currently valid. Registration validates
+and publishes the fixed allowlist but does not itself prove or provision the
+environment; never create the receipt merely to unblock work. Audit and persist
+the registration checkpoint with the current `last_round_id` before the next
+scheduled claim or cleanup of its private provisioning evidence.
+
 A `RUN_FROZEN_ORACLE` intent must also supply `--target-revision <SHA>`. Resolve
 a completed run with its JSON command argv, integer exit code, actual
 `SUCCESS`/`FAILURE` observation, SHA-256 evidence digest, and one or more summary

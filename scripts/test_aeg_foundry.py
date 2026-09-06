@@ -2274,6 +2274,83 @@ class FoundryTests(FoundryFixture):
         self.assertIn("model_credentials_present", str(raised.exception))
         self.assertIn("invalid test network host codes", str(raised.exception))
 
+    def test_register_runtime_accepts_current_private_receipt(self) -> None:
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir()
+        receipt_path = private / "runtime-AEG-E-001.json"
+        foundry.atomic_write_json(receipt_path, self.runtime_receipt())
+        result = foundry.register_runtime_environment(
+            self.root, receipt_path, now=self.start
+        )
+        self.assertEqual(result["environment_id"], "AEG-E-001")
+        self.assertEqual(result["activation"], "NEXT_ELIGIBLE_BEGIN_ROUND")
+        state = self.load("state")
+        self.assertEqual(state["runtime_environments"], [self.runtime_receipt()])
+        self.assertEqual(
+            state["channels"]["DISPOSABLE_RUNTIME"]["status"],
+            "BLOCKED_ENVIRONMENT",
+        )
+        self.assertIn(
+            "Verified disposable-runtime receipts: `1`",
+            (self.root / "foundry" / "STATUS.md").read_text(encoding="utf-8"),
+        )
+
+    def test_register_runtime_rejects_receipt_outside_private_directory(self) -> None:
+        receipt_path = self.root / "runtime-receipt.json"
+        foundry.atomic_write_json(receipt_path, self.runtime_receipt())
+        state_before = (self.root / "foundry" / "state.json").read_text(encoding="utf-8")
+        with self.assertRaisesRegex(foundry.UnsafeRepositoryError, "direct JSON file"):
+            foundry.register_runtime_environment(
+                self.root, receipt_path, now=self.start
+            )
+        private = self.root / ".aeg-foundry-private"
+        linked_receipt = private / "linked-runtime-receipt.json"
+        linked_receipt.symlink_to(receipt_path)
+        with self.assertRaisesRegex(foundry.UnsafeRepositoryError, "symbolic link"):
+            foundry.register_runtime_environment(
+                self.root, linked_receipt, now=self.start
+            )
+        self.assertEqual(
+            (self.root / "foundry" / "state.json").read_text(encoding="utf-8"),
+            state_before,
+        )
+
+    def test_register_runtime_rejects_unsafe_or_expired_receipt_without_write(self) -> None:
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir()
+        receipt_path = private / "runtime-AEG-E-001.json"
+        state_before = (self.root / "foundry" / "state.json").read_text(encoding="utf-8")
+        unsafe = self.runtime_receipt()
+        unsafe["model_credentials_present"] = True
+        foundry.atomic_write_json(receipt_path, unsafe)
+        with self.assertRaisesRegex(foundry.ConfigError, "model_credentials_present"):
+            foundry.register_runtime_environment(
+                self.root, receipt_path, now=self.start
+            )
+        expired = self.runtime_receipt()
+        expired["expires_at"] = "2026-09-06T07:59:59Z"
+        foundry.atomic_write_json(receipt_path, expired)
+        with self.assertRaisesRegex(foundry.ConfigError, "qualification window"):
+            foundry.register_runtime_environment(
+                self.root, receipt_path, now=self.start
+            )
+        self.assertEqual(
+            (self.root / "foundry" / "state.json").read_text(encoding="utf-8"),
+            state_before,
+        )
+
+    def test_register_runtime_rejects_duplicate_environment_id(self) -> None:
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir()
+        receipt_path = private / "runtime-AEG-E-001.json"
+        foundry.atomic_write_json(receipt_path, self.runtime_receipt())
+        foundry.register_runtime_environment(self.root, receipt_path, now=self.start)
+        with self.assertRaisesRegex(foundry.ConfigError, "unique and well formed"):
+            foundry.register_runtime_environment(
+                self.root, receipt_path, now=self.start + timedelta(minutes=1)
+            )
+        self.assertEqual(len(self.load("state")["runtime_environments"]), 1)
+
     def test_committed_runtime_receipt_and_claim_ledgers_are_append_only(self) -> None:
         state = self.load("state")
         state["runtime_environments"].append(self.runtime_receipt())

@@ -800,6 +800,76 @@ def load_all(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]
     return pilot, load_json(located["backlog"]), load_json(located["state"])
 
 
+def _runtime_environment_record_errors(
+    environment: Any, existing_ids: set[str]
+) -> tuple[list[str], str | None, tuple[datetime, datetime] | None]:
+    errors: list[str] = []
+    if not isinstance(environment, dict):
+        return ["runtime environment records must be objects"], None, None
+    environment_id = environment.get("environment_id")
+    if set(environment) != RUNTIME_ENVIRONMENT_KEYS:
+        errors.append(f"runtime environment fields are not allowlisted for {environment_id}")
+    valid_identity = (
+        isinstance(environment_id, str)
+        and RUNTIME_ENVIRONMENT_ID_RE.fullmatch(environment_id) is not None
+        and environment_id not in existing_ids
+    )
+    if not valid_identity:
+        errors.append("runtime environment IDs must be unique and well formed")
+    if environment.get("qualification_status") != "VERIFIED_DISPOSABLE_RUNTIME":
+        errors.append(f"runtime environment is not verified for {environment_id}")
+    if environment.get("isolation_class") != "QUALIFIED_ONE_TIME_RUNTIME":
+        errors.append(f"runtime environment has invalid isolation class for {environment_id}")
+    for field, required in (
+        ("disposable", True),
+        ("fresh_instance", True),
+        ("host_home_mounted", False),
+        ("company_data_mounted", False),
+        ("model_credentials_present", False),
+        ("github_write_credentials_present", False),
+    ):
+        if environment.get(field) is not required:
+            errors.append(f"runtime environment violates isolation field {field}: {environment_id}")
+    for prefix in ("dependency", "test"):
+        policy = environment.get(f"{prefix}_network_policy")
+        hosts = environment.get(f"{prefix}_host_codes")
+        if policy not in {"DENY_ALL", "ALLOWLISTED"}:
+            errors.append(f"invalid {prefix} network policy for {environment_id}")
+        if (
+            not isinstance(hosts, list)
+            or any(
+                not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                for item in hosts
+            )
+            or len(set(hosts)) != len(hosts)
+            or (policy == "DENY_ALL" and hosts)
+            or (policy == "ALLOWLISTED" and not hosts)
+        ):
+            errors.append(f"invalid {prefix} network host codes for {environment_id}")
+    verifier_code = environment.get("verifier_code")
+    if (
+        not isinstance(verifier_code, str)
+        or not CODE_VALUE_RE.fullmatch(verifier_code)
+        or verifier_code in {"UNVERIFIED", "SELF_REPORTED", "FOUNDER", "FOUNDRY_AGENT"}
+    ):
+        errors.append(f"invalid runtime verifier for {environment_id}")
+    if not isinstance(environment.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+        environment.get("evidence_digest_sha256", "")
+    ):
+        errors.append(f"invalid runtime evidence digest for {environment_id}")
+    window: tuple[datetime, datetime] | None = None
+    try:
+        qualified_at = parse_time(environment.get("qualified_at", ""))
+        expires_at = parse_time(environment.get("expires_at", ""))
+        if expires_at <= qualified_at:
+            errors.append(f"runtime qualification window is empty for {environment_id}")
+        else:
+            window = (qualified_at, expires_at)
+    except ConfigError:
+        errors.append(f"invalid runtime qualification timing for {environment_id}")
+    return errors, environment_id if valid_identity else None, window
+
+
 def _walk_public(value: Any, location: str = "root") -> list[str]:
     errors: list[str] = []
     if isinstance(value, dict):
@@ -1119,70 +1189,15 @@ def validate(
         errors.append("runtime_environments must be a list")
         runtime_environments = []
     for environment in runtime_environments:
-        if not isinstance(environment, dict):
-            errors.append("runtime environment records must be objects")
-            continue
-        environment_id = environment.get("environment_id")
-        if set(environment) != RUNTIME_ENVIRONMENT_KEYS:
-            errors.append(
-                f"runtime environment fields are not allowlisted for {environment_id}"
-            )
-        if (
-            not isinstance(environment_id, str)
-            or not RUNTIME_ENVIRONMENT_ID_RE.fullmatch(environment_id)
-            or environment_id in runtime_environment_ids
-        ):
-            errors.append("runtime environment IDs must be unique and well formed")
-        else:
+        receipt_errors, environment_id, window = _runtime_environment_record_errors(
+            environment, runtime_environment_ids
+        )
+        errors.extend(receipt_errors)
+        if environment_id is not None:
             runtime_environment_ids.add(environment_id)
             runtime_environment_by_id[environment_id] = environment
-        if environment.get("qualification_status") != "VERIFIED_DISPOSABLE_RUNTIME":
-            errors.append(f"runtime environment is not verified for {environment_id}")
-        if environment.get("isolation_class") != "QUALIFIED_ONE_TIME_RUNTIME":
-            errors.append(f"runtime environment has invalid isolation class for {environment_id}")
-        for field, required in (
-            ("disposable", True),
-            ("fresh_instance", True),
-            ("host_home_mounted", False),
-            ("company_data_mounted", False),
-            ("model_credentials_present", False),
-            ("github_write_credentials_present", False),
-        ):
-            if environment.get(field) is not required:
-                errors.append(f"runtime environment violates isolation field {field}: {environment_id}")
-        for prefix in ("dependency", "test"):
-            policy = environment.get(f"{prefix}_network_policy")
-            hosts = environment.get(f"{prefix}_host_codes")
-            if policy not in {"DENY_ALL", "ALLOWLISTED"}:
-                errors.append(f"invalid {prefix} network policy for {environment_id}")
-            if (
-                not isinstance(hosts, list)
-                or any(
-                    not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
-                    for item in hosts
-                )
-                or len(set(hosts)) != len(hosts)
-                or (policy == "DENY_ALL" and hosts)
-                or (policy == "ALLOWLISTED" and not hosts)
-            ):
-                errors.append(f"invalid {prefix} network host codes for {environment_id}")
-        if not isinstance(environment.get("verifier_code"), str) or not CODE_VALUE_RE.fullmatch(
-            environment.get("verifier_code", "")
-        ):
-            errors.append(f"invalid runtime verifier for {environment_id}")
-        if not isinstance(environment.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
-            environment.get("evidence_digest_sha256", "")
-        ):
-            errors.append(f"invalid runtime evidence digest for {environment_id}")
-        try:
-            qualified_at = parse_time(environment.get("qualified_at", ""))
-            expires_at = parse_time(environment.get("expires_at", ""))
-            if expires_at <= qualified_at:
-                errors.append(f"runtime qualification window is empty for {environment_id}")
-            elif isinstance(environment_id, str):
-                runtime_windows[environment_id] = (qualified_at, expires_at)
-        except ConfigError:
-            errors.append(f"invalid runtime qualification timing for {environment_id}")
+            if window is not None:
+                runtime_windows[environment_id] = window
 
     runtime_claim_ids: set[str] = set()
     claimed_runtime_environment_ids: set[str] = set()
@@ -3941,6 +3956,64 @@ def finish_round(
         return record
 
 
+def _private_runtime_receipt_path(
+    root: Path, pilot: dict[str, Any], receipt_path: Path
+) -> Path:
+    candidate = receipt_path if receipt_path.is_absolute() else root / receipt_path
+    if candidate.is_symlink():
+        raise UnsafeRepositoryError("runtime receipt must not be a symbolic link")
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError as error:
+        raise ConfigError("runtime receipt file does not exist") from error
+    private = private_directory(root, pilot).resolve()
+    if resolved.parent != private or resolved.suffix != ".json" or not resolved.is_file():
+        raise UnsafeRepositoryError(
+            "runtime receipt must be a direct JSON file in .aeg-foundry-private"
+        )
+    return resolved
+
+
+def register_runtime_environment(
+    root: Path, receipt_path: Path, now: datetime | None = None
+) -> dict[str, Any]:
+    now = now or utc_now()
+    _recover_incomplete_finish(root)
+    pilot, backlog, state = load_all(root)
+    with control_lock(root, pilot):
+        validate(root, check_git=False)
+        if now >= parse_time(pilot["activation"]["ends_at"]):
+            raise PausedError("cannot register a runtime after pilot expiry")
+        if state.get("pilot_status") != "ACTIVE" or state.get("pause"):
+            raise PausedError("cannot register a runtime while the pilot is paused")
+        if state.get("active_round") or state.get("pending_effect"):
+            raise LeaseError("runtime registration requires no active or unresolved work")
+        receipt = load_json(_private_runtime_receipt_path(root, pilot, receipt_path))
+        existing_ids = {
+            item.get("environment_id")
+            for item in state.get("runtime_environments", [])
+            if isinstance(item, dict) and isinstance(item.get("environment_id"), str)
+        }
+        receipt_errors, environment_id, window = _runtime_environment_record_errors(
+            receipt, existing_ids
+        )
+        if receipt_errors or environment_id is None or window is None:
+            raise ConfigError("invalid runtime receipt: " + "; ".join(receipt_errors))
+        if not (window[0] <= now < window[1]):
+            raise ConfigError("runtime receipt is not currently within its qualification window")
+        state["runtime_environments"].append(receipt)
+        atomic_write_json(paths(root)["state"], state)
+        render_status(root, pilot, backlog, state, now)
+        return {
+            "activation": "NEXT_ELIGIBLE_BEGIN_ROUND",
+            "environment_id": environment_id,
+            "evidence_digest_sha256": receipt["evidence_digest_sha256"],
+            "expires_at": receipt["expires_at"],
+            "qualification_status": receipt["qualification_status"],
+            "registered_at": format_time(now),
+        }
+
+
 def register_worker(
     root: Path,
     kind: str,
@@ -4735,6 +4808,8 @@ def parser() -> argparse.ArgumentParser:
     worker.add_argument("--configured-model", default="UNKNOWN")
     worker.add_argument("--call-method", default="UNKNOWN")
     worker.add_argument("--round-id")
+    runtime = commands.add_parser("register-runtime")
+    runtime.add_argument("--receipt-json", required=True, type=Path)
     worker_finish = commands.add_parser("finish-worker")
     worker_finish.add_argument("--event-id", required=True)
     worker_finish.add_argument(
@@ -4867,6 +4942,8 @@ def main(argv: list[str] | None = None) -> int:
                     round_id=arguments.round_id,
                 )
             )
+        elif arguments.command == "register-runtime":
+            output(register_runtime_environment(root, arguments.receipt_json))
         elif arguments.command == "finish-worker":
             output(
                 finish_worker(

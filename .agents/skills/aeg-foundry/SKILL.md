@@ -77,6 +77,19 @@ Expired or consumed receipts do not count, and exhausting the available set
 returns affected ready tasks to `BLOCKED_ENVIRONMENT` without pausing unrelated
 channels.
 
+An independent runtime verifier must write the exact public-safe receipt as a
+direct JSON file in `.aeg-foundry-private/`; register it with `python3
+scripts/aeg_foundry.py register-runtime --receipt-json
+.aeg-foundry-private/<FILE>.json`. This command validates and copies only the
+allowlisted receipt into state; it does not provision an environment or turn a
+self-authored claim into independent evidence. It rejects symlinks, paths
+outside that directory, duplicate IDs, unsafe isolation fields, and receipts
+outside their qualification window. Channel/task activation remains derived at
+the next eligible `begin-round`. After successful registration, run
+`audit-public` and persist the checkpoint with the state's `last_round_id`
+before deleting any private provisioning resource or allowing a scheduled
+claim.
+
 Record a frozen oracle only with an immutable revision, for example
 `record-intent --effect-type RUN_FROZEN_ORACLE --environment-id <AEG-E-NNN>
 --target-revision <SHA>`. Resolve `COMPLETED` atomically with
