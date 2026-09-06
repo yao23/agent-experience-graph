@@ -141,6 +141,12 @@ merge a PR, deploy, promote an Experience, alter repository rulesets, spend new
 money, export private material, or contact external maintainers without the
 separate authorization required by the charter.
 
+The controller makes `finish-round` recoverable with the ignored local
+`.aeg-foundry-private/finish-transaction.json` journal. On the next command it
+restores a PREPARED checkpoint or clears a COMMITTED marker under the same
+mutex. Do not edit, delete, commit, or bypass that journal; an invalid journal
+is an integrity error requiring review.
+
 Notify only for a real milestone, failure, terminal conclusion, or required
 human decision. The fixed pilot expiry is `2026-10-18T07:22:29Z`; do not start
 new experiments at or after it.

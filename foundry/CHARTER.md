@@ -120,6 +120,14 @@ defense in depth, not permission to upload arbitrary free text. Intent is
 persisted before an external effect. An unresolved effect is verified before it
 can be retried.
 
+Round completion is a recoverable local transaction. Before changing the
+public backlog, state, round ledger, status, or generated reports, the
+controller writes their exact checkpoint to an ignored PREPARED journal under
+`.aeg-foundry-private/`. Final validation precedes a COMMITTED marker. A later
+controller command restores PREPARED state or only removes a COMMITTED marker
+under the same mutex. The journal contains snapshots only of already-public
+tracked state, is never exported, and rejects unknown or escaping paths.
+
 ## Stop and review rules
 
 Pause or expiry prevents new claims; an active unit exits at a safe checkpoint.

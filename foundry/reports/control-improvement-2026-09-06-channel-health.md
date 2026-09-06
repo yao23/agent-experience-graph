@@ -100,6 +100,11 @@
   build it. Generated transfer tasks pin both identities, require two runtime
   receipts, reject unknown Experience references, and can be created when the
   held-out candidate arrives in a later discovery batch.
+- Transactional round completion: `finish-round` snapshots the exact public
+  checkpoint in an ignored local PREPARED journal before its first write, runs
+  final validation before marking COMMITTED, and restores on failure. Every CLI
+  entry recovers an interrupted PREPARED journal or only clears a COMMITTED
+  marker under the controller mutex; unsafe journal paths fail closed.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

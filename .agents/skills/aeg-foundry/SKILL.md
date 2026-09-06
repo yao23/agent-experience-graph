@@ -160,6 +160,14 @@ and `persist --push` so the next task can resume from the pilot branch. The push
 records an intent before the effect; the next invocation reconciles it against
 the remote before claiming work.
 
+`finish-round` uses `.aeg-foundry-private/finish-transaction.json` as a local,
+ignored PREPARED/COMMITTED journal for the public backlog, state, round ledger,
+status, and generated reports. A failed final validation restores the exact
+pre-finish checkpoint. After a process interruption, the next controller
+command rolls back a PREPARED journal or only clears a COMMITTED marker while
+holding the controller mutex. Never edit or delete this journal manually; a
+malformed or unsafe path must fail closed for operator review.
+
 Use `pause` immediately for an uncontrolled permission/privacy/integrity event,
 or explicit operator request. Channel-local quota, auth, environment, and
 infrastructure failures use the channel state above and must not pause unrelated

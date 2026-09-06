@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -427,6 +428,9 @@ class FoundryTests(FoundryFixture):
             now=self.start + timedelta(minutes=2),
         )
         self.assertEqual(record["outcome"], "SUCCESS")
+        self.assertFalse(
+            (self.root / ".aeg-foundry-private" / "finish-transaction.json").exists()
+        )
         self.assertEqual(foundry.validate(self.root, check_git=False)["completed_round_count"], 1)
         self.assertEqual(
             self.load("state")["counters_by_utc_day"]["2026-09-06"]["worker_starts"],
@@ -444,6 +448,108 @@ class FoundryTests(FoundryFixture):
         ]
         self.assertEqual(resumed_number, max(prior_numbers) + 1)
         self.assertEqual(resumed["source_ref_sha"], claim["source_ref_sha"])
+
+    def test_finish_validation_failure_restores_exact_checkpoint(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        checkpoint_paths = [self.root / relative for relative in foundry.FINISH_TRANSACTION_CORE_PATHS]
+        before = {
+            str(path.relative_to(self.root)): (
+                path.read_text(encoding="utf-8") if path.exists() else None
+            )
+            for path in checkpoint_paths
+        }
+        with mock.patch.object(
+            foundry,
+            "validate",
+            side_effect=foundry.ConfigError("injected post-write validation failure"),
+        ):
+            with self.assertRaisesRegex(foundry.ConfigError, "injected post-write"):
+                foundry.finish_round(
+                    self.root,
+                    claim["round_id"],
+                    "SUCCESS",
+                    "PASSED",
+                    "NEXT",
+                    now=self.start + timedelta(minutes=1),
+                )
+        after = {
+            str(path.relative_to(self.root)): (
+                path.read_text(encoding="utf-8") if path.exists() else None
+            )
+            for path in checkpoint_paths
+        }
+        self.assertEqual(after, before)
+        state = self.load("state")
+        self.assertEqual(state["active_round"]["round_id"], claim["round_id"])
+        self.assertEqual(state["rounds_completed"], 0)
+        self.assertEqual(self.load("backlog")["work_items"][0]["status"], "IN_PROGRESS")
+        self.assertFalse(
+            (self.root / ".aeg-foundry-private" / "finish-transaction.json").exists()
+        )
+
+    def test_prepared_finish_transaction_is_rolled_back_on_recovery(self) -> None:
+        pilot = self.load("pilot")
+        round_id = "AEG-R-20260906T080000Z-transaction"
+        with foundry.control_lock(self.root, pilot):
+            foundry._prepare_finish_transaction(self.root, pilot, round_id, self.start)
+        state_before = (self.root / "foundry" / "state.json").read_text(encoding="utf-8")
+        status_path = self.root / "foundry" / "STATUS.md"
+        status_before = status_path.read_text(encoding="utf-8") if status_path.exists() else None
+        foundry.atomic_write(self.root / "foundry" / "state.json", "mutated state\n")
+        foundry.atomic_write(status_path, "mutated status\n")
+        report = self.root / "foundry" / "reports" / "week-01.md"
+        foundry.atomic_write(report, "new generated report\n")
+        next_process = subprocess.run(
+            [sys.executable, str(MODULE_PATH), "--root", str(self.root), "validate"],
+            text=True,
+            check=False,
+            capture_output=True,
+        )
+        self.assertEqual(next_process.returncode, 0, next_process.stderr or next_process.stdout)
+        self.assertEqual(
+            (self.root / "foundry" / "state.json").read_text(encoding="utf-8"),
+            state_before,
+        )
+        self.assertEqual(
+            status_path.read_text(encoding="utf-8") if status_path.exists() else None,
+            status_before,
+        )
+        self.assertFalse(report.exists())
+        self.assertFalse(foundry._finish_transaction_path(self.root, pilot).exists())
+
+    def test_committed_finish_transaction_only_clears_marker(self) -> None:
+        pilot = self.load("pilot")
+        round_id = "AEG-R-20260906T080000Z-transaction"
+        with foundry.control_lock(self.root, pilot):
+            journal = foundry._prepare_finish_transaction(
+                self.root, pilot, round_id, self.start
+            )
+            foundry.atomic_write(self.root / "foundry" / "STATUS.md", "committed status\n")
+            foundry._mark_finish_transaction_committed(self.root, pilot, journal)
+        recovery = foundry._recover_incomplete_finish(self.root)
+        self.assertEqual(recovery, "CLEARED_COMMITTED_FINISH")
+        self.assertEqual(
+            (self.root / "foundry" / "STATUS.md").read_text(encoding="utf-8"),
+            "committed status\n",
+        )
+        self.assertFalse(foundry._finish_transaction_path(self.root, pilot).exists())
+
+    def test_unsafe_finish_transaction_journal_fails_closed(self) -> None:
+        pilot = self.load("pilot")
+        journal = foundry._snapshot_finish_checkpoint(
+            self.root, "AEG-R-20260906T080000Z-transaction", self.start
+        )
+        journal["reports"]["foundry/reports/../../outside.md"] = "unsafe\n"
+        journal_path = foundry._finish_transaction_path(self.root, pilot)
+        foundry.atomic_write_json(journal_path, journal)
+        state_before = (self.root / "foundry" / "state.json").read_text(encoding="utf-8")
+        with self.assertRaisesRegex(foundry.ConfigError, "unsafe report snapshot"):
+            foundry._recover_incomplete_finish(self.root)
+        self.assertEqual(
+            (self.root / "foundry" / "state.json").read_text(encoding="utf-8"),
+            state_before,
+        )
+        self.assertTrue(journal_path.exists())
 
     def test_source_observation_replaces_stale_tracking_sha(self) -> None:
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)

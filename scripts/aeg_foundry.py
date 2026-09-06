@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 import fcntl
+from functools import wraps
 import hashlib
 import json
 import os
@@ -600,6 +601,183 @@ def control_lock(root: Path, pilot: dict[str, Any], blocking: bool = False) -> I
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+FINISH_TRANSACTION_CORE_PATHS = (
+    "foundry/backlog.json",
+    "foundry/state.json",
+    "foundry/rounds.jsonl",
+    "foundry/STATUS.md",
+)
+
+
+def _finish_transaction_path(root: Path, pilot: dict[str, Any]) -> Path:
+    return private_directory(root, pilot) / "finish-transaction.json"
+
+
+def _validate_finish_transaction(journal: Any) -> dict[str, Any]:
+    if not isinstance(journal, dict) or set(journal) != {
+        "created_at",
+        "files",
+        "phase",
+        "reports",
+        "round_id",
+        "schema_version",
+    }:
+        raise ConfigError("finish transaction journal has an invalid top-level schema")
+    if journal.get("schema_version") != 1 or journal.get("phase") not in {
+        "PREPARED",
+        "COMMITTED",
+    }:
+        raise ConfigError("finish transaction journal has an invalid version or phase")
+    round_id = journal.get("round_id")
+    if not isinstance(round_id, str) or not round_id.startswith("AEG-R-"):
+        raise ConfigError("finish transaction journal has an invalid round ID")
+    try:
+        parse_time(journal.get("created_at"))
+    except (TypeError, ConfigError) as error:
+        raise ConfigError("finish transaction journal has an invalid creation time") from error
+    files = journal.get("files")
+    if not isinstance(files, dict) or set(files) != set(FINISH_TRANSACTION_CORE_PATHS):
+        raise ConfigError("finish transaction journal has invalid core paths")
+    if any(value is not None and not isinstance(value, str) for value in files.values()):
+        raise ConfigError("finish transaction journal has invalid core snapshots")
+    reports = journal.get("reports")
+    if not isinstance(reports, dict):
+        raise ConfigError("finish transaction journal reports must be an object")
+    for relative, value in reports.items():
+        report_path = Path(relative) if isinstance(relative, str) else Path()
+        if (
+            not isinstance(relative, str)
+            or report_path.is_absolute()
+            or len(report_path.parts) != 3
+            or report_path.parts[:2] != ("foundry", "reports")
+            or report_path.suffix != ".md"
+            or report_path.name in {".", ".."}
+            or not isinstance(value, str)
+        ):
+            raise ConfigError("finish transaction journal has an unsafe report snapshot")
+    return journal
+
+
+def _snapshot_finish_checkpoint(
+    root: Path, round_id: str, now: datetime
+) -> dict[str, Any]:
+    report_directory = paths(root)["reports"]
+    reports: dict[str, str] = {}
+    for report in sorted(report_directory.glob("*.md")):
+        if report.is_symlink() or not report.is_file():
+            raise UnsafeRepositoryError("report snapshots must be direct regular files")
+        reports[str(report.relative_to(root))] = report.read_text(encoding="utf-8")
+    files: dict[str, str | None] = {}
+    for relative in FINISH_TRANSACTION_CORE_PATHS:
+        checkpoint = root / relative
+        files[relative] = checkpoint.read_text(encoding="utf-8") if checkpoint.exists() else None
+    return {
+        "created_at": format_time(now),
+        "files": files,
+        "phase": "PREPARED",
+        "reports": reports,
+        "round_id": round_id,
+        "schema_version": 1,
+    }
+
+
+def _prepare_finish_transaction(
+    root: Path, pilot: dict[str, Any], round_id: str, now: datetime
+) -> dict[str, Any]:
+    journal_path = _finish_transaction_path(root, pilot)
+    if journal_path.exists():
+        raise LeaseError("an unresolved finish transaction already exists")
+    journal = _validate_finish_transaction(_snapshot_finish_checkpoint(root, round_id, now))
+    atomic_write_json(journal_path, journal)
+    return journal
+
+
+def _restore_finish_transaction(root: Path, journal: dict[str, Any]) -> None:
+    journal = _validate_finish_transaction(journal)
+    for relative, value in journal["files"].items():
+        checkpoint = root / relative
+        if value is None:
+            if checkpoint.exists():
+                _unlink_and_fsync(checkpoint)
+        else:
+            atomic_write(checkpoint, value)
+    snapshot_reports = journal["reports"]
+    for relative, value in snapshot_reports.items():
+        atomic_write(root / relative, value)
+    report_directory = paths(root)["reports"]
+    if report_directory.exists():
+        for report in report_directory.glob("*.md"):
+            relative = str(report.relative_to(root))
+            generated_name = report.name == "final.md" or re.fullmatch(
+                r"week-[0-9]{2}\.md", report.name
+            )
+            if generated_name and relative not in snapshot_reports:
+                _unlink_and_fsync(report)
+
+
+def _mark_finish_transaction_committed(
+    root: Path, pilot: dict[str, Any], journal: dict[str, Any]
+) -> None:
+    committed = dict(_validate_finish_transaction(journal))
+    committed["phase"] = "COMMITTED"
+    atomic_write_json(_finish_transaction_path(root, pilot), committed)
+
+
+def _clear_finish_transaction(root: Path, pilot: dict[str, Any]) -> None:
+    journal_path = _finish_transaction_path(root, pilot)
+    if not journal_path.exists():
+        return
+    _unlink_and_fsync(journal_path)
+
+
+def _unlink_and_fsync(path: Path) -> None:
+    path.unlink()
+    directory_descriptor = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(directory_descriptor)
+    finally:
+        os.close(directory_descriptor)
+
+
+def _recover_incomplete_finish(root: Path) -> str | None:
+    pilot_path = paths(root)["pilot"]
+    pilot = load_json(pilot_path)
+    if pilot != PILOT_CONTRACT:
+        raise ConfigError("fixed pilot control contract changed")
+    journal_path = _finish_transaction_path(root, pilot)
+    if not journal_path.exists():
+        return None
+    with control_lock(root, pilot):
+        if not journal_path.exists():
+            return None
+        journal = _validate_finish_transaction(load_json(journal_path))
+        if journal["phase"] == "PREPARED":
+            _restore_finish_transaction(root, journal)
+            recovery = "ROLLED_BACK_PREPARED_FINISH"
+        else:
+            recovery = "CLEARED_COMMITTED_FINISH"
+        _clear_finish_transaction(root, pilot)
+        return recovery
+
+
+def _transactional_finish(function: Any) -> Any:
+    @wraps(function)
+    def wrapped(root: Path, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        _recover_incomplete_finish(root)
+        try:
+            return function(root, *args, **kwargs)
+        except BaseException:
+            try:
+                _recover_incomplete_finish(root)
+            except FoundryError as recovery_error:
+                raise UnsafeRepositoryError(
+                    "finish failed and its prepared checkpoint could not be restored"
+                ) from recovery_error
+            raise
+
+    return wrapped
+
+
 def paths(root: Path) -> dict[str, Path]:
     foundry = root / FOUNDRY
     return {
@@ -892,7 +1070,11 @@ def validate_committed_foundry_history(
     return errors
 
 
-def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
+def validate(
+    root: Path, check_git: bool = True, recover_transaction: bool = True
+) -> dict[str, Any]:
+    if recover_transaction:
+        _recover_incomplete_finish(root)
     pilot, backlog, state = load_all(root)
     errors: list[str] = []
     if pilot != PILOT_CONTRACT:
@@ -2880,6 +3062,7 @@ def set_automation(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
+    _recover_incomplete_finish(root)
     pilot, backlog, state = load_all(root)
     with control_lock(root, pilot):
         if state.get("active_round") or state.get("pending_effect"):
@@ -2913,6 +3096,7 @@ def begin_round(
     check_git: bool = True,
 ) -> dict[str, Any]:
     now = now or utc_now()
+    _recover_incomplete_finish(root)
     pilot, backlog, state = load_all(root)
     with control_lock(root, pilot):
         validate(root, check_git=check_git)
@@ -3443,6 +3627,7 @@ def observe_source_ref(
         return receipt
 
 
+@_transactional_finish
 def finish_round(
     root: Path,
     round_id: str,
@@ -3477,6 +3662,7 @@ def finish_round(
         if not active or active["round_id"] != round_id:
             raise LeaseError("round does not own the active lease")
         task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
+        finish_transaction = _prepare_finish_transaction(root, pilot, round_id, now)
         if state.get("pending_effect"):
             raise LeaseError("resolve or verify the pending effect before finishing")
         if not active.get("source_ref_verified_at"):
@@ -3660,7 +3846,9 @@ def finish_round(
         atomic_write_json(paths(root)["state"], state)
         generate_due_reports(root, pilot, backlog, state, now)
         render_status(root, pilot, backlog, state, now)
-        validate(root, check_git=False)
+        validate(root, check_git=False, recover_transaction=False)
+        _mark_finish_transaction_committed(root, pilot, finish_transaction)
+        _clear_finish_transaction(root, pilot)
         return record
 
 
@@ -4504,6 +4692,7 @@ def main(argv: list[str] | None = None) -> int:
     arguments = parser().parse_args(argv)
     root = arguments.root.resolve()
     try:
+        _recover_incomplete_finish(root)
         if arguments.command == "validate":
             output(validate(root))
         elif arguments.command == "status":
