@@ -131,7 +131,7 @@
   "schema_version": 1,
   "work_items": [
     {
-      "attempts": 0,
+      "attempts": 1,
       "candidate_ids": [
         "AEG-C-001",
         "AEG-C-002",
@@ -146,11 +146,11 @@
       ],
       "claim": null,
       "failure_code": null,
-      "next_step_code": "FINALIZE_INITIAL_FAMILY_SELECTION",
+      "next_step_code": "PROVISION_CLEAN_ONE_TIME_EXECUTION_ENVIRONMENT",
       "oracle_kind": "PUBLIC_ISSUE_METADATA_REFRESH",
       "priority": 100,
       "stage": "DISCOVERY",
-      "status": "READY",
+      "status": "COMPLETED",
       "task_id": "AEG-W-001"
     },
     {

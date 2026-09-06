@@ -787,6 +787,7 @@ def finish_worker(
     *,
     input_tokens: str = "UNKNOWN",
     output_tokens: str = "UNKNOWN",
+    total_tokens: str = "UNKNOWN",
     compute_usd: str = "UNKNOWN",
     now: datetime | None = None,
 ) -> dict[str, Any]:
@@ -805,6 +806,7 @@ def finish_worker(
                 "compute_usd": compute_usd,
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,
+                "total_tokens": total_tokens,
                 "status": status,
             }
         )
@@ -1113,6 +1115,7 @@ def parser() -> argparse.ArgumentParser:
     worker_finish.add_argument("--status", required=True, choices=("PASSED", "FAILED", "AUTH_FAILED", "QUOTA_FAILED"))
     worker_finish.add_argument("--input-tokens", default="UNKNOWN")
     worker_finish.add_argument("--output-tokens", default="UNKNOWN")
+    worker_finish.add_argument("--total-tokens", default="UNKNOWN")
     worker_finish.add_argument("--compute-usd", default="UNKNOWN")
     pause_command = commands.add_parser("pause")
     pause_command.add_argument("--reason-code", required=True)
@@ -1173,6 +1176,7 @@ def main(argv: list[str] | None = None) -> int:
                     arguments.status,
                     input_tokens=arguments.input_tokens,
                     output_tokens=arguments.output_tokens,
+                    total_tokens=arguments.total_tokens,
                     compute_usd=arguments.compute_usd,
                 )
             )

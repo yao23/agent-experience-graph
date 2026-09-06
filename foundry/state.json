@@ -4,15 +4,39 @@
     "id": null,
     "status": "NOT_CREATED"
   },
-  "counters_by_utc_day": {},
-  "last_charter_sha256": null,
-  "last_remote_ref_sha": null,
-  "last_round_id": null,
+  "counters_by_utc_day": {
+    "2026-09-06": {
+      "round_starts": 1,
+      "worker_starts": 2
+    }
+  },
+  "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
+  "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+  "last_round_id": "AEG-R-20260906T073046Z-0c86db97",
   "pause": null,
-  "pending_effect": null,
+  "pending_effect": {
+    "effect_id": "AEG-I-bab930c171de4c2784ca407f37e2894c",
+    "effect_type": "PUSH_PILOT_BRANCH",
+    "recorded_at": "2026-09-06T07:32:39Z",
+    "round_id": "AEG-R-20260906T073046Z-0c86db97",
+    "target_code": "ORIGIN_PILOT_BRANCH"
+  },
   "pilot_status": "ACTIVE",
-  "rounds_completed": 0,
-  "rounds_started": 0,
+  "rounds_completed": 1,
+  "rounds_started": 1,
   "schema_version": 1,
-  "worker_events": []
+  "worker_events": [
+    {
+      "completed_at": "2026-09-06T07:32:28Z",
+      "compute_usd": "UNKNOWN",
+      "event_id": "AEG-M-e66687b959e64d83aa2a62ea9e18c8bd",
+      "input_tokens": "UNKNOWN",
+      "kind": "AUTH_TERMINAL_CANARY",
+      "model": "gpt-5.6-terra",
+      "output_tokens": "UNKNOWN",
+      "started_at": "2026-09-06T07:31:41Z",
+      "status": "PASSED",
+      "total_tokens": "3828"
+    }
+  ]
 }
