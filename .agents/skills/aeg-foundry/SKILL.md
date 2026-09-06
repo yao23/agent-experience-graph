@@ -33,5 +33,9 @@ quota or auth failure on the affected channel, two repeated infrastructure
 failures, or explicit operator request. Do not change the fixed end time,
 budgets, qualification gates, frozen oracle, or historical result.
 
+The operator pause entry is `python3 scripts/aeg_foundry.py pause
+--reason-code OPERATOR_REQUEST --push`; it records and pushes the pause before
+the next scheduled invocation can claim work.
+
 Stay quiet when nothing materially changed. Notify only on a real milestone,
 failure, required human decision, or terminal conclusion.

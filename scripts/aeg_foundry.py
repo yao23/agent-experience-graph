@@ -569,6 +569,15 @@ def begin_round(
         validate(root, check_git=check_git)
         if check_git:
             repository_preflight(root, pilot, require_clean=True)
+        prior_status = state["pilot_status"]
+        prior_pause = state.get("pause")
+        _expire_if_needed(state, pilot, now)
+        if state["pilot_status"] != "ACTIVE" or state.get("pause"):
+            if state["pilot_status"] != prior_status or state.get("pause") != prior_pause:
+                atomic_write_json(paths(root)["state"], state)
+                generate_due_reports(root, pilot, backlog, state, now)
+                render_status(root, pilot, backlog, state, now)
+            raise PausedError(f"pilot is {state['pilot_status']}")
         reconciliation = None
         if reconcile_prior_push:
             reconciliation = reconcile_push(root, pilot, state, now)
@@ -578,11 +587,6 @@ def begin_round(
         active = state.get("active_round")
         if active:
             raise LeaseError(f"round {active['round_id']} holds the lease until {active['expires_at']}")
-        _expire_if_needed(state, pilot, now)
-        if state["pilot_status"] != "ACTIVE" or state.get("pause"):
-            atomic_write_json(paths(root)["state"], state)
-            render_status(root, pilot, backlog, state, now)
-            raise PausedError(f"pilot is {state['pilot_status']}")
         budgets = pilot["budgets"]
         if state["rounds_started"] >= budgets["max_rounds_total"]:
             raise BudgetError("total round budget exhausted")
@@ -1165,6 +1169,7 @@ def parser() -> argparse.ArgumentParser:
     worker_finish.add_argument("--compute-usd", default="UNKNOWN")
     pause_command = commands.add_parser("pause")
     pause_command.add_argument("--reason-code", required=True)
+    pause_command.add_argument("--push", action="store_true")
     commands.add_parser("resume")
     commands.add_parser("reconcile-push")
     automation = commands.add_parser("set-automation")
@@ -1232,7 +1237,21 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         elif arguments.command == "pause":
-            output(pause(root, arguments.reason_code))
+            pause_result = pause(root, arguments.reason_code)
+            if arguments.push:
+                _, _, paused_state = load_all(root)
+                output(
+                    {
+                        "pause": pause_result,
+                        "persistence": persist(
+                            root,
+                            paused_state["last_round_id"],
+                            push=True,
+                        ),
+                    }
+                )
+            else:
+                output(pause_result)
         elif arguments.command == "resume":
             output(resume(root))
         elif arguments.command == "reconcile-push":

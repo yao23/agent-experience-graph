@@ -130,6 +130,27 @@ class FoundryTests(FoundryFixture):
             foundry.begin_round(self.root, now=expiry, check_git=False)
         self.assertEqual(self.load("state")["pilot_status"], "EXPIRED")
 
+    def test_persisted_pause_blocks_before_push_reconciliation(self) -> None:
+        state = self.load("state")
+        state["pilot_status"] = "PAUSED"
+        state["pause"] = {"reason_code": "OPERATOR_REQUEST", "recorded_at": "2026-09-06T08:00:00Z"}
+        state["pending_effect"] = {
+            "effect_id": "AEG-I-pause-checkpoint",
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T08:00:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        with self.assertRaises(foundry.PausedError):
+            foundry.begin_round(
+                self.root,
+                now=self.start + timedelta(minutes=1),
+                reconcile_prior_push=True,
+                check_git=False,
+            )
+        self.assertEqual(self.load("state")["pending_effect"]["effect_id"], "AEG-I-pause-checkpoint")
+
     def test_daily_and_total_budgets_fail_closed(self) -> None:
         state = self.load("state")
         state["rounds_started"] = 84
