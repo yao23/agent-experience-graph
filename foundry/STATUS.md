@@ -1,6 +1,6 @@
 # AEG Experience Foundry Pilot status
 
-Generated: `2026-09-06T08:33:09Z`
+Generated: `2026-09-06T09:01:01Z`
 
 - Pilot: `ACTIVE`
 - Automation: `ACTIVE`
@@ -20,6 +20,10 @@ Generated: `2026-09-06T08:33:09Z`
 - Independently behavior-verified tasks: `0 / 10`
 - Release-review Experiences: `0 / 5-8`
 - Held-out positive transfers: `0 / 3`
+- Verified external users: `0 / 3`
+- External users with strong evidence: `0 / 1`
+- Independently verified external successful reuses: `0`
+- Integrity incident counts: `{"CONTROLLED":1,"UNCONTROLLED":0}`
 - Rounds: `2 completed / 2 started / 84 max`
 
 ## Current focus and bottleneck

@@ -40,6 +40,26 @@
   have a completed transfer that did not participate in construction. Git
   history validation rejects rewrites of committed Experience versions,
   preregistered freezes, and terminal transfer outcomes.
+- Candidate, behavior, and adoption integrity: committed candidate
+  classifications are immutable exact-shape records. Independently verified
+  behavior now requires a first-class baseline-failure/repaired-success record
+  with frozen revisions and an independent deterministic-oracle verifier.
+  External reuse has a separate evidence ledger; self-reports and founder,
+  Foundry-agent, or project-CI activity cannot enter either the verified-user
+  gate or the external-success numerator.
+- Resource and reporting integrity: scheduled worker starts are charged at
+  claim time so crashed rounds cannot disappear from the daily budget. New
+  round and worker receipts distinguish configured model, observed model and
+  attestation, call method, tokens, retries, quota, actual-cost basis, and
+  source-backed market estimates; unknown values remain `UNKNOWN`. Weekly
+  reports include release, user, external-reuse, per-qualified-task cost, ratio,
+  canary, and model-usage evidence, and are synthesized as bounded controller
+  work when no ordinary task is ready.
+- Pause durability: the single pause-and-push entry now reconciles an existing
+  pushed checkpoint before committing the pause. It still pauses locally first
+  when a non-push effect cannot be verified or an active round must reach a safe
+  checkpoint, and reports that persistence is deferred instead of claiming a
+  remote pause.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

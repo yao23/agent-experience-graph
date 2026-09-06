@@ -62,9 +62,93 @@ EFFECT_TYPES = {
 GITHUB_ISSUE_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 CHANNEL_RE = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
+CANDIDATE_ID_RE = re.compile(r"^AEG-C-[0-9]{3}$")
 EXPERIENCE_ID_RE = re.compile(r"^AEG-X-[0-9]{3}$")
 TRANSFER_ID_RE = re.compile(r"^AEG-T-[0-9]{3}$")
+BEHAVIOR_ID_RE = re.compile(r"^AEG-V-[0-9]{3}$")
+EXTERNAL_USER_ID_RE = re.compile(r"^AEG-U-[0-9]{3}$")
+EXTERNAL_REUSE_ID_RE = re.compile(r"^AEG-ER-[0-9]{3}$")
+INTEGRITY_INCIDENT_ID_RE = re.compile(r"^AEG-II-[0-9]{3}$")
 CODE_VALUE_RE = re.compile(r"^[A-Z0-9][A-Z0-9_.:-]{0,127}$")
+CANDIDATE_KEYS = {
+    "candidate_id",
+    "category",
+    "contamination",
+    "family",
+    "issue_number",
+    "oracle_kind",
+    "qualification",
+    "repository",
+    "source_state",
+    "source_url",
+}
+BEHAVIOR_VERIFICATION_KEYS = {
+    "baseline",
+    "budget",
+    "candidate_id",
+    "finished_at",
+    "model_config",
+    "oracle_kind",
+    "oracle_version",
+    "outcome",
+    "repaired",
+    "result_revision",
+    "solver_code",
+    "started_at",
+    "status",
+    "target_revision",
+    "task_id",
+    "verification_id",
+    "verifier_code",
+}
+BEHAVIOR_ARM_KEYS = {
+    "command_argv",
+    "environment_code",
+    "evidence_digest_sha256",
+    "evidence_summary_codes",
+    "exit_code",
+    "oracle_observation",
+    "workspace_code",
+}
+EXTERNAL_USER_KEYS = {
+    "actor_class",
+    "evidence_digest_sha256",
+    "evidence_kind",
+    "evidence_summary_codes",
+    "observed_at",
+    "status",
+    "user_id",
+    "verifier_code",
+}
+EXTERNAL_REUSE_KEYS = {
+    "command_argv",
+    "evidence_digest_sha256",
+    "evidence_summary_codes",
+    "experience_id",
+    "experience_version",
+    "finished_at",
+    "oracle_kind",
+    "oracle_observation",
+    "oracle_version",
+    "outcome",
+    "started_at",
+    "status",
+    "target_revision",
+    "user_id",
+    "verification_environment_code",
+    "verifier_code",
+    "reuse_id",
+    "exit_code",
+}
+INTEGRITY_INCIDENT_KEYS = {
+    "affected_record_code",
+    "containment_code",
+    "evidence_digest_sha256",
+    "incident_code",
+    "incident_id",
+    "observed_at",
+    "status",
+}
 EXPERIENCE_ARTIFACT_KEYS = {
     "schema_version",
     "experience_id",
@@ -126,6 +210,67 @@ TRANSFER_ATTEMPT_KEYS = {
 TRANSFER_DECISION_RULE = (
     "BASELINE_FAILURE_ASSISTED_SUCCESS_POSITIVE__MATCH_NEUTRAL__REGRESSION_HARMFUL"
 )
+ROUND_RECORD_V2_KEYS = {
+    "call_method",
+    "channel_code",
+    "channel_status_after",
+    "charter_sha256",
+    "completed_at",
+    "compute_cost_basis_code",
+    "compute_usd",
+    "configured_model",
+    "elapsed_seconds",
+    "failure_class",
+    "failure_code",
+    "founder_hours",
+    "input_tokens",
+    "market_estimate_source_code",
+    "market_estimate_usd",
+    "model",
+    "model_attestation",
+    "next_step_code",
+    "oracle_status",
+    "outcome",
+    "output_tokens",
+    "quota_observation_code",
+    "record_schema_version",
+    "retry_count",
+    "round_id",
+    "source_ref",
+    "source_ref_sha",
+    "source_ref_verified_at",
+    "stage",
+    "started_at",
+    "task_id",
+    "total_tokens",
+    "worker_starts",
+}
+WORKER_EVENT_V2_STARTED_KEYS = {
+    "call_method",
+    "channel_code",
+    "configured_model",
+    "event_id",
+    "kind",
+    "model",
+    "record_schema_version",
+    "round_id",
+    "started_at",
+    "status",
+}
+WORKER_EVENT_V2_TERMINAL_KEYS = WORKER_EVENT_V2_STARTED_KEYS | {
+    "channel_status_after",
+    "completed_at",
+    "compute_cost_basis_code",
+    "compute_usd",
+    "failure_code",
+    "input_tokens",
+    "market_estimate_source_code",
+    "market_estimate_usd",
+    "model_attestation",
+    "output_tokens",
+    "retry_count",
+    "total_tokens",
+}
 SHA_RE = re.compile(r"^[0-9a-f]{40,64}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SENSITIVE_VALUE_RES = (
@@ -198,6 +343,21 @@ def parse_time(value: str) -> datetime:
 
 def format_time(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def valid_decimal_measurement(value: Any) -> bool:
+    if value == "UNKNOWN":
+        return True
+    try:
+        return Decimal(str(value)) >= 0
+    except (InvalidOperation, ValueError):
+        return False
+
+
+def valid_token_measurement(value: Any) -> bool:
+    return value == "UNKNOWN" or (
+        isinstance(value, str) and value.isdigit() and int(value) >= 0
+    )
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -376,7 +536,9 @@ def audit_public(root: Path) -> dict[str, Any]:
     return {"ok": not errors, "errors": errors, "scanned_private_directory": False}
 
 
-def validate_committed_foundry_history(root: Path, backlog: dict[str, Any]) -> list[str]:
+def validate_committed_foundry_history(
+    root: Path, backlog: dict[str, Any], state: dict[str, Any]
+) -> list[str]:
     """Reject rewrites of versioned artifacts, preregistration, and terminal results."""
     previous_result = run_git(root, "show", "HEAD:foundry/backlog.json", check=False)
     if previous_result.returncode != 0:
@@ -387,6 +549,41 @@ def validate_committed_foundry_history(root: Path, backlog: dict[str, Any]) -> l
         return ["committed foundry backlog is not valid JSON"]
 
     errors: list[str] = []
+    previous_rounds = run_git(root, "show", "HEAD:foundry/rounds.jsonl", check=False)
+    if previous_rounds.returncode == 0:
+        current_rounds = paths(root)["rounds"].read_text(encoding="utf-8")
+        if not current_rounds.startswith(previous_rounds.stdout):
+            errors.append("committed round ledger was rewritten instead of appended")
+    current_candidates = {
+        item.get("candidate_id"): item
+        for item in backlog.get("candidates", [])
+        if isinstance(item, dict) and isinstance(item.get("candidate_id"), str)
+    }
+    for prior in previous.get("candidates", []):
+        if not isinstance(prior, dict) or not isinstance(prior.get("candidate_id"), str):
+            continue
+        candidate_id = prior["candidate_id"]
+        current = current_candidates.get(candidate_id)
+        if current is None:
+            errors.append(f"committed candidate was deleted: {candidate_id}")
+        elif current != prior:
+            errors.append(f"committed candidate classification was rewritten: {candidate_id}")
+
+    current_verifications = {
+        item.get("verification_id"): item
+        for item in backlog.get("behavior_verifications", [])
+        if isinstance(item, dict) and isinstance(item.get("verification_id"), str)
+    }
+    for prior in previous.get("behavior_verifications", []):
+        if not isinstance(prior, dict) or not isinstance(prior.get("verification_id"), str):
+            continue
+        verification_id = prior["verification_id"]
+        current = current_verifications.get(verification_id)
+        if current is None:
+            errors.append(f"committed behavior verification was deleted: {verification_id}")
+        elif current != prior:
+            errors.append(f"committed behavior verification was rewritten: {verification_id}")
+
     current_experiences = {
         (item.get("experience_id"), item.get("version")): item
         for item in backlog.get("experiences", [])
@@ -457,6 +654,92 @@ def validate_committed_foundry_history(root: Path, backlog: dict[str, Any]) -> l
                 errors.append(
                     f"preregistered {arm_name} isolation was rewritten: {transfer_id}"
                 )
+
+    previous_state_result = run_git(root, "show", "HEAD:foundry/state.json", check=False)
+    if previous_state_result.returncode != 0:
+        return errors
+    try:
+        previous_state = json.loads(previous_state_result.stdout)
+    except json.JSONDecodeError:
+        errors.append("committed foundry state is not valid JSON")
+        return errors
+    for field in ("rounds_started", "rounds_completed", "founder_interventions"):
+        prior_value = previous_state.get(field)
+        current_value = state.get(field)
+        if (
+            isinstance(prior_value, int)
+            and isinstance(current_value, int)
+            and current_value < prior_value
+        ):
+            errors.append(f"committed monotonic counter decreased: {field}")
+    prior_daily = previous_state.get("counters_by_utc_day", {})
+    current_daily = state.get("counters_by_utc_day", {})
+    if isinstance(prior_daily, dict) and isinstance(current_daily, dict):
+        for day, prior_counter in prior_daily.items():
+            current_counter = current_daily.get(day)
+            if not isinstance(prior_counter, dict) or not isinstance(current_counter, dict):
+                errors.append(f"committed daily counter was deleted: {day}")
+                continue
+            for field in ("round_starts", "worker_starts"):
+                if (
+                    isinstance(prior_counter.get(field), int)
+                    and isinstance(current_counter.get(field), int)
+                    and current_counter[field] < prior_counter[field]
+                ):
+                    errors.append(f"committed daily counter decreased: {day}:{field}")
+    for list_name, id_key in (
+        ("external_users", "user_id"),
+        ("external_reuse_events", "reuse_id"),
+    ):
+        current_records = {
+            item.get(id_key): item
+            for item in state.get(list_name, [])
+            if isinstance(item, dict) and isinstance(item.get(id_key), str)
+        }
+        for prior in previous_state.get(list_name, []):
+            if not isinstance(prior, dict) or not isinstance(prior.get(id_key), str):
+                continue
+            record_id = prior[id_key]
+            current = current_records.get(record_id)
+            if current is None:
+                errors.append(f"committed {list_name} record was deleted: {record_id}")
+                continue
+            if prior.get("status") in {"VERIFIED_EXTERNAL_USER", "VERIFIED", "INVALID"}:
+                if current != prior:
+                    errors.append(f"terminal {list_name} record was rewritten: {record_id}")
+            elif current.get(id_key) != record_id:
+                errors.append(f"committed {list_name} identity was rewritten: {record_id}")
+    prior_effect_events = previous_state.get("effect_events", [])
+    current_effect_events = state.get("effect_events", [])
+    if isinstance(prior_effect_events, list) and isinstance(current_effect_events, list) and (
+        current_effect_events[: len(prior_effect_events)] != prior_effect_events
+    ):
+        errors.append("committed external-effect receipt ledger was rewritten")
+    current_workers = {
+        item.get("event_id"): item
+        for item in state.get("worker_events", [])
+        if isinstance(item, dict) and isinstance(item.get("event_id"), str)
+    }
+    for prior in previous_state.get("worker_events", []):
+        if not isinstance(prior, dict) or not isinstance(prior.get("event_id"), str):
+            continue
+        event_id = prior["event_id"]
+        current = current_workers.get(event_id)
+        if current is None:
+            errors.append(f"committed worker event was deleted: {event_id}")
+        elif prior.get("status") != "STARTED" and current != prior:
+            errors.append(f"terminal worker event was rewritten: {event_id}")
+        elif prior.get("status") == "STARTED":
+            for field in WORKER_EVENT_V2_STARTED_KEYS - {"status"}:
+                if prior.get(field) != current.get(field):
+                    errors.append(f"started worker identity was rewritten: {event_id}")
+                    break
+    prior_incidents = previous_state.get("integrity_incidents", [])
+    current_incidents = state.get("integrity_incidents", [])
+    if isinstance(prior_incidents, list) and isinstance(current_incidents, list) and (
+        current_incidents[: len(prior_incidents)] != prior_incidents
+    ):
+        errors.append("committed integrity incident ledger was rewritten")
     return errors
 
 
@@ -487,7 +770,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         source_remote_head_ref(pilot)
     except (KeyError, ConfigError) as error:
         errors.append(str(error))
-    if backlog.get("schema_version") != 1 or state.get("schema_version") != 1:
+    if backlog.get("schema_version") != 2 or state.get("schema_version") != 2:
         errors.append("unsupported backlog or state schema")
 
     channels = state.get("channels")
@@ -507,18 +790,111 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         if channel.get("status") == "QUARANTINED" and streak < 2:
             errors.append(f"quarantined channel lacks two consecutive failures: {channel_code}")
 
+    worker_event_ids: set[str] = set()
+    worker_events = state.get("worker_events")
+    if not isinstance(worker_events, list):
+        errors.append("worker_events must be a list")
+        worker_events = []
+    for event in worker_events:
+        if not isinstance(event, dict):
+            errors.append("worker event records must be objects")
+            continue
+        event_id = event.get("event_id")
+        if not isinstance(event_id, str) or event_id in worker_event_ids:
+            errors.append("worker event IDs must be unique strings")
+        else:
+            worker_event_ids.add(event_id)
+        if event.get("record_schema_version") != 2:
+            continue
+        status = event.get("status")
+        terminal = status != "STARTED"
+        expected_keys = WORKER_EVENT_V2_TERMINAL_KEYS if terminal else WORKER_EVENT_V2_STARTED_KEYS
+        if set(event) != expected_keys:
+            errors.append(f"worker event v2 fields are not allowlisted for {event_id}")
+        if event.get("channel_code") not in channels:
+            errors.append(f"worker event references unknown channel for {event_id}")
+        if not isinstance(event.get("model"), str) or not event.get("model"):
+            errors.append(f"worker event lacks actual model for {event_id}")
+        if not isinstance(event.get("configured_model"), str) or not event.get(
+            "configured_model"
+        ):
+            errors.append(f"worker event lacks configured model for {event_id}")
+        if not isinstance(event.get("call_method"), str) or not CODE_VALUE_RE.fullmatch(
+            event.get("call_method", "")
+        ):
+            errors.append(f"worker event has invalid call method for {event_id}")
+        try:
+            parse_time(event.get("started_at", ""))
+        except ConfigError:
+            errors.append(f"worker event has invalid start time for {event_id}")
+        if not terminal:
+            continue
+        if status not in {
+            "PASSED",
+            "FAILED",
+            "INFRASTRUCTURE_FAILED",
+            "AUTH_FAILED",
+            "QUOTA_FAILED",
+        }:
+            errors.append(f"worker event has invalid terminal status for {event_id}")
+        try:
+            parse_time(event.get("completed_at", ""))
+        except ConfigError:
+            errors.append(f"worker event has invalid completion time for {event_id}")
+        for field in ("compute_usd", "market_estimate_usd"):
+            if not valid_decimal_measurement(event.get(field)):
+                errors.append(f"worker event has invalid {field} for {event_id}")
+        for field in ("input_tokens", "output_tokens", "total_tokens"):
+            if not valid_token_measurement(event.get(field)):
+                errors.append(f"worker event has invalid {field} for {event_id}")
+        token_values = tuple(
+            event.get(field) for field in ("input_tokens", "output_tokens", "total_tokens")
+        )
+        if all(value != "UNKNOWN" for value in token_values) and all(
+            valid_token_measurement(value) for value in token_values
+        ) and int(token_values[0]) + int(token_values[1]) != int(token_values[2]):
+            errors.append(f"worker event token total mismatch for {event_id}")
+        for field in (
+            "compute_cost_basis_code",
+            "market_estimate_source_code",
+            "model_attestation",
+        ):
+            if not isinstance(event.get(field), str) or not CODE_VALUE_RE.fullmatch(
+                event.get(field, "")
+            ):
+                errors.append(f"worker event has invalid {field} for {event_id}")
+        if event.get("compute_usd") != "UNKNOWN" and event.get(
+            "compute_cost_basis_code"
+        ) == "UNKNOWN":
+            errors.append(f"worker event known cost lacks basis for {event_id}")
+        if event.get("market_estimate_usd") != "UNKNOWN" and event.get(
+            "market_estimate_source_code"
+        ) == "UNKNOWN":
+            errors.append(f"worker event market estimate lacks source for {event_id}")
+        if not isinstance(event.get("retry_count"), int) or event.get("retry_count", -1) < 0:
+            errors.append(f"worker event has invalid retry count for {event_id}")
+
     candidate_ids: set[str] = set()
     candidate_by_id: dict[str, dict[str, Any]] = {}
     dedupe: set[tuple[str, int]] = set()
     for candidate in backlog.get("candidates", []):
+        if not isinstance(candidate, dict):
+            errors.append("candidate records must be objects")
+            continue
         candidate_id = candidate.get("candidate_id")
         repository = candidate.get("repository")
         number = candidate.get("issue_number")
-        if not isinstance(candidate_id, str) or candidate_id in candidate_ids:
-            errors.append("candidate IDs must be unique strings")
+        if (
+            not isinstance(candidate_id, str)
+            or not CANDIDATE_ID_RE.fullmatch(candidate_id)
+            or candidate_id in candidate_ids
+        ):
+            errors.append("candidate IDs must be unique and well formed")
         else:
             candidate_ids.add(candidate_id)
             candidate_by_id[candidate_id] = candidate
+        if set(candidate) != CANDIDATE_KEYS:
+            errors.append(f"candidate fields are not allowlisted for {candidate_id}")
         if not isinstance(repository, str) or not REPOSITORY_RE.fullmatch(repository):
             errors.append(f"invalid repository for {candidate_id}")
         if not isinstance(number, int) or number <= 0:
@@ -537,11 +913,25 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             "HELD_OUT_TRANSFER",
         }:
             errors.append(f"invalid category for {candidate_id}")
+        if candidate.get("qualification") not in {"QUALIFIED", "NOT_QUALIFIED"}:
+            errors.append(f"invalid qualification for {candidate_id}")
+        if candidate.get("contamination") not in {"LOW", "MODERATE", "HIGH", "UNKNOWN"}:
+            errors.append(f"invalid contamination for {candidate_id}")
+        if candidate.get("source_state") not in {"OPEN", "CLOSED"}:
+            errors.append(f"invalid source state for {candidate_id}")
+        for field in ("family", "oracle_kind"):
+            if not isinstance(candidate.get(field), str) or not CODE_VALUE_RE.fullmatch(
+                candidate.get(field, "")
+            ):
+                errors.append(f"invalid {field} for {candidate_id}")
 
     task_ids: set[str] = set()
     task_by_id: dict[str, dict[str, Any]] = {}
     in_progress: list[dict[str, Any]] = []
     for task in backlog.get("work_items", []):
+        if not isinstance(task, dict):
+            errors.append("work item records must be objects")
+            continue
         task_id = task.get("task_id")
         if not isinstance(task_id, str) or task_id in task_ids:
             errors.append("task IDs must be unique strings")
@@ -559,6 +949,160 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             in_progress.append(task)
             if not isinstance(task.get("claim"), dict):
                 errors.append(f"in-progress task {task_id} has no claim")
+
+    behavior_verifications = backlog.get("behavior_verifications")
+    if not isinstance(behavior_verifications, list):
+        errors.append("behavior_verifications must be a list")
+        behavior_verifications = []
+    verification_ids: set[str] = set()
+    verified_candidate_ids: set[str] = set()
+    for verification in behavior_verifications:
+        if not isinstance(verification, dict):
+            errors.append("behavior verification records must be objects")
+            continue
+        verification_id = verification.get("verification_id")
+        if set(verification) != BEHAVIOR_VERIFICATION_KEYS:
+            errors.append(f"behavior verification fields are not allowlisted for {verification_id}")
+        if (
+            not isinstance(verification_id, str)
+            or not BEHAVIOR_ID_RE.fullmatch(verification_id)
+            or verification_id in verification_ids
+        ):
+            errors.append("behavior verification IDs must be unique and well formed")
+        else:
+            verification_ids.add(verification_id)
+        candidate_id = verification.get("candidate_id")
+        candidate = candidate_by_id.get(candidate_id) if isinstance(candidate_id, str) else None
+        if (
+            candidate is None
+            or candidate.get("qualification") != "QUALIFIED"
+            or candidate.get("category") == "HELD_OUT_TRANSFER"
+        ):
+            errors.append(f"behavior verification requires a qualified non-held-out candidate: {verification_id}")
+        task_id = verification.get("task_id")
+        task = task_by_id.get(task_id)
+        if (
+            task is None
+            or task.get("stage") != "VERIFICATION"
+            or task.get("status") != "COMPLETED"
+            or candidate_id not in task.get("candidate_ids", [])
+        ):
+            errors.append(f"invalid completed verification work item for {verification_id}")
+        for field in ("target_revision", "result_revision"):
+            if not isinstance(verification.get(field), str) or not SHA_RE.fullmatch(
+                verification.get(field, "")
+            ):
+                errors.append(f"invalid frozen {field} for {verification_id}")
+        oracle_kind = verification.get("oracle_kind")
+        if (
+            not isinstance(oracle_kind, str)
+            or not CODE_VALUE_RE.fullmatch(oracle_kind)
+            or (candidate is not None and oracle_kind != candidate.get("oracle_kind"))
+        ):
+            errors.append(f"invalid frozen oracle for {verification_id}")
+        if not isinstance(verification.get("oracle_version"), int) or verification.get(
+            "oracle_version", 0
+        ) <= 0:
+            errors.append(f"invalid oracle version for {verification_id}")
+        model_config = verification.get("model_config")
+        if (
+            not isinstance(model_config, dict)
+            or set(model_config) != {"model", "reasoning_effort"}
+            or any(not isinstance(value, str) or not value for value in model_config.values())
+        ):
+            errors.append(f"invalid frozen model configuration for {verification_id}")
+        budget = verification.get("budget")
+        if (
+            not isinstance(budget, dict)
+            or set(budget) != {"max_retries", "max_seconds", "max_worker_starts"}
+            or any(
+                not isinstance(budget.get(field), int) or budget[field] < minimum
+                for field, minimum in (
+                    ("max_retries", 0),
+                    ("max_seconds", 1),
+                    ("max_worker_starts", 1),
+                )
+            )
+        ):
+            errors.append(f"invalid verification budget for {verification_id}")
+        solver_code = verification.get("solver_code")
+        verifier_code = verification.get("verifier_code")
+        if (
+            not isinstance(solver_code, str)
+            or not CODE_VALUE_RE.fullmatch(solver_code)
+            or not isinstance(verifier_code, str)
+            or not CODE_VALUE_RE.fullmatch(verifier_code)
+            or solver_code == verifier_code
+        ):
+            errors.append(f"independent verifier missing for {verification_id}")
+        try:
+            started_at = parse_time(verification.get("started_at", ""))
+            finished_at = parse_time(verification.get("finished_at", ""))
+            if finished_at < started_at:
+                errors.append(f"verification timing is reversed for {verification_id}")
+        except ConfigError:
+            errors.append(f"invalid verification timing for {verification_id}")
+        arms: dict[str, dict[str, Any]] = {}
+        for arm_name in ("baseline", "repaired"):
+            arm = verification.get(arm_name)
+            if not isinstance(arm, dict) or set(arm) != BEHAVIOR_ARM_KEYS:
+                errors.append(f"invalid {arm_name} evidence fields for {verification_id}")
+                continue
+            arms[arm_name] = arm
+            for code_field in ("environment_code", "workspace_code"):
+                if not isinstance(arm.get(code_field), str) or not CODE_VALUE_RE.fullmatch(
+                    arm.get(code_field, "")
+                ):
+                    errors.append(f"invalid {arm_name} {code_field} for {verification_id}")
+            command = arm.get("command_argv")
+            if (
+                not isinstance(command, list)
+                or not command
+                or any(not isinstance(item, str) or not item for item in command)
+            ):
+                errors.append(f"missing {arm_name} oracle command for {verification_id}")
+            if not isinstance(arm.get("exit_code"), int):
+                errors.append(f"missing {arm_name} oracle exit status for {verification_id}")
+            if arm.get("oracle_observation") not in {"SUCCESS", "FAILURE"}:
+                errors.append(f"invalid {arm_name} oracle observation for {verification_id}")
+            if not isinstance(arm.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+                arm.get("evidence_digest_sha256", "")
+            ):
+                errors.append(f"invalid {arm_name} evidence digest for {verification_id}")
+            evidence_codes = arm.get("evidence_summary_codes")
+            if (
+                not isinstance(evidence_codes, list)
+                or not evidence_codes
+                or any(
+                    not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                    for item in evidence_codes
+                )
+                or len(set(evidence_codes)) != len(evidence_codes)
+            ):
+                errors.append(f"invalid {arm_name} evidence summary for {verification_id}")
+        if len(arms) == 2 and (
+            arms["baseline"].get("environment_code") == arms["repaired"].get("environment_code")
+            or arms["baseline"].get("workspace_code") == arms["repaired"].get("workspace_code")
+        ):
+            errors.append(f"baseline and repaired verification are not isolated: {verification_id}")
+        status = verification.get("status")
+        outcome = verification.get("outcome")
+        if status not in {"COMPLETED", "INVALID"}:
+            errors.append(f"invalid behavior verification status for {verification_id}")
+        if outcome not in {"VERIFIED_REPAIR", "FAILED", "INVALID"}:
+            errors.append(f"invalid behavior verification outcome for {verification_id}")
+        observations = tuple(
+            arms.get(name, {}).get("oracle_observation") for name in ("baseline", "repaired")
+        )
+        if status == "COMPLETED" and outcome == "VERIFIED_REPAIR":
+            if observations != ("FAILURE", "SUCCESS"):
+                errors.append(f"verified repair arm results disagree for {verification_id}")
+            elif isinstance(candidate_id, str):
+                if candidate_id in verified_candidate_ids:
+                    errors.append(f"candidate has duplicate verified behavior: {candidate_id}")
+                verified_candidate_ids.add(candidate_id)
+        elif status == "COMPLETED":
+            errors.append(f"completed behavior verification is not a verified repair: {verification_id}")
 
     experiences = backlog.get("experiences")
     if not isinstance(experiences, list):
@@ -686,6 +1230,12 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             if experience_id in ready_versions_by_id:
                 errors.append(f"multiple release-ready versions for {experience_id}")
             ready_versions_by_id[experience_id] = version
+            if not isinstance(source_candidates, list) or not set(source_candidates).issubset(
+                verified_candidate_ids
+            ):
+                errors.append(
+                    f"release-ready Experience lacks independently verified sources: {experience_id} v{version}"
+                )
 
     transfer_evaluations = backlog.get("transfer_evaluations")
     if not isinstance(transfer_evaluations, list):
@@ -975,6 +1525,40 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append("active round and claimed task disagree")
     if state.get("rounds_completed", 0) > state.get("rounds_started", 0):
         errors.append("completed round count exceeds started round count")
+    daily_counters = state.get("counters_by_utc_day")
+    if not isinstance(daily_counters, dict):
+        errors.append("daily counters must be an object")
+        daily_counters = {}
+    for day, counter in daily_counters.items():
+        try:
+            datetime.strptime(day, "%Y-%m-%d")
+        except (TypeError, ValueError):
+            errors.append(f"invalid daily counter date: {day}")
+        if not isinstance(counter, dict) or set(counter) != {"round_starts", "worker_starts"}:
+            errors.append(f"invalid daily counter fields: {day}")
+            continue
+        for field, maximum in (
+            ("round_starts", budgets.get("max_rounds_per_day", -1)),
+            ("worker_starts", budgets.get("max_worker_starts_per_day", -1)),
+        ):
+            if (
+                not isinstance(counter.get(field), int)
+                or counter[field] < 0
+                or counter[field] > maximum
+            ):
+                errors.append(f"daily counter exceeds fixed budget: {day}:{field}")
+    if sum(
+        counter.get("round_starts", 0)
+        for counter in daily_counters.values()
+        if isinstance(counter, dict)
+    ) != state.get("rounds_started"):
+        errors.append("daily round counters do not equal total starts")
+    if sum(
+        counter.get("worker_starts", 0)
+        for counter in daily_counters.values()
+        if isinstance(counter, dict)
+    ) != state.get("rounds_started", 0) + len(worker_events):
+        errors.append("daily worker counters do not equal scheduled plus registered starts")
     if state.get("pilot_status") not in {"ACTIVE", "PAUSED", "EXPIRED"}:
         errors.append("invalid pilot status")
     if not isinstance(state.get("founder_interventions"), int) or state.get(
@@ -985,7 +1569,213 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         if not isinstance(state.get(state_list), list):
             errors.append(f"{state_list} must be a list")
 
-    errors.extend(validate_committed_foundry_history(root, backlog))
+    incident_ids: set[str] = set()
+    integrity_incidents = state.get("integrity_incidents", [])
+    if isinstance(integrity_incidents, list):
+        for incident in integrity_incidents:
+            if not isinstance(incident, dict):
+                errors.append("integrity incident records must be objects")
+                continue
+            incident_id = incident.get("incident_id")
+            if set(incident) != INTEGRITY_INCIDENT_KEYS:
+                errors.append(f"integrity incident fields are not allowlisted for {incident_id}")
+            if (
+                not isinstance(incident_id, str)
+                or not INTEGRITY_INCIDENT_ID_RE.fullmatch(incident_id)
+                or incident_id in incident_ids
+            ):
+                errors.append("integrity incident IDs must be unique and well formed")
+            else:
+                incident_ids.add(incident_id)
+            if incident.get("status") not in {"CONTROLLED", "UNCONTROLLED"}:
+                errors.append(f"invalid integrity incident status for {incident_id}")
+            for field in ("affected_record_code", "containment_code", "incident_code"):
+                if not isinstance(incident.get(field), str) or not CODE_VALUE_RE.fullmatch(
+                    incident.get(field, "")
+                ):
+                    errors.append(f"invalid {field} for {incident_id}")
+            if not isinstance(incident.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+                incident.get("evidence_digest_sha256", "")
+            ):
+                errors.append(f"invalid integrity evidence digest for {incident_id}")
+            try:
+                parse_time(incident.get("observed_at", ""))
+            except ConfigError:
+                errors.append(f"invalid integrity incident time for {incident_id}")
+
+    external_users = state.get("external_users", [])
+    external_user_ids: set[str] = set()
+    verified_external_user_ids: set[str] = set()
+    if isinstance(external_users, list):
+        for user in external_users:
+            if not isinstance(user, dict):
+                errors.append("external user records must be objects")
+                continue
+            user_id = user.get("user_id")
+            if set(user) != EXTERNAL_USER_KEYS:
+                errors.append(f"external user fields are not allowlisted for {user_id}")
+            if (
+                not isinstance(user_id, str)
+                or not EXTERNAL_USER_ID_RE.fullmatch(user_id)
+                or user_id in external_user_ids
+            ):
+                errors.append("external user IDs must be unique and well formed")
+            else:
+                external_user_ids.add(user_id)
+            if user.get("actor_class") != "EXTERNAL":
+                errors.append(f"non-external actor cannot be an external user: {user_id}")
+            status = user.get("status")
+            evidence_kind = user.get("evidence_kind")
+            if status not in {"SELF_REPORTED", "VERIFIED_EXTERNAL_USER", "INVALID"}:
+                errors.append(f"invalid external user status for {user_id}")
+            if evidence_kind not in {
+                "SELF_REPORT",
+                "INDEPENDENT_OBSERVATION",
+                "RECEIPT",
+                "REPEAT_USE",
+                "NEW_TASK",
+            }:
+                errors.append(f"invalid external user evidence kind for {user_id}")
+            if status == "VERIFIED_EXTERNAL_USER":
+                if evidence_kind == "SELF_REPORT" or user.get("verifier_code") == "UNVERIFIED":
+                    errors.append(f"self-report cannot verify external user {user_id}")
+                elif isinstance(user_id, str):
+                    verified_external_user_ids.add(user_id)
+            if not isinstance(user.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+                user.get("evidence_digest_sha256", "")
+            ):
+                errors.append(f"invalid external user evidence digest for {user_id}")
+            evidence_codes = user.get("evidence_summary_codes")
+            if (
+                not isinstance(evidence_codes, list)
+                or not evidence_codes
+                or any(
+                    not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                    for item in evidence_codes
+                )
+                or len(set(evidence_codes)) != len(evidence_codes)
+            ):
+                errors.append(f"invalid external user evidence summary for {user_id}")
+            if not isinstance(user.get("verifier_code"), str) or not CODE_VALUE_RE.fullmatch(
+                user.get("verifier_code", "")
+            ):
+                errors.append(f"invalid external user verifier for {user_id}")
+            try:
+                parse_time(user.get("observed_at", ""))
+            except ConfigError:
+                errors.append(f"invalid external user observation time for {user_id}")
+
+    external_reuse_events = state.get("external_reuse_events")
+    if not isinstance(external_reuse_events, list):
+        errors.append("external_reuse_events must be a list")
+        external_reuse_events = []
+    external_reuse_ids: set[str] = set()
+    for reuse in external_reuse_events:
+        if not isinstance(reuse, dict):
+            errors.append("external reuse records must be objects")
+            continue
+        reuse_id = reuse.get("reuse_id")
+        if set(reuse) != EXTERNAL_REUSE_KEYS:
+            errors.append(f"external reuse fields are not allowlisted for {reuse_id}")
+        if (
+            not isinstance(reuse_id, str)
+            or not EXTERNAL_REUSE_ID_RE.fullmatch(reuse_id)
+            or reuse_id in external_reuse_ids
+        ):
+            errors.append("external reuse IDs must be unique and well formed")
+        else:
+            external_reuse_ids.add(reuse_id)
+        raw_user_id = reuse.get("user_id")
+        user_id = raw_user_id if isinstance(raw_user_id, str) else "INVALID"
+        if user_id not in external_user_ids:
+            errors.append(f"external reuse references unknown user for {reuse_id}")
+        raw_experience_id = reuse.get("experience_id")
+        raw_experience_version = reuse.get("experience_version")
+        experience_key = (
+            raw_experience_id if isinstance(raw_experience_id, str) else "INVALID",
+            raw_experience_version if isinstance(raw_experience_version, int) else -1,
+        )
+        if experience_key not in experience_by_key:
+            errors.append(f"external reuse references unknown Experience for {reuse_id}")
+        if not isinstance(reuse.get("target_revision"), str) or not SHA_RE.fullmatch(
+            reuse.get("target_revision", "")
+        ):
+            errors.append(f"invalid external reuse target revision for {reuse_id}")
+        if not isinstance(reuse.get("oracle_kind"), str) or not CODE_VALUE_RE.fullmatch(
+            reuse.get("oracle_kind", "")
+        ):
+            errors.append(f"invalid external reuse oracle for {reuse_id}")
+        if not isinstance(reuse.get("oracle_version"), int) or reuse.get(
+            "oracle_version", 0
+        ) <= 0:
+            errors.append(f"invalid external reuse oracle version for {reuse_id}")
+        if not isinstance(reuse.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+            reuse.get("evidence_digest_sha256", "")
+        ):
+            errors.append(f"invalid external reuse evidence digest for {reuse_id}")
+        evidence_codes = reuse.get("evidence_summary_codes")
+        if (
+            not isinstance(evidence_codes, list)
+            or not evidence_codes
+            or any(
+                not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                for item in evidence_codes
+            )
+            or len(set(evidence_codes)) != len(evidence_codes)
+        ):
+            errors.append(f"invalid external reuse evidence summary for {reuse_id}")
+        try:
+            started_at = parse_time(reuse.get("started_at", ""))
+            finished_at = parse_time(reuse.get("finished_at", ""))
+            if finished_at < started_at:
+                errors.append(f"external reuse timing is reversed for {reuse_id}")
+        except ConfigError:
+            errors.append(f"invalid external reuse timing for {reuse_id}")
+        status = reuse.get("status")
+        outcome = reuse.get("outcome")
+        observation = reuse.get("oracle_observation")
+        command = reuse.get("command_argv")
+        exit_code = reuse.get("exit_code")
+        environment_code = reuse.get("verification_environment_code")
+        verifier_code = reuse.get("verifier_code")
+        if status == "SELF_REPORTED":
+            if (
+                outcome != "CLAIMED_SUCCESS"
+                or observation != "NOT_RUN"
+                or command != []
+                or exit_code is not None
+                or environment_code != "UNVERIFIED"
+                or verifier_code != "UNVERIFIED"
+            ):
+                errors.append(f"self-reported reuse claims verification for {reuse_id}")
+        elif status == "VERIFIED":
+            if user_id not in verified_external_user_ids:
+                errors.append(f"verified reuse lacks a verified external user for {reuse_id}")
+            if outcome not in {"SUCCESS", "FAILURE"} or observation != outcome:
+                errors.append(f"verified reuse outcome disagrees with oracle for {reuse_id}")
+            if (
+                not isinstance(command, list)
+                or not command
+                or any(not isinstance(item, str) or not item for item in command)
+                or not isinstance(exit_code, int)
+            ):
+                errors.append(f"verified reuse lacks command and exit status for {reuse_id}")
+            if (
+                not isinstance(environment_code, str)
+                or not CODE_VALUE_RE.fullmatch(environment_code)
+                or environment_code == "UNVERIFIED"
+                or not isinstance(verifier_code, str)
+                or not CODE_VALUE_RE.fullmatch(verifier_code)
+                or verifier_code == "UNVERIFIED"
+            ):
+                errors.append(f"verified reuse lacks independent execution evidence for {reuse_id}")
+        elif status == "INVALID":
+            if outcome != "INVALID":
+                errors.append(f"invalid external reuse has non-invalid outcome for {reuse_id}")
+        else:
+            errors.append(f"invalid external reuse status for {reuse_id}")
+
+    errors.extend(validate_committed_foundry_history(root, backlog, state))
 
     seen_rounds: set[str] = set()
     successful = 0
@@ -999,6 +1789,59 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append(f"invalid rounds JSON at line {number}")
             continue
         round_id = record.get("round_id")
+        if record.get("record_schema_version") == 2:
+            if set(record) != ROUND_RECORD_V2_KEYS:
+                errors.append(f"round v2 fields are not allowlisted at line {number}")
+            for field in ("founder_hours", "compute_usd", "market_estimate_usd"):
+                if not valid_decimal_measurement(record.get(field)):
+                    errors.append(f"invalid {field} at rounds line {number}")
+            for field in ("input_tokens", "output_tokens", "total_tokens"):
+                if not valid_token_measurement(record.get(field)):
+                    errors.append(f"invalid {field} at rounds line {number}")
+            token_values = tuple(
+                record.get(field) for field in ("input_tokens", "output_tokens", "total_tokens")
+            )
+            if all(value != "UNKNOWN" for value in token_values) and all(
+                valid_token_measurement(value) for value in token_values
+            ) and int(token_values[0]) + int(token_values[1]) != int(token_values[2]):
+                errors.append(f"token total mismatch at rounds line {number}")
+            for field in (
+                "call_method",
+                "compute_cost_basis_code",
+                "market_estimate_source_code",
+                "model_attestation",
+                "quota_observation_code",
+            ):
+                if not isinstance(record.get(field), str) or not CODE_VALUE_RE.fullmatch(
+                    record.get(field, "")
+                ):
+                    errors.append(f"invalid {field} at rounds line {number}")
+            for field in ("model", "configured_model"):
+                if not isinstance(record.get(field), str) or not record.get(field):
+                    errors.append(f"invalid {field} at rounds line {number}")
+            if record.get("compute_usd") != "UNKNOWN" and record.get(
+                "compute_cost_basis_code"
+            ) == "UNKNOWN":
+                errors.append(f"known compute cost lacks basis at rounds line {number}")
+            if record.get("market_estimate_usd") != "UNKNOWN" and record.get(
+                "market_estimate_source_code"
+            ) == "UNKNOWN":
+                errors.append(f"known market estimate lacks source at rounds line {number}")
+            if not isinstance(record.get("retry_count"), int) or record.get("retry_count", -1) < 0:
+                errors.append(f"invalid retry count at rounds line {number}")
+            if not isinstance(record.get("worker_starts"), int) or record.get(
+                "worker_starts", 0
+            ) < 1:
+                errors.append(f"invalid worker starts at rounds line {number}")
+            if not isinstance(record.get("elapsed_seconds"), int) or record.get(
+                "elapsed_seconds", -1
+            ) < 0:
+                errors.append(f"invalid elapsed time at rounds line {number}")
+            for field in ("started_at", "completed_at", "source_ref_verified_at"):
+                try:
+                    parse_time(record.get(field, ""))
+                except ConfigError:
+                    errors.append(f"invalid {field} at rounds line {number}")
         if round_id in seen_rounds:
             errors.append(f"duplicate completed round ID {round_id}")
         seen_rounds.add(round_id)
@@ -1008,6 +1851,18 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
                 errors.append(f"successful round {round_id} lacks a passed oracle")
     if len(seen_rounds) != state.get("rounds_completed"):
         errors.append("round ledger count does not equal completed counter")
+
+    try:
+        report_start = parse_time(pilot["activation"]["starts_at"])
+        for report in paths(root)["reports"].glob("week-*.md"):
+            match = re.fullmatch(r"week-([0-9]{2})\.md", report.name)
+            if not match or not 1 <= int(match.group(1)) <= 6:
+                errors.append(f"invalid weekly report name: {report.name}")
+                continue
+            week = int(match.group(1))
+            errors.extend(_weekly_report_schema_errors(report, week, report_start))
+    except (KeyError, ConfigError) as error:
+        errors.append(f"cannot validate weekly report windows: {error}")
 
     public_result = audit_public(root)
     errors.extend(public_result["errors"])
@@ -1151,11 +2006,100 @@ def _next_work_item_id(backlog: dict[str, Any]) -> str:
     return f"AEG-W-{max(numbers, default=0) + 1:03d}"
 
 
+def _weekly_report_schema_errors(
+    report: Path, week: int, start: datetime
+) -> list[str]:
+    if not report.is_file():
+        return [f"missing week {week} report"]
+    content = report.read_text(encoding="utf-8")
+    window_start = start + timedelta(days=7 * (week - 1))
+    window_end = start + timedelta(days=7 * week)
+    exact_lines = {
+        f"# AEG Foundry week {week}",
+        f"- Window start: `{format_time(window_start)}`",
+        f"- Window end: `{format_time(window_end)}`",
+    }
+    required_prefixes = (
+        "- Candidates: `",
+        "- Qualified: `",
+        "- Qualification rate: `",
+        "- Behavior verified: `",
+        "- Release-review Experiences: `",
+        "- Positive held-out transfers: `",
+        "- Verified external users: `",
+        "- External users with strong evidence: `",
+        "- Independently verified external successful reuses: `",
+        "- Most important recorded outcome: `",
+        "- Weekly outcome counts: `",
+        "- Weekly founder hours: `",
+        "- Weekly compute USD: `",
+        "- Acquisition founder hours per qualified task: `",
+        "- Acquisition compute USD per qualified task: `",
+        "- Verified external reuse per founder hour: `",
+        "- Verified external reuse per compute USD: `",
+        "- Weekly worker starts: `",
+        "- Weekly model usage events: `",
+        "- Founder interventions: `",
+        "- Integrity incident counts: `",
+        "- Account quota observation: `",
+        "- Bottleneck: `",
+        "- Next focus: `",
+        "- Human decision queue: `",
+    )
+    lines = content.splitlines()
+    errors = [
+        f"week {week} report lacks required line: {line}"
+        for line in exact_lines
+        if lines.count(line) != 1
+    ]
+    errors.extend(
+        f"week {week} report lacks unique field: {prefix}"
+        for prefix in required_prefixes
+        if sum(line.startswith(prefix) for line in lines) != 1
+    )
+    return errors
+
+
+def _missing_week_reports(root: Path, pilot: dict[str, Any], now: datetime) -> list[int]:
+    start = parse_time(pilot["activation"]["starts_at"])
+    completed_weeks = min(6, max(0, int((now - start).total_seconds() // (7 * 86400))))
+    return [
+        week
+        for week in range(1, completed_weeks + 1)
+        if _weekly_report_schema_errors(
+            paths(root)["reports"] / f"week-{week:02d}.md", week, start
+        )
+    ]
+
+
 def synthesize_next_work(
-    backlog: dict[str, Any], state: dict[str, Any], pilot: dict[str, Any]
+    root: Path,
+    backlog: dict[str, Any],
+    state: dict[str, Any],
+    pilot: dict[str, Any],
+    now: datetime,
 ) -> dict[str, Any] | None:
     """Create one bounded continuation unit when the queue is empty but a target is unmet."""
 
+    due_reports = _missing_week_reports(root, pilot, now)
+    if due_reports and _channel_is_active(state, "MODEL_WORKER"):
+        task = {
+            "attempts": 0,
+            "candidate_ids": [],
+            "channel_code": "MODEL_WORKER",
+            "claim": None,
+            "failure_code": None,
+            "generated_by_controller": True,
+            "next_step_code": "CONTINUE_HIGHEST_VALUE_AUTHORIZED_WORK",
+            "oracle_kind": "WEEKLY_REPORT_SCHEMA_AND_WINDOW_CHECK",
+            "priority": 110,
+            "report_week": due_reports[0],
+            "stage": "REPORTING",
+            "status": "READY",
+            "task_id": _next_work_item_id(backlog),
+        }
+        backlog["work_items"].append(task)
+        return task
     candidates = backlog["candidates"]
     if len(candidates) >= pilot["targets"]["deduplicated_external_candidates"]:
         return None
@@ -1364,7 +2308,7 @@ def begin_round(
         )
         synthesized = None
         if not ready:
-            synthesized = synthesize_next_work(backlog, state, pilot)
+            synthesized = synthesize_next_work(root, backlog, state, pilot, now)
             if synthesized is not None:
                 ready = [synthesized]
         if not ready:
@@ -1401,6 +2345,7 @@ def begin_round(
             "qualified_count_at_start": sum(
                 item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
             ),
+            "scheduled_worker_start_counted": True,
             "acquisition_strategy_version_at_start": backlog["discovery"].get(
                 "acquisition_strategy_version", 1
             ),
@@ -1409,6 +2354,7 @@ def begin_round(
         state["last_charter_sha256"] = charter_sha
         state["rounds_started"] += 1
         counter["round_starts"] += 1
+        counter["worker_starts"] += 1
         atomic_write_json(paths(root)["backlog"], backlog)
         atomic_write_json(paths(root)["state"], state)
         render_status(root, pilot, backlog, state, now)
@@ -1572,9 +2518,18 @@ def finish_round(
     founder_hours: str = "UNKNOWN",
     compute_usd: str = "UNKNOWN",
     model: str = "UNKNOWN",
+    configured_model: str = "UNKNOWN",
+    model_attestation: str = "UNKNOWN",
+    call_method: str = "UNKNOWN",
     input_tokens: str = "UNKNOWN",
     output_tokens: str = "UNKNOWN",
-    worker_starts: int = 1,
+    total_tokens: str = "UNKNOWN",
+    retry_count: int = 0,
+    compute_cost_basis_code: str = "UNKNOWN",
+    market_estimate_usd: str = "UNKNOWN",
+    market_estimate_source_code: str = "UNKNOWN",
+    quota_observation_code: str = "UNKNOWN",
+    worker_starts: int | None = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
@@ -1595,11 +2550,54 @@ def finish_round(
             raise ConfigError("SUCCESS cannot carry a failure class")
         if outcome in {"FAILURE", "BLOCKED"} and failure_class == "NONE":
             raise ConfigError(f"{outcome} requires an explicit failure class")
+        for field, value in (
+            ("founder_hours", founder_hours),
+            ("compute_usd", compute_usd),
+            ("market_estimate_usd", market_estimate_usd),
+        ):
+            if not valid_decimal_measurement(value):
+                raise ConfigError(f"invalid non-negative measurement: {field}")
+        for field, value in (
+            ("input_tokens", input_tokens),
+            ("output_tokens", output_tokens),
+            ("total_tokens", total_tokens),
+        ):
+            if not valid_token_measurement(value):
+                raise ConfigError(f"invalid token measurement: {field}")
+        if all(value != "UNKNOWN" for value in (input_tokens, output_tokens, total_tokens)) and (
+            int(input_tokens) + int(output_tokens) != int(total_tokens)
+        ):
+            raise ConfigError("input and output tokens do not equal total tokens")
+        if not isinstance(retry_count, int) or retry_count < 0:
+            raise ConfigError("retry count must be a non-negative integer")
+        if not isinstance(model, str) or not model or not isinstance(configured_model, str) or not configured_model:
+            raise ConfigError("actual and configured model fields must be non-empty")
+        for field, value in (
+            ("model_attestation", model_attestation),
+            ("call_method", call_method),
+            ("compute_cost_basis_code", compute_cost_basis_code),
+            ("market_estimate_source_code", market_estimate_source_code),
+            ("quota_observation_code", quota_observation_code),
+        ):
+            if not isinstance(value, str) or not CODE_VALUE_RE.fullmatch(value):
+                raise ConfigError(f"invalid resource evidence code: {field}")
+        if compute_usd != "UNKNOWN" and compute_cost_basis_code == "UNKNOWN":
+            raise ConfigError("known compute USD requires a cost basis code")
+        if market_estimate_usd != "UNKNOWN" and market_estimate_source_code == "UNKNOWN":
+            raise ConfigError("known market estimate requires a source code")
         counter = _today_counter(state, now)
-        if worker_starts < 1:
-            raise ConfigError("a round must count its scheduled task worker start")
-        if counter["worker_starts"] + worker_starts > pilot["budgets"]["max_worker_starts_per_day"]:
-            raise BudgetError("worker-start accounting would exceed the daily budget")
+        linked_worker_starts = sum(
+            event.get("round_id") == round_id for event in state.get("worker_events", [])
+        )
+        inferred_worker_starts = 1 + linked_worker_starts
+        if worker_starts is not None and worker_starts != inferred_worker_starts:
+            raise ConfigError("round worker starts disagree with registered worker events")
+        worker_starts = inferred_worker_starts
+        scheduled_start_already_counted = active.get("scheduled_worker_start_counted") is True
+        if not scheduled_start_already_counted:
+            if counter["worker_starts"] >= pilot["budgets"]["max_worker_starts_per_day"]:
+                raise BudgetError("worker-start accounting would exceed the daily budget")
+            counter["worker_starts"] += 1
         task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
         channel_code = task["channel_code"]
         if task["oracle_kind"] == "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK":
@@ -1623,6 +2621,23 @@ def finish_round(
                 raise ConfigError("strategy-change SUCCESS requires exactly one version increment")
             if outcome == "SUCCESS":
                 state["discovery_no_qualified_streak"] = 0
+        elif task["oracle_kind"] == "WEEKLY_REPORT_SCHEMA_AND_WINDOW_CHECK":
+            report_week = task.get("report_week")
+            if not isinstance(report_week, int) or not 1 <= report_week <= 6:
+                raise ConfigError("reporting task has an invalid week number")
+            expected_report = paths(root)["reports"] / f"week-{report_week:02d}.md"
+            if outcome == "SUCCESS":
+                generate_due_reports(root, pilot, backlog, state, now)
+                report_errors = _weekly_report_schema_errors(
+                    expected_report,
+                    report_week,
+                    parse_time(pilot["activation"]["starts_at"]),
+                )
+                if report_errors:
+                    raise ConfigError(
+                        "reporting SUCCESS requires a valid due weekly report: "
+                        + "; ".join(report_errors)
+                    )
         if task_status is None:
             task_status = "COMPLETED" if outcome == "SUCCESS" else "FAILED"
         if task_status not in TASK_STATUSES or task_status in {"READY", "IN_PROGRESS"}:
@@ -1643,18 +2658,27 @@ def finish_round(
             "channel_code": channel_code,
             "channel_status_after": channel["status"],
             "charter_sha256": active["charter_sha256"],
+            "call_method": call_method,
             "completed_at": format_time(now),
+            "compute_cost_basis_code": compute_cost_basis_code,
             "compute_usd": compute_usd,
+            "configured_model": configured_model,
             "elapsed_seconds": elapsed,
             "failure_code": failure_code,
             "failure_class": failure_class,
             "founder_hours": founder_hours,
             "input_tokens": input_tokens,
+            "market_estimate_source_code": market_estimate_source_code,
+            "market_estimate_usd": market_estimate_usd,
             "model": model,
+            "model_attestation": model_attestation,
             "next_step_code": next_step_code,
             "oracle_status": oracle_status,
             "outcome": outcome,
             "output_tokens": output_tokens,
+            "quota_observation_code": quota_observation_code,
+            "record_schema_version": 2,
+            "retry_count": retry_count,
             "round_id": round_id,
             "source_ref": active["source_ref"],
             "source_ref_sha": active["source_ref_sha"],
@@ -1662,13 +2686,13 @@ def finish_round(
             "stage": task["stage"],
             "started_at": active["claimed_at"],
             "task_id": task["task_id"],
+            "total_tokens": total_tokens,
             "worker_starts": worker_starts,
         }
         append_jsonl(paths(root)["rounds"], record)
         state["active_round"] = None
         state["last_round_id"] = round_id
         state["rounds_completed"] += 1
-        counter["worker_starts"] += worker_starts
         _expire_if_needed(state, pilot, now)
         atomic_write_json(paths(root)["backlog"], backlog)
         atomic_write_json(paths(root)["state"], state)
@@ -1683,6 +2707,9 @@ def register_worker(
     kind: str,
     model: str,
     channel_code: str = "MODEL_WORKER",
+    configured_model: str = "UNKNOWN",
+    call_method: str = "UNKNOWN",
+    round_id: str | None = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
@@ -1691,14 +2718,26 @@ def register_worker(
     with control_lock(root, pilot):
         if not _channel_is_active(state, channel_code):
             raise PausedError(f"execution channel {channel_code} is not ACTIVE")
+        if round_id is not None:
+            active = state.get("active_round")
+            if not active or active.get("round_id") != round_id:
+                raise LeaseError("worker event must reference the active round")
         counter = _today_counter(state, now)
         if counter["worker_starts"] >= pilot["budgets"]["max_worker_starts_per_day"]:
             raise BudgetError("daily worker-start budget exhausted")
+        if not isinstance(model, str) or not model or not isinstance(configured_model, str) or not configured_model:
+            raise ConfigError("actual and configured worker model fields must be non-empty")
+        if not isinstance(call_method, str) or not CODE_VALUE_RE.fullmatch(call_method):
+            raise ConfigError("invalid worker call method")
         event = {
+            "call_method": call_method,
             "channel_code": channel_code,
+            "configured_model": configured_model,
             "event_id": f"AEG-M-{uuid.uuid4().hex}",
             "kind": kind,
             "model": model,
+            "record_schema_version": 2,
+            "round_id": round_id,
             "started_at": format_time(now),
             "status": "STARTED",
         }
@@ -1718,6 +2757,11 @@ def finish_worker(
     output_tokens: str = "UNKNOWN",
     total_tokens: str = "UNKNOWN",
     compute_usd: str = "UNKNOWN",
+    model_attestation: str = "UNKNOWN",
+    retry_count: int = 0,
+    compute_cost_basis_code: str = "UNKNOWN",
+    market_estimate_usd: str = "UNKNOWN",
+    market_estimate_source_code: str = "UNKNOWN",
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
@@ -1735,12 +2779,47 @@ def finish_worker(
             "QUOTA_FAILED",
         }:
             raise ConfigError("invalid worker status")
+        for field, value in (
+            ("compute_usd", compute_usd),
+            ("market_estimate_usd", market_estimate_usd),
+        ):
+            if not valid_decimal_measurement(value):
+                raise ConfigError(f"invalid worker measurement: {field}")
+        for field, value in (
+            ("input_tokens", input_tokens),
+            ("output_tokens", output_tokens),
+            ("total_tokens", total_tokens),
+        ):
+            if not valid_token_measurement(value):
+                raise ConfigError(f"invalid worker token measurement: {field}")
+        if all(value != "UNKNOWN" for value in (input_tokens, output_tokens, total_tokens)) and (
+            int(input_tokens) + int(output_tokens) != int(total_tokens)
+        ):
+            raise ConfigError("worker input and output tokens do not equal total tokens")
+        if not isinstance(retry_count, int) or retry_count < 0:
+            raise ConfigError("worker retry count must be non-negative")
+        for field, value in (
+            ("model_attestation", model_attestation),
+            ("compute_cost_basis_code", compute_cost_basis_code),
+            ("market_estimate_source_code", market_estimate_source_code),
+        ):
+            if not isinstance(value, str) or not CODE_VALUE_RE.fullmatch(value):
+                raise ConfigError(f"invalid worker evidence code: {field}")
+        if compute_usd != "UNKNOWN" and compute_cost_basis_code == "UNKNOWN":
+            raise ConfigError("known worker compute USD requires a cost basis code")
+        if market_estimate_usd != "UNKNOWN" and market_estimate_source_code == "UNKNOWN":
+            raise ConfigError("known worker market estimate requires a source code")
         event.update(
             {
                 "completed_at": format_time(now),
+                "compute_cost_basis_code": compute_cost_basis_code,
                 "compute_usd": compute_usd,
                 "input_tokens": input_tokens,
+                "market_estimate_source_code": market_estimate_source_code,
+                "market_estimate_usd": market_estimate_usd,
+                "model_attestation": model_attestation,
                 "output_tokens": output_tokens,
+                "retry_count": retry_count,
                 "total_tokens": total_tokens,
                 "status": status,
             }
@@ -1796,15 +2875,51 @@ def resume(root: Path, now: datetime | None = None) -> dict[str, Any]:
         return {"pilot_status": "ACTIVE", "resumed_at": format_time(now)}
 
 
+def pause_and_persist(root: Path, reason_code: str) -> dict[str, Any]:
+    _, _, state = load_all(root)
+    reconciliation: dict[str, Any] | None = None
+    if state.get("pending_effect"):
+        try:
+            reconciliation = reconcile_push_command(root)
+        except FoundryError as error:
+            pause_result = pause(root, reason_code)
+            return {
+                "pause": pause_result,
+                "persistence": "DEFERRED_PENDING_EFFECT",
+                "reconciliation_error": str(error),
+            }
+    pause_result = pause(root, reason_code)
+    _, _, paused_state = load_all(root)
+    if paused_state.get("active_round"):
+        return {
+            "pause": pause_result,
+            "persistence": "DEFERRED_ACTIVE_ROUND_SAFE_CHECKPOINT_REQUIRED",
+            "reconciliation": reconciliation,
+        }
+    return {
+        "pause": pause_result,
+        "persistence": persist(root, paused_state["last_round_id"], push=True),
+        "reconciliation": reconciliation,
+    }
+
+
 def _counts(backlog: dict[str, Any]) -> dict[str, int]:
     candidates = backlog["candidates"]
     work = backlog["work_items"]
+    verifications = backlog.get("behavior_verifications", [])
     experiences = backlog.get("experiences", [])
     transfers = backlog.get("transfer_evaluations", [])
     return {
         "candidates": len(candidates),
         "qualified": sum(item["qualification"] == "QUALIFIED" for item in candidates),
-        "behavior_verified": sum(item.get("behavior_verification") == "PASSED" for item in candidates),
+        "behavior_verified": len(
+            {
+                item.get("candidate_id")
+                for item in verifications
+                if item.get("status") == "COMPLETED"
+                and item.get("outcome") == "VERIFIED_REPAIR"
+            }
+        ),
         "release_review_experiences": len(
             {
                 item.get("experience_id")
@@ -1833,6 +2948,8 @@ def render_status(
     if pilot is None or backlog is None or state is None:
         pilot, backlog, state = load_all(root)
     counts = _counts(backlog)
+    verified_users, strong_user_evidence = _external_user_evidence(state)
+    verified_external_reuse = _verified_external_reuse_count(state)
     active = state.get("active_round")
     next_items = sorted(
         (item for item in backlog["work_items"] if item["status"] != "COMPLETED"),
@@ -1870,6 +2987,10 @@ def render_status(
         f"- Independently behavior-verified tasks: `{counts['behavior_verified']} / {pilot['targets']['independently_behavior_verified_tasks']}`",
         f"- Release-review Experiences: `{counts['release_review_experiences']} / {pilot['targets']['release_review_experiences_min']}-{pilot['targets']['release_review_experiences_max']}`",
         f"- Held-out positive transfers: `{counts['held_out_positive_transfers']} / 3`",
+        f"- Verified external users: `{verified_users} / 3`",
+        f"- External users with strong evidence: `{strong_user_evidence} / 1`",
+        f"- Independently verified external successful reuses: `{verified_external_reuse}`",
+        f"- Integrity incident counts: `{json.dumps(_integrity_incident_counts(state), sort_keys=True, separators=(',', ':'))}`",
         f"- Rounds: `{state['rounds_completed']} completed / {state['rounds_started']} started / {pilot['budgets']['max_rounds_total']} max`",
         "",
         "## Current focus and bottleneck",
@@ -1929,6 +3050,14 @@ def _ratio(numerator: int, denominator: str) -> str:
     return _decimal_text(Decimal(numerator) / parsed)
 
 
+def _cost_per_unit(total: str, units: int) -> str:
+    if total == "UNKNOWN":
+        return "UNKNOWN"
+    if units == 0:
+        return "UNDEFINED_ZERO_QUALIFIED"
+    return _decimal_text(Decimal(total) / Decimal(units))
+
+
 def _qualification_rate(counts: dict[str, int]) -> str:
     if not counts["candidates"]:
         return "UNDEFINED_NO_CANDIDATES"
@@ -1958,14 +3087,34 @@ def _external_user_evidence(state: dict[str, Any]) -> tuple[int, int]:
     return len(verified), stronger
 
 
+def _verified_external_reuse_count(state: dict[str, Any]) -> int:
+    return len(
+        {
+            item.get("reuse_id")
+            for item in state.get("external_reuse_events", [])
+            if item.get("status") == "VERIFIED" and item.get("outcome") == "SUCCESS"
+        }
+    )
+
+
+def _integrity_incident_counts(state: dict[str, Any]) -> dict[str, int]:
+    return {
+        status: sum(
+            item.get("status") == status for item in state.get("integrity_incidents", [])
+        )
+        for status in ("CONTROLLED", "UNCONTROLLED")
+    }
+
+
 def _continuation_gates(
     pilot: dict[str, Any],
     counts: dict[str, int],
     state: dict[str, Any],
     records: list[dict[str, Any]],
 ) -> dict[str, bool]:
-    founder_hours = _known_total(records, "founder_hours")
-    compute_usd = _known_total(records, "compute_usd")
+    discovery_records = [record for record in records if record.get("stage") == "DISCOVERY"]
+    founder_hours = _known_total(discovery_records, "founder_hours")
+    compute_usd = _known_total(discovery_records, "compute_usd")
     verified_users, strong_user_evidence = _external_user_evidence(state)
     uncontrolled_incidents = sum(
         item.get("status") == "UNCONTROLLED" for item in state["integrity_incidents"]
@@ -2017,12 +3166,16 @@ def generate_due_reports(
     completed_weeks = min(6, max(0, int((now - start).total_seconds() // (7 * 86400))))
     counts = _counts(backlog)
     records = _round_records(root)
+    worker_events = state.get("worker_events", [])
     cumulative_founder_hours = _known_total(records, "founder_hours")
-    cumulative_compute_usd = _known_total(records, "compute_usd")
+    cumulative_compute_usd = _known_total([*records, *worker_events], "compute_usd")
+    discovery_records = [record for record in records if record.get("stage") == "DISCOVERY"]
+    acquisition_founder_hours = _known_total(discovery_records, "founder_hours")
+    acquisition_compute_usd = _known_total(discovery_records, "compute_usd")
     created: list[str] = []
     for week in range(1, completed_weeks + 1):
         report = reports / f"week-{week:02d}.md"
-        if report.exists():
+        if report.exists() and not _weekly_report_schema_errors(report, week, start):
             continue
         window_start = start + timedelta(days=7 * (week - 1))
         window_end = start + timedelta(days=7 * week)
@@ -2030,6 +3183,11 @@ def generate_due_reports(
             record
             for record in records
             if window_start <= parse_time(record["completed_at"]) < window_end
+        ]
+        week_worker_events = [
+            event
+            for event in worker_events
+            if window_start <= parse_time(event["started_at"]) < window_end
         ]
         priority = {"HARMFUL": 6, "SUCCESS": 5, "NEUTRAL": 4, "FAILURE": 3, "INVALID": 2, "BLOCKED": 1}
         important = max(
@@ -2046,22 +3204,56 @@ def generate_due_reports(
             outcome: sum(record.get("outcome") == outcome for record in week_records)
             for outcome in ("SUCCESS", "NEUTRAL", "HARMFUL", "FAILURE", "INVALID", "BLOCKED")
         }
-        week_worker_starts = sum(int(record.get("worker_starts", 0)) for record in week_records)
+        week_worker_starts = sum(
+            int(record.get("worker_starts", 0)) for record in week_records
+        ) + len(week_worker_events)
+        verified_users, strong_user_evidence = _external_user_evidence(state)
+        verified_external_reuse = _verified_external_reuse_count(state)
+        weekly_founder_hours = _known_total(week_records, "founder_hours")
+        weekly_compute_usd = _known_total(
+            [*week_records, *week_worker_events], "compute_usd"
+        )
+        model_usage = [
+            {
+                "call_method": event.get("call_method", "UNKNOWN"),
+                "compute_usd": event.get("compute_usd", "UNKNOWN"),
+                "configured_model": event.get("configured_model", "UNKNOWN"),
+                "kind": event.get("kind", "UNKNOWN"),
+                "model": event.get("model", "UNKNOWN"),
+                "model_attestation": event.get("model_attestation", "UNKNOWN"),
+                "retry_count": event.get("retry_count", "UNKNOWN"),
+                "status": event.get("status", "UNKNOWN"),
+                "total_tokens": event.get("total_tokens", "UNKNOWN"),
+            }
+            for event in week_worker_events
+        ]
         content = "\n".join(
             [
                 f"# AEG Foundry week {week}",
                 "",
+                f"- Window start: `{format_time(window_start)}`",
+                f"- Window end: `{format_time(window_end)}`",
                 f"- Candidates: `{counts['candidates']} / {pilot['targets']['deduplicated_external_candidates']}`",
                 f"- Qualified: `{counts['qualified']} / {pilot['targets']['qualified_tasks']}`",
                 f"- Qualification rate: `{_qualification_rate(counts)}`",
                 f"- Behavior verified: `{counts['behavior_verified']} / {pilot['targets']['independently_behavior_verified_tasks']}`",
+                f"- Release-review Experiences: `{counts['release_review_experiences']} / {pilot['targets']['release_review_experiences_min']}-{pilot['targets']['release_review_experiences_max']}`",
                 f"- Positive held-out transfers: `{counts['held_out_positive_transfers']} / 3`",
+                f"- Verified external users: `{verified_users} / 3`",
+                f"- External users with strong evidence: `{strong_user_evidence} / 1`",
+                f"- Independently verified external successful reuses: `{verified_external_reuse}`",
                 f"- Most important recorded outcome: `{highlight}`",
                 f"- Weekly outcome counts: `{json.dumps(outcome_counts, sort_keys=True, separators=(',', ':'))}`",
-                f"- Weekly founder hours: `{_known_total(week_records, 'founder_hours')}`",
-                f"- Weekly compute USD: `{_known_total(week_records, 'compute_usd')}`",
+                f"- Weekly founder hours: `{weekly_founder_hours}`",
+                f"- Weekly compute USD: `{weekly_compute_usd}`",
+                f"- Acquisition founder hours per qualified task: `{_cost_per_unit(acquisition_founder_hours, counts['qualified'])}`",
+                f"- Acquisition compute USD per qualified task: `{_cost_per_unit(acquisition_compute_usd, counts['qualified'])}`",
+                f"- Verified external reuse per founder hour: `{_ratio(verified_external_reuse, cumulative_founder_hours)}`",
+                f"- Verified external reuse per compute USD: `{_ratio(verified_external_reuse, cumulative_compute_usd)}`",
                 f"- Weekly worker starts: `{week_worker_starts}`",
+                f"- Weekly model usage events: `{json.dumps(model_usage, sort_keys=True, separators=(',', ':')) if model_usage else 'NONE'}`",
                 f"- Founder interventions: `{state['founder_interventions']}`",
+                f"- Integrity incident counts: `{json.dumps(_integrity_incident_counts(state), sort_keys=True, separators=(',', ':'))}`",
                 f"- Account quota observation: `UNKNOWN_NOT_PUBLICLY_RECORDED`",
                 f"- Bottleneck: `{'BLOCKED_ENVIRONMENT' if counts['blocked_environment'] else 'NONE'}`",
                 f"- Next focus: `{backlog['work_items'][-1]['next_step_code']}`",
@@ -2083,7 +3275,7 @@ def generate_due_reports(
                 for name, passed in gates.items()
             ]
             verified_users, strong_user_evidence = _external_user_evidence(state)
-            verified_reuse = counts["behavior_verified"]
+            verified_reuse = _verified_external_reuse_count(state)
             atomic_write(
                 final,
                 "\n".join(
@@ -2099,11 +3291,15 @@ def generate_due_reports(
                         f"- Release-review Experiences: `{counts['release_review_experiences']}`",
                         f"- Verified external users: `{verified_users}`",
                         f"- External users with receipt, repeat use, or new task: `{strong_user_evidence}`",
+                        f"- Independently verified external successful reuses: `{verified_reuse}`",
                         f"- Founder hours: `{cumulative_founder_hours}`",
                         f"- Compute USD: `{cumulative_compute_usd}`",
+                        f"- Acquisition founder hours per qualified task: `{_cost_per_unit(acquisition_founder_hours, counts['qualified'])}`",
+                        f"- Acquisition compute USD per qualified task: `{_cost_per_unit(acquisition_compute_usd, counts['qualified'])}`",
                         f"- Verified external reuse per founder hour: `{_ratio(verified_reuse, cumulative_founder_hours)}`",
                         f"- Verified external reuse per compute USD: `{_ratio(verified_reuse, cumulative_compute_usd)}`",
                         f"- Human decision queue: `{_active_decision_codes(state)}`",
+                        f"- Integrity incident counts: `{json.dumps(_integrity_incident_counts(state), sort_keys=True, separators=(',', ':'))}`",
                         "",
                         *gate_lines,
                         "",
@@ -2248,13 +3444,25 @@ def parser() -> argparse.ArgumentParser:
     finish.add_argument("--founder-hours", default="UNKNOWN")
     finish.add_argument("--compute-usd", default="UNKNOWN")
     finish.add_argument("--model", default="UNKNOWN")
+    finish.add_argument("--configured-model", default="UNKNOWN")
+    finish.add_argument("--model-attestation", default="UNKNOWN")
+    finish.add_argument("--call-method", default="UNKNOWN")
     finish.add_argument("--input-tokens", default="UNKNOWN")
     finish.add_argument("--output-tokens", default="UNKNOWN")
-    finish.add_argument("--worker-starts", type=int, default=1)
+    finish.add_argument("--total-tokens", default="UNKNOWN")
+    finish.add_argument("--retry-count", type=int, default=0)
+    finish.add_argument("--compute-cost-basis-code", default="UNKNOWN")
+    finish.add_argument("--market-estimate-usd", default="UNKNOWN")
+    finish.add_argument("--market-estimate-source-code", default="UNKNOWN")
+    finish.add_argument("--quota-observation-code", default="UNKNOWN")
+    finish.add_argument("--worker-starts", type=int)
     worker = commands.add_parser("register-worker")
     worker.add_argument("--kind", required=True)
     worker.add_argument("--model", required=True)
     worker.add_argument("--channel", default="MODEL_WORKER")
+    worker.add_argument("--configured-model", default="UNKNOWN")
+    worker.add_argument("--call-method", default="UNKNOWN")
+    worker.add_argument("--round-id")
     worker_finish = commands.add_parser("finish-worker")
     worker_finish.add_argument("--event-id", required=True)
     worker_finish.add_argument(
@@ -2273,6 +3481,11 @@ def parser() -> argparse.ArgumentParser:
     worker_finish.add_argument("--output-tokens", default="UNKNOWN")
     worker_finish.add_argument("--total-tokens", default="UNKNOWN")
     worker_finish.add_argument("--compute-usd", default="UNKNOWN")
+    worker_finish.add_argument("--model-attestation", default="UNKNOWN")
+    worker_finish.add_argument("--retry-count", type=int, default=0)
+    worker_finish.add_argument("--compute-cost-basis-code", default="UNKNOWN")
+    worker_finish.add_argument("--market-estimate-usd", default="UNKNOWN")
+    worker_finish.add_argument("--market-estimate-source-code", default="UNKNOWN")
     pause_command = commands.add_parser("pause")
     pause_command.add_argument("--reason-code", required=True)
     pause_command.add_argument("--push", action="store_true")
@@ -2326,13 +3539,32 @@ def main(argv: list[str] | None = None) -> int:
                     founder_hours=arguments.founder_hours,
                     compute_usd=arguments.compute_usd,
                     model=arguments.model,
+                    configured_model=arguments.configured_model,
+                    model_attestation=arguments.model_attestation,
+                    call_method=arguments.call_method,
                     input_tokens=arguments.input_tokens,
                     output_tokens=arguments.output_tokens,
+                    total_tokens=arguments.total_tokens,
+                    retry_count=arguments.retry_count,
+                    compute_cost_basis_code=arguments.compute_cost_basis_code,
+                    market_estimate_usd=arguments.market_estimate_usd,
+                    market_estimate_source_code=arguments.market_estimate_source_code,
+                    quota_observation_code=arguments.quota_observation_code,
                     worker_starts=arguments.worker_starts,
                 )
             )
         elif arguments.command == "register-worker":
-            output(register_worker(root, arguments.kind, arguments.model, arguments.channel))
+            output(
+                register_worker(
+                    root,
+                    arguments.kind,
+                    arguments.model,
+                    arguments.channel,
+                    configured_model=arguments.configured_model,
+                    call_method=arguments.call_method,
+                    round_id=arguments.round_id,
+                )
+            )
         elif arguments.command == "finish-worker":
             output(
                 finish_worker(
@@ -2344,24 +3576,18 @@ def main(argv: list[str] | None = None) -> int:
                     output_tokens=arguments.output_tokens,
                     total_tokens=arguments.total_tokens,
                     compute_usd=arguments.compute_usd,
+                    model_attestation=arguments.model_attestation,
+                    retry_count=arguments.retry_count,
+                    compute_cost_basis_code=arguments.compute_cost_basis_code,
+                    market_estimate_usd=arguments.market_estimate_usd,
+                    market_estimate_source_code=arguments.market_estimate_source_code,
                 )
             )
         elif arguments.command == "pause":
-            pause_result = pause(root, arguments.reason_code)
             if arguments.push:
-                _, _, paused_state = load_all(root)
-                output(
-                    {
-                        "pause": pause_result,
-                        "persistence": persist(
-                            root,
-                            paused_state["last_round_id"],
-                            push=True,
-                        ),
-                    }
-                )
+                output(pause_and_persist(root, arguments.reason_code))
             else:
-                output(pause_result)
+                output(pause(root, arguments.reason_code))
         elif arguments.command == "resume":
             output(resume(root))
         elif arguments.command == "reconcile-push":

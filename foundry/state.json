@@ -254,27 +254,53 @@
       "resolved_at": "2026-09-06T08:33:03Z",
       "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
       "target_code": "UPDATE_DRAFT_PR_BUDGET_SAFE_RECOVERY"
+    },
+    {
+      "effect_id": "AEG-I-e3d1f63eb0e14f33bf1f33fdf7161817",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "bb074120ab621ae08ec8bfcf6d21cf3fcb066a64",
+      "verified_at": "2026-09-06T08:57:36Z"
+    },
+    {
+      "effect_id": "AEG-I-0e937d7daf1e45488fa100a72e4f8b72",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:58:57Z",
+      "resolved_at": "2026-09-06T09:00:13Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_EVIDENCE_LEDGER_V2"
     }
   ],
+  "external_reuse_events": [],
   "external_users": [],
   "founder_interventions": 1,
   "human_decision_queue": [],
-  "integrity_incidents": [],
+  "integrity_incidents": [
+    {
+      "affected_record_code": "ROUND_002:COMPUTE_USD",
+      "containment_code": "ROUND_RESOURCE_SCHEMA_V2_REQUIRES_COST_BASIS",
+      "evidence_digest_sha256": "aecb85495c7adef8a1f4310a533a74e5dec7651982e516d83df944c90d893c49",
+      "incident_code": "LEGACY_UNATTESTED_ZERO_COMPUTE_COST",
+      "incident_id": "AEG-II-001",
+      "observed_at": "2026-09-06T08:48:38Z",
+      "status": "CONTROLLED"
+    }
+  ],
   "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
   "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
   "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-e3d1f63eb0e14f33bf1f33fdf7161817",
+    "effect_id": "AEG-I-ef2dd6b20d1c488eb278744ceadb12d4",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T08:33:09Z",
+    "recorded_at": "2026-09-06T09:01:01Z",
     "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },
   "pilot_status": "ACTIVE",
   "rounds_completed": 2,
   "rounds_started": 2,
-  "schema_version": 1,
+  "schema_version": 2,
   "worker_events": [
     {
       "completed_at": "2026-09-06T07:32:28Z",

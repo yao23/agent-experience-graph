@@ -40,6 +40,12 @@ the charter's clean disposable-environment gate is already satisfied. Never
 read historical `.aeg` content. Keep raw logs and model output only in
 `.aeg-foundry-private/`.
 
+Do not rewrite a committed candidate classification or put verification flags
+on candidates. A behavior-verification stage writes a first-class
+`behavior_verifications[]` record only after an independent verifier actually
+runs the frozen oracle in isolated baseline and repaired environments and saves
+both command/exit/evidence receipts. Baseline must fail and repaired must pass.
+
 For an Experience stage, write only the code-only, digest-pinned artifact shape
 accepted under `foundry/experiences/`, and register its sources and builder
 tasks in `experiences[]`. For a held-out transfer, preregister all frozen fields
@@ -54,8 +60,22 @@ or positive-transfer counts. Committed Experience versions, preregistered
 frozen fields, and terminal transfer results are append-only; use a new version
 or transfer ID rather than rewriting history.
 
+Treat external adoption separately from internal verification. Self-reports may
+be registered but do not verify a user or successful reuse. Only a
+digest-backed deterministic oracle run for a verified external user, stored in
+`external_reuse_events[]` with an independent verifier and fresh environment,
+enters the external-success numerator. Never count the founder, this loop, its
+agents, or project CI as an external user.
+
 Finish with the actual deterministic oracle outcome using
 `python3 scripts/aeg_foundry.py finish-round`; `SUCCESS` requires `PASSED`.
+The controller charges the scheduled worker at claim time, including crashes;
+register every extra worker against the active round ID and let finish infer the
+total from those events.
+Record configured and observed model separately, model attestation, call method,
+input/output/total tokens, retries, quota observation, actual-cost basis, and any
+market estimate with its source. Use `UNKNOWN` rather than zero whenever a value
+or its evidence is not observable.
 For `FAILURE` or `BLOCKED`, classify the cause with `--failure-class` and retain
 the actual failure code. Respect the claimed task's `channel_code`: two
 consecutive identical infrastructure failures quarantine that channel, while
@@ -71,3 +91,14 @@ separate authorization required by the charter.
 Notify only for a real milestone, failure, terminal conclusion, or required
 human decision. The fixed pilot expiry is `2026-10-18T07:22:29Z`; do not start
 new experiments at or after it.
+
+If the controller synthesizes a due `REPORTING` task after ordinary work is
+exhausted, complete only that stage with
+`WEEKLY_REPORT_SCHEMA_AND_WINDOW_CHECK`; the controller creates the missing
+weekly report deterministically and includes all model-worker events.
+
+An operator may pause through `python3 scripts/aeg_foundry.py pause
+--reason-code OPERATOR_REQUEST --push`. The command reconciles an already-pushed
+checkpoint first; if an unresolved non-push effect or active round prevents
+remote persistence, the local pause remains effective and reports the exact
+deferred condition for safe resolution.

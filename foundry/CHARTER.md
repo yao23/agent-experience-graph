@@ -37,6 +37,11 @@ A success needs a deterministic oracle run by an independent verifier from the
 frozen revision in a fresh qualified environment. Review of a solver summary is
 not independent verification. A baseline that passes, an oracle that did not
 run, tool failure, or missing telemetry cannot be counted as positive transfer.
+Candidate annotations cannot establish independently verified behavior; that
+count requires a separate immutable baseline-failure/repaired-success record.
+Likewise, the external-success reuse numerator includes only deterministic
+oracle runs for verified external users, never founder, Foundry-agent, project
+CI, or self-reported claims.
 
 ## Execution and isolation gate
 

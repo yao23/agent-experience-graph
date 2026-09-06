@@ -66,6 +66,7 @@ class FoundryFixture(unittest.TestCase):
                 "counters_by_utc_day": {},
                 "discovery_no_qualified_streak": 0,
                 "effect_events": [],
+                "external_reuse_events": [],
                 "external_users": [],
                 "founder_interventions": 1,
                 "human_decision_queue": [],
@@ -78,7 +79,7 @@ class FoundryFixture(unittest.TestCase):
                 "pilot_status": "ACTIVE",
                 "rounds_completed": 0,
                 "rounds_started": 0,
-                "schema_version": 1,
+                "schema_version": 2,
                 "worker_events": [],
             },
         )
@@ -106,12 +107,21 @@ class FoundryFixture(unittest.TestCase):
 
     def add_valid_positive_transfer(self) -> dict:
         backlog = self.load("backlog")
-        target_id = "AEG-C-011"
-        target = next(
-            item for item in backlog["candidates"] if item["candidate_id"] == target_id
+        target_id = "AEG-C-999"
+        backlog["candidates"].append(
+            {
+                "candidate_id": target_id,
+                "category": "HELD_OUT_TRANSFER",
+                "contamination": "LOW",
+                "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+                "issue_number": 999999,
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "qualification": "QUALIFIED",
+                "repository": "example/held-out-project",
+                "source_state": "OPEN",
+                "source_url": "https://github.com/example/held-out-project/issues/999999",
+            }
         )
-        target["category"] = "HELD_OUT_TRANSFER"
-        target["qualification"] = "QUALIFIED"
         transfer_task = {
             "attempts": 1,
             "candidate_ids": [target_id],
@@ -126,11 +136,66 @@ class FoundryFixture(unittest.TestCase):
             "task_id": "AEG-W-900",
         }
         backlog["work_items"].append(transfer_task)
+        verification_task = {
+            "attempts": 1,
+            "candidate_ids": ["AEG-C-001"],
+            "channel_code": "DISPOSABLE_RUNTIME",
+            "claim": None,
+            "failure_code": None,
+            "next_step_code": "BUILD_EXPERIENCE",
+            "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+            "priority": 71,
+            "stage": "VERIFICATION",
+            "status": "COMPLETED",
+            "task_id": "AEG-W-899",
+        }
+        backlog["work_items"].append(verification_task)
         builder_task = next(
             item for item in backlog["work_items"] if item["task_id"] == "AEG-W-001"
         )
         builder_task["attempts"] = 1
         builder_task["status"] = "COMPLETED"
+        backlog["behavior_verifications"] = [
+            {
+                "baseline": {
+                    "command_argv": ["python3", "frozen_oracle.py"],
+                    "environment_code": "ENV_BASELINE_VERIFY_001",
+                    "evidence_digest_sha256": "c" * 64,
+                    "evidence_summary_codes": ["BASELINE_FAILURE_REPRODUCED"],
+                    "exit_code": 1,
+                    "oracle_observation": "FAILURE",
+                    "workspace_code": "WS_BASELINE_VERIFY_001",
+                },
+                "budget": {
+                    "max_retries": 0,
+                    "max_seconds": 2700,
+                    "max_worker_starts": 2,
+                },
+                "candidate_id": "AEG-C-001",
+                "finished_at": "2026-09-06T08:00:00Z",
+                "model_config": {"model": "TEST_MODEL", "reasoning_effort": "low"},
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "oracle_version": 1,
+                "outcome": "VERIFIED_REPAIR",
+                "repaired": {
+                    "command_argv": ["python3", "frozen_oracle.py"],
+                    "environment_code": "ENV_REPAIRED_VERIFY_001",
+                    "evidence_digest_sha256": "d" * 64,
+                    "evidence_summary_codes": ["REPAIRED_ORACLE_PASSED"],
+                    "exit_code": 0,
+                    "oracle_observation": "SUCCESS",
+                    "workspace_code": "WS_REPAIRED_VERIFY_001",
+                },
+                "result_revision": "b" * 40,
+                "solver_code": "SOLVER_VERIFY_001",
+                "started_at": "2026-09-06T07:58:00Z",
+                "status": "COMPLETED",
+                "target_revision": "a" * 40,
+                "task_id": "AEG-W-899",
+                "verification_id": "AEG-V-001",
+                "verifier_code": "VALIDATOR_VERIFY_001",
+            }
+        ]
         artifact = {
             "schema_version": 1,
             "experience_id": "AEG-X-001",
@@ -242,6 +307,46 @@ class FoundryFixture(unittest.TestCase):
         self.write("backlog", backlog)
         return backlog
 
+    def add_valid_external_reuse(self) -> tuple[dict, dict]:
+        backlog = self.add_valid_positive_transfer()
+        state = self.load("state")
+        state["external_users"] = [
+            {
+                "actor_class": "EXTERNAL",
+                "evidence_digest_sha256": "e" * 64,
+                "evidence_kind": "RECEIPT",
+                "evidence_summary_codes": ["EXTERNAL_RECEIPT_OBSERVED"],
+                "observed_at": "2026-09-06T08:04:00Z",
+                "status": "VERIFIED_EXTERNAL_USER",
+                "user_id": "AEG-U-001",
+                "verifier_code": "INDEPENDENT_USER_VALIDATOR_001",
+            }
+        ]
+        state["external_reuse_events"] = [
+            {
+                "command_argv": ["python3", "frozen_oracle.py"],
+                "evidence_digest_sha256": "f" * 64,
+                "evidence_summary_codes": ["EXTERNAL_ORACLE_EXIT_ZERO"],
+                "exit_code": 0,
+                "experience_id": "AEG-X-001",
+                "experience_version": 1,
+                "finished_at": "2026-09-06T08:06:00Z",
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "oracle_observation": "SUCCESS",
+                "oracle_version": 1,
+                "outcome": "SUCCESS",
+                "reuse_id": "AEG-ER-001",
+                "started_at": "2026-09-06T08:05:00Z",
+                "status": "VERIFIED",
+                "target_revision": "c" * 40,
+                "user_id": "AEG-U-001",
+                "verification_environment_code": "ENV_EXTERNAL_VERIFY_001",
+                "verifier_code": "INDEPENDENT_REUSE_VALIDATOR_001",
+            }
+        ]
+        self.write("state", state)
+        return backlog, state
+
 
 class FoundryTests(FoundryFixture):
     def test_initial_state_validates_and_public_fields_are_deduplicated(self) -> None:
@@ -271,6 +376,10 @@ class FoundryTests(FoundryFixture):
         )
         self.assertEqual(record["outcome"], "SUCCESS")
         self.assertEqual(foundry.validate(self.root, check_git=False)["completed_round_count"], 1)
+        self.assertEqual(
+            self.load("state")["counters_by_utc_day"]["2026-09-06"]["worker_starts"],
+            1,
+        )
         resumed = foundry.begin_round(
             self.root, now=self.start + timedelta(hours=12), check_git=False
         )
@@ -393,6 +502,10 @@ class FoundryTests(FoundryFixture):
 
     def test_expired_claim_is_recovered_then_reclaimed(self) -> None:
         first = foundry.begin_round(self.root, now=self.start, check_git=False)
+        self.assertEqual(
+            self.load("state")["counters_by_utc_day"]["2026-09-06"]["worker_starts"],
+            1,
+        )
         second = foundry.begin_round(
             self.root,
             now=self.start + timedelta(minutes=46),
@@ -401,6 +514,10 @@ class FoundryTests(FoundryFixture):
         self.assertNotEqual(first["round_id"], second["round_id"])
         self.assertEqual(second["recovery"]["resulting_task_status"], "READY")
         self.assertEqual(second["task_id"], "AEG-W-001")
+        self.assertEqual(
+            self.load("state")["counters_by_utc_day"]["2026-09-06"]["worker_starts"],
+            2,
+        )
 
     def test_pause_and_expiry_block_new_work(self) -> None:
         foundry.pause(self.root, "OPERATOR_REQUEST", now=self.start)
@@ -444,8 +561,61 @@ class FoundryTests(FoundryFixture):
         )
         self.assertIn("- Weekly founder hours: `UNKNOWN`", content)
         self.assertIn("- Weekly compute USD: `UNKNOWN`", content)
+        self.assertIn("- Release-review Experiences: `0 / 5-8`", content)
+        self.assertIn("- Verified external users: `0 / 3`", content)
+        self.assertIn("- Independently verified external successful reuses: `0`", content)
+        self.assertIn("- Acquisition compute USD per qualified task: `UNKNOWN`", content)
+        self.assertIn("- Weekly model usage events: `NONE`", content)
         self.assertIn("- Human decision queue: `NONE`", content)
         self.assertIn("not a held-out positive transfer", content)
+
+    def test_due_weekly_report_is_synthesized_as_bounded_work(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        next_candidate_number = 900
+        while len(backlog["candidates"]) < 30:
+            candidate_id = f"AEG-C-{next_candidate_number:03d}"
+            backlog["candidates"].append(
+                {
+                    "candidate_id": candidate_id,
+                    "category": "RETROSPECTIVE_REPRODUCTION",
+                    "contamination": "HIGH",
+                    "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+                    "issue_number": next_candidate_number,
+                    "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                    "qualification": "NOT_QUALIFIED",
+                    "repository": f"example/project-{next_candidate_number}",
+                    "source_state": "CLOSED",
+                    "source_url": f"https://github.com/example/project-{next_candidate_number}/issues/{next_candidate_number}",
+                }
+            )
+            next_candidate_number += 1
+        self.write("backlog", backlog)
+        week_one = self.start + timedelta(days=7)
+        claim = foundry.begin_round(self.root, now=week_one, check_git=False)
+        self.assertEqual(claim["stage"], "REPORTING")
+        self.assertEqual(claim["oracle_kind"], "WEEKLY_REPORT_SCHEMA_AND_WINDOW_CHECK")
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "CONTINUE_HIGHEST_VALUE_AUTHORIZED_WORK",
+            now=week_one + timedelta(minutes=1),
+        )
+        report = self.root / "foundry" / "reports" / "week-01.md"
+        self.assertTrue(report.is_file())
+        report_start = foundry.parse_time(self.load("pilot")["activation"]["starts_at"])
+        self.assertEqual(foundry._weekly_report_schema_errors(report, 1, report_start), [])
+
+    def test_incomplete_weekly_report_fails_validation(self) -> None:
+        foundry.atomic_write(
+            self.root / "foundry" / "reports" / "week-01.md",
+            "# AEG Foundry week 1\n",
+        )
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("week 1 report lacks required line", str(raised.exception))
 
     def test_final_report_exposes_each_unproven_continuation_gate(self) -> None:
         pilot, backlog, state = foundry.load_all(self.root)
@@ -469,6 +639,53 @@ class FoundryTests(FoundryFixture):
             content,
         )
 
+    def test_final_external_reuse_numerator_requires_verified_external_event(self) -> None:
+        backlog, state = self.add_valid_external_reuse()
+        pilot = self.load("pilot")
+        foundry.validate(self.root, check_git=False)
+        foundry.generate_due_reports(
+            self.root,
+            pilot,
+            backlog,
+            state,
+            datetime(2026, 10, 18, 7, 22, 29, tzinfo=timezone.utc),
+        )
+        content = (self.root / "foundry" / "reports" / "final.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("- Behavior verified: `1`", content)
+        self.assertIn("- Independently verified external successful reuses: `1`", content)
+
+    def test_uncontrolled_integrity_incident_permanently_fails_continuation_gate(self) -> None:
+        state = self.load("state")
+        state["integrity_incidents"] = [
+            {
+                "affected_record_code": "PUBLIC_STATE",
+                "containment_code": "NO_CONTAINMENT_AT_OBSERVATION",
+                "evidence_digest_sha256": "a" * 64,
+                "incident_code": "UNCONTROLLED_PUBLIC_DATA_EXPOSURE",
+                "incident_id": "AEG-II-001",
+                "observed_at": "2026-09-06T08:00:00Z",
+                "status": "UNCONTROLLED",
+            }
+        ]
+        self.write("state", state)
+        foundry.validate(self.root, check_git=False)
+        gates = foundry._continuation_gates(
+            self.load("pilot"),
+            foundry._counts(self.load("backlog")),
+            state,
+            [],
+        )
+        self.assertFalse(gates["NO_UNCONTROLLED_INCIDENTS"])
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record incident")
+        state["integrity_incidents"][0]["status"] = "CONTROLLED"
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("committed integrity incident ledger was rewritten", str(raised.exception))
+
     def test_persisted_pause_blocks_before_push_reconciliation(self) -> None:
         state = self.load("state")
         state["pilot_status"] = "PAUSED"
@@ -489,6 +706,49 @@ class FoundryTests(FoundryFixture):
                 check_git=False,
             )
         self.assertEqual(self.load("state")["pending_effect"]["effect_id"], "AEG-I-pause-checkpoint")
+
+    def test_pause_push_reconciles_prior_push_before_persisting(self) -> None:
+        state = self.load("state")
+        state["pending_effect"] = {
+            "effect_id": "AEG-I-before-pause",
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T07:59:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+
+        def reconcile(root: Path) -> dict:
+            reconciled = self.load("state")
+            reconciled["pending_effect"] = None
+            self.write("state", reconciled)
+            return {"outcome": "COMPLETED_VERIFIED"}
+
+        with mock.patch.object(foundry, "reconcile_push_command", side_effect=reconcile):
+            with mock.patch.object(
+                foundry,
+                "persist",
+                return_value={"push_reported_success": True},
+            ) as persistence:
+                result = foundry.pause_and_persist(self.root, "OPERATOR_REQUEST")
+        self.assertEqual(result["reconciliation"]["outcome"], "COMPLETED_VERIFIED")
+        self.assertTrue(result["persistence"]["push_reported_success"])
+        persistence.assert_called_once()
+        self.assertEqual(self.load("state")["pilot_status"], "PAUSED")
+
+    def test_pause_during_active_round_is_immediate_and_defers_push(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with mock.patch.object(foundry, "persist") as persistence:
+            result = foundry.pause_and_persist(self.root, "OPERATOR_REQUEST")
+        persistence.assert_not_called()
+        self.assertEqual(
+            result["persistence"],
+            "DEFERRED_ACTIVE_ROUND_SAFE_CHECKPOINT_REQUIRED",
+        )
+        state = self.load("state")
+        self.assertEqual(state["pilot_status"], "PAUSED")
+        self.assertEqual(state["active_round"]["round_id"], claim["round_id"])
+        self.assertTrue(state["active_round"]["stop_requested"])
 
     def test_expiry_reconciles_prior_push_before_writing_terminal_state(self) -> None:
         state = self.load("state")
@@ -548,14 +808,30 @@ class FoundryTests(FoundryFixture):
     def test_daily_and_total_budgets_fail_closed(self) -> None:
         state = self.load("state")
         state["rounds_started"] = 84
+        state["counters_by_utc_day"] = {
+            (self.start + timedelta(days=offset)).date().isoformat(): {
+                "round_starts": 2,
+                "worker_starts": 2,
+            }
+            for offset in range(42)
+        }
+        self.write("state", state)
+        with self.assertRaises(foundry.BudgetError):
+            foundry.begin_round(self.root, now=self.start, check_git=False)
+        state = self.load("state")
+        state["rounds_started"] = 2
+        state["counters_by_utc_day"] = {
+            "2026-09-06": {"round_starts": 2, "worker_starts": 2}
+        }
         self.write("state", state)
         with self.assertRaises(foundry.BudgetError):
             foundry.begin_round(self.root, now=self.start, check_git=False)
 
     def test_budget_block_leaves_committed_push_intent_for_a_later_eligible_run(self) -> None:
         state = self.load("state")
+        state["rounds_started"] = 2
         state["counters_by_utc_day"] = {
-            "2026-09-06": {"round_starts": 2, "worker_starts": 3}
+            "2026-09-06": {"round_starts": 2, "worker_starts": 2}
         }
         state["pending_effect"] = {
             "effect_id": "AEG-I-budget-safe-reconcile",
@@ -579,14 +855,6 @@ class FoundryTests(FoundryFixture):
             after["pending_effect"]["effect_id"], "AEG-I-budget-safe-reconcile"
         )
         self.assertEqual(after["effect_events"], [])
-        state = self.load("state")
-        state["rounds_started"] = 0
-        state["counters_by_utc_day"] = {
-            "2026-09-06": {"round_starts": 2, "worker_starts": 2}
-        }
-        self.write("state", state)
-        with self.assertRaises(foundry.BudgetError):
-            foundry.begin_round(self.root, now=self.start, check_git=False)
 
     def test_failed_or_missing_oracle_cannot_be_success(self) -> None:
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)
@@ -600,6 +868,83 @@ class FoundryTests(FoundryFixture):
                 now=self.start + timedelta(minutes=1),
             )
         self.assertEqual(self.load("state")["rounds_completed"], 0)
+
+    def test_round_resource_record_distinguishes_config_observation_and_estimate(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        record = foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            model="gpt-5.6-terra",
+            configured_model="gpt-5.6-terra",
+            model_attestation="CLIENT_REPORTED_MODEL",
+            call_method="CODEX_NATIVE_AUTOMATION",
+            input_tokens="10",
+            output_tokens="5",
+            total_tokens="15",
+            retry_count=1,
+            compute_usd="0.25",
+            compute_cost_basis_code="OBSERVED_ACCOUNT_CHARGE",
+            market_estimate_usd="0.40",
+            market_estimate_source_code="PUBLIC_PRICE_TABLE_2026_09_06",
+            quota_observation_code="CLIENT_USAGE_AVAILABLE",
+            now=self.start + timedelta(minutes=1),
+        )
+        self.assertEqual(record["record_schema_version"], 2)
+        self.assertEqual(record["total_tokens"], "15")
+        self.assertEqual(record["model_attestation"], "CLIENT_REPORTED_MODEL")
+        self.assertEqual(record["market_estimate_usd"], "0.40")
+        foundry.validate(self.root, check_git=False)
+
+    def test_known_cost_without_basis_and_mismatched_tokens_fail_closed(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError):
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                compute_usd="0",
+                now=self.start + timedelta(seconds=30),
+            )
+        with self.assertRaises(foundry.ConfigError):
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                input_tokens="10",
+                output_tokens="5",
+                total_tokens="99",
+                now=self.start + timedelta(seconds=31),
+            )
+
+    def test_committed_round_ledger_is_append_only(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record round")
+        rounds_path = self.root / "foundry" / "rounds.jsonl"
+        record = json.loads(rounds_path.read_text(encoding="utf-8"))
+        record["next_step_code"] = "REWRITTEN_HISTORY"
+        foundry.atomic_write(
+            rounds_path,
+            json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n",
+        )
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("committed round ledger was rewritten", str(raised.exception))
 
     def test_worker_start_budget_includes_canary(self) -> None:
         events = []
@@ -615,6 +960,65 @@ class FoundryTests(FoundryFixture):
         self.assertEqual(len(events), 6)
         with self.assertRaises(foundry.BudgetError):
             foundry.register_worker(self.root, "CANARY_7", "TEST_MODEL", now=self.start)
+
+    def test_worker_resource_receipt_records_call_tokens_retries_and_cost_basis(self) -> None:
+        event = foundry.register_worker(
+            self.root,
+            "REVIEW",
+            "gpt-5.6-terra",
+            configured_model="gpt-5.6-terra",
+            call_method="CODEX_MODEL_WORKER",
+            now=self.start,
+        )
+        completed = foundry.finish_worker(
+            self.root,
+            event["event_id"],
+            "PASSED",
+            input_tokens="100",
+            output_tokens="20",
+            total_tokens="120",
+            compute_usd="0.10",
+            model_attestation="CLIENT_REPORTED_MODEL",
+            retry_count=0,
+            compute_cost_basis_code="OBSERVED_ACCOUNT_CHARGE",
+            market_estimate_usd="0.15",
+            market_estimate_source_code="PUBLIC_PRICE_TABLE_2026_09_06",
+            now=self.start + timedelta(seconds=5),
+        )
+        self.assertEqual(completed["call_method"], "CODEX_MODEL_WORKER")
+        self.assertEqual(completed["total_tokens"], "120")
+        foundry.validate(self.root, check_git=False)
+
+    def test_round_worker_total_is_inferred_from_linked_events_without_double_counting(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        event = foundry.register_worker(
+            self.root,
+            "REVIEW",
+            "TEST_MODEL",
+            round_id=claim["round_id"],
+            now=self.start + timedelta(seconds=1),
+        )
+        foundry.finish_worker(
+            self.root,
+            event["event_id"],
+            "PASSED",
+            now=self.start + timedelta(seconds=2),
+        )
+        record = foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        self.assertEqual(record["worker_starts"], 2)
+        state = self.load("state")
+        self.assertEqual(
+            state["counters_by_utc_day"]["2026-09-06"]["worker_starts"],
+            2,
+        )
+        foundry.validate(self.root, check_git=False)
 
     def test_same_infrastructure_failure_twice_quarantines_only_its_channel(self) -> None:
         failure_codes = ("GITHUB_API_502", "GITHUB_API_503", "GITHUB_API_503")
@@ -750,6 +1154,7 @@ class FoundryTests(FoundryFixture):
         backlog = self.add_valid_positive_transfer()
         foundry.validate(self.root, check_git=False)
         counts = foundry._counts(backlog)
+        self.assertEqual(counts["behavior_verified"], 1)
         self.assertEqual(counts["release_review_experiences"], 1)
         self.assertEqual(counts["held_out_positive_transfers"], 1)
 
@@ -757,11 +1162,87 @@ class FoundryTests(FoundryFixture):
         backlog = self.load("backlog")
         backlog["candidates"][0]["release_review_status"] = "READY"
         backlog["candidates"][0]["transfer_outcome"] = "POSITIVE"
+        backlog["candidates"][0]["behavior_verification"] = "PASSED"
         self.write("backlog", backlog)
-        foundry.validate(self.root, check_git=False)
         counts = foundry._counts(backlog)
         self.assertEqual(counts["release_review_experiences"], 0)
         self.assertEqual(counts["held_out_positive_transfers"], 0)
+        self.assertEqual(counts["behavior_verified"], 0)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("candidate fields are not allowlisted", str(raised.exception))
+
+    def test_committed_candidate_qualification_cannot_be_reclassified(self) -> None:
+        backlog = self.load("backlog")
+        backlog["candidates"][1]["qualification"] = "QUALIFIED"
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("committed candidate classification was rewritten", str(raised.exception))
+
+    def test_behavior_verification_requires_an_independent_verifier(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        verification = backlog["behavior_verifications"][0]
+        verification["verifier_code"] = verification["solver_code"]
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("independent verifier missing", str(raised.exception))
+
+    def test_release_ready_experience_requires_verified_source_behavior(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["behavior_verifications"] = []
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("lacks independently verified sources", str(raised.exception))
+
+    def test_verified_external_reuse_is_separate_from_behavior_verification(self) -> None:
+        backlog, state = self.add_valid_external_reuse()
+        foundry.validate(self.root, check_git=False)
+        self.assertEqual(foundry._counts(backlog)["behavior_verified"], 1)
+        self.assertEqual(foundry._verified_external_reuse_count(state), 1)
+        self.assertEqual(foundry._external_user_evidence(state), (1, 1))
+
+    def test_self_report_does_not_become_verified_user_or_reuse(self) -> None:
+        state = self.load("state")
+        state["external_users"] = [
+            {
+                "actor_class": "EXTERNAL",
+                "evidence_digest_sha256": "a" * 64,
+                "evidence_kind": "SELF_REPORT",
+                "evidence_summary_codes": ["UNVERIFIED_SUCCESS_CLAIM"],
+                "observed_at": "2026-09-06T08:04:00Z",
+                "status": "SELF_REPORTED",
+                "user_id": "AEG-U-001",
+                "verifier_code": "UNVERIFIED",
+            }
+        ]
+        self.write("state", state)
+        foundry.validate(self.root, check_git=False)
+        self.assertEqual(foundry._external_user_evidence(state), (0, 0))
+        self.assertEqual(foundry._verified_external_reuse_count(state), 0)
+
+    def test_internal_actor_cannot_be_registered_as_external_user(self) -> None:
+        _, state = self.add_valid_external_reuse()
+        state["external_users"][0]["actor_class"] = "FOUNDER"
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("non-external actor cannot be an external user", str(raised.exception))
+
+    def test_terminal_external_reuse_cannot_be_rewritten(self) -> None:
+        _, state = self.add_valid_external_reuse()
+        foundry.validate(self.root, check_git=False)
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record external reuse")
+        reuse = state["external_reuse_events"][0]
+        reuse["outcome"] = "FAILURE"
+        reuse["oracle_observation"] = "FAILURE"
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("terminal external_reuse_events record was rewritten", str(raised.exception))
 
     def test_release_ready_experience_requires_completed_independent_transfer(self) -> None:
         backlog = self.add_valid_positive_transfer()

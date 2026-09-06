@@ -249,8 +249,9 @@
     "historical_lead_revision": "999dbb4399e6a6190474a9c9bee88785f8bb7e9f",
     "selected_family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT"
   },
+  "behavior_verifications": [],
   "experiences": [],
-  "schema_version": 1,
+  "schema_version": 2,
   "transfer_evaluations": [],
   "work_items": [
     {
