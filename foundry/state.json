@@ -344,6 +344,21 @@
       "resolved_at": "2026-09-06T09:47:23Z",
       "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
       "target_code": "UPDATE_DRAFT_PR_RECEIPT_DRIVEN_PIPELINE"
+    },
+    {
+      "effect_id": "AEG-I-8baab4aaba59413daeb5014c6e636b05",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "b94712e06ddb31aaf5b64a7067b3b99d15a3520a",
+      "verified_at": "2026-09-06T09:52:06Z"
+    },
+    {
+      "effect_id": "AEG-I-aa03b83390dd420c8e07a0a64ecb1098",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:52:13Z",
+      "resolved_at": "2026-09-06T09:52:33Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_HELDOUT_PIPELINE_COMPLETION"
     }
   ],
   "external_reuse_events": [],
@@ -366,9 +381,9 @@
   "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-8baab4aaba59413daeb5014c6e636b05",
+    "effect_id": "AEG-I-fc019d67a97f4a46b2169e3a48c6e96f",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T09:47:28Z",
+    "recorded_at": "2026-09-06T09:52:38Z",
     "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },

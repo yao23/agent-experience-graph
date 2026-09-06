@@ -101,6 +101,13 @@ or positive-transfer counts. Committed Experience versions, preregistered
 frozen fields, and terminal transfer results are append-only; use a new version
 or transfer ID rather than rewriting history.
 
+Let the controller pair an untested Experience with one same-family qualified
+held-out candidate that did not build it and has not served another generated
+transfer task. The task freezes the Experience identity/version and target
+identity and waits for two runtime receipts. New held-out candidates discovered
+after the Experience was built may create the missing task; do not reuse a
+previously exposed target or bypass preregistration.
+
 Treat external adoption separately from internal verification. Self-reports may
 be registered but do not verify a user or successful reuse. Only a
 digest-backed deterministic oracle run for a verified external user, stored in

@@ -1498,6 +1498,82 @@ class FoundryTests(FoundryFixture):
         self.assertIn("invalid preregistration time", str(raised.exception))
         self.assertIn("preregistered transfer freeze was rewritten", str(raised.exception))
 
+    def test_transfer_task_pairs_experience_with_unused_heldout_and_needs_two_runtimes(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["experiences"][0]["release_review_status"] = "NOT_READY"
+        backlog["transfer_evaluations"] = []
+        backlog["work_items"] = [
+            item for item in backlog["work_items"] if item["task_id"] != "AEG-W-900"
+        ]
+        created = foundry._ensure_transfer_evaluation_tasks(backlog)
+        self.assertEqual(len(created), 1)
+        task = created[0]
+        self.assertEqual(task["experience_id"], "AEG-X-001")
+        self.assertEqual(task["experience_version"], 1)
+        self.assertEqual(task["target_candidate_id"], "AEG-C-999")
+        self.assertEqual(task["candidate_ids"], ["AEG-C-999"])
+        self.assertEqual(foundry._ensure_transfer_evaluation_tasks(backlog), [])
+
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt())
+        foundry._synchronize_disposable_runtime_availability(backlog, state, self.start)
+        self.assertEqual(task["status"], "BLOCKED_ENVIRONMENT")
+        state["runtime_environments"].append(self.runtime_receipt("AEG-E-002"))
+        foundry._synchronize_disposable_runtime_availability(backlog, state, self.start)
+        self.assertEqual(task["status"], "READY")
+        task["experience_id"] = "AEG-X-999"
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("unknown Experience", str(raised.exception))
+
+    def test_late_heldout_discovery_enqueues_missing_experience_transfer(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["experiences"][0]["release_review_status"] = "NOT_READY"
+        backlog["transfer_evaluations"] = []
+        backlog["candidates"] = [
+            item for item in backlog["candidates"] if item["candidate_id"] != "AEG-C-999"
+        ]
+        backlog["work_items"] = [
+            item for item in backlog["work_items"] if item["task_id"] != "AEG-W-900"
+        ]
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        backlog = self.load("backlog")
+        backlog["candidates"].append(
+            {
+                "candidate_id": "AEG-C-999",
+                "category": "HELD_OUT_TRANSFER",
+                "contamination": "LOW",
+                "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+                "issue_number": 999999,
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "qualification": "QUALIFIED",
+                "repository": "example/late-held-out-project",
+                "source_state": "OPEN",
+                "source_url": "https://github.com/example/late-held-out-project/issues/999999",
+            }
+        )
+        for number in range(900, 909):
+            self.append_candidate(backlog, number)
+        self.write("backlog", backlog)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "CONTINUE_TRANSFER_PIPELINE",
+            now=self.start + timedelta(minutes=1),
+        )
+        transfer_task = next(
+            item
+            for item in self.load("backlog")["work_items"]
+            if item.get("stage") == "TRANSFER_EVALUATION"
+            and item.get("experience_id") == "AEG-X-001"
+        )
+        self.assertEqual(transfer_task["target_candidate_id"], "AEG-C-999")
+        self.assertEqual(transfer_task["status"], "BLOCKED_ENVIRONMENT")
+
     def test_blocked_or_wrong_channel_cannot_record_untrusted_execution_intent(self) -> None:
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)
         with self.assertRaises(foundry.ConfigError) as raised:

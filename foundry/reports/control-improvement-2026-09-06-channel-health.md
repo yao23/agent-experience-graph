@@ -95,6 +95,11 @@
   channel. Qualified selected-family discoveries enqueue reproduction, while
   successful reproduction, repair, and verification enqueue exactly one next
   stage without executing it in the same round.
+- Held-out pipeline completion: an untested Experience is deterministically
+  paired with one unused, same-family qualified held-out candidate that did not
+  build it. Generated transfer tasks pin both identities, require two runtime
+  receipts, reject unknown Experience references, and can be created when the
+  held-out candidate arrives in a later discovery batch.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

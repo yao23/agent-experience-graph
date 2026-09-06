@@ -1575,6 +1575,28 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
                     f"release-ready Experience lacks independently verified sources: {experience_id} v{version}"
                 )
 
+    for task in task_by_id.values():
+        if task.get("stage") != "TRANSFER_EVALUATION" or task.get(
+            "generated_by_controller"
+        ) is not True:
+            continue
+        experience_key = (task.get("experience_id"), task.get("experience_version"))
+        target_candidate_id = task.get("target_candidate_id")
+        target_candidate = candidate_by_id.get(target_candidate_id)
+        if experience_key not in experience_by_key:
+            errors.append(
+                f"generated transfer task references an unknown Experience: {task.get('task_id')}"
+            )
+        if (
+            target_candidate is None
+            or target_candidate.get("category") != "HELD_OUT_TRANSFER"
+            or target_candidate.get("qualification") != "QUALIFIED"
+            or task.get("candidate_ids") != [target_candidate_id]
+        ):
+            errors.append(
+                f"generated transfer task has an invalid held-out target: {task.get('task_id')}"
+            )
+
     transfer_evaluations = backlog.get("transfer_evaluations")
     if not isinstance(transfer_evaluations, list):
         errors.append("transfer_evaluations must be a list")
@@ -2465,6 +2487,94 @@ def _ensure_qualified_candidate_reproduction_tasks(
         }
         backlog["work_items"].append(task)
         existing_candidate_ids.add(candidate_id)
+        created.append(task)
+    return created
+
+
+def _ensure_transfer_evaluation_tasks(
+    backlog: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Pair untested Experiences with unused qualified held-out candidates."""
+
+    existing_experience_keys = {
+        (transfer.get("experience_id"), transfer.get("experience_version"))
+        for transfer in backlog.get("transfer_evaluations", [])
+        if isinstance(transfer, dict)
+    }
+    used_target_ids = {
+        transfer.get("target_candidate_id")
+        for transfer in backlog.get("transfer_evaluations", [])
+        if isinstance(transfer, dict)
+    }
+    for task in backlog.get("work_items", []):
+        if not isinstance(task, dict) or task.get("stage") != "TRANSFER_EVALUATION":
+            continue
+        if isinstance(task.get("experience_id"), str) and isinstance(
+            task.get("experience_version"), int
+        ):
+            existing_experience_keys.add(
+                (task["experience_id"], task["experience_version"])
+            )
+        if isinstance(task.get("target_candidate_id"), str):
+            used_target_ids.add(task["target_candidate_id"])
+
+    held_out = sorted(
+        (
+            candidate
+            for candidate in backlog.get("candidates", [])
+            if isinstance(candidate, dict)
+            and candidate.get("category") == "HELD_OUT_TRANSFER"
+            and candidate.get("qualification") == "QUALIFIED"
+            and candidate.get("candidate_id") not in used_target_ids
+        ),
+        key=lambda candidate: candidate["candidate_id"],
+    )
+    created: list[dict[str, Any]] = []
+    for experience in sorted(
+        (
+            item
+            for item in backlog.get("experiences", [])
+            if isinstance(item, dict)
+            and (
+                item.get("experience_id"), item.get("version")
+            )
+            not in existing_experience_keys
+        ),
+        key=lambda item: (item.get("experience_id", ""), item.get("version", 0)),
+    ):
+        target = next(
+            (
+                candidate
+                for candidate in held_out
+                if candidate["candidate_id"] not in experience.get("source_candidate_ids", [])
+                and candidate.get("family") == experience.get("family")
+            ),
+            None,
+        )
+        if target is None:
+            continue
+        held_out.remove(target)
+        experience_key = (experience["experience_id"], experience["version"])
+        task = {
+            "attempts": 0,
+            "candidate_ids": [target["candidate_id"]],
+            "channel_code": "DISPOSABLE_RUNTIME",
+            "claim": None,
+            "experience_id": experience["experience_id"],
+            "experience_version": experience["version"],
+            "failure_code": None,
+            "generated_by_controller": True,
+            "next_step_code": "PREREGISTER_HELD_OUT_BASELINE_AND_ASSISTED_ARMS",
+            "oracle_kind": target["oracle_kind"],
+            "priority": 93,
+            "stage": "TRANSFER_EVALUATION",
+            "status": "READY",
+            "target_candidate_id": target["candidate_id"],
+            "task_id": _next_work_item_id(backlog),
+        }
+        backlog["work_items"].append(task)
+        existing_experience_keys.add(experience_key)
+        used_target_ids.add(target["candidate_id"])
         created.append(task)
     return created
 
@@ -3492,8 +3602,11 @@ def finish_round(
         if outcome == "SUCCESS":
             if task["stage"] == "DISCOVERY":
                 _ensure_qualified_candidate_reproduction_tasks(backlog)
+                _ensure_transfer_evaluation_tasks(backlog)
             else:
                 _append_stage_successor(backlog, task)
+                if task["stage"] == "RELEASE_MATERIAL":
+                    _ensure_transfer_evaluation_tasks(backlog)
         channel = _record_channel_result(
             state,
             channel_code,

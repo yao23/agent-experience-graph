@@ -36,6 +36,11 @@ not facts that may be manufactured by relabeling or duplicate counting.
   either arm. Baseline and assisted runs use separate clean contexts and
   workspaces. All valid, failed, harmful, neutral, and invalid attempts remain.
 
+The controller may pair an untested Experience with one same-family qualified
+held-out candidate only when that candidate neither built the Experience nor
+served another generated transfer task. Pairing creates a bounded task, not a
+result, and cannot replace preregistration or two isolated runtime receipts.
+
 A success needs a deterministic oracle run by an independent verifier from the
 frozen revision in a fresh qualified environment. Review of a solver summary is
 not independent verification. A baseline that passes, an oracle that did not

@@ -121,6 +121,14 @@ completed transfer whose target and transfer task did not build it. Never alter
 a committed Experience version, a preregistered frozen field, or a terminal
 transfer result; create a new version or transfer record instead.
 
+After release material exists, the controller pairs each untested Experience
+with one same-family qualified held-out candidate that neither built the
+Experience nor served another generated transfer task. The generated task pins
+the Experience identity/version and target identity, remains environment-blocked
+until two fresh runtime receipts exist, and still requires full preregistration
+before either arm. A later discovery batch may create the missing pairing; do
+not reuse a contaminated held-out target or fabricate a pair when none exists.
+
 External users and reuse are separate evidence. Record pseudonymous,
 digest-backed user evidence in `external_users[]`; a self-report is not a
 verified user. Record external reuse in `external_reuse_events[]`; only an
