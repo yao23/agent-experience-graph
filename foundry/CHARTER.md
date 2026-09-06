@@ -1,0 +1,160 @@
+# AEG Experience Foundry Pilot v0.1 charter
+
+Status: authorized for bounded execution on `codex/aeg-experience-foundry-pilot-v0.1`.
+
+## Mission and fixed term
+
+The pilot tests whether verified Experience reuse can improve real coding-agent
+CI, build, and test repairs. It starts at `2026-09-06T07:22:29Z` and stops
+starting new experiments at `2026-10-18T07:22:29Z`. No agent may extend that
+time. The first ten refreshed candidates select one initial focus:
+Playwright package, image, cache, and browser-artifact compatibility failures.
+Other families remain candidates, not parallel active programs.
+
+The six-week targets are 30 deduplicated external real candidates, 15 qualified
+tasks, 10 independently behavior-verified tasks, and 5–8 Experiences ready for
+release review. Every such Experience needs at least one transfer task that did
+not participate in its construction. Candidate and qualification targets are
+both minimum gates: reaching 30 candidates does not stop bounded acquisition
+while fewer than 15 are qualified, and committed classifications remain
+immutable.
+
+Continue only if task supply is sustainable, at least three preregistered
+held-out positive transfers exist, there has been no uncontrolled permission,
+privacy, or integrity incident, and at least three real external users exist
+with at least one receipt, repeat use, or new task. These are targets to test,
+not facts that may be manufactured by relabeling or duplicate counting.
+
+## Evidence classes
+
+- `RETROSPECTIVE_REPRODUCTION` may use a disclosed solution to produce replayable
+  material. It never counts as independent discovery or clean transfer.
+- `PROSPECTIVE_REPAIR` freezes prior exposure before reproduction and keeps the
+  exposure label with the result.
+- `HELD_OUT_TRANSFER` freezes Experience version, target revision, oracle, model,
+  budget, retry rule, order, visible material, and outcome classification before
+  either arm. Baseline and assisted runs use separate clean contexts and
+  workspaces. All valid, failed, harmful, neutral, and invalid attempts remain.
+
+The controller may pair an untested Experience with one same-family qualified
+held-out candidate only when that candidate neither built the Experience nor
+served another generated transfer task. Pairing creates a bounded task, not a
+result, and cannot replace preregistration or two isolated runtime receipts.
+
+A success needs a deterministic oracle run by an independent verifier from the
+frozen revision in a fresh qualified environment. Review of a solver summary is
+not independent verification. A baseline that passes, an oracle that did not
+run, tool failure, or missing telemetry cannot be counted as positive transfer.
+Candidate annotations cannot establish independently verified behavior; that
+count requires a separate immutable baseline-failure/repaired-success record.
+Likewise, the external-success reuse numerator includes only deterministic
+oracle runs for verified external users, never founder, Foundry-agent, project
+CI, or self-reported claims.
+
+## Execution and isolation gate
+
+One scheduled invocation may claim one work unit and perform one stage. External
+repository code, installers, and tests may run only in a verified disposable
+environment without model credentials, GitHub write credentials, host home, or
+company data. Dependency-fetch networking and test networking are separate
+recorded grants. A Git worktree is not a sandbox. Before any clone, install, or
+frozen-oracle intent, the controller requires an immutable qualification
+receipt and permanently binds each named one-time environment ID to that round.
+A round may claim multiple environments for isolated experimental arms, but a
+claimed or expired environment cannot be used by another round. The controller
+reactivates no-runtime-blocked work only when enough current, unclaimed receipts
+exist, and blocks it again when those receipts are consumed or expire.
+Qualification receipts enter public state only through a controller command
+that reads a direct non-symlink JSON file from the ignored private directory,
+checks the exact allowlist, isolation claims, non-placeholder verifier code, digest,
+unique ID, and current validity window. Registration does not provision or
+independently attest the environment; truthful qualification evidence remains
+a convention-level prerequisite.
+Maintenance mode cannot issue untrusted-execution intents. The current local
+host has no qualified disposable runtime receipt, so external execution is
+`BLOCKED_ENVIRONMENT`; read-only
+discovery, public-material preparation, and trusted repository tests may
+continue.
+
+Repository leases and policy files are convention-level controls. They prevent
+duplicate work in this selected local checkout but are not an unbypassable
+security boundary and do not coordinate independent clones.
+
+## Cadence and budgets
+
+- Cadence: every 12 hours; concurrency 1; one invocation at most 45 minutes.
+- Daily maximum: two scheduled rounds and six total worker starts, including
+  startup, failures, review, escalation, and canaries.
+- Fixed term maximum: 84 scheduled rounds.
+- New paid API, additional credits, subscription upgrades, and new paid cloud
+  resources: USD 0 without separate authorization.
+- Founder time and compute dollars are reported separately. Unobservable values
+  are `UNKNOWN`, never zero and never added together.
+- Authentication or quota failure pauses that channel; it never switches to a
+  paid credential automatically.
+
+## Authorization boundary
+
+The loop may read public sources; deduplicate and rank candidates; prepare frozen
+inputs; use a qualified isolated environment; create scoped task branches and
+commits; push this pilot branch; and create or update bounded Draft PRs. It may
+make one evidence-based correction after a failure.
+
+Separate authorization is still required for new spend, broader host privilege,
+security-policy or repository-ruleset changes, production merges, deployments,
+Registry promotion, public trust claims, external messages/comments/claims/PRs,
+or export of private execution material. The existing `codex-ruleset` must not
+be deleted, enabled, or modified.
+
+## State, privacy, and public export
+
+Tracked files under `foundry/` are the continuation source. Each round records
+the exact remote/ref observation and SHA-256 of this charter. Raw logs, model
+output, patches under evaluation, and sensitive material belong only in the new
+ignored `.aeg-foundry-private/` directory. Historical `.aeg` content is outside
+this pilot and must not be read or exported.
+
+`foundry/pilot.json` is the exact machine-readable control contract. Its fixed
+activation timestamps, authorization and zero-spend boundaries, budgets,
+execution and model policy, cadence, source identity, and target/gate values are
+validated as one closed schema. A worker cannot edit, omit, add, or relax one of
+those fields and still pass the controller preflight; an authorized policy
+change would require an explicit reviewed controller-and-contract revision.
+
+Public state is generated from a fixed field allowlist. Passing a scanner is
+defense in depth, not permission to upload arbitrary free text. Intent is
+persisted before an external effect. An unresolved effect is verified before it
+can be retried.
+
+Discovery candidate batches enter tracked state only through the controller's
+active-round ingestion command. Its ignored private JSON input is bound to that
+round and accepted only as one exact-shape, family-locked, deduplicated batch
+within the frozen count target. Repository, issue number, and canonical source
+URL must agree. All records are checked before the backlog is atomically
+replaced; raw acquisition material remains private and only allowlisted
+candidate fields are published.
+
+A push retry is allowed only after a read proves the pending intent is absent
+from the remote tip. The committed `HEAD` must contain that same intent, the
+worktree must be clean, and the observed remote tip must be its ancestor. The
+controller uses a non-force push and re-verifies the remote; any divergence or
+failed re-verification preserves the unresolved intent and stops work.
+
+Round completion is a recoverable local transaction. Before changing the
+public backlog, state, round ledger, status, or generated reports, the
+controller writes their exact checkpoint to an ignored PREPARED journal under
+`.aeg-foundry-private/`. Final validation precedes a COMMITTED marker. A later
+controller command restores PREPARED state or only removes a COMMITTED marker
+under the same mutex. The journal contains snapshots only of already-public
+tracked state, is never exported, and rejects unknown or escaping paths.
+
+## Stop and review rules
+
+Pause or expiry prevents new claims; an active unit exits at a safe checkpoint.
+Two consecutive infrastructure failures quarantine that channel. Two discovery
+cycles without a qualified task permit exactly one documented acquisition or
+subdomain change. Oracle and qualification rules cannot be changed to rescue a
+result. Successful stages create only their next bounded pipeline unit; they do
+not execute a second stage in the same invocation. Every seven days the same
+loop emits a short templated report. At expiry it stops new experiments and
+recommends continue, narrow, or stop using the fixed gates above.

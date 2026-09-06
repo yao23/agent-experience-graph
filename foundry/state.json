@@ -1,0 +1,491 @@
+{
+  "active_round": null,
+  "automation": {
+    "id": "aeg-experience-foundry-pilot-v0-1",
+    "kind": "CRON",
+    "location_code": "LOCAL_PROJECT_NEW_PROJECT",
+    "model": "gpt-5.6-terra",
+    "next_run_at": "2026-09-06T19:36:50Z",
+    "project_id": "local-3c2d5b47ae3f282074bdf431918e7e6d",
+    "reasoning_effort": "low",
+    "recorded_at": "2026-09-06T07:38:20Z",
+    "status": "ACTIVE"
+  },
+  "channels": {
+    "DISPOSABLE_RUNTIME": {
+      "consecutive_infrastructure_failures": 0,
+      "last_infrastructure_failure_code": null,
+      "status": "BLOCKED_ENVIRONMENT",
+      "status_reason_code": "BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME",
+      "status_recorded_at": "2026-09-06T07:22:29Z"
+    },
+    "MODEL_WORKER": {
+      "consecutive_infrastructure_failures": 0,
+      "last_infrastructure_failure_code": null,
+      "status": "ACTIVE",
+      "status_reason_code": null,
+      "status_recorded_at": "2026-09-06T07:22:29Z"
+    },
+    "PUBLIC_GITHUB_READ": {
+      "consecutive_infrastructure_failures": 0,
+      "last_infrastructure_failure_code": null,
+      "status": "ACTIVE",
+      "status_reason_code": null,
+      "status_recorded_at": "2026-09-06T07:22:29Z"
+    }
+  },
+  "counters_by_utc_day": {
+    "2026-09-06": {
+      "round_starts": 2,
+      "worker_starts": 3
+    }
+  },
+  "discovery_no_qualified_streak": 1,
+  "effect_events": [
+    {
+      "effect_id": "AEG-I-bab930c171de4c2784ca407f37e2894c",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "b1f72dd0989fc85c802bfe28009804870bb6ee9f",
+      "verified_at": "2026-09-06T07:33:56Z"
+    },
+    {
+      "effect_id": "AEG-I-0214a47834994297abfd8d2ed419f174",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:35:33Z",
+      "resolved_at": "2026-09-06T07:36:06Z",
+      "round_id": "AEG-R-20260906T073046Z-0c86db97",
+      "target_code": "BOOTSTRAP_DRAFT_PR"
+    },
+    {
+      "effect_id": "AEG-I-0c1c34fc7b624565a9ad8aa9fe01211c",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "4833aebeb2448881b618e13846f9bad957b841da",
+      "verified_at": "2026-09-06T07:39:20Z"
+    },
+    {
+      "effect_id": "AEG-I-8418254a5d1f46d0b5ab5ef0196b1d30",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "1476305e4eb55fa5b9c891d1f4b33849c9f52ec4",
+      "verified_at": "2026-09-06T07:41:04Z"
+    },
+    {
+      "effect_id": "AEG-I-38a03654624a45699d9bca59682f0027",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "23a40943996a35c16a542308f3f8a8a119e8a2cc",
+      "verified_at": "2026-09-06T07:42:07Z"
+    },
+    {
+      "effect_id": "AEG-I-1708d8ed92d6495db10b69ca9910e5b7",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:42:12Z",
+      "resolved_at": "2026-09-06T07:42:54Z",
+      "round_id": "AEG-R-20260906T073046Z-0c86db97",
+      "target_code": "UPDATE_BOOTSTRAP_DRAFT_PR_VALIDATION"
+    },
+    {
+      "effect_id": "AEG-I-c11212a0878e43b285e4484d89d21e10",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "51a93a107a83322e03c9d55b256abbe1f9390cde",
+      "verified_at": "2026-09-06T07:44:11Z"
+    },
+    {
+      "effect_id": "AEG-I-47dd268753cf4a33abc6207202a91688",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "5fa25aa0a72af4dd43222f99adf9c51ebb1a00c4",
+      "verified_at": "2026-09-06T07:46:03Z"
+    },
+    {
+      "effect_id": "AEG-I-849ee2074ce44c83966f99c856db0005",
+      "effect_type": "READ_PUBLIC_SOURCE",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:46:08Z",
+      "resolved_at": "2026-09-06T07:50:08Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "NEXT_PLAYWRIGHT_DRIFT_BATCH"
+    },
+    {
+      "effect_id": "AEG-I-4d9890ee7a3a44fe80eabce1b047eeac",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "bc9656743f2d984cdc397b5ca0265031ddb7f864",
+      "verified_at": "2026-09-06T07:52:37Z"
+    },
+    {
+      "effect_id": "AEG-I-366ddd0299a74936bbf75903440164a6",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:52:41Z",
+      "resolved_at": "2026-09-06T07:53:58Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_ROUND_2_AND_TEST_COUNT"
+    },
+    {
+      "effect_id": "AEG-I-3b38e699a17443da877b3e2091173d2e",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "b6df527ca26163ff333aff9e335c4e54203f149f",
+      "verified_at": "2026-09-06T07:57:08Z"
+    },
+    {
+      "effect_id": "AEG-I-899c2a7e152c4d0087667c4df56b2eaf",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "NOT_PERFORMED",
+      "recorded_at": "2026-09-06T08:01:15Z",
+      "resolved_at": "2026-09-06T08:01:22Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_NATIVE_AUTOMATION_CHANNEL_FAILURE_PROMPT"
+    },
+    {
+      "effect_id": "AEG-I-7dbfecce7bf94fa0a5444fdd26a9d15d",
+      "effect_type": "UPDATE_NATIVE_AUTOMATION",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:01:33Z",
+      "resolved_at": "2026-09-06T08:02:07Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "SYNC_CHANNEL_FAILURE_PROMPT_V2"
+    },
+    {
+      "effect_id": "AEG-I-906f1a35ff094b0fbf3143fc710f53c9",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "e70672168ed5bd832adafee3775e225042e88df8",
+      "verified_at": "2026-09-06T08:02:29Z"
+    },
+    {
+      "effect_id": "AEG-I-36df6c66f3344879bee8a57343b6e900",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:02:37Z",
+      "resolved_at": "2026-09-06T08:02:57Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_CHANNEL_GATES_AND_TEST_COUNTS"
+    },
+    {
+      "effect_id": "AEG-I-a8f70a9dd925488eb31fbe54b8fb9355",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "6cb6fcdf6deb585a75f95b75572fe87763499fed",
+      "verified_at": "2026-09-06T08:04:01Z"
+    },
+    {
+      "effect_id": "AEG-I-4334ffedbbed413fa04c6971deb16880",
+      "effect_type": "UPDATE_NATIVE_AUTOMATION",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:06:21Z",
+      "resolved_at": "2026-09-06T08:07:14Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "REQUIRE_CURRENT_REMOTE_REF_OBSERVATION_V3"
+    },
+    {
+      "effect_id": "AEG-I-29b42ecb5453493594062c05d1466d53",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "0e6355367e9d45c1f93de6c25aee2bc349d8a55e",
+      "verified_at": "2026-09-06T08:07:35Z"
+    },
+    {
+      "effect_id": "AEG-I-53b1a6b80f6b4ecfbcda751a76b8c2a0",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:07:48Z",
+      "resolved_at": "2026-09-06T08:08:13Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_REMOTE_REF_GATE_AND_TEST_COUNTS"
+    },
+    {
+      "effect_id": "AEG-I-4e2a643f7e3744f5baeab1e261ce98fc",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "572a45744467946832e7c5adbe0d1ad11ea82e5b",
+      "verified_at": "2026-09-06T08:09:49Z"
+    },
+    {
+      "effect_id": "AEG-I-2eb8c9c94e274eb29c0f504d7fc2b357",
+      "effect_type": "UPDATE_NATIVE_AUTOMATION",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:13:31Z",
+      "resolved_at": "2026-09-06T08:13:59Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "PERSIST_WEEKLY_AND_TERMINAL_REPORTING_V4"
+    },
+    {
+      "effect_id": "AEG-I-35d23c7b54604116ad74d542904c68fb",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "3c0b311fa418a65dd1cec5696c9606b0ff414a8c",
+      "verified_at": "2026-09-06T08:14:20Z"
+    },
+    {
+      "effect_id": "AEG-I-14d8b5fc0cc34bb6b3cf5cc8ab4c87cf",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:14:24Z",
+      "resolved_at": "2026-09-06T08:14:45Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_REPORTING_AND_EXPIRY_CONTROLS"
+    },
+    {
+      "effect_id": "AEG-I-390edbf023144375bd8b12919296f6a4",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "6ddc3cff0ea06086babf891243cfa72f91e137e5",
+      "verified_at": "2026-09-06T08:15:37Z"
+    },
+    {
+      "effect_id": "AEG-I-0a7aba1e32a64ea7b05657e22a64b861",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "5411448d22be66b5cf4fec78fa255ae8509f1045",
+      "verified_at": "2026-09-06T08:29:03Z"
+    },
+    {
+      "effect_id": "AEG-I-1a25f03f3a2e4c9c83ded12b3866f8f7",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:29:12Z",
+      "resolved_at": "2026-09-06T08:30:03Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_EXPERIENCE_TRANSFER_INTEGRITY"
+    },
+    {
+      "effect_id": "AEG-I-f8f558a361634390b174ad5fad1fea31",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "1ff6ff506f9b05b53eae4b86c0a599403b6857bd",
+      "verified_at": "2026-09-06T08:31:51Z"
+    },
+    {
+      "effect_id": "AEG-I-5cf1085736dc41d0a3fab1dc48b40c76",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:32:50Z",
+      "resolved_at": "2026-09-06T08:33:03Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_BUDGET_SAFE_RECOVERY"
+    },
+    {
+      "effect_id": "AEG-I-e3d1f63eb0e14f33bf1f33fdf7161817",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "bb074120ab621ae08ec8bfcf6d21cf3fcb066a64",
+      "verified_at": "2026-09-06T08:57:36Z"
+    },
+    {
+      "effect_id": "AEG-I-0e937d7daf1e45488fa100a72e4f8b72",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:58:57Z",
+      "resolved_at": "2026-09-06T09:00:13Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_EVIDENCE_LEDGER_V2"
+    },
+    {
+      "effect_id": "AEG-I-ef2dd6b20d1c488eb278744ceadb12d4",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "a6c6a0af59b5612af3b41edf5eca6467cc3363bd",
+      "verified_at": "2026-09-06T09:09:50Z"
+    },
+    {
+      "effect_id": "AEG-I-4ff1f46a0c0343319860bee6eb68c810",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:10:16Z",
+      "resolved_at": "2026-09-06T09:10:54Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_CONTROL_CONTRACT_V2"
+    },
+    {
+      "effect_id": "AEG-I-c767258a645a4f95b97749f1414b968b",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "4504ba189c37e38231b5436c51ed085a3c296b2f",
+      "verified_at": "2026-09-06T09:19:42Z"
+    },
+    {
+      "effect_id": "AEG-I-bc03229ba15140fbb36fcd24e8f8fb4a",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:20:36Z",
+      "resolved_at": "2026-09-06T09:20:58Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_RUNTIME_GATE_V3"
+    },
+    {
+      "effect_id": "AEG-I-90124cf802d84098b8452ad06b868b67",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "6f3f46711b77fca05fa01a74293992d89ffc3c06",
+      "verified_at": "2026-09-06T09:32:22Z"
+    },
+    {
+      "effect_id": "AEG-I-f6fe7bb895a945e6baef5968131ed6ea",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:32:59Z",
+      "resolved_at": "2026-09-06T09:33:17Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_STAGE_EVIDENCE_V4"
+    },
+    {
+      "effect_id": "AEG-I-77f011129e4e4d97ab35099ef0d5f7bd",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "d0d3836a7f87b5cf114236061df07de7775e8d1f",
+      "verified_at": "2026-09-06T09:39:55Z"
+    },
+    {
+      "effect_id": "AEG-I-2bec0953800a4f5e9b0a2fb437c90ddd",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:40:05Z",
+      "resolved_at": "2026-09-06T09:40:24Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_DUAL_TARGET_DISCOVERY"
+    },
+    {
+      "effect_id": "AEG-I-357f88fba27946168ae097a0eb74ae6e",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "ad5ed16342cc5ee90b4c6bf518d9df0feb1c4f8f",
+      "verified_at": "2026-09-06T09:46:50Z"
+    },
+    {
+      "effect_id": "AEG-I-fedb30cb02e74e5e9e1deae926110846",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:47:00Z",
+      "resolved_at": "2026-09-06T09:47:23Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_RECEIPT_DRIVEN_PIPELINE"
+    },
+    {
+      "effect_id": "AEG-I-8baab4aaba59413daeb5014c6e636b05",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "b94712e06ddb31aaf5b64a7067b3b99d15a3520a",
+      "verified_at": "2026-09-06T09:52:06Z"
+    },
+    {
+      "effect_id": "AEG-I-aa03b83390dd420c8e07a0a64ecb1098",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T09:52:13Z",
+      "resolved_at": "2026-09-06T09:52:33Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "UPDATE_DRAFT_PR_HELDOUT_PIPELINE_COMPLETION"
+    },
+    {
+      "effect_id": "AEG-I-fc019d67a97f4a46b2169e3a48c6e96f",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "1d22a5440de34185af5e1c4cc9a3e7f4b5eb61a8",
+      "verified_at": "2026-09-06T10:01:56Z"
+    },
+    {
+      "effect_id": "AEG-I-ac0c971971e0442fbf147fa9003fb821",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:02:13Z",
+      "resolved_at": "2026-09-06T10:02:48Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
+    },
+    {
+      "effect_id": "AEG-I-b4ff18271a9b40ee9cc25bb2090f76bd",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "ac6685bccbd515105b0951047b9c3a01f26938d6",
+      "verified_at": "2026-09-06T10:10:20Z"
+    },
+    {
+      "effect_id": "AEG-I-b44c101f0c4740b1ac27e43cddbbc14f",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:11:21Z",
+      "resolved_at": "2026-09-06T10:11:39Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
+    },
+    {
+      "effect_id": "AEG-I-053bf8328cf541458f5de167830adad8",
+      "initial_remote_sha": "ae8407ec67833710e0c22c3efee8abd46e8c1863",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "ae8407ec67833710e0c22c3efee8abd46e8c1863",
+      "resolution_code": "REMOTE_ALREADY_CONTAINED_INTENT",
+      "verified_at": "2026-09-06T10:17:09Z"
+    },
+    {
+      "effect_id": "AEG-I-42efcbb8246a42ec8b2addd65daf24e6",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:17:17Z",
+      "resolved_at": "2026-09-06T10:17:33Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
+    },
+    {
+      "effect_id": "AEG-I-d4344f4da74e4c29955e0741d08da100",
+      "initial_remote_sha": "290edf9a207d9d55ce064b937b3f62b8d418c3fc",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "290edf9a207d9d55ce064b937b3f62b8d418c3fc",
+      "resolution_code": "REMOTE_ALREADY_CONTAINED_INTENT",
+      "verified_at": "2026-09-06T10:23:24Z"
+    },
+    {
+      "effect_id": "AEG-I-c5f01223f2464c9288028c800b7c5ba1",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:23:33Z",
+      "resolved_at": "2026-09-06T10:23:49Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
+    },
+    {
+      "effect_id": "AEG-I-bedd1d34ab69472893240b6eb0054962",
+      "initial_remote_sha": "8e35396e44e7b834b36eea74ca5bada13f834843",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "8e35396e44e7b834b36eea74ca5bada13f834843",
+      "resolution_code": "REMOTE_ALREADY_CONTAINED_INTENT",
+      "verified_at": "2026-09-06T10:30:49Z"
+    },
+    {
+      "effect_id": "AEG-I-7b52f9756daf4f4dbf0d06b93100b95c",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T10:30:59Z",
+      "resolved_at": "2026-09-06T10:31:34Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "GITHUB_DRAFT_PR_32"
+    }
+  ],
+  "external_reuse_events": [],
+  "external_users": [],
+  "founder_interventions": 1,
+  "human_decision_queue": [],
+  "integrity_incidents": [
+    {
+      "affected_record_code": "ROUND_002:COMPUTE_USD",
+      "containment_code": "ROUND_RESOURCE_SCHEMA_V2_REQUIRES_COST_BASIS",
+      "evidence_digest_sha256": "aecb85495c7adef8a1f4310a533a74e5dec7651982e516d83df944c90d893c49",
+      "incident_code": "LEGACY_UNATTESTED_ZERO_COMPUTE_COST",
+      "incident_id": "AEG-II-001",
+      "observed_at": "2026-09-06T08:48:38Z",
+      "status": "CONTROLLED"
+    }
+  ],
+  "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
+  "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+  "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+  "pause": null,
+  "pending_effect": {
+    "effect_id": "AEG-I-73e01448e49a44ff959cfcac12235a37",
+    "effect_type": "PUSH_PILOT_BRANCH",
+    "recorded_at": "2026-09-06T10:31:45Z",
+    "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+    "target_code": "ORIGIN_PILOT_BRANCH"
+  },
+  "pilot_status": "ACTIVE",
+  "rounds_completed": 2,
+  "rounds_started": 2,
+  "runtime_environment_claims": [],
+  "runtime_environments": [],
+  "schema_version": 4,
+  "worker_events": [
+    {
+      "completed_at": "2026-09-06T07:32:28Z",
+      "compute_usd": "UNKNOWN",
+      "event_id": "AEG-M-e66687b959e64d83aa2a62ea9e18c8bd",
+      "input_tokens": "UNKNOWN",
+      "kind": "AUTH_TERMINAL_CANARY",
+      "model": "gpt-5.6-terra",
+      "output_tokens": "UNKNOWN",
+      "started_at": "2026-09-06T07:31:41Z",
+      "status": "PASSED",
+      "total_tokens": "3828"
+    }
+  ]
+}

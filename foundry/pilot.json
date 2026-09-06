@@ -1,0 +1,68 @@
+{
+  "activation": {
+    "ends_at": "2026-10-18T07:22:29Z",
+    "starts_at": "2026-09-06T07:22:29Z"
+  },
+  "authorization": {
+    "additional_credits_usd": 0,
+    "codex_ruleset": "PRESERVE_UNCHANGED",
+    "external_communication": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "host_privilege_expansion": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "new_paid_api_usd": 0,
+    "new_paid_cloud_usd": 0,
+    "private_material_export": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "production_deployment": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "production_merge": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "registry_promotion": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "repository_ruleset_change": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "subscription_upgrade_usd": 0
+  },
+  "budgets": {
+    "max_round_seconds": 2700,
+    "max_rounds_per_day": 2,
+    "max_rounds_total": 84,
+    "max_worker_starts_per_day": 6
+  },
+  "config_version": "0.1.2",
+  "execution": {
+    "cleanup_after_checkpoint_only": true,
+    "concurrency": 1,
+    "controls_enforcement_level": "CONVENTION_LEVEL",
+    "historical_state_policy": "DO_NOT_READ_DOT_AEG",
+    "private_directory": ".aeg-foundry-private",
+    "required_branch": "codex/aeg-experience-foundry-pilot-v0.1",
+    "runtime_class": "LOCAL_PROJECT",
+    "untrusted_execution_gate": "REQUIRES_VERIFIED_DISPOSABLE_RUNTIME"
+  },
+  "model_policy": {
+    "automation_model": "gpt-5.6-terra",
+    "automation_reasoning_effort": "low",
+    "discovery_preference": "gpt-5.6-luna",
+    "repair_preference": "gpt-5.6-terra",
+    "server_attestation": "UNKNOWN_UNLESS_REPORTED_BY_CLIENT"
+  },
+  "pilot_id": "AEG-EXPERIENCE-FOUNDRY-PILOT-V0.1",
+  "schedule": {
+    "cadence": "PT12H",
+    "notification_policy": "MEANINGFUL_CHANGE_OR_ACTION_ONLY"
+  },
+  "schema_version": 2,
+  "source": {
+    "bootstrap_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+    "charter_path": "foundry/CHARTER.md",
+    "remote": "origin",
+    "remote_ref": "refs/remotes/origin/main",
+    "remote_url": "https://github.com/yao23/agent-experience-graph.git"
+  },
+  "targets": {
+    "deduplicated_external_candidates": 30,
+    "external_users_with_strong_evidence": 1,
+    "held_out_positive_transfers": 3,
+    "independently_behavior_verified_tasks": 10,
+    "max_uncontrolled_incidents": 0,
+    "qualified_tasks": 15,
+    "release_review_experiences_max": 8,
+    "release_review_experiences_min": 5,
+    "verified_external_users": 3
+  }
+}

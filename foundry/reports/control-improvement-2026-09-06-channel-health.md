@@ -1,0 +1,149 @@
+# Control improvement: channel-local failure gates
+
+- Observed problem: the charter required repeated infrastructure failures and
+  auth or quota failures to stop only the affected execution channel, but the
+  controller enforced this only as prose and model-worker auth or quota failure
+  paused the entire pilot.
+- Change: every work item now names a machine-readable execution channel.
+  Non-active channels are excluded from task claiming. Two consecutive
+  identical infrastructure failures quarantine that channel; auth or quota
+  failure pauses that channel; an unavailable disposable runtime remains
+  `BLOCKED_ENVIRONMENT` without stopping public discovery.
+- Intent vocabulary: native automation updates now have their own external
+  effect type; an attempted use of the Draft PR type was recorded as
+  `NOT_PERFORMED` before any scheduler update occurred.
+- Remote-ref freshness: the SHA from the local tracking ref is now provisional.
+  Every claimed round must record a public-read intent and freeze the current
+  remote branch SHA before stage work; a round cannot finish without that
+  observation.
+- Weekly and terminal evidence: weekly reports now include target-relative
+  progress, qualification rate, outcome counts and highlight, separate founder
+  hours and compute dollars, worker starts, quota visibility, bottleneck, next
+  focus, and decision queue. The final report exposes every continuation gate
+  and returns only `CONTINUE`, `NARROW`, or `STOP`.
+- Expiry persistence: an active pilot reconciles an already-pushed checkpoint
+  before writing `EXPIRED` and `final.md`. The scheduler is instructed to audit
+  and push that terminal checkpoint. An explicit operator pause remains
+  network-quiet and requires human resolution if an effect is still pending.
+- Budget-safe recovery ordering: active-run daily and total budget gates now
+  precede push reconciliation. A budget-blocked invocation leaves the committed
+  pending intent untouched instead of creating an uncommitted receipt that
+  would make the following scheduled validation dirty. Expiry still reconciles
+  first so the terminal checkpoint includes the verified effect.
+- Experience and transfer integrity: release-review and held-out-positive counts
+  now come only from first-class Experience and transfer-evaluation records.
+  Experience artifacts are exact-shape, code-only JSON with pinned SHA-256
+  digests. A transfer freezes its decision rule and experimental configuration,
+  uses isolated baseline and assisted contexts/workspaces/environments, retains
+  ordered command/exit/oracle evidence for every attempt, and requires an
+  independent deterministic-oracle executor. A release-ready Experience must
+  have a completed transfer that did not participate in construction. Git
+  history validation rejects rewrites of committed Experience versions,
+  preregistered freezes, and terminal transfer outcomes.
+- Candidate, behavior, and adoption integrity: committed candidate
+  classifications are immutable exact-shape records. Independently verified
+  behavior now requires a first-class baseline-failure/repaired-success record
+  with frozen revisions and an independent deterministic-oracle verifier.
+  External reuse has a separate evidence ledger; self-reports and founder,
+  Foundry-agent, or project-CI activity cannot enter either the verified-user
+  gate or the external-success numerator.
+- Resource and reporting integrity: scheduled worker starts are charged at
+  claim time so crashed rounds cannot disappear from the daily budget. New
+  round and worker receipts distinguish configured model, observed model and
+  attestation, call method, tokens, retries, quota, actual-cost basis, and
+  source-backed market estimates; unknown values remain `UNKNOWN`. Weekly
+  reports include release, user, external-reuse, per-qualified-task cost, ratio,
+  canary, and model-usage evidence, and are synthesized as bounded controller
+  work when no ordinary task is ready.
+- Pause durability: the single pause-and-push entry now reconciles an existing
+  pushed checkpoint before committing the pause. It still pauses locally first
+  when a non-push effect cannot be verified or an active round must reach a safe
+  checkpoint, and reports that persistence is deferred instead of claiming a
+  remote pause.
+- Control-contract immutability: `pilot.json` is now a closed v2 schema. The
+  controller fixes the original activation timestamps, all zero-spend and
+  separate-authorization boundaries, cadence, concurrency, model policy,
+  source identity, six-week targets, and continuation gates as one exact
+  contract. Shifting the whole 42-day window, lowering a target, expanding an
+  authorization, changing model/schedule/execution policy, or adding an
+  unreviewed field all fail before a round can start. Report denominators and
+  terminal gates read the same machine values instead of parallel hard-coded
+  numbers.
+- Disposable-runtime enforcement: state schema v3 adds immutable, exact-shape
+  qualification receipts and permanent one-time environment claims. Clone,
+  install, and frozen-oracle intents now require an active
+  `DISPOSABLE_RUNTIME` task, an unexpired receipt proving no sensitive mounts or
+  credentials and separately bounded dependency/test networking, and an
+  environment ID not claimed by another round. Maintenance mode cannot create
+  these intents, and status reports both receipt and available-runtime counts.
+- Stage-evidence enforcement: state schema v4 permits a round to claim multiple
+  distinct one-time environments for isolated arms while permanently preventing
+  cross-round reuse. Frozen-oracle completion now records immutable revision,
+  command, exit, observed result, evidence digest, and summary codes atomically.
+  Reproduction, repair, verification, transfer, and release-material success
+  each fail closed unless their corresponding current-round first-class evidence
+  is present; a generic `PASSED` label cannot complete those stages.
+- Dual-target discovery continuity: the controller no longer treats 30
+  candidates as a cap when fewer than 15 are qualified. It appends new,
+  family-locked immutable candidates until both minima are met or a fixed gate
+  stops work, and a synthesized batch cannot succeed before reaching its frozen
+  candidate-count target.
+- Receipt-driven pipeline recovery: round start now derives disposable-channel
+  and task readiness from current unclaimed receipts. One receipt gates
+  reproduction/repair and two gate verification/transfer; expired or consumed
+  receipts cannot reactivate work, and exhaustion blocks only the affected
+  channel. Qualified selected-family discoveries enqueue reproduction, while
+  successful reproduction, repair, and verification enqueue exactly one next
+  stage without executing it in the same round.
+- Held-out pipeline completion: an untested Experience is deterministically
+  paired with one unused, same-family qualified held-out candidate that did not
+  build it. Generated transfer tasks pin both identities, require two runtime
+  receipts, reject unknown Experience references, and can be created when the
+  held-out candidate arrives in a later discovery batch.
+- Transactional round completion: `finish-round` snapshots the exact public
+  checkpoint in an ignored local PREPARED journal before its first write, runs
+  final validation before marking COMMITTED, and restores on failure. Every CLI
+  entry recovers an interrupted PREPARED journal or only clears a COMMITTED
+  marker under the controller mutex; unsafe journal paths fail closed.
+- Verified-missing push recovery: reconciliation can now recover a push that
+  definitely did not reach the remote without an operator's manual Git command.
+  It retries only the identical intent-bearing committed checkpoint from a
+  clean worktree, only across a fast-forward ancestry, never force-pushes, and
+  requires a second remote read before clearing the intent.
+- Rejected maintenance hypothesis: an audit initially treated qualified
+  `AEG-C-010` as missing reproduction work. Its family is
+  `PLAYWRIGHT_STRICT_LOCATOR_AMBIGUITY`, not the selected
+  `PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT` family, so generating that task
+  would have violated the single-subdomain focus. The proposed behavior and
+  test were removed before checkpointing; no candidate or result was changed.
+- Hard round-time enforcement: `finish-round` now rejects a completion after
+  the exact 45-minute lease without changing the checkpoint, active leases must
+  encode the fixed duration, and completed ledger timestamps/elapsed seconds
+  must agree and remain within the same cap. An exact-deadline completion is
+  accepted; expired work is left for the existing next-invocation recovery.
+- Controlled runtime-receipt ingestion: a verified runtime can now enter state
+  through `register-runtime` instead of a hand edit. The command accepts only a
+  direct non-symlink JSON file from the ignored private directory, reuses the
+  controller's exact receipt validator, requires a unique currently valid ID,
+  and rejects credential/mount/network-policy violations. Registration is not
+  represented as provisioning or independent attestation; actual channel/task
+  activation remains derived at the next eligible round start, after the
+  receipt checkpoint is audited and persisted through the normal push-intent
+  workflow.
+- Controlled discovery-batch ingestion: an active discovery round now accepts
+  candidates only through `register-candidates` from one direct non-symlink
+  JSON file in the ignored private directory. The command binds the envelope to
+  the active lease, reuses the exact candidate validator, checks canonical
+  repository/issue URLs, deduplicates both IDs and source pairs across the
+  existing ledger and the whole batch, enforces the frozen family and count
+  target, and writes no backlog change if any item fails. Accepted IDs are
+  attached to the active task; the normal deterministic oracle must still pass
+  before the round can finish.
+- Policy unchanged: authorization, budget, qualification, oracle, and fixed
+  expiry values were not modified.
+- Verification: dedicated tests cover same-error streak reset and quarantine,
+  channel-local auth pause, continued work on an unrelated active channel,
+  count-spoof rejection, immutable artifact digests, exact artifact fields,
+  independent-transfer release gating, arm isolation, outcome consistency, and
+  fail-closed malformed targets. Full validation results are recorded in the
+  Draft PR after execution.
