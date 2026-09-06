@@ -67,6 +67,13 @@ on candidates. A behavior-verification stage writes a first-class
 runs the frozen oracle in isolated baseline and repaired environments and saves
 both command/exit/evidence receipts. Baseline must fail and repaired must pass.
 
+Treat 30 candidates as the minimum discovery target, not a cap. If fewer than
+15 tasks are qualified when that minimum is reached, continue new,
+family-locked, deduplicated candidate batches until both minima are satisfied or
+a fixed budget, pause, expiry, or channel gate stops work. A synthesized batch
+is successful only after its frozen `target_candidate_count` is reached; never
+reclassify committed candidates to close the gap.
+
 For an Experience stage, write only the code-only, digest-pinned artifact shape
 accepted under `foundry/experiences/`, and register its sources and builder
 tasks in `experiences[]`. For a held-out transfer, preregister all frozen fields

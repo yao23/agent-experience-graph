@@ -77,6 +77,14 @@ candidate, completed verification task, frozen revisions/oracle/model/budget,
 isolated baseline failure and repaired success receipts, and a verifier distinct
 from the solver. Candidate annotations never count as verification.
 
+The 30-candidate target is a minimum, not an early stop that overrides the
+15-qualified-task target. When both ordinary work and due reporting are absent,
+the controller continues bounded, family-locked discovery batches until both
+minima are met or another fixed gate stops work. Reach the task's frozen
+`target_candidate_count` before reporting batch success. If qualification does
+not improve for two cycles, change exactly one acquisition strategy; never
+reclassify a committed candidate to manufacture the qualification ratio.
+
 Create Experience artifacts only as direct JSON files under
 `foundry/experiences/`, using the controller's code-only allowlist and a digest
 recorded in `backlog.json`. Record the Experience entity separately from its

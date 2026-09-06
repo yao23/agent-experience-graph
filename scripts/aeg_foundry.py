@@ -2462,7 +2462,14 @@ def synthesize_next_work(
         backlog["work_items"].append(task)
         return task
     candidates = backlog["candidates"]
-    if len(candidates) >= pilot["targets"]["deduplicated_external_candidates"]:
+    qualified_count = sum(
+        item.get("qualification") == "QUALIFIED" for item in candidates
+    )
+    candidate_target_met = (
+        len(candidates) >= pilot["targets"]["deduplicated_external_candidates"]
+    )
+    qualification_target_met = qualified_count >= pilot["targets"]["qualified_tasks"]
+    if candidate_target_met and qualification_target_met:
         return None
     channel_code = "PUBLIC_GITHUB_READ"
     if not _channel_is_active(state, channel_code):
@@ -2497,9 +2504,13 @@ def synthesize_next_work(
             "priority": 80,
             "stage": "DISCOVERY",
             "status": "READY",
-            "target_candidate_count": min(
-                len(candidates) + 10,
-                pilot["targets"]["deduplicated_external_candidates"],
+            "target_candidate_count": (
+                len(candidates) + 10
+                if candidate_target_met
+                else min(
+                    len(candidates) + 10,
+                    pilot["targets"]["deduplicated_external_candidates"],
+                )
             ),
             "task_id": task_id,
         }
@@ -3232,12 +3243,21 @@ def finish_round(
         channel_code = task["channel_code"]
         if task["oracle_kind"] == "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK":
             candidate_gain = len(backlog["candidates"]) - active["candidate_count_at_start"]
+            target_candidate_count = task.get("target_candidate_count")
             qualified_now = sum(
                 item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
             )
             qualified_gain = qualified_now - active["qualified_count_at_start"]
             if outcome == "SUCCESS" and candidate_gain <= 0:
                 raise ConfigError("candidate-batch SUCCESS requires at least one new deduplicated candidate")
+            if (
+                outcome == "SUCCESS"
+                and isinstance(target_candidate_count, int)
+                and len(backlog["candidates"]) < target_candidate_count
+            ):
+                raise ConfigError(
+                    "candidate-batch SUCCESS requires reaching its frozen candidate-count target"
+                )
             if oracle_status == "PASSED" and qualified_gain <= 0:
                 state["discovery_no_qualified_streak"] = state.get(
                     "discovery_no_qualified_streak", 0

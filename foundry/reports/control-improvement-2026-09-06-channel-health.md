@@ -83,6 +83,11 @@
   Reproduction, repair, verification, transfer, and release-material success
   each fail closed unless their corresponding current-round first-class evidence
   is present; a generic `PASSED` label cannot complete those stages.
+- Dual-target discovery continuity: the controller no longer treats 30
+  candidates as a cap when fewer than 15 are qualified. It appends new,
+  family-locked immutable candidates until both minima are met or a fixed gate
+  stops work, and a synthesized batch cannot succeed before reaching its frozen
+  candidate-count target.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

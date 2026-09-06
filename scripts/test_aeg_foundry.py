@@ -107,6 +107,24 @@ class FoundryFixture(unittest.TestCase):
     def write(self, name: str, value: dict) -> None:
         foundry.atomic_write_json(self.root / "foundry" / f"{name}.json", value)
 
+    def append_candidate(
+        self, backlog: dict, number: int, qualification: str = "NOT_QUALIFIED"
+    ) -> None:
+        backlog["candidates"].append(
+            {
+                "candidate_id": f"AEG-C-{number:03d}",
+                "category": "PROSPECTIVE_REPAIR",
+                "contamination": "LOW",
+                "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+                "issue_number": number,
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "qualification": qualification,
+                "repository": f"example/project-{number}",
+                "source_state": "OPEN",
+                "source_url": f"https://github.com/example/project-{number}/issues/{number}",
+            }
+        )
+
     def runtime_receipt(self, environment_id: str = "AEG-E-001") -> dict:
         return {
             "company_data_mounted": False,
@@ -505,6 +523,56 @@ class FoundryTests(FoundryFixture):
                 "NEXT",
                 now=self.start + timedelta(hours=12, minutes=1),
             )
+
+    def test_synthesized_discovery_success_requires_frozen_batch_target(self) -> None:
+        first = foundry.begin_round(self.root, now=self.start, check_git=False)
+        foundry.finish_round(
+            self.root,
+            first["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        second = foundry.begin_round(
+            self.root, now=self.start + timedelta(hours=12), check_git=False
+        )
+        backlog = self.load("backlog")
+        self.append_candidate(backlog, 900)
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                second["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(hours=12, minutes=1),
+            )
+        self.assertIn("frozen candidate-count target", str(raised.exception))
+
+    def test_discovery_continues_past_candidate_minimum_until_qualified_minimum(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        for number in range(900, 910):
+            self.append_candidate(backlog, number)
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        self.assertTrue(claim["synthesized_work_item"])
+        self.assertEqual(claim["stage"], "DISCOVERY")
+        task = next(
+            item for item in self.load("backlog")["work_items"] if item["task_id"] == claim["task_id"]
+        )
+        self.assertEqual(task["target_candidate_count"], 40)
+
+    def test_discovery_stops_only_after_candidate_and_qualified_minima(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        for number in range(900, 913):
+            self.append_candidate(backlog, number, "QUALIFIED")
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.NoWorkError):
+            foundry.begin_round(self.root, now=self.start, check_git=False)
 
     def test_two_no_qualified_cycles_force_one_strategy_version_change(self) -> None:
         backlog = self.load("backlog")

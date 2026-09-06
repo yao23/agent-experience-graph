@@ -14,7 +14,10 @@ Other families remain candidates, not parallel active programs.
 The six-week targets are 30 deduplicated external real candidates, 15 qualified
 tasks, 10 independently behavior-verified tasks, and 5–8 Experiences ready for
 release review. Every such Experience needs at least one transfer task that did
-not participate in its construction.
+not participate in its construction. Candidate and qualification targets are
+both minimum gates: reaching 30 candidates does not stop bounded acquisition
+while fewer than 15 are qualified, and committed classifications remain
+immutable.
 
 Continue only if task supply is sustainable, at least three preregistered
 held-out positive transfers exist, there has been no uncontrolled permission,
