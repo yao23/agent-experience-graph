@@ -82,9 +82,16 @@ class FoundryFixture(unittest.TestCase):
 
 class FoundryTests(FoundryFixture):
     def test_initial_state_validates_and_public_fields_are_deduplicated(self) -> None:
+        backlog = self.load("backlog")
         result = foundry.validate(self.root, check_git=False)
-        self.assertEqual(result["candidate_count"], 10)
-        self.assertEqual(result["qualified_candidate_count"], 2)
+        self.assertEqual(result["candidate_count"], len(backlog["candidates"]))
+        self.assertEqual(
+            result["qualified_candidate_count"],
+            sum(
+                candidate["qualification"] == "QUALIFIED"
+                for candidate in backlog["candidates"]
+            ),
+        )
         self.assertEqual(result["public_scan"], "PASSED")
 
     def test_claim_finish_and_independent_resume(self) -> None:
@@ -105,7 +112,13 @@ class FoundryTests(FoundryFixture):
             self.root, now=self.start + timedelta(hours=12), check_git=False
         )
         self.assertTrue(resumed["synthesized_work_item"])
-        self.assertEqual(resumed["task_id"], "AEG-W-003")
+        resumed_number = int(resumed["task_id"].removeprefix("AEG-W-"))
+        prior_numbers = [
+            int(item["task_id"].removeprefix("AEG-W-"))
+            for item in self.load("backlog")["work_items"]
+            if item["task_id"] != resumed["task_id"]
+        ]
+        self.assertEqual(resumed_number, max(prior_numbers) + 1)
         self.assertEqual(resumed["source_ref_sha"], claim["source_ref_sha"])
 
     def test_synthesized_discovery_success_requires_a_candidate_gain(self) -> None:

@@ -13,11 +13,11 @@
   },
   "counters_by_utc_day": {
     "2026-09-06": {
-      "round_starts": 1,
-      "worker_starts": 2
+      "round_starts": 2,
+      "worker_starts": 3
     }
   },
-  "discovery_no_qualified_streak": 0,
+  "discovery_no_qualified_streak": 1,
   "effect_events": [
     {
       "effect_id": "AEG-I-bab930c171de4c2784ca407f37e2894c",
@@ -66,22 +66,37 @@
       "outcome": "COMPLETED_VERIFIED",
       "remote_sha": "51a93a107a83322e03c9d55b256abbe1f9390cde",
       "verified_at": "2026-09-06T07:44:11Z"
+    },
+    {
+      "effect_id": "AEG-I-47dd268753cf4a33abc6207202a91688",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "5fa25aa0a72af4dd43222f99adf9c51ebb1a00c4",
+      "verified_at": "2026-09-06T07:46:03Z"
+    },
+    {
+      "effect_id": "AEG-I-849ee2074ce44c83966f99c856db0005",
+      "effect_type": "READ_PUBLIC_SOURCE",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:46:08Z",
+      "resolved_at": "2026-09-06T07:50:08Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "NEXT_PLAYWRIGHT_DRIFT_BATCH"
     }
   ],
   "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
   "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
-  "last_round_id": "AEG-R-20260906T073046Z-0c86db97",
+  "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-47dd268753cf4a33abc6207202a91688",
+    "effect_id": "AEG-I-4d9890ee7a3a44fe80eabce1b047eeac",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T07:45:53Z",
-    "round_id": "AEG-R-20260906T073046Z-0c86db97",
+    "recorded_at": "2026-09-06T07:51:36Z",
+    "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },
   "pilot_status": "ACTIVE",
-  "rounds_completed": 1,
-  "rounds_started": 1,
+  "rounds_completed": 2,
+  "rounds_started": 2,
   "schema_version": 1,
   "worker_events": [
     {

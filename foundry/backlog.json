@@ -119,11 +119,131 @@
       "repository": "bufbuild/vscode-buf",
       "source_state": "OPEN",
       "source_url": "https://github.com/bufbuild/vscode-buf/issues/570"
+    },
+    {
+      "candidate_id": "AEG-C-011",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 40862,
+      "oracle_kind": "CONTAINER_MCP_BROWSER_NAVIGATION",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/40862"
+    },
+    {
+      "candidate_id": "AEG-C-012",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 40995,
+      "oracle_kind": "RESTARTED_ENVIRONMENT_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/40995"
+    },
+    {
+      "candidate_id": "AEG-C-013",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 30371,
+      "oracle_kind": "GITHUB_ACTIONS_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/30371"
+    },
+    {
+      "candidate_id": "AEG-C-014",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 29930,
+      "oracle_kind": "GITHUB_ACTIONS_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/29930"
+    },
+    {
+      "candidate_id": "AEG-C-015",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 5545,
+      "oracle_kind": "LOCAL_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/5545"
+    },
+    {
+      "candidate_id": "AEG-C-016",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 12772,
+      "oracle_kind": "CONTAINER_BROWSER_MATRIX_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/12772"
+    },
+    {
+      "candidate_id": "AEG-C-017",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 22333,
+      "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "microsoft/playwright",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/microsoft/playwright/issues/22333"
+    },
+    {
+      "candidate_id": "AEG-C-018",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 31780,
+      "oracle_kind": "EMBEDDED_RUNTIME_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "openai/codex",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/openai/codex/issues/31780"
+    },
+    {
+      "candidate_id": "AEG-C-019",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 4506,
+      "oracle_kind": "CI_E2E_SMOKE",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "marin-community/marin",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/marin-community/marin/issues/4506"
+    },
+    {
+      "candidate_id": "AEG-C-020",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 1829,
+      "oracle_kind": "HEADED_BROWSER_CONNECT",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "garrytan/gstack",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/garrytan/gstack/issues/1829"
     }
   ],
   "discovery": {
     "acquisition_strategy_version": 1,
-    "current_refresh_at": "2026-09-06T07:22:29Z",
+    "current_refresh_at": "2026-09-06T07:49:25Z",
     "deduplication_key": "repository+issue_number",
     "first_ten_complete": true,
     "historical_lead_revision": "999dbb4399e6a6190474a9c9bee88785f8bb7e9f",
@@ -168,6 +288,32 @@
       "stage": "REPRODUCTION",
       "status": "BLOCKED_ENVIRONMENT",
       "task_id": "AEG-W-002"
+    },
+    {
+      "attempts": 1,
+      "candidate_ids": [
+        "AEG-C-011",
+        "AEG-C-012",
+        "AEG-C-013",
+        "AEG-C-014",
+        "AEG-C-015",
+        "AEG-C-016",
+        "AEG-C-017",
+        "AEG-C-018",
+        "AEG-C-019",
+        "AEG-C-020"
+      ],
+      "claim": null,
+      "failure_code": null,
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "generated_by_controller": true,
+      "next_step_code": "DISCOVER_FINAL_FAMILY_LOCKED_BATCH",
+      "oracle_kind": "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK",
+      "priority": 80,
+      "stage": "DISCOVERY",
+      "status": "COMPLETED",
+      "target_candidate_count": 20,
+      "task_id": "AEG-W-003"
     }
   ]
 }
