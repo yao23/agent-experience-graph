@@ -25,6 +25,11 @@ read historical `.aeg` content. Keep raw logs and model output only in
 
 Finish with the actual deterministic oracle outcome using
 `python3 scripts/aeg_foundry.py finish-round`; `SUCCESS` requires `PASSED`.
+For `FAILURE` or `BLOCKED`, classify the cause with `--failure-class` and retain
+the actual failure code. Respect the claimed task's `channel_code`: two
+consecutive identical infrastructure failures quarantine that channel, while
+auth or quota failure pauses only that channel. Continue unrelated authorized
+work on other `ACTIVE` channels.
 Keep founder hours, tokens, and dollars as `UNKNOWN` when not observable. Run
 `python3 scripts/aeg_foundry.py audit-public`, then
 `python3 scripts/aeg_foundry.py persist --run-id <ROUND_ID> --push`. Do not

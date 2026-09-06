@@ -265,6 +265,7 @@
         "AEG-C-009",
         "AEG-C-010"
       ],
+      "channel_code": "PUBLIC_GITHUB_READ",
       "claim": null,
       "failure_code": null,
       "next_step_code": "PROVISION_CLEAN_ONE_TIME_EXECUTION_ENVIRONMENT",
@@ -279,6 +280,7 @@
       "candidate_ids": [
         "AEG-C-001"
       ],
+      "channel_code": "DISPOSABLE_RUNTIME",
       "claim": null,
       "failure_code": "BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME",
       "frozen_target_revision": "UNFROZEN_NOT_EXECUTED",
@@ -303,6 +305,7 @@
         "AEG-C-019",
         "AEG-C-020"
       ],
+      "channel_code": "PUBLIC_GITHUB_READ",
       "claim": null,
       "failure_code": null,
       "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",

@@ -47,6 +47,8 @@ TASK_STATUSES = {
 }
 OUTCOMES = {"SUCCESS", "FAILURE", "NEUTRAL", "HARMFUL", "INVALID", "BLOCKED"}
 ORACLE_STATUSES = {"PASSED", "FAILED", "NOT_RUN", "INVALID"}
+CHANNEL_STATUSES = {"ACTIVE", "PAUSED", "QUARANTINED", "BLOCKED_ENVIRONMENT"}
+FAILURE_CLASSES = {"NONE", "TASK", "INFRASTRUCTURE", "AUTH", "QUOTA", "ENVIRONMENT"}
 EFFECT_TYPES = {
     "READ_PUBLIC_SOURCE",
     "CLONE_PUBLIC_REPOSITORY",
@@ -54,9 +56,11 @@ EFFECT_TYPES = {
     "RUN_FROZEN_ORACLE",
     "PUSH_PILOT_BRANCH",
     "CREATE_OR_UPDATE_DRAFT_PR",
+    "UPDATE_NATIVE_AUTOMATION",
 }
 GITHUB_ISSUE_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+CHANNEL_RE = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
 SHA_RE = re.compile(r"^[0-9a-f]{40,64}$")
 SENSITIVE_VALUE_RES = (
     re.compile(r"/(?:Users|home)/[^/\s]+/"),
@@ -318,6 +322,23 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     if backlog.get("schema_version") != 1 or state.get("schema_version") != 1:
         errors.append("unsupported backlog or state schema")
 
+    channels = state.get("channels")
+    if not isinstance(channels, dict) or not channels:
+        errors.append("execution channels must be a non-empty object")
+        channels = {}
+    for channel_code, channel in channels.items():
+        if not isinstance(channel_code, str) or not CHANNEL_RE.fullmatch(channel_code):
+            errors.append(f"invalid execution channel code: {channel_code}")
+            continue
+        if not isinstance(channel, dict) or channel.get("status") not in CHANNEL_STATUSES:
+            errors.append(f"invalid execution channel status: {channel_code}")
+            continue
+        streak = channel.get("consecutive_infrastructure_failures", 0)
+        if not isinstance(streak, int) or streak < 0 or streak > 2:
+            errors.append(f"invalid infrastructure failure streak: {channel_code}")
+        if channel.get("status") == "QUARANTINED" and streak < 2:
+            errors.append(f"quarantined channel lacks two consecutive failures: {channel_code}")
+
     candidate_ids: set[str] = set()
     dedupe: set[tuple[str, int]] = set()
     for candidate in backlog.get("candidates", []):
@@ -357,6 +378,9 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             task_ids.add(task_id)
         if task.get("status") not in TASK_STATUSES:
             errors.append(f"invalid status for {task_id}")
+        channel_code = task.get("channel_code")
+        if channel_code not in channels:
+            errors.append(f"unknown execution channel for {task_id}")
         if not set(task.get("candidate_ids", [])).issubset(candidate_ids):
             errors.append(f"unknown candidate reference for {task_id}")
         if task.get("status") == "IN_PROGRESS":
@@ -432,6 +456,57 @@ def _today_counter(state: dict[str, Any], now: datetime) -> dict[str, int]:
     return counters.setdefault(day, {"round_starts": 0, "worker_starts": 0})
 
 
+def _channel(state: dict[str, Any], channel_code: str) -> dict[str, Any]:
+    channels = state.get("channels")
+    if not isinstance(channels, dict) or channel_code not in channels:
+        raise ConfigError(f"unknown execution channel: {channel_code}")
+    channel = channels[channel_code]
+    if not isinstance(channel, dict):
+        raise ConfigError(f"invalid execution channel state: {channel_code}")
+    return channel
+
+
+def _channel_is_active(state: dict[str, Any], channel_code: str) -> bool:
+    return _channel(state, channel_code).get("status") == "ACTIVE"
+
+
+def _record_channel_result(
+    state: dict[str, Any],
+    channel_code: str,
+    failure_class: str,
+    failure_code: str | None,
+    now: datetime,
+) -> dict[str, Any]:
+    channel = _channel(state, channel_code)
+    if failure_class not in FAILURE_CLASSES:
+        raise ConfigError("invalid failure class")
+    if failure_class in {"INFRASTRUCTURE", "AUTH", "QUOTA", "ENVIRONMENT"} and not failure_code:
+        raise ConfigError(f"{failure_class} result requires a failure code")
+    if failure_class == "INFRASTRUCTURE":
+        prior_code = channel.get("last_infrastructure_failure_code")
+        streak = int(channel.get("consecutive_infrastructure_failures", 0))
+        streak = streak + 1 if prior_code == failure_code else 1
+        channel["consecutive_infrastructure_failures"] = streak
+        channel["last_infrastructure_failure_code"] = failure_code
+        channel["last_failure_at"] = format_time(now)
+        if streak >= 2:
+            channel["status"] = "QUARANTINED"
+            channel["status_reason_code"] = failure_code
+            channel["status_recorded_at"] = format_time(now)
+    elif failure_class in {"AUTH", "QUOTA"}:
+        channel["status"] = "PAUSED"
+        channel["status_reason_code"] = failure_code
+        channel["status_recorded_at"] = format_time(now)
+    elif failure_class == "ENVIRONMENT":
+        channel["status"] = "BLOCKED_ENVIRONMENT"
+        channel["status_reason_code"] = failure_code
+        channel["status_recorded_at"] = format_time(now)
+    elif failure_class == "NONE" and channel.get("status") == "ACTIVE":
+        channel["consecutive_infrastructure_failures"] = 0
+        channel["last_infrastructure_failure_code"] = None
+    return channel
+
+
 def _expire_if_needed(state: dict[str, Any], pilot: dict[str, Any], now: datetime) -> None:
     if now >= parse_time(pilot["activation"]["ends_at"]):
         state["pilot_status"] = "EXPIRED"
@@ -482,11 +557,15 @@ def synthesize_next_work(
     candidates = backlog["candidates"]
     if len(candidates) >= pilot["targets"]["deduplicated_external_candidates"]:
         return None
+    channel_code = "PUBLIC_GITHUB_READ"
+    if not _channel_is_active(state, channel_code):
+        return None
     task_id = _next_work_item_id(backlog)
     if state.get("discovery_no_qualified_streak", 0) >= 2:
         task = {
             "attempts": 0,
             "candidate_ids": [],
+            "channel_code": channel_code,
             "claim": None,
             "failure_code": None,
             "generated_by_controller": True,
@@ -501,6 +580,7 @@ def synthesize_next_work(
         task = {
             "attempts": 0,
             "candidate_ids": [],
+            "channel_code": channel_code,
             "claim": None,
             "failure_code": None,
             "family": backlog["discovery"]["selected_family"],
@@ -652,7 +732,12 @@ def begin_round(
         if counter["worker_starts"] >= budgets["max_worker_starts_per_day"]:
             raise BudgetError("daily worker-start budget exhausted")
         ready = sorted(
-            (item for item in backlog["work_items"] if item["status"] == "READY"),
+            (
+                item
+                for item in backlog["work_items"]
+                if item["status"] == "READY"
+                and _channel_is_active(state, item["channel_code"])
+            ),
             key=lambda item: (-item["priority"], item["task_id"]),
         )
         synthesized = None
@@ -684,6 +769,7 @@ def begin_round(
         state["active_round"] = {
             **claim,
             "task_id": task["task_id"],
+            "channel_code": task["channel_code"],
             "source_remote": pilot["source"]["remote"],
             "source_ref": pilot["source"]["remote_ref"],
             "source_ref_sha": source_sha,
@@ -706,6 +792,7 @@ def begin_round(
         return {
             "round_id": round_id,
             "task_id": task["task_id"],
+            "channel_code": task["channel_code"],
             "stage": task["stage"],
             "oracle_kind": task["oracle_kind"],
             "expires_at": format_time(expires),
@@ -798,6 +885,7 @@ def finish_round(
     *,
     task_status: str | None = None,
     failure_code: str | None = None,
+    failure_class: str = "NONE",
     founder_hours: str = "UNKNOWN",
     compute_usd: str = "UNKNOWN",
     model: str = "UNKNOWN",
@@ -818,12 +906,17 @@ def finish_round(
             raise ConfigError("invalid outcome or oracle status")
         if outcome == "SUCCESS" and oracle_status != "PASSED":
             raise ConfigError("SUCCESS requires a PASSED deterministic oracle")
+        if outcome == "SUCCESS" and failure_class != "NONE":
+            raise ConfigError("SUCCESS cannot carry a failure class")
+        if outcome in {"FAILURE", "BLOCKED"} and failure_class == "NONE":
+            raise ConfigError(f"{outcome} requires an explicit failure class")
         counter = _today_counter(state, now)
         if worker_starts < 1:
             raise ConfigError("a round must count its scheduled task worker start")
         if counter["worker_starts"] + worker_starts > pilot["budgets"]["max_worker_starts_per_day"]:
             raise BudgetError("worker-start accounting would exceed the daily budget")
         task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
+        channel_code = task["channel_code"]
         if task["oracle_kind"] == "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK":
             candidate_gain = len(backlog["candidates"]) - active["candidate_count_at_start"]
             qualified_now = sum(
@@ -853,13 +946,23 @@ def finish_round(
         task["claim"] = None
         task["failure_code"] = failure_code
         task["next_step_code"] = next_step_code
+        channel = _record_channel_result(
+            state,
+            channel_code,
+            failure_class,
+            failure_code,
+            now,
+        )
         elapsed = max(0, int((now - parse_time(active["claimed_at"])).total_seconds()))
         record = {
+            "channel_code": channel_code,
+            "channel_status_after": channel["status"],
             "charter_sha256": active["charter_sha256"],
             "completed_at": format_time(now),
             "compute_usd": compute_usd,
             "elapsed_seconds": elapsed,
             "failure_code": failure_code,
+            "failure_class": failure_class,
             "founder_hours": founder_hours,
             "input_tokens": input_tokens,
             "model": model,
@@ -890,16 +993,23 @@ def finish_round(
 
 
 def register_worker(
-    root: Path, kind: str, model: str, now: datetime | None = None
+    root: Path,
+    kind: str,
+    model: str,
+    channel_code: str = "MODEL_WORKER",
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
     pilot, backlog, state = load_all(root)
     del backlog
     with control_lock(root, pilot):
+        if not _channel_is_active(state, channel_code):
+            raise PausedError(f"execution channel {channel_code} is not ACTIVE")
         counter = _today_counter(state, now)
         if counter["worker_starts"] >= pilot["budgets"]["max_worker_starts_per_day"]:
             raise BudgetError("daily worker-start budget exhausted")
         event = {
+            "channel_code": channel_code,
             "event_id": f"AEG-M-{uuid.uuid4().hex}",
             "kind": kind,
             "model": model,
@@ -917,6 +1027,7 @@ def finish_worker(
     event_id: str,
     status: str,
     *,
+    failure_code: str | None = None,
     input_tokens: str = "UNKNOWN",
     output_tokens: str = "UNKNOWN",
     total_tokens: str = "UNKNOWN",
@@ -930,7 +1041,13 @@ def finish_worker(
         event = next((item for item in state.get("worker_events", []) if item["event_id"] == event_id), None)
         if event is None or event["status"] != "STARTED":
             raise ConfigError("worker event is absent or already terminal")
-        if status not in {"PASSED", "FAILED", "AUTH_FAILED", "QUOTA_FAILED"}:
+        if status not in {
+            "PASSED",
+            "FAILED",
+            "INFRASTRUCTURE_FAILED",
+            "AUTH_FAILED",
+            "QUOTA_FAILED",
+        }:
             raise ConfigError("invalid worker status")
         event.update(
             {
@@ -942,9 +1059,25 @@ def finish_worker(
                 "status": status,
             }
         )
-        if status in {"AUTH_FAILED", "QUOTA_FAILED"}:
-            state["pilot_status"] = "PAUSED"
-            state["pause"] = {"reason_code": status, "recorded_at": format_time(now)}
+        failure_class = {
+            "PASSED": "NONE",
+            "FAILED": "TASK",
+            "INFRASTRUCTURE_FAILED": "INFRASTRUCTURE",
+            "AUTH_FAILED": "AUTH",
+            "QUOTA_FAILED": "QUOTA",
+        }[status]
+        resolved_failure_code = failure_code or (
+            status if status in {"AUTH_FAILED", "QUOTA_FAILED"} else None
+        )
+        channel = _record_channel_result(
+            state,
+            event.get("channel_code", "MODEL_WORKER"),
+            failure_class,
+            resolved_failure_code,
+            now,
+        )
+        event["channel_status_after"] = channel["status"]
+        event["failure_code"] = resolved_failure_code
         atomic_write_json(paths(root)["state"], state)
         return event
 
@@ -1013,6 +1146,13 @@ def render_status(
     )
     next_code = next_items[0]["next_step_code"] if next_items else "NONE"
     blocked_code = next_items[0].get("failure_code") if next_items else None
+    channel_lines = [
+        "- "
+        + f"`{channel_code}`: `{channel['status']}`"
+        + f"; infra streak `{channel.get('consecutive_infrastructure_failures', 0)}`"
+        + f"; reason `{channel.get('status_reason_code') or 'NONE'}`"
+        for channel_code, channel in sorted(state["channels"].items())
+    ]
     lines = [
         "# AEG Experience Foundry Pilot status",
         "",
@@ -1046,6 +1186,10 @@ def render_status(
         f"- Approval-blocked work: `{counts['blocked_approval']}`",
         f"- Primary block code: `{blocked_code or 'NONE'}`",
         f"- Next step code: `{next_code}`",
+        "",
+        "## Execution channels",
+        "",
+        *channel_lines,
         "",
         "Founder hours and compute dollars are reported separately. Unobservable values remain `UNKNOWN`.",
     ]
@@ -1241,6 +1385,7 @@ def parser() -> argparse.ArgumentParser:
     finish.add_argument("--next-step-code", required=True)
     finish.add_argument("--task-status", choices=sorted(TASK_STATUSES - {"READY", "IN_PROGRESS"}))
     finish.add_argument("--failure-code")
+    finish.add_argument("--failure-class", default="NONE", choices=sorted(FAILURE_CLASSES))
     finish.add_argument("--founder-hours", default="UNKNOWN")
     finish.add_argument("--compute-usd", default="UNKNOWN")
     finish.add_argument("--model", default="UNKNOWN")
@@ -1250,9 +1395,21 @@ def parser() -> argparse.ArgumentParser:
     worker = commands.add_parser("register-worker")
     worker.add_argument("--kind", required=True)
     worker.add_argument("--model", required=True)
+    worker.add_argument("--channel", default="MODEL_WORKER")
     worker_finish = commands.add_parser("finish-worker")
     worker_finish.add_argument("--event-id", required=True)
-    worker_finish.add_argument("--status", required=True, choices=("PASSED", "FAILED", "AUTH_FAILED", "QUOTA_FAILED"))
+    worker_finish.add_argument(
+        "--status",
+        required=True,
+        choices=(
+            "PASSED",
+            "FAILED",
+            "INFRASTRUCTURE_FAILED",
+            "AUTH_FAILED",
+            "QUOTA_FAILED",
+        ),
+    )
+    worker_finish.add_argument("--failure-code")
     worker_finish.add_argument("--input-tokens", default="UNKNOWN")
     worker_finish.add_argument("--output-tokens", default="UNKNOWN")
     worker_finish.add_argument("--total-tokens", default="UNKNOWN")
@@ -1304,6 +1461,7 @@ def main(argv: list[str] | None = None) -> int:
                     arguments.next_step_code,
                     task_status=arguments.task_status,
                     failure_code=arguments.failure_code,
+                    failure_class=arguments.failure_class,
                     founder_hours=arguments.founder_hours,
                     compute_usd=arguments.compute_usd,
                     model=arguments.model,
@@ -1313,13 +1471,14 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         elif arguments.command == "register-worker":
-            output(register_worker(root, arguments.kind, arguments.model))
+            output(register_worker(root, arguments.kind, arguments.model, arguments.channel))
         elif arguments.command == "finish-worker":
             output(
                 finish_worker(
                     root,
                     arguments.event_id,
                     arguments.status,
+                    failure_code=arguments.failure_code,
                     input_tokens=arguments.input_tokens,
                     output_tokens=arguments.output_tokens,
                     total_tokens=arguments.total_tokens,

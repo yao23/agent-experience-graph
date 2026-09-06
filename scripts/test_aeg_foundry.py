@@ -42,6 +42,26 @@ class FoundryFixture(unittest.TestCase):
             {
                 "active_round": None,
                 "automation": {"id": None, "status": "NOT_CREATED"},
+                "channels": {
+                    "DISPOSABLE_RUNTIME": {
+                        "consecutive_infrastructure_failures": 0,
+                        "last_infrastructure_failure_code": None,
+                        "status": "BLOCKED_ENVIRONMENT",
+                        "status_reason_code": "BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME",
+                    },
+                    "MODEL_WORKER": {
+                        "consecutive_infrastructure_failures": 0,
+                        "last_infrastructure_failure_code": None,
+                        "status": "ACTIVE",
+                        "status_reason_code": None,
+                    },
+                    "PUBLIC_GITHUB_READ": {
+                        "consecutive_infrastructure_failures": 0,
+                        "last_infrastructure_failure_code": None,
+                        "status": "ACTIVE",
+                        "status_reason_code": None,
+                    },
+                },
                 "counters_by_utc_day": {},
                 "discovery_no_qualified_streak": 0,
                 "effect_events": [],
@@ -257,6 +277,75 @@ class FoundryTests(FoundryFixture):
         with self.assertRaises(foundry.BudgetError):
             foundry.register_worker(self.root, "CANARY_7", "TEST_MODEL", now=self.start)
 
+    def test_same_infrastructure_failure_twice_quarantines_only_its_channel(self) -> None:
+        failure_codes = ("GITHUB_API_502", "GITHUB_API_503", "GITHUB_API_503")
+        offsets = (timedelta(), timedelta(hours=12), timedelta(hours=24))
+        for index, (failure_code, offset) in enumerate(zip(failure_codes, offsets)):
+            if index:
+                backlog = self.load("backlog")
+                backlog["work_items"][0].update(
+                    {"claim": None, "failure_code": None, "status": "READY"}
+                )
+                self.write("backlog", backlog)
+            claim = foundry.begin_round(self.root, now=self.start + offset, check_git=False)
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "FAILURE",
+                "FAILED",
+                "RETRY_OR_QUARANTINE_PUBLIC_SOURCE_CHANNEL",
+                failure_class="INFRASTRUCTURE",
+                failure_code=failure_code,
+                now=self.start + offset + timedelta(minutes=1),
+            )
+            channel = self.load("state")["channels"]["PUBLIC_GITHUB_READ"]
+            expected_status = "QUARANTINED" if index == 2 else "ACTIVE"
+            self.assertEqual(channel["status"], expected_status)
+            self.assertEqual(
+                channel["consecutive_infrastructure_failures"],
+                2 if index == 2 else 1,
+            )
+        self.assertEqual(self.load("state")["pilot_status"], "ACTIVE")
+        with self.assertRaises(foundry.NoWorkError):
+            foundry.begin_round(
+                self.root,
+                now=self.start + timedelta(hours=36),
+                check_git=False,
+            )
+
+    def test_auth_failure_pauses_only_affected_worker_channel(self) -> None:
+        event = foundry.register_worker(
+            self.root,
+            "AUTH_CANARY",
+            "TEST_MODEL",
+            channel_code="MODEL_WORKER",
+            now=self.start,
+        )
+        foundry.finish_worker(
+            self.root,
+            event["event_id"],
+            "AUTH_FAILED",
+            now=self.start + timedelta(seconds=1),
+        )
+        state = self.load("state")
+        self.assertEqual(state["pilot_status"], "ACTIVE")
+        self.assertEqual(state["channels"]["MODEL_WORKER"]["status"], "PAUSED")
+        self.assertEqual(state["channels"]["PUBLIC_GITHUB_READ"]["status"], "ACTIVE")
+        with self.assertRaises(foundry.PausedError):
+            foundry.register_worker(
+                self.root,
+                "SECOND_AUTH_CANARY",
+                "TEST_MODEL",
+                channel_code="MODEL_WORKER",
+                now=self.start + timedelta(seconds=2),
+            )
+        claim = foundry.begin_round(
+            self.root,
+            now=self.start + timedelta(minutes=1),
+            check_git=False,
+        )
+        self.assertEqual(claim["channel_code"], "PUBLIC_GITHUB_READ")
+
     def test_unresolved_intent_blocks_finish_and_retry(self) -> None:
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)
         intent = foundry.record_intent(
@@ -320,7 +409,7 @@ class FoundryTests(FoundryFixture):
 
     def test_duplicate_candidate_is_invalid(self) -> None:
         backlog = self.load("backlog")
-        backlog["candidates"].append(dict(backlog["candidates"][0], candidate_id="AEG-C-011"))
+        backlog["candidates"].append(dict(backlog["candidates"][0], candidate_id="AEG-C-999"))
         self.write("backlog", backlog)
         with self.assertRaises(foundry.ConfigError) as raised:
             foundry.validate(self.root, check_git=False)

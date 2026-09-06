@@ -24,14 +24,19 @@ disposable-environment gate. Keep raw logs and model output only in
 
 Finish with the actual oracle result using `finish-round`. `SUCCESS` requires a
 deterministic `PASSED` oracle. Use `UNKNOWN` for unobservable founder time,
-tokens, or cost. Then run `audit-public` and `persist --push` so the next task
-can resume from the pilot branch. The push records an intent before the effect;
-the next invocation reconciles it against the remote before claiming work.
+tokens, or cost. For `FAILURE` or `BLOCKED`, supply an explicit
+`--failure-class`. Two consecutive identical `INFRASTRUCTURE` failures
+quarantine only that task's `channel_code`; `AUTH` or `QUOTA` pauses only that
+channel. Do not claim work from a non-`ACTIVE` channel. Then run `audit-public`
+and `persist --push` so the next task can resume from the pilot branch. The push
+records an intent before the effect; the next invocation reconciles it against
+the remote before claiming work.
 
 Use `pause` immediately for an uncontrolled permission/privacy/integrity event,
-quota or auth failure on the affected channel, two repeated infrastructure
-failures, or explicit operator request. Do not change the fixed end time,
-budgets, qualification gates, frozen oracle, or historical result.
+or explicit operator request. Channel-local quota, auth, environment, and
+infrastructure failures use the channel state above and must not pause unrelated
+authorized work. Do not change the fixed end time, budgets, qualification gates,
+frozen oracle, or historical result.
 
 The operator pause entry is `python3 scripts/aeg_foundry.py pause
 --reason-code OPERATOR_REQUEST --push`; it records and pushes the pause before

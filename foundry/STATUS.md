@@ -1,6 +1,6 @@
 # AEG Experience Foundry Pilot status
 
-Generated: `2026-09-06T07:54:08Z`
+Generated: `2026-09-06T08:02:14Z`
 
 - Pilot: `ACTIVE`
 - Automation: `ACTIVE`
@@ -30,5 +30,11 @@ Generated: `2026-09-06T07:54:08Z`
 - Approval-blocked work: `0`
 - Primary block code: `BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME`
 - Next step code: `PROVISION_CLEAN_ONE_TIME_EXECUTION_ENVIRONMENT`
+
+## Execution channels
+
+- `DISPOSABLE_RUNTIME`: `BLOCKED_ENVIRONMENT`; infra streak `0`; reason `BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME`
+- `MODEL_WORKER`: `ACTIVE`; infra streak `0`; reason `NONE`
+- `PUBLIC_GITHUB_READ`: `ACTIVE`; infra streak `0`; reason `NONE`
 
 Founder hours and compute dollars are reported separately. Unobservable values remain `UNKNOWN`.
