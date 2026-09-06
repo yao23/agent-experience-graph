@@ -14,6 +14,13 @@ Run `python3 scripts/aeg_foundry.py validate`, then
 pause, expiry, budget, lease, unresolved-effect, and no-work exits. If no work
 or no meaningful change exists, remain quiet.
 
+If `begin-round` reports `EXPIRED`, inspect the state it just wrote. When no
+effect remains pending, run `audit-public` and persist the generated terminal
+state and `foundry/reports/final.md` with the recorded `last_round_id`, then
+notify the terminal recommendation. If an explicit operator pause left an
+unresolved effect, remain network-quiet and request human resolution rather
+than pushing around the pause.
+
 Immediately after a claim, run `record-intent` with effect type
 `READ_PUBLIC_SOURCE` and target code `CURRENT_SOURCE_REMOTE_REF`, then run
 `python3 scripts/aeg_foundry.py observe-source-ref --round-id <ROUND_ID>

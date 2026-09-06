@@ -16,6 +16,15 @@
   Every claimed round must record a public-read intent and freeze the current
   remote branch SHA before stage work; a round cannot finish without that
   observation.
+- Weekly and terminal evidence: weekly reports now include target-relative
+  progress, qualification rate, outcome counts and highlight, separate founder
+  hours and compute dollars, worker starts, quota visibility, bottleneck, next
+  focus, and decision queue. The final report exposes every continuation gate
+  and returns only `CONTINUE`, `NARROW`, or `STOP`.
+- Expiry persistence: an active pilot reconciles an already-pushed checkpoint
+  before writing `EXPIRED` and `final.md`. The scheduler is instructed to audit
+  and push that terminal checkpoint. An explicit operator pause remains
+  network-quiet and requires human resolution if an effect is still pending.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

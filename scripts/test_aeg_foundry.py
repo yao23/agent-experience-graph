@@ -66,6 +66,10 @@ class FoundryFixture(unittest.TestCase):
                 "counters_by_utc_day": {},
                 "discovery_no_qualified_streak": 0,
                 "effect_events": [],
+                "external_users": [],
+                "founder_interventions": 1,
+                "human_decision_queue": [],
+                "integrity_incidents": [],
                 "last_charter_sha256": None,
                 "last_remote_ref_sha": None,
                 "last_round_id": None,
@@ -269,6 +273,63 @@ class FoundryTests(FoundryFixture):
         with self.assertRaises(foundry.PausedError):
             foundry.begin_round(self.root, now=expiry, check_git=False)
         self.assertEqual(self.load("state")["pilot_status"], "EXPIRED")
+        final = self.root / "foundry" / "reports" / "final.md"
+        self.assertTrue(final.exists())
+        self.assertIn("- Recommendation: `STOP`", final.read_text(encoding="utf-8"))
+
+    def test_weekly_report_contains_required_evidence_fields(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "DISCOVER_FINAL_FAMILY_LOCKED_BATCH",
+            now=self.start + timedelta(minutes=1),
+        )
+        pilot, backlog, state = foundry.load_all(self.root)
+        created = foundry.generate_due_reports(
+            self.root,
+            pilot,
+            backlog,
+            state,
+            datetime(2026, 9, 13, 8, 0, tzinfo=timezone.utc),
+        )
+        self.assertIn("foundry/reports/week-01.md", created)
+        content = (self.root / "foundry" / "reports" / "week-01.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("- Qualification rate: `10%`", content)
+        self.assertIn(
+            "- Most important recorded outcome: `SUCCESS:AEG-W-001:PASSED`",
+            content,
+        )
+        self.assertIn("- Weekly founder hours: `UNKNOWN`", content)
+        self.assertIn("- Weekly compute USD: `UNKNOWN`", content)
+        self.assertIn("- Human decision queue: `NONE`", content)
+        self.assertIn("not a held-out positive transfer", content)
+
+    def test_final_report_exposes_each_unproven_continuation_gate(self) -> None:
+        pilot, backlog, state = foundry.load_all(self.root)
+        created = foundry.generate_due_reports(
+            self.root,
+            pilot,
+            backlog,
+            state,
+            datetime(2026, 10, 18, 7, 22, 29, tzinfo=timezone.utc),
+        )
+        self.assertIn("foundry/reports/final.md", created)
+        content = (self.root / "foundry" / "reports" / "final.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("- Recommendation: `STOP`", content)
+        self.assertIn("- Gate TASK_SUPPLY_AND_ACQUISITION_COST: `FAIL`", content)
+        self.assertIn("- Gate NO_UNCONTROLLED_INCIDENTS: `PASS`", content)
+        self.assertIn("- Gate THREE_VERIFIED_EXTERNAL_USERS: `FAIL`", content)
+        self.assertIn(
+            "- Verified external reuse per founder hour: `UNDEFINED_ZERO_DENOMINATOR`",
+            content,
+        )
 
     def test_persisted_pause_blocks_before_push_reconciliation(self) -> None:
         state = self.load("state")
@@ -290,6 +351,61 @@ class FoundryTests(FoundryFixture):
                 check_git=False,
             )
         self.assertEqual(self.load("state")["pending_effect"]["effect_id"], "AEG-I-pause-checkpoint")
+
+    def test_expiry_reconciles_prior_push_before_writing_terminal_state(self) -> None:
+        state = self.load("state")
+        state["pending_effect"] = {
+            "effect_id": "AEG-I-before-expiry",
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-10-18T07:20:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        expiry = datetime(2026, 10, 18, 7, 22, 29, tzinfo=timezone.utc)
+        with mock.patch.object(
+            foundry,
+            "_remote_contains_push_intent",
+            return_value=(True, "a" * 40),
+        ):
+            with self.assertRaises(foundry.PausedError):
+                foundry.begin_round(
+                    self.root,
+                    now=expiry,
+                    reconcile_prior_push=True,
+                    check_git=False,
+                )
+        state = self.load("state")
+        self.assertEqual(state["pilot_status"], "EXPIRED")
+        self.assertIsNone(state["pending_effect"])
+        self.assertEqual(state["effect_events"][-1]["outcome"], "COMPLETED_VERIFIED")
+        self.assertTrue((self.root / "foundry" / "reports" / "final.md").exists())
+
+    def test_operator_pause_at_expiry_stays_network_quiet_but_writes_final(self) -> None:
+        foundry.pause(self.root, "OPERATOR_REQUEST", now=self.start)
+        state = self.load("state")
+        state["pending_effect"] = {
+            "effect_id": "AEG-I-paused-before-expiry",
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-10-18T07:20:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        expiry = datetime(2026, 10, 18, 7, 22, 29, tzinfo=timezone.utc)
+        with mock.patch.object(foundry, "_remote_contains_push_intent") as remote_check:
+            with self.assertRaises(foundry.PausedError):
+                foundry.begin_round(
+                    self.root,
+                    now=expiry,
+                    reconcile_prior_push=True,
+                    check_git=False,
+                )
+        remote_check.assert_not_called()
+        state = self.load("state")
+        self.assertEqual(state["pilot_status"], "EXPIRED")
+        self.assertEqual(state["pending_effect"]["effect_id"], "AEG-I-paused-before-expiry")
+        self.assertTrue((self.root / "foundry" / "reports" / "final.md").exists())
 
     def test_daily_and_total_budgets_fail_closed(self) -> None:
         state = self.load("state")

@@ -188,16 +188,35 @@
       "resolved_at": "2026-09-06T08:08:13Z",
       "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
       "target_code": "UPDATE_DRAFT_PR_REMOTE_REF_GATE_AND_TEST_COUNTS"
+    },
+    {
+      "effect_id": "AEG-I-4e2a643f7e3744f5baeab1e261ce98fc",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "572a45744467946832e7c5adbe0d1ad11ea82e5b",
+      "verified_at": "2026-09-06T08:09:49Z"
+    },
+    {
+      "effect_id": "AEG-I-2eb8c9c94e274eb29c0f504d7fc2b357",
+      "effect_type": "UPDATE_NATIVE_AUTOMATION",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T08:13:31Z",
+      "resolved_at": "2026-09-06T08:13:59Z",
+      "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
+      "target_code": "PERSIST_WEEKLY_AND_TERMINAL_REPORTING_V4"
     }
   ],
+  "external_users": [],
+  "founder_interventions": 1,
+  "human_decision_queue": [],
+  "integrity_incidents": [],
   "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
   "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
   "last_round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-4e2a643f7e3744f5baeab1e261ce98fc",
+    "effect_id": "AEG-I-35d23c7b54604116ad74d542904c68fb",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T08:08:13Z",
+    "recorded_at": "2026-09-06T08:14:05Z",
     "round_id": "AEG-R-20260906T074603Z-6c3ec0d2",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },

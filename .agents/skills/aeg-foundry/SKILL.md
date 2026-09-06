@@ -15,6 +15,12 @@ Start one round with `python3 scripts/aeg_foundry.py begin-round
 uncertain effect, or no ready work, do not invent work or retry a blocked
 channel.
 
+An `EXPIRED` result may have generated the terminal state and `final.md`. If
+there is no pending effect, run `audit-public` and persist that terminal
+checkpoint with the `last_round_id`, then notify the conclusion. If an explicit
+operator pause left an unresolved effect, stay network-quiet and request human
+resolution; do not push around the pause.
+
 Immediately after a claim, record a `READ_PUBLIC_SOURCE` intent with target
 `CURRENT_SOURCE_REMOTE_REF`, then resolve it with `python3
 scripts/aeg_foundry.py observe-source-ref --round-id <ROUND_ID> --effect-id

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 import fcntl
 import hashlib
 import json
@@ -401,6 +402,13 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         errors.append("completed round count exceeds started round count")
     if state.get("pilot_status") not in {"ACTIVE", "PAUSED", "EXPIRED"}:
         errors.append("invalid pilot status")
+    if not isinstance(state.get("founder_interventions"), int) or state.get(
+        "founder_interventions", -1
+    ) < 0:
+        errors.append("founder interventions must be a non-negative integer")
+    for state_list in ("external_users", "human_decision_queue", "integrity_incidents"):
+        if not isinstance(state.get(state_list), list):
+            errors.append(f"{state_list} must be a list")
 
     seen_rounds: set[str] = set()
     successful = 0
@@ -522,6 +530,10 @@ def _record_channel_result(
 
 def _expire_if_needed(state: dict[str, Any], pilot: dict[str, Any], now: datetime) -> None:
     if now >= parse_time(pilot["activation"]["ends_at"]):
+        if state.get("pilot_status") == "EXPIRED" and (state.get("pause") or {}).get(
+            "reason_code"
+        ) == "FIXED_TERM_ENDED":
+            return
         state["pilot_status"] = "EXPIRED"
         state["pause"] = {
             "reason_code": "FIXED_TERM_ENDED",
@@ -720,6 +732,27 @@ def begin_round(
             repository_preflight(root, pilot, require_clean=True)
         prior_status = state["pilot_status"]
         prior_pause = state.get("pause")
+        reconciliation = None
+        if now >= parse_time(pilot["activation"]["ends_at"]):
+            if state.get("pilot_status") == "PAUSED" or (
+                state.get("pause")
+                and (state.get("pause") or {}).get("reason_code") != "FIXED_TERM_ENDED"
+            ):
+                _expire_if_needed(state, pilot, now)
+                atomic_write_json(paths(root)["state"], state)
+                generate_due_reports(root, pilot, backlog, state, now)
+                render_status(root, pilot, backlog, state, now)
+                raise PausedError(f"pilot is {state['pilot_status']}")
+            if reconcile_prior_push:
+                reconciliation = reconcile_push(root, pilot, state, now)
+            elif state.get("pending_effect"):
+                raise LeaseError("an external effect is unresolved; reconciliation is required")
+            _expire_if_needed(state, pilot, now)
+            if state["pilot_status"] != prior_status or state.get("pause") != prior_pause or reconciliation:
+                atomic_write_json(paths(root)["state"], state)
+                generate_due_reports(root, pilot, backlog, state, now)
+                render_status(root, pilot, backlog, state, now)
+            raise PausedError(f"pilot is {state['pilot_status']}")
         _expire_if_needed(state, pilot, now)
         if state["pilot_status"] != "ACTIVE" or state.get("pause"):
             if state["pilot_status"] != prior_status or state.get("pause") != prior_pause:
@@ -727,7 +760,6 @@ def begin_round(
                 generate_due_reports(root, pilot, backlog, state, now)
                 render_status(root, pilot, backlog, state, now)
             raise PausedError(f"pilot is {state['pilot_status']}")
-        reconciliation = None
         if reconcile_prior_push:
             reconciliation = reconcile_push(root, pilot, state, now)
         elif state.get("pending_effect"):
@@ -1275,6 +1307,118 @@ def render_status(
     return content
 
 
+def _round_records(root: Path) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for line in paths(root)["rounds"].read_text(encoding="utf-8").splitlines():
+        if line:
+            records.append(json.loads(line))
+    return records
+
+
+def _decimal_text(value: Decimal) -> str:
+    return format(value.normalize(), "f") if value else "0"
+
+
+def _known_total(records: list[dict[str, Any]], field: str) -> str:
+    if not records:
+        return "0"
+    total = Decimal("0")
+    for record in records:
+        raw = record.get(field, "UNKNOWN")
+        try:
+            parsed = Decimal(str(raw))
+        except (InvalidOperation, ValueError):
+            return "UNKNOWN"
+        if parsed < 0:
+            return "UNKNOWN"
+        total += parsed
+    return _decimal_text(total)
+
+
+def _ratio(numerator: int, denominator: str) -> str:
+    if denominator == "UNKNOWN":
+        return "UNKNOWN"
+    parsed = Decimal(denominator)
+    if parsed == 0:
+        return "UNDEFINED_ZERO_DENOMINATOR"
+    return _decimal_text(Decimal(numerator) / parsed)
+
+
+def _qualification_rate(counts: dict[str, int]) -> str:
+    if not counts["candidates"]:
+        return "UNDEFINED_NO_CANDIDATES"
+    rate = Decimal(counts["qualified"]) * Decimal("100") / Decimal(counts["candidates"])
+    return _decimal_text(rate) + "%"
+
+
+def _active_decision_codes(state: dict[str, Any]) -> str:
+    decisions = [
+        item.get("decision_code", "INVALID_DECISION_RECORD")
+        for item in state["human_decision_queue"]
+        if item.get("status") == "PENDING"
+    ]
+    return ",".join(sorted(decisions)) if decisions else "NONE"
+
+
+def _external_user_evidence(state: dict[str, Any]) -> tuple[int, int]:
+    verified = [
+        item
+        for item in state["external_users"]
+        if item.get("status") == "VERIFIED_EXTERNAL_USER"
+    ]
+    stronger = sum(
+        item.get("evidence_kind") in {"RECEIPT", "REPEAT_USE", "NEW_TASK"}
+        for item in verified
+    )
+    return len(verified), stronger
+
+
+def _continuation_gates(
+    pilot: dict[str, Any],
+    counts: dict[str, int],
+    state: dict[str, Any],
+    records: list[dict[str, Any]],
+) -> dict[str, bool]:
+    founder_hours = _known_total(records, "founder_hours")
+    compute_usd = _known_total(records, "compute_usd")
+    verified_users, strong_user_evidence = _external_user_evidence(state)
+    uncontrolled_incidents = sum(
+        item.get("status") == "UNCONTROLLED" for item in state["integrity_incidents"]
+    )
+    return {
+        "TASK_SUPPLY_AND_ACQUISITION_COST": (
+            counts["candidates"] >= pilot["targets"]["deduplicated_external_candidates"]
+            and counts["qualified"] >= pilot["targets"]["qualified_tasks"]
+            and (founder_hours != "UNKNOWN" or compute_usd != "UNKNOWN")
+        ),
+        "BEHAVIOR_VERIFIED_TARGET": (
+            counts["behavior_verified"]
+            >= pilot["targets"]["independently_behavior_verified_tasks"]
+        ),
+        "RELEASE_REVIEW_EXPERIENCE_TARGET": (
+            pilot["targets"]["release_review_experiences_min"]
+            <= counts["release_review_experiences"]
+            <= pilot["targets"]["release_review_experiences_max"]
+        ),
+        "HELD_OUT_POSITIVE_TRANSFERS": counts["held_out_positive_transfers"] >= 3,
+        "NO_UNCONTROLLED_INCIDENTS": uncontrolled_incidents == 0,
+        "THREE_VERIFIED_EXTERNAL_USERS": verified_users >= 3,
+        "EXTERNAL_USER_STRONG_EVIDENCE": strong_user_evidence >= 1,
+    }
+
+
+def _recommendation(gates: dict[str, bool], counts: dict[str, int]) -> str:
+    if all(gates.values()):
+        return "CONTINUE"
+    if gates["NO_UNCONTROLLED_INCIDENTS"] and (
+        counts["qualified"] >= 5
+        or counts["behavior_verified"] > 0
+        or counts["held_out_positive_transfers"] > 0
+    ):
+        return "NARROW"
+    return "STOP"
+
+
 def generate_due_reports(
     root: Path,
     pilot: dict[str, Any],
@@ -1287,26 +1431,58 @@ def generate_due_reports(
     start = parse_time(pilot["activation"]["starts_at"])
     completed_weeks = min(6, max(0, int((now - start).total_seconds() // (7 * 86400))))
     counts = _counts(backlog)
+    records = _round_records(root)
+    cumulative_founder_hours = _known_total(records, "founder_hours")
+    cumulative_compute_usd = _known_total(records, "compute_usd")
     created: list[str] = []
     for week in range(1, completed_weeks + 1):
         report = reports / f"week-{week:02d}.md"
         if report.exists():
             continue
+        window_start = start + timedelta(days=7 * (week - 1))
+        window_end = start + timedelta(days=7 * week)
+        week_records = [
+            record
+            for record in records
+            if window_start <= parse_time(record["completed_at"]) < window_end
+        ]
+        priority = {"HARMFUL": 6, "SUCCESS": 5, "NEUTRAL": 4, "FAILURE": 3, "INVALID": 2, "BLOCKED": 1}
+        important = max(
+            week_records,
+            key=lambda item: (priority.get(item.get("outcome"), 0), item.get("completed_at", "")),
+            default=None,
+        )
+        highlight = (
+            f"{important['outcome']}:{important['task_id']}:{important['oracle_status']}"
+            if important
+            else "NO_ROUND_RECORDED"
+        )
+        outcome_counts = {
+            outcome: sum(record.get("outcome") == outcome for record in week_records)
+            for outcome in ("SUCCESS", "NEUTRAL", "HARMFUL", "FAILURE", "INVALID", "BLOCKED")
+        }
+        week_worker_starts = sum(int(record.get("worker_starts", 0)) for record in week_records)
         content = "\n".join(
             [
                 f"# AEG Foundry week {week}",
                 "",
-                f"- Candidates: `{counts['candidates']}`",
-                f"- Qualified: `{counts['qualified']}`",
-                f"- Behavior verified: `{counts['behavior_verified']}`",
-                f"- Positive held-out transfers: `{counts['held_out_positive_transfers']}`",
-                f"- Founder hours: `UNKNOWN`",
-                f"- Compute USD: `UNKNOWN`",
-                f"- Founder interventions: `{state.get('founder_interventions', 1)}`",
+                f"- Candidates: `{counts['candidates']} / {pilot['targets']['deduplicated_external_candidates']}`",
+                f"- Qualified: `{counts['qualified']} / {pilot['targets']['qualified_tasks']}`",
+                f"- Qualification rate: `{_qualification_rate(counts)}`",
+                f"- Behavior verified: `{counts['behavior_verified']} / {pilot['targets']['independently_behavior_verified_tasks']}`",
+                f"- Positive held-out transfers: `{counts['held_out_positive_transfers']} / 3`",
+                f"- Most important recorded outcome: `{highlight}`",
+                f"- Weekly outcome counts: `{json.dumps(outcome_counts, sort_keys=True, separators=(',', ':'))}`",
+                f"- Weekly founder hours: `{_known_total(week_records, 'founder_hours')}`",
+                f"- Weekly compute USD: `{_known_total(week_records, 'compute_usd')}`",
+                f"- Weekly worker starts: `{week_worker_starts}`",
+                f"- Founder interventions: `{state['founder_interventions']}`",
+                f"- Account quota observation: `UNKNOWN_NOT_PUBLICLY_RECORDED`",
                 f"- Bottleneck: `{'BLOCKED_ENVIRONMENT' if counts['blocked_environment'] else 'NONE'}`",
                 f"- Next focus: `{backlog['work_items'][-1]['next_step_code']}`",
-                "- Human decision queue: `NONE`",
+                f"- Human decision queue: `{_active_decision_codes(state)}`",
                 "",
+                "`SUCCESS` above is a round outcome, not a held-out positive transfer.",
                 "No milestone classification is inferred from missing evidence.",
             ]
         ) + "\n"
@@ -1315,10 +1491,14 @@ def generate_due_reports(
     if now >= parse_time(pilot["activation"]["ends_at"]):
         final = reports / "final.md"
         if not final.exists():
-            recommendation = "CONTINUE" if (
-                counts["held_out_positive_transfers"] >= 3
-                and counts["qualified"] >= pilot["targets"]["qualified_tasks"]
-            ) else "STOP_OR_NARROW"
+            gates = _continuation_gates(pilot, counts, state, records)
+            recommendation = _recommendation(gates, counts)
+            gate_lines = [
+                f"- Gate {name}: `{'PASS' if passed else 'FAIL'}`"
+                for name, passed in gates.items()
+            ]
+            verified_users, strong_user_evidence = _external_user_evidence(state)
+            verified_reuse = counts["behavior_verified"]
             atomic_write(
                 final,
                 "\n".join(
@@ -1328,10 +1508,19 @@ def generate_due_reports(
                         f"- Recommendation: `{recommendation}`",
                         f"- Candidates: `{counts['candidates']}`",
                         f"- Qualified: `{counts['qualified']}`",
+                        f"- Qualification rate: `{_qualification_rate(counts)}`",
                         f"- Behavior verified: `{counts['behavior_verified']}`",
                         f"- Positive held-out transfers: `{counts['held_out_positive_transfers']}`",
-                        "- Verified external reuse per founder hour: `UNKNOWN`",
-                        "- Verified external reuse per compute USD: `UNKNOWN`",
+                        f"- Release-review Experiences: `{counts['release_review_experiences']}`",
+                        f"- Verified external users: `{verified_users}`",
+                        f"- External users with receipt, repeat use, or new task: `{strong_user_evidence}`",
+                        f"- Founder hours: `{cumulative_founder_hours}`",
+                        f"- Compute USD: `{cumulative_compute_usd}`",
+                        f"- Verified external reuse per founder hour: `{_ratio(verified_reuse, cumulative_founder_hours)}`",
+                        f"- Verified external reuse per compute USD: `{_ratio(verified_reuse, cumulative_compute_usd)}`",
+                        f"- Human decision queue: `{_active_decision_codes(state)}`",
+                        "",
+                        *gate_lines,
                         "",
                         "The fixed term ended; no new experiment may start.",
                     ]
