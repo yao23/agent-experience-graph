@@ -141,6 +141,7 @@ UNTRUSTED_EXECUTION_EFFECT_TYPES = {
     "INSTALL_PINNED_DEPENDENCIES",
     "RUN_FROZEN_ORACLE",
 }
+NO_DISPOSABLE_RUNTIME_CODE = "BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME"
 GITHUB_ISSUE_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 CHANNEL_RE = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
@@ -2284,6 +2285,190 @@ def _channel_is_active(state: dict[str, Any], channel_code: str) -> bool:
     return _channel(state, channel_code).get("status") == "ACTIVE"
 
 
+def _available_runtime_environment_ids(
+    state: dict[str, Any], now: datetime
+) -> list[str]:
+    claimed = {
+        claim.get("environment_id")
+        for claim in state.get("runtime_environment_claims", [])
+        if isinstance(claim, dict)
+    }
+    available: list[str] = []
+    for environment in state.get("runtime_environments", []):
+        if (
+            not isinstance(environment, dict)
+            or environment.get("qualification_status") != "VERIFIED_DISPOSABLE_RUNTIME"
+            or environment.get("environment_id") in claimed
+        ):
+            continue
+        try:
+            current = (
+                parse_time(environment["qualified_at"])
+                <= now
+                < parse_time(environment["expires_at"])
+            )
+        except (KeyError, ConfigError):
+            current = False
+        if current:
+            available.append(environment["environment_id"])
+    return sorted(available)
+
+
+def _required_runtime_count(task: dict[str, Any]) -> int:
+    return 2 if task.get("stage") in {"VERIFICATION", "TRANSFER_EVALUATION"} else 1
+
+
+def _synchronize_disposable_runtime_availability(
+    backlog: dict[str, Any],
+    state: dict[str, Any],
+    now: datetime,
+) -> dict[str, Any]:
+    """Derive channel/task availability from immutable, unclaimed runtime receipts."""
+
+    available_ids = _available_runtime_environment_ids(state, now)
+    available_count = len(available_ids)
+    channel = _channel(state, "DISPOSABLE_RUNTIME")
+    changes: list[str] = []
+    if (
+        available_count
+        and channel.get("status") == "BLOCKED_ENVIRONMENT"
+        and channel.get("status_reason_code") == NO_DISPOSABLE_RUNTIME_CODE
+    ):
+        channel["status"] = "ACTIVE"
+        channel["status_reason_code"] = None
+        channel["status_recorded_at"] = format_time(now)
+        changes.append("CHANNEL_REACTIVATED_FROM_VERIFIED_RECEIPT")
+    elif not available_count and channel.get("status") == "ACTIVE":
+        channel["status"] = "BLOCKED_ENVIRONMENT"
+        channel["status_reason_code"] = NO_DISPOSABLE_RUNTIME_CODE
+        channel["status_recorded_at"] = format_time(now)
+        changes.append("CHANNEL_BLOCKED_NO_AVAILABLE_RUNTIME")
+
+    channel_active = channel.get("status") == "ACTIVE"
+    for task in backlog.get("work_items", []):
+        if not isinstance(task, dict) or task.get("channel_code") != "DISPOSABLE_RUNTIME":
+            continue
+        enough_runtime = available_count >= _required_runtime_count(task)
+        if (
+            channel_active
+            and enough_runtime
+            and task.get("status") == "BLOCKED_ENVIRONMENT"
+            and task.get("failure_code") == NO_DISPOSABLE_RUNTIME_CODE
+        ):
+            task["status"] = "READY"
+            task["failure_code"] = None
+            changes.append(f"TASK_REACTIVATED:{task.get('task_id')}")
+        elif task.get("status") == "READY" and (not channel_active or not enough_runtime):
+            task["status"] = "BLOCKED_ENVIRONMENT"
+            task["failure_code"] = NO_DISPOSABLE_RUNTIME_CODE
+            changes.append(f"TASK_BLOCKED:{task.get('task_id')}")
+    return {
+        "available_environment_ids": available_ids,
+        "changes": changes,
+    }
+
+
+def _append_stage_successor(
+    backlog: dict[str, Any], task: dict[str, Any]
+) -> dict[str, Any] | None:
+    successor_specs = {
+        "REPRODUCTION": (
+            "REPAIR",
+            "DISPOSABLE_RUNTIME",
+            task.get("oracle_kind"),
+            "IMPLEMENT_BOUNDED_REPAIR_AT_FROZEN_SCOPE",
+            95,
+        ),
+        "REPAIR": (
+            "VERIFICATION",
+            "DISPOSABLE_RUNTIME",
+            task.get("oracle_kind"),
+            "RUN_INDEPENDENT_BASELINE_AND_REPAIRED_VERIFICATION",
+            94,
+        ),
+        "VERIFICATION": (
+            "RELEASE_MATERIAL",
+            "MODEL_WORKER",
+            "EXPERIENCE_ARTIFACT_SCHEMA_AND_DIGEST",
+            "BUILD_VERSIONED_EXPERIENCE_ARTIFACT",
+            85,
+        ),
+    }
+    spec = successor_specs.get(task.get("stage"))
+    if spec is None:
+        return None
+    stage, channel_code, oracle_kind, next_step_code, priority = spec
+    candidate_ids = list(task.get("candidate_ids", []))
+    if any(
+        isinstance(item, dict)
+        and item.get("stage") == stage
+        and item.get("candidate_ids") == candidate_ids
+        for item in backlog.get("work_items", [])
+    ):
+        return None
+    successor = {
+        "attempts": 0,
+        "candidate_ids": candidate_ids,
+        "channel_code": channel_code,
+        "claim": None,
+        "failure_code": None,
+        "generated_by_controller": True,
+        "next_step_code": next_step_code,
+        "oracle_kind": oracle_kind,
+        "priority": priority,
+        "stage": stage,
+        "status": "READY",
+        "task_id": _next_work_item_id(backlog),
+    }
+    backlog["work_items"].append(successor)
+    return successor
+
+
+def _ensure_qualified_candidate_reproduction_tasks(
+    backlog: dict[str, Any],
+) -> list[dict[str, Any]]:
+    existing_candidate_ids = {
+        candidate_id
+        for task in backlog.get("work_items", [])
+        if isinstance(task, dict)
+        and task.get("stage") in {
+            "REPRODUCTION",
+            "REPAIR",
+            "VERIFICATION",
+            "RELEASE_MATERIAL",
+        }
+        for candidate_id in task.get("candidate_ids", [])
+    }
+    created: list[dict[str, Any]] = []
+    for candidate in backlog.get("candidates", []):
+        candidate_id = candidate.get("candidate_id")
+        if (
+            candidate.get("qualification") != "QUALIFIED"
+            or candidate.get("category") == "HELD_OUT_TRANSFER"
+            or candidate.get("family") != backlog.get("discovery", {}).get("selected_family")
+            or candidate_id in existing_candidate_ids
+        ):
+            continue
+        task = {
+            "attempts": 0,
+            "candidate_ids": [candidate_id],
+            "channel_code": "DISPOSABLE_RUNTIME",
+            "claim": None,
+            "failure_code": None,
+            "generated_by_controller": True,
+            "next_step_code": "FREEZE_TARGET_AND_REPRODUCE_BASELINE_FAILURE",
+            "oracle_kind": candidate["oracle_kind"],
+            "priority": 90,
+            "stage": "REPRODUCTION",
+            "status": "READY",
+            "task_id": _next_work_item_id(backlog),
+        }
+        backlog["work_items"].append(task)
+        existing_candidate_ids.add(candidate_id)
+        created.append(task)
+    return created
+
+
 def _record_channel_result(
     state: dict[str, Any],
     channel_code: str,
@@ -2669,6 +2854,9 @@ def begin_round(
         active = state.get("active_round")
         if active:
             raise LeaseError(f"round {active['round_id']} holds the lease until {active['expires_at']}")
+        runtime_availability = _synchronize_disposable_runtime_availability(
+            backlog, state, now
+        )
         ready = sorted(
             (
                 item
@@ -2684,7 +2872,7 @@ def begin_round(
             if synthesized is not None:
                 ready = [synthesized]
         if not ready:
-            if recovery or reconciliation:
+            if recovery or reconciliation or runtime_availability["changes"]:
                 atomic_write_json(paths(root)["backlog"], backlog)
                 atomic_write_json(paths(root)["state"], state)
                 render_status(root, pilot, backlog, state, now)
@@ -2745,6 +2933,7 @@ def begin_round(
             "charter_sha256": charter_sha,
             "recovery": recovery,
             "push_reconciliation": reconciliation,
+            "runtime_availability": runtime_availability,
             "synthesized_work_item": synthesized is not None,
         }
 
@@ -3292,10 +3481,19 @@ def finish_round(
             task_status = "COMPLETED" if outcome == "SUCCESS" else "FAILED"
         if task_status not in TASK_STATUSES or task_status in {"READY", "IN_PROGRESS"}:
             raise ConfigError("invalid terminal/checkpoint task status")
+        if outcome == "SUCCESS" and task_status != "COMPLETED":
+            raise ConfigError("SUCCESS requires a COMPLETED task status")
+        if outcome != "SUCCESS" and task_status == "COMPLETED":
+            raise ConfigError("non-success outcome cannot complete a task")
         task["status"] = task_status
         task["claim"] = None
         task["failure_code"] = failure_code
         task["next_step_code"] = next_step_code
+        if outcome == "SUCCESS":
+            if task["stage"] == "DISCOVERY":
+                _ensure_qualified_candidate_reproduction_tasks(backlog)
+            else:
+                _append_stage_successor(backlog, task)
         channel = _record_channel_result(
             state,
             channel_code,
@@ -3343,6 +3541,7 @@ def finish_round(
         state["active_round"] = None
         state["last_round_id"] = round_id
         state["rounds_completed"] += 1
+        _synchronize_disposable_runtime_availability(backlog, state, now)
         _expire_if_needed(state, pilot, now)
         atomic_write_json(paths(root)["backlog"], backlog)
         atomic_write_json(paths(root)["state"], state)

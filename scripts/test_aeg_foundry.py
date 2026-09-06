@@ -596,6 +596,35 @@ class FoundryTests(FoundryFixture):
         )
         self.assertEqual(self.load("state")["discovery_no_qualified_streak"], 0)
 
+    def test_discovery_success_enqueues_new_qualified_candidate_reproduction(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        backlog = self.load("backlog")
+        for number in range(900, 910):
+            self.append_candidate(
+                backlog,
+                number,
+                "QUALIFIED" if number == 900 else "NOT_QUALIFIED",
+            )
+        self.write("backlog", backlog)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "CONTINUE_QUALIFIED_PIPELINE",
+            now=self.start + timedelta(minutes=1),
+        )
+        reproduction = next(
+            item
+            for item in self.load("backlog")["work_items"]
+            if item.get("stage") == "REPRODUCTION" and item.get("candidate_ids") == ["AEG-C-900"]
+        )
+        self.assertEqual(reproduction["status"], "BLOCKED_ENVIRONMENT")
+        self.assertEqual(reproduction["failure_code"], foundry.NO_DISPOSABLE_RUNTIME_CODE)
+
     def test_duplicate_start_is_rejected(self) -> None:
         first = foundry.begin_round(self.root, now=self.start, check_git=False)
         with self.assertRaises(foundry.LeaseError) as raised:
@@ -1483,6 +1512,43 @@ class FoundryTests(FoundryFixture):
         self.assertIn("requires a DISPOSABLE_RUNTIME round", str(raised.exception))
         self.assertIsNone(self.load("state")["pending_effect"])
 
+    def test_verified_receipt_reactivates_runtime_channel_and_blocked_task(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt())
+        self.write("state", state)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        self.assertEqual(claim["task_id"], "AEG-W-002")
+        self.assertEqual(claim["channel_code"], "DISPOSABLE_RUNTIME")
+        self.assertIn(
+            "CHANNEL_REACTIVATED_FROM_VERIFIED_RECEIPT",
+            claim["runtime_availability"]["changes"],
+        )
+        self.assertEqual(
+            self.load("state")["channels"]["DISPOSABLE_RUNTIME"]["status"],
+            "ACTIVE",
+        )
+
+    def test_expired_receipt_does_not_reactivate_runtime_work(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt())
+        self.write("state", state)
+        claim = foundry.begin_round(
+            self.root,
+            now=self.start + timedelta(days=2),
+            check_git=False,
+        )
+        self.assertEqual(claim["channel_code"], "PUBLIC_GITHUB_READ")
+        blocked = next(
+            item for item in self.load("backlog")["work_items"] if item["task_id"] == "AEG-W-002"
+        )
+        self.assertEqual(blocked["status"], "BLOCKED_ENVIRONMENT")
+
     def test_untrusted_intent_requires_both_receipt_and_live_runtime_channel(self) -> None:
         backlog = self.load("backlog")
         backlog["work_items"][0]["channel_code"] = "DISPOSABLE_RUNTIME"
@@ -1493,18 +1559,10 @@ class FoundryTests(FoundryFixture):
         )
         self.write("state", state)
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)
-        with self.assertRaises(foundry.ConfigError) as missing_receipt:
-            foundry.record_intent(
-                self.root,
-                claim["round_id"],
-                "RUN_FROZEN_ORACLE",
-                "FROZEN_TARGET_ORACLE",
-                environment_id="AEG-E-001",
-                target_revision="a" * 40,
-                now=self.start + timedelta(seconds=1),
-            )
-        self.assertIn("lacks a verified qualification receipt", str(missing_receipt.exception))
+        self.assertEqual(claim["channel_code"], "PUBLIC_GITHUB_READ")
         state = self.load("state")
+        self.assertEqual(state["channels"]["DISPOSABLE_RUNTIME"]["status"], "BLOCKED_ENVIRONMENT")
+        self.assertEqual(state["runtime_environment_claims"], [])
         state["runtime_environments"].append(self.runtime_receipt())
         state["channels"]["DISPOSABLE_RUNTIME"].update(
             {
@@ -1512,20 +1570,19 @@ class FoundryTests(FoundryFixture):
                 "status_reason_code": "RUNTIME_REVOKED_BEFORE_EFFECT",
             }
         )
-        self.write("state", state)
+        active = {
+            "channel_code": "DISPOSABLE_RUNTIME",
+            "round_id": "AEG-R-TEST",
+            "runtime_environment_ids": [],
+        }
         with self.assertRaises(foundry.ConfigError) as blocked_channel:
-            foundry.record_intent(
-                self.root,
-                claim["round_id"],
-                "RUN_FROZEN_ORACLE",
-                "FROZEN_TARGET_ORACLE",
-                environment_id="AEG-E-001",
-                target_revision="a" * 40,
-                now=self.start + timedelta(seconds=2),
+            foundry._bind_disposable_runtime(
+                state,
+                active,
+                "AEG-E-001",
+                self.start + timedelta(seconds=2),
             )
         self.assertIn("channel is not ACTIVE", str(blocked_channel.exception))
-        state = self.load("state")
-        self.assertIsNone(state["pending_effect"])
         self.assertEqual(state["runtime_environment_claims"], [])
 
     def test_maintenance_cannot_record_untrusted_execution_intent(self) -> None:
@@ -1583,6 +1640,9 @@ class FoundryTests(FoundryFixture):
             "NEXT",
             now=self.start + timedelta(minutes=1),
         )
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt("AEG-E-002"))
+        self.write("state", state)
         backlog = self.load("backlog")
         backlog["work_items"][1].update(
             {"channel_code": "DISPOSABLE_RUNTIME", "status": "READY"}
@@ -1733,6 +1793,17 @@ class FoundryTests(FoundryFixture):
             now=self.start + timedelta(seconds=9),
         )
         self.assertEqual(result["stage"], "REPRODUCTION")
+        repair = next(
+            item
+            for item in self.load("backlog")["work_items"]
+            if item.get("stage") == "REPAIR"
+            and item.get("candidate_ids") == backlog["work_items"][0]["candidate_ids"]
+        )
+        self.assertEqual(repair["status"], "BLOCKED_ENVIRONMENT")
+        self.assertEqual(
+            self.load("state")["channels"]["DISPOSABLE_RUNTIME"]["status"],
+            "BLOCKED_ENVIRONMENT",
+        )
 
     def test_repair_success_requires_success_observation_receipt(self) -> None:
         self.prepare_disposable_runtime()
@@ -1773,6 +1844,9 @@ class FoundryTests(FoundryFixture):
 
     def test_verification_success_requires_first_class_behavior_evidence(self) -> None:
         self.prepare_disposable_runtime()
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt("AEG-E-002"))
+        self.write("state", state)
         backlog = self.load("backlog")
         backlog["work_items"][0]["stage"] = "VERIFICATION"
         self.write("backlog", backlog)
@@ -1790,6 +1864,9 @@ class FoundryTests(FoundryFixture):
 
     def test_transfer_success_requires_first_class_terminal_evidence(self) -> None:
         self.prepare_disposable_runtime()
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt("AEG-E-002"))
+        self.write("state", state)
         backlog = self.load("backlog")
         backlog["work_items"][0]["stage"] = "TRANSFER_EVALUATION"
         self.write("backlog", backlog)
@@ -1828,6 +1905,21 @@ class FoundryTests(FoundryFixture):
         with self.assertRaises(foundry.ConfigError) as raised:
             foundry.validate(self.root, check_git=False)
         self.assertIn("invalid stage", str(raised.exception))
+
+    def test_non_success_outcome_cannot_mark_task_completed(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "FAILURE",
+                "FAILED",
+                "NEXT",
+                task_status="COMPLETED",
+                failure_class="TASK",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("non-success outcome", str(raised.exception))
 
     def test_runtime_receipt_rejects_credentials_mounts_and_open_network_shape(self) -> None:
         state = self.load("state")

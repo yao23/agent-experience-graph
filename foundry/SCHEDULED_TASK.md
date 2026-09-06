@@ -55,6 +55,13 @@ that arm's ID. Every claimed environment is permanently consumed by that round.
 Do not fabricate a receipt, reactivate the channel by hand, reuse an environment
 in another round, or issue these effects from maintenance.
 
+At round start, let the controller derive channel/task readiness from current,
+unclaimed receipts. One receipt is required for reproduction or repair and two
+for verification or transfer. A valid receipt automatically reactivates only a
+no-runtime-blocked task; an expired or consumed receipt cannot do so. When no
+qualified runtime remains, the controller returns affected work to
+`BLOCKED_ENVIRONMENT` without pausing public-read or model-worker work.
+
 A `RUN_FROZEN_ORACLE` intent must also supply `--target-revision <SHA>`. Resolve
 a completed run with its JSON command argv, integer exit code, actual
 `SUCCESS`/`FAILURE` observation, SHA-256 evidence digest, and one or more summary
@@ -73,6 +80,12 @@ family-locked, deduplicated candidate batches until both minima are satisfied or
 a fixed budget, pause, expiry, or channel gate stops work. A synthesized batch
 is successful only after its frozen `target_candidate_count` is reached; never
 reclassify committed candidates to close the gap.
+
+Use controller-created stage successors. Successful discovery adds reproduction
+work for newly qualified, non-held-out candidates in the selected family;
+successful reproduction, repair, and verification add one repair, verification,
+and release-material task respectively. If the successor is environment-blocked,
+continue other authorized work instead of hand-unblocking or duplicating it.
 
 For an Experience stage, write only the code-only, digest-pinned artifact shape
 accepted under `foundry/experiences/`, and register its sources and builder

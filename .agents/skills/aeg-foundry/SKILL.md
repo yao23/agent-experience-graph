@@ -60,6 +60,14 @@ Never fabricate a receipt, manually unlock the channel, reuse a claimed
 environment in another round, or create an untrusted-execution maintenance
 intent.
 
+At `begin-round`, the controller derives runtime availability from valid,
+unexpired, unclaimed receipts. It reactivates a no-runtime-blocked channel and
+task only from that evidence, never from a manual status flip. Reproduction and
+repair need at least one available runtime; verification and transfer need two.
+Expired or consumed receipts do not count, and exhausting the available set
+returns affected ready tasks to `BLOCKED_ENVIRONMENT` without pausing unrelated
+channels.
+
 Record a frozen oracle only with an immutable revision, for example
 `record-intent --effect-type RUN_FROZEN_ORACLE --environment-id <AEG-E-NNN>
 --target-revision <SHA>`. Resolve `COMPLETED` atomically with
@@ -84,6 +92,13 @@ minima are met or another fixed gate stops work. Reach the task's frozen
 `target_candidate_count` before reporting batch success. If qualification does
 not improve for two cycles, change exactly one acquisition strategy; never
 reclassify a committed candidate to manufacture the qualification ratio.
+
+Successful discovery automatically creates reproduction work for each newly
+qualified, non-held-out candidate in the selected family if no pipeline task
+already covers it. Successful reproduction, repair, and verification enqueue
+exactly one repair, verification, and release-material successor respectively;
+the runtime gate may immediately block that successor until enough fresh
+receipts exist. Do not duplicate or skip the controller-created successor.
 
 Create Experience artifacts only as direct JSON files under
 `foundry/experiences/`, using the controller's code-only allowlist and a digest

@@ -56,9 +56,12 @@ recorded grants. A Git worktree is not a sandbox. Before any clone, install, or
 frozen-oracle intent, the controller requires an immutable qualification
 receipt and permanently binds each named one-time environment ID to that round.
 A round may claim multiple environments for isolated experimental arms, but a
-claimed or expired environment cannot be used by another round. Maintenance mode cannot issue
-untrusted-execution intents. The current local host has no qualified disposable
-runtime receipt, so external execution is `BLOCKED_ENVIRONMENT`; read-only
+claimed or expired environment cannot be used by another round. The controller
+reactivates no-runtime-blocked work only when enough current, unclaimed receipts
+exist, and blocks it again when those receipts are consumed or expire.
+Maintenance mode cannot issue untrusted-execution intents. The current local
+host has no qualified disposable runtime receipt, so external execution is
+`BLOCKED_ENVIRONMENT`; read-only
 discovery, public-material preparation, and trusted repository tests may
 continue.
 
@@ -118,6 +121,7 @@ Pause or expiry prevents new claims; an active unit exits at a safe checkpoint.
 Two consecutive infrastructure failures quarantine that channel. Two discovery
 cycles without a qualified task permit exactly one documented acquisition or
 subdomain change. Oracle and qualification rules cannot be changed to rescue a
-result. Every seven days the same loop emits a short templated report. At expiry
-it stops new experiments and recommends continue, narrow, or stop using the
-fixed gates above.
+result. Successful stages create only their next bounded pipeline unit; they do
+not execute a second stage in the same invocation. Every seven days the same
+loop emits a short templated report. At expiry it stops new experiments and
+recommends continue, narrow, or stop using the fixed gates above.

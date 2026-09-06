@@ -88,6 +88,13 @@
   family-locked immutable candidates until both minima are met or a fixed gate
   stops work, and a synthesized batch cannot succeed before reaching its frozen
   candidate-count target.
+- Receipt-driven pipeline recovery: round start now derives disposable-channel
+  and task readiness from current unclaimed receipts. One receipt gates
+  reproduction/repair and two gate verification/transfer; expired or consumed
+  receipts cannot reactivate work, and exhaustion blocks only the affected
+  channel. Qualified selected-family discoveries enqueue reproduction, while
+  successful reproduction, repair, and verification enqueue exactly one next
+  stage without executing it in the same round.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,
