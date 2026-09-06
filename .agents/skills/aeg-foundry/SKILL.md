@@ -15,6 +15,13 @@ Start one round with `python3 scripts/aeg_foundry.py begin-round
 uncertain effect, or no ready work, do not invent work or retry a blocked
 channel.
 
+Immediately after a claim, record a `READ_PUBLIC_SOURCE` intent with target
+`CURRENT_SOURCE_REMOTE_REF`, then resolve it with `python3
+scripts/aeg_foundry.py observe-source-ref --round-id <ROUND_ID> --effect-id
+<EFFECT_ID>`. This reads and freezes the current remote branch SHA; the local
+tracking ref printed by `begin-round` is provisional. Do not perform stage work
+until this observation succeeds. `finish-round` rejects an unverified source.
+
 For the claimed task, perform one stage only. Before an external effect, run
 `record-intent`; after a definite result run `resolve-intent`. Never retry an
 uncertain effect until the relevant read-only verification proves whether it

@@ -319,6 +319,10 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         errors.append("fixed budget values changed")
     if pilot.get("authorization", {}).get("new_paid_api_usd") != 0:
         errors.append("new paid API budget must remain zero")
+    try:
+        source_remote_head_ref(pilot)
+    except (KeyError, ConfigError) as error:
+        errors.append(str(error))
     if backlog.get("schema_version") != 1 or state.get("schema_version") != 1:
         errors.append("unsupported backlog or state schema")
 
@@ -448,6 +452,15 @@ def current_source_identity(root: Path, pilot: dict[str, Any]) -> tuple[str, str
         raise UnsafeRepositoryError("remote/ref did not resolve to a commit")
     charter = (root / pilot["source"]["charter_path"]).read_bytes()
     return revision, sha256_bytes(charter)
+
+
+def source_remote_head_ref(pilot: dict[str, Any]) -> str:
+    remote = pilot["source"]["remote"]
+    configured_ref = pilot["source"]["remote_ref"]
+    prefix = f"refs/remotes/{remote}/"
+    if not configured_ref.startswith(prefix) or configured_ref == prefix:
+        raise ConfigError("source remote_ref must name a branch on the configured remote")
+    return "refs/heads/" + configured_ref.removeprefix(prefix)
 
 
 def _today_counter(state: dict[str, Any], now: datetime) -> dict[str, int]:
@@ -773,6 +786,7 @@ def begin_round(
             "source_remote": pilot["source"]["remote"],
             "source_ref": pilot["source"]["remote_ref"],
             "source_ref_sha": source_sha,
+            "source_ref_verified_at": format_time(now) if not check_git else None,
             "charter_sha256": charter_sha,
             "candidate_count_at_start": len(backlog["candidates"]),
             "qualified_count_at_start": sum(
@@ -799,6 +813,7 @@ def begin_round(
             "source_remote": pilot["source"]["remote"],
             "source_ref": pilot["source"]["remote_ref"],
             "source_ref_sha": source_sha,
+            "source_ref_verified_at": state["active_round"]["source_ref_verified_at"],
             "charter_sha256": charter_sha,
             "recovery": recovery,
             "push_reconciliation": reconciliation,
@@ -876,6 +891,65 @@ def resolve_intent(
         return result
 
 
+def observe_source_ref(
+    root: Path,
+    round_id: str,
+    effect_id: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Resolve a recorded source-read intent against the current remote branch tip."""
+
+    now = now or utc_now()
+    pilot, backlog, state = load_all(root)
+    with control_lock(root, pilot):
+        active = state.get("active_round")
+        if not active or active.get("round_id") != round_id:
+            raise LeaseError("source observation round does not own the active lease")
+        pending = state.get("pending_effect")
+        if not pending or pending.get("effect_id") != effect_id:
+            raise LeaseError("source observation intent is not the current unresolved effect")
+        if pending.get("effect_type") != "READ_PUBLIC_SOURCE":
+            raise ConfigError("source observation requires a READ_PUBLIC_SOURCE intent")
+        if pending.get("target_code") != "CURRENT_SOURCE_REMOTE_REF":
+            raise ConfigError("source observation intent has the wrong target code")
+        remote = pilot["source"]["remote"]
+        head_ref = source_remote_head_ref(pilot)
+        result = run_git(root, "ls-remote", "--heads", remote, head_ref, check=False)
+        if result.returncode != 0:
+            receipt = {
+                **pending,
+                "failure_code": "SOURCE_REMOTE_READ_FAILED",
+                "outcome": "FAILED",
+                "resolved_at": format_time(now),
+            }
+            state.setdefault("effect_events", []).append(receipt)
+            state["pending_effect"] = None
+            atomic_write_json(paths(root)["state"], state)
+            render_status(root, pilot, backlog, state, now)
+            raise UnsafeRepositoryError("current source remote/ref could not be read")
+        lines = [line.split() for line in result.stdout.splitlines() if line.strip()]
+        if len(lines) != 1 or len(lines[0]) < 2 or lines[0][1] != head_ref:
+            raise UnsafeRepositoryError("current source remote/ref did not resolve uniquely")
+        remote_sha = lines[0][0]
+        if not SHA_RE.fullmatch(remote_sha):
+            raise UnsafeRepositoryError("current source remote/ref returned an invalid commit")
+        observed_at = format_time(now)
+        active["source_ref_sha"] = remote_sha
+        active["source_ref_verified_at"] = observed_at
+        state["last_remote_ref_sha"] = remote_sha
+        receipt = {
+            **pending,
+            "outcome": "COMPLETED",
+            "resolved_at": observed_at,
+            "source_ref_sha": remote_sha,
+        }
+        state.setdefault("effect_events", []).append(receipt)
+        state["pending_effect"] = None
+        atomic_write_json(paths(root)["state"], state)
+        render_status(root, pilot, backlog, state, now)
+        return receipt
+
+
 def finish_round(
     root: Path,
     round_id: str,
@@ -902,6 +976,8 @@ def finish_round(
             raise LeaseError("round does not own the active lease")
         if state.get("pending_effect"):
             raise LeaseError("resolve or verify the pending effect before finishing")
+        if not active.get("source_ref_verified_at"):
+            raise ConfigError("current source remote/ref must be observed before finishing")
         if outcome not in OUTCOMES or oracle_status not in ORACLE_STATUSES:
             raise ConfigError("invalid outcome or oracle status")
         if outcome == "SUCCESS" and oracle_status != "PASSED":
@@ -973,6 +1049,7 @@ def finish_round(
             "round_id": round_id,
             "source_ref": active["source_ref"],
             "source_ref_sha": active["source_ref_sha"],
+            "source_ref_verified_at": active["source_ref_verified_at"],
             "stage": task["stage"],
             "started_at": active["claimed_at"],
             "task_id": task["task_id"],
@@ -1370,6 +1447,9 @@ def parser() -> argparse.ArgumentParser:
     intent.add_argument("--round-id", required=True)
     intent.add_argument("--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"}))
     intent.add_argument("--target-code", required=True)
+    observe_source = commands.add_parser("observe-source-ref")
+    observe_source.add_argument("--round-id", required=True)
+    observe_source.add_argument("--effect-id", required=True)
     maintenance_intent = commands.add_parser("record-maintenance-intent")
     maintenance_intent.add_argument(
         "--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"})
@@ -1447,6 +1527,8 @@ def main(argv: list[str] | None = None) -> int:
             output(begin_round(root, reconcile_prior_push=arguments.reconcile_push))
         elif arguments.command == "record-intent":
             output(record_intent(root, arguments.round_id, arguments.effect_type, arguments.target_code))
+        elif arguments.command == "observe-source-ref":
+            output(observe_source_ref(root, arguments.round_id, arguments.effect_id))
         elif arguments.command == "record-maintenance-intent":
             output(record_maintenance_intent(root, arguments.effect_type, arguments.target_code))
         elif arguments.command == "resolve-intent":

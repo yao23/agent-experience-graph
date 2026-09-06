@@ -14,6 +14,14 @@ Run `python3 scripts/aeg_foundry.py validate`, then
 pause, expiry, budget, lease, unresolved-effect, and no-work exits. If no work
 or no meaningful change exists, remain quiet.
 
+Immediately after a claim, run `record-intent` with effect type
+`READ_PUBLIC_SOURCE` and target code `CURRENT_SOURCE_REMOTE_REF`, then run
+`python3 scripts/aeg_foundry.py observe-source-ref --round-id <ROUND_ID>
+--effect-id <EFFECT_ID>`. Treat the SHA initially returned by `begin-round` as
+provisional; do no stage work until the controller freezes the current remote
+branch SHA. If the source read fails, finish the round as an infrastructure
+failure using the reported failure code.
+
 For the one claimed task, execute exactly one discovery, reproduction, repair,
 verification, transfer-evaluation, or release-material stage. Persist intent
 before any network read/write or other external effect and resolve it only from

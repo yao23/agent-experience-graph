@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 
 MODULE_PATH = Path(__file__).with_name("aeg_foundry.py")
@@ -140,6 +141,62 @@ class FoundryTests(FoundryFixture):
         ]
         self.assertEqual(resumed_number, max(prior_numbers) + 1)
         self.assertEqual(resumed["source_ref_sha"], claim["source_ref_sha"])
+
+    def test_source_observation_replaces_stale_tracking_sha(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        state = self.load("state")
+        state["active_round"]["source_ref_sha"] = "b" * 40
+        state["active_round"]["source_ref_verified_at"] = None
+        self.write("state", state)
+        intent = foundry.record_intent(
+            self.root,
+            claim["round_id"],
+            "READ_PUBLIC_SOURCE",
+            "CURRENT_SOURCE_REMOTE_REF",
+            now=self.start + timedelta(seconds=1),
+        )
+        remote_sha = "a" * 40
+        completed = subprocess.CompletedProcess(
+            ["git", "ls-remote"],
+            0,
+            stdout=f"{remote_sha}\trefs/heads/main\n",
+            stderr="",
+        )
+        with mock.patch.object(foundry, "run_git", return_value=completed):
+            receipt = foundry.observe_source_ref(
+                self.root,
+                claim["round_id"],
+                intent["effect_id"],
+                now=self.start + timedelta(seconds=2),
+            )
+        state = self.load("state")
+        self.assertEqual(receipt["source_ref_sha"], remote_sha)
+        self.assertEqual(state["active_round"]["source_ref_sha"], remote_sha)
+        self.assertEqual(state["last_remote_ref_sha"], remote_sha)
+        self.assertIsNone(state["pending_effect"])
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+
+    def test_finish_requires_current_remote_source_observation(self) -> None:
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        state = self.load("state")
+        state["active_round"]["source_ref_verified_at"] = None
+        self.write("state", state)
+        with self.assertRaises(foundry.ConfigError):
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(minutes=1),
+            )
 
     def test_synthesized_discovery_success_requires_a_candidate_gain(self) -> None:
         first = foundry.begin_round(self.root, now=self.start, check_git=False)

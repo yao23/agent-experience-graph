@@ -12,6 +12,10 @@
 - Intent vocabulary: native automation updates now have their own external
   effect type; an attempted use of the Draft PR type was recorded as
   `NOT_PERFORMED` before any scheduler update occurred.
+- Remote-ref freshness: the SHA from the local tracking ref is now provisional.
+  Every claimed round must record a public-read intent and freeze the current
+  remote branch SHA before stage work; a round cannot finish without that
+  observation.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,
