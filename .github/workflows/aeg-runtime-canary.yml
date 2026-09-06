@@ -13,7 +13,10 @@ permissions:
 
 jobs:
   runtime-canary:
-    if: github.event.created == true && github.run_attempt == 1
+    if: >-
+      github.event.forced == false &&
+      github.event.before == '4942049e632bf9442fe7809fe2450697a884fba0' &&
+      github.run_attempt == 1
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     steps:
@@ -23,6 +26,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           path: control
+
+      - name: Run focused probe regression
+        run: python3 -m unittest -v control/runtime-canary/test_run_canary.py
 
       - name: Check out pinned public source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

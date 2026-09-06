@@ -60,6 +60,7 @@ docker create \
   -i \
   HOME=/tmp/aeg-home \
   PATH=/usr/local/bin:/usr/bin:/bin \
+  PYTHONCOERCECLOCALE=0 \
   PYTHONDONTWRITEBYTECODE=1 \
   "CANARY_RUN_ID=${GITHUB_RUN_ID}" \
   "CONTROL_REVISION=${GITHUB_SHA}" \
@@ -90,7 +91,15 @@ python3 -m json.tool "${OUTPUT_ROOT}/canary-result.json"
 echo "container_exit_code=${CONTAINER_EXIT} outer_exit_code=${CANARY_EXIT}"
 
 docker rm --force "${CONTAINER_NAME}" >/dev/null
+if docker container inspect "${CONTAINER_NAME}" >/dev/null 2>&1; then
+  echo "container still exists after cleanup" >&2
+  exit 2
+fi
 docker image rm --force "${IMAGE_TAG}" >/dev/null
+if docker image inspect "${IMAGE_TAG}" >/dev/null 2>&1; then
+  echo "local canary image still exists after cleanup" >&2
+  exit 2
+fi
 rm -f "${SENTINEL_PATH}"
 test ! -e "${SENTINEL_PATH}"
 
@@ -104,6 +113,10 @@ test ! -e "${SENTINEL_PATH}"
   echo "- Container, local image, and synthetic sentinel removed before job exit"
   echo "- Full structured evidence is retained in this job log; no artifact or cache was created"
 } >>"${GITHUB_STEP_SUMMARY}"
+
+rm -rf "${CANARY_ROOT}"
+test ! -e "${CANARY_ROOT}"
+echo 'CLEANUP_RESULT {"container_removed":true,"image_removed":true,"synthetic_sentinel_removed":true,"temporary_root_removed":true}'
 
 test "${CANARY_EXIT}" -eq "${CONTAINER_EXIT}"
 exit "${CANARY_EXIT}"

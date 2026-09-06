@@ -9,6 +9,12 @@ from pathlib import Path
 import re
 
 
+EXPECTED_BASE_IMAGE = (
+    "python:3.12-slim@sha256:"
+    "78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea"
+)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("inspect_json", type=Path)
@@ -20,7 +26,10 @@ def main() -> int:
     mounts = {item["Destination"]: item["RW"] for item in inspected["Mounts"]}
     runtime_user = str(config.get("User", ""))
     tmpfs_options = (host.get("Tmpfs") or {}).get("/tmp", "")
+    labels = config.get("Labels") or {}
     checks = {
+        "base_image_digest_attested": labels.get("org.aeg.runtime-canary.base-image")
+        == EXPECTED_BASE_IMAGE,
         "capabilities_dropped": sorted(host.get("CapDrop") or []) == ["ALL"],
         "cpu_limited": host.get("NanoCpus") == 2000000000,
         "entry_environment_cleared": config.get("Entrypoint") == ["/usr/bin/env"]
