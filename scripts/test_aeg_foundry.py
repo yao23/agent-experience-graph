@@ -104,6 +104,144 @@ class FoundryFixture(unittest.TestCase):
     def write(self, name: str, value: dict) -> None:
         foundry.atomic_write_json(self.root / "foundry" / f"{name}.json", value)
 
+    def add_valid_positive_transfer(self) -> dict:
+        backlog = self.load("backlog")
+        target_id = "AEG-C-011"
+        target = next(
+            item for item in backlog["candidates"] if item["candidate_id"] == target_id
+        )
+        target["category"] = "HELD_OUT_TRANSFER"
+        target["qualification"] = "QUALIFIED"
+        transfer_task = {
+            "attempts": 1,
+            "candidate_ids": [target_id],
+            "channel_code": "DISPOSABLE_RUNTIME",
+            "claim": None,
+            "failure_code": None,
+            "next_step_code": "REVIEW_EXPERIENCE_RELEASE",
+            "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+            "priority": 70,
+            "stage": "TRANSFER_EVALUATION",
+            "status": "COMPLETED",
+            "task_id": "AEG-W-900",
+        }
+        backlog["work_items"].append(transfer_task)
+        builder_task = next(
+            item for item in backlog["work_items"] if item["task_id"] == "AEG-W-001"
+        )
+        builder_task["attempts"] = 1
+        builder_task["status"] = "COMPLETED"
+        artifact = {
+            "schema_version": 1,
+            "experience_id": "AEG-X-001",
+            "version": 1,
+            "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+            "problem_signature_codes": ["PLAYWRIGHT_BROWSER_REVISION_MISSING"],
+            "precondition_codes": ["LOCKFILE_AND_BROWSER_CACHE_DRIFT"],
+            "procedure_steps": [
+                {
+                    "action_code": "INSTALL_BROWSER_FOR_RESOLVED_PLAYWRIGHT_VERSION",
+                    "verification_code": "RUN_FROZEN_BROWSER_LAUNCH_ORACLE",
+                }
+            ],
+            "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+            "source_candidate_ids": ["AEG-C-001"],
+            "limitation_codes": ["REQUIRES_DISPOSABLE_RUNTIME"],
+        }
+        artifact_path = self.root / "foundry" / "experiences" / "aeg-x-001-v1.json"
+        foundry.atomic_write_json(artifact_path, artifact)
+        backlog["experiences"] = [
+            {
+                "artifact_path": "foundry/experiences/aeg-x-001-v1.json",
+                "artifact_sha256": foundry.sha256_bytes(artifact_path.read_bytes()),
+                "builder_task_ids": ["AEG-W-001"],
+                "experience_id": "AEG-X-001",
+                "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+                "release_review_status": "READY",
+                "source_candidate_ids": ["AEG-C-001"],
+                "version": 1,
+            }
+        ]
+        backlog["transfer_evaluations"] = [
+            {
+                "all_attempts_retained": True,
+                "assisted": {
+                    "attempts": [
+                        {
+                            "attempt_id": "AEG-A-ASSISTED-001",
+                            "attempt_number": 1,
+                            "command_argv": ["python3", "frozen_oracle.py"],
+                            "evidence_digest_sha256": "b" * 64,
+                            "evidence_summary_codes": ["ORACLE_EXIT_ZERO"],
+                            "exit_code": 0,
+                            "finished_at": "2026-09-06T08:03:00Z",
+                            "oracle_executor_code": "VALIDATOR_ASSISTED_001",
+                            "oracle_observation": "SUCCESS",
+                            "run_status": "VALID",
+                            "solver_code": "SOLVER_ASSISTED_001",
+                            "started_at": "2026-09-06T08:02:00Z",
+                        }
+                    ],
+                    "context_code": "CTX_ASSISTED_001",
+                    "environment_code": "ENV_ASSISTED_001",
+                    "oracle_observation": "SUCCESS",
+                    "run_status": "VALID",
+                    "workspace_code": "WS_ASSISTED_001",
+                },
+                "baseline": {
+                    "attempts": [
+                        {
+                            "attempt_id": "AEG-A-BASELINE-001",
+                            "attempt_number": 1,
+                            "command_argv": ["python3", "frozen_oracle.py"],
+                            "evidence_digest_sha256": "a" * 64,
+                            "evidence_summary_codes": ["ORACLE_REPRODUCED_FAILURE"],
+                            "exit_code": 1,
+                            "finished_at": "2026-09-06T08:02:00Z",
+                            "oracle_executor_code": "VALIDATOR_BASELINE_001",
+                            "oracle_observation": "FAILURE",
+                            "run_status": "VALID",
+                            "solver_code": "SOLVER_BASELINE_001",
+                            "started_at": "2026-09-06T08:01:00Z",
+                        }
+                    ],
+                    "context_code": "CTX_BASELINE_001",
+                    "environment_code": "ENV_BASELINE_001",
+                    "oracle_observation": "FAILURE",
+                    "run_status": "VALID",
+                    "workspace_code": "WS_BASELINE_001",
+                },
+                "budget": {
+                    "max_retries": 0,
+                    "max_seconds": 2700,
+                    "max_worker_starts": 2,
+                },
+                "decision_rule_code": foundry.TRANSFER_DECISION_RULE,
+                "evaluator_feedback_visible_to_assisted": False,
+                "experience_id": "AEG-X-001",
+                "experience_version": 1,
+                "model_config": {"model": "TEST_MODEL", "reasoning_effort": "low"},
+                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+                "oracle_version": 1,
+                "outcome": "POSITIVE",
+                "preregistered_at": "2026-09-06T08:00:00Z",
+                "retry_rule_code": "NO_RETRY",
+                "run_order": "BASELINE_FIRST",
+                "status": "COMPLETED",
+                "target_candidate_id": target_id,
+                "target_revision": "a" * 40,
+                "task_id": "AEG-W-900",
+                "tool_permission_profile": "DISPOSABLE_NO_SECRETS_DEP_FETCH_ONLY",
+                "transfer_id": "AEG-T-001",
+                "visible_material_codes": {
+                    "assisted": ["TARGET_ISSUE", "ORACLE", "EXPERIENCE:AEG-X-001:V1"],
+                    "baseline": ["TARGET_ISSUE", "ORACLE"],
+                },
+            }
+        ]
+        self.write("backlog", backlog)
+        return backlog
+
 
 class FoundryTests(FoundryFixture):
     def test_initial_state_validates_and_public_fields_are_deduplicated(self) -> None:
@@ -579,6 +717,146 @@ class FoundryTests(FoundryFixture):
         audit = foundry.audit_public(self.root)
         self.assertTrue(audit["ok"])
         self.assertFalse(audit["scanned_private_directory"])
+
+    def test_valid_experience_and_positive_transfer_drive_counts(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        foundry.validate(self.root, check_git=False)
+        counts = foundry._counts(backlog)
+        self.assertEqual(counts["release_review_experiences"], 1)
+        self.assertEqual(counts["held_out_positive_transfers"], 1)
+
+    def test_candidate_fields_cannot_spoof_experience_or_transfer_counts(self) -> None:
+        backlog = self.load("backlog")
+        backlog["candidates"][0]["release_review_status"] = "READY"
+        backlog["candidates"][0]["transfer_outcome"] = "POSITIVE"
+        self.write("backlog", backlog)
+        foundry.validate(self.root, check_git=False)
+        counts = foundry._counts(backlog)
+        self.assertEqual(counts["release_review_experiences"], 0)
+        self.assertEqual(counts["held_out_positive_transfers"], 0)
+
+    def test_release_ready_experience_requires_completed_independent_transfer(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["transfer_evaluations"] = []
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("lacks an independent completed transfer", str(raised.exception))
+
+    def test_transfer_task_cannot_also_build_the_experience(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["experiences"][0]["builder_task_ids"].append("AEG-W-900")
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("transfer task used to build", str(raised.exception))
+
+    def test_transfer_arms_require_distinct_context_workspace_and_environment(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        assisted = backlog["transfer_evaluations"][0]["assisted"]
+        baseline = backlog["transfer_evaluations"][0]["baseline"]
+        assisted["workspace_code"] = baseline["workspace_code"]
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("baseline and assisted isolation violated", str(raised.exception))
+
+    def test_positive_transfer_requires_baseline_failure_and_assisted_success(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        assisted = backlog["transfer_evaluations"][0]["assisted"]
+        assisted["oracle_observation"] = "FAILURE"
+        assisted["attempts"][-1]["oracle_observation"] = "FAILURE"
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("POSITIVE transfer arm results disagree", str(raised.exception))
+
+    def test_experience_artifact_rejects_unallowlisted_free_text(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        artifact_path = self.root / backlog["experiences"][0]["artifact_path"]
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        artifact["notes"] = "unstructured material must not enter a public Experience"
+        foundry.atomic_write_json(artifact_path, artifact)
+        backlog["experiences"][0]["artifact_sha256"] = foundry.sha256_bytes(
+            artifact_path.read_bytes()
+        )
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("artifact fields are not allowlisted", str(raised.exception))
+
+    def test_experience_artifact_digest_is_immutable(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["experiences"][0]["artifact_sha256"] = "f" * 64
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("artifact digest mismatch", str(raised.exception))
+
+    def test_non_string_transfer_target_fails_closed(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        backlog["transfer_evaluations"][0]["target_candidate_id"] = {"unexpected": "shape"}
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("qualified held-out candidate", str(raised.exception))
+
+    def test_committed_experience_version_cannot_be_rewritten_with_a_new_digest(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        foundry.validate(self.root, check_git=False)
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record completed transfer")
+        artifact_path = self.root / backlog["experiences"][0]["artifact_path"]
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        artifact["procedure_steps"][0]["action_code"] = "DIFFERENT_ACTION"
+        foundry.atomic_write_json(artifact_path, artifact)
+        backlog["experiences"][0]["artifact_sha256"] = foundry.sha256_bytes(
+            artifact_path.read_bytes()
+        )
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("committed Experience version was rewritten", str(raised.exception))
+
+    def test_terminal_transfer_result_cannot_be_rewritten(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        foundry.validate(self.root, check_git=False)
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "record completed transfer")
+        transfer = backlog["transfer_evaluations"][0]
+        transfer["outcome"] = "NEUTRAL"
+        transfer["assisted"]["oracle_observation"] = "FAILURE"
+        transfer["assisted"]["attempts"][-1]["oracle_observation"] = "FAILURE"
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("terminal transfer evaluation was rewritten", str(raised.exception))
+
+    def test_preregistered_transfer_freeze_and_timestamp_fail_closed(self) -> None:
+        backlog = self.add_valid_positive_transfer()
+        transfer = backlog["transfer_evaluations"][0]
+        transfer["status"] = "PREREGISTERED"
+        transfer["outcome"] = "PENDING"
+        transfer["all_attempts_retained"] = False
+        backlog["experiences"][0]["release_review_status"] = "NOT_READY"
+        next(item for item in backlog["work_items"] if item["task_id"] == "AEG-W-900")[
+            "status"
+        ] = "READY"
+        for arm_name in ("baseline", "assisted"):
+            transfer[arm_name]["attempts"] = []
+            transfer[arm_name]["run_status"] = "PENDING"
+            transfer[arm_name]["oracle_observation"] = "PENDING"
+        self.write("backlog", backlog)
+        foundry.validate(self.root, check_git=False)
+        self._git("add", "foundry")
+        self._git("commit", "-q", "-m", "preregister transfer")
+        transfer["target_revision"] = "c" * 40
+        transfer["preregistered_at"] = None
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("invalid preregistration time", str(raised.exception))
+        self.assertIn("preregistered transfer freeze was rewritten", str(raised.exception))
 
     def test_duplicate_candidate_is_invalid(self) -> None:
         backlog = self.load("backlog")

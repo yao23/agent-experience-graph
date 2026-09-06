@@ -62,7 +62,72 @@ EFFECT_TYPES = {
 GITHUB_ISSUE_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 CHANNEL_RE = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
+EXPERIENCE_ID_RE = re.compile(r"^AEG-X-[0-9]{3}$")
+TRANSFER_ID_RE = re.compile(r"^AEG-T-[0-9]{3}$")
+CODE_VALUE_RE = re.compile(r"^[A-Z0-9][A-Z0-9_.:-]{0,127}$")
+EXPERIENCE_ARTIFACT_KEYS = {
+    "schema_version",
+    "experience_id",
+    "version",
+    "family",
+    "problem_signature_codes",
+    "precondition_codes",
+    "procedure_steps",
+    "oracle_kind",
+    "source_candidate_ids",
+    "limitation_codes",
+}
+TRANSFER_EVALUATION_KEYS = {
+    "all_attempts_retained",
+    "assisted",
+    "baseline",
+    "budget",
+    "decision_rule_code",
+    "evaluator_feedback_visible_to_assisted",
+    "experience_id",
+    "experience_version",
+    "model_config",
+    "oracle_kind",
+    "oracle_version",
+    "outcome",
+    "preregistered_at",
+    "retry_rule_code",
+    "run_order",
+    "status",
+    "target_candidate_id",
+    "target_revision",
+    "task_id",
+    "tool_permission_profile",
+    "transfer_id",
+    "visible_material_codes",
+}
+TRANSFER_ARM_KEYS = {
+    "attempts",
+    "context_code",
+    "environment_code",
+    "oracle_observation",
+    "run_status",
+    "workspace_code",
+}
+TRANSFER_ATTEMPT_KEYS = {
+    "attempt_id",
+    "attempt_number",
+    "command_argv",
+    "evidence_digest_sha256",
+    "evidence_summary_codes",
+    "exit_code",
+    "finished_at",
+    "oracle_executor_code",
+    "oracle_observation",
+    "run_status",
+    "solver_code",
+    "started_at",
+}
+TRANSFER_DECISION_RULE = (
+    "BASELINE_FAILURE_ASSISTED_SUCCESS_POSITIVE__MATCH_NEUTRAL__REGRESSION_HARMFUL"
+)
 SHA_RE = re.compile(r"^[0-9a-f]{40,64}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SENSITIVE_VALUE_RES = (
     re.compile(r"/(?:Users|home)/[^/\s]+/"),
     re.compile(r"\b(?:gh[pousr]_|sk-)[A-Za-z0-9_-]{20,}\b"),
@@ -120,6 +185,8 @@ def utc_now() -> datetime:
 
 
 def parse_time(value: str) -> datetime:
+    if not isinstance(value, str):
+        raise ConfigError(f"invalid UTC timestamp: {value}")
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as error:
@@ -244,6 +311,7 @@ def paths(root: Path) -> dict[str, Path]:
         "rounds": foundry / "rounds.jsonl",
         "status": foundry / "STATUS.md",
         "reports": foundry / "reports",
+        "experiences": foundry / "experiences",
     }
 
 
@@ -294,7 +362,102 @@ def audit_public(root: Path) -> dict[str, Any]:
             if pattern.search(content):
                 errors.append(f"sensitive-shaped public markdown: {markdown.relative_to(root)}")
                 break
+    if located["experiences"].exists():
+        for artifact in sorted(located["experiences"].iterdir()):
+            if not artifact.is_file() or artifact.suffix != ".json":
+                errors.append("Experience artifacts must be direct JSON files")
+                continue
+            try:
+                content = load_json(artifact)
+            except ConfigError as error:
+                errors.append(str(error))
+                continue
+            errors.extend(_walk_public(content, f"experience_artifact.{artifact.name}"))
     return {"ok": not errors, "errors": errors, "scanned_private_directory": False}
+
+
+def validate_committed_foundry_history(root: Path, backlog: dict[str, Any]) -> list[str]:
+    """Reject rewrites of versioned artifacts, preregistration, and terminal results."""
+    previous_result = run_git(root, "show", "HEAD:foundry/backlog.json", check=False)
+    if previous_result.returncode != 0:
+        return []
+    try:
+        previous = json.loads(previous_result.stdout)
+    except json.JSONDecodeError:
+        return ["committed foundry backlog is not valid JSON"]
+
+    errors: list[str] = []
+    current_experiences = {
+        (item.get("experience_id"), item.get("version")): item
+        for item in backlog.get("experiences", [])
+        if isinstance(item, dict)
+        and isinstance(item.get("experience_id"), str)
+        and isinstance(item.get("version"), int)
+    }
+    for prior in previous.get("experiences", []):
+        if not isinstance(prior, dict):
+            continue
+        key = (prior.get("experience_id"), prior.get("version"))
+        current = current_experiences.get(key)
+        if current is None:
+            errors.append(f"committed Experience version was deleted: {key}")
+            continue
+        prior_core = {key: value for key, value in prior.items() if key != "release_review_status"}
+        current_core = {
+            key: value for key, value in current.items() if key != "release_review_status"
+        }
+        if current_core != prior_core:
+            errors.append(f"committed Experience version was rewritten: {key}")
+        prior_review = prior.get("release_review_status")
+        current_review = current.get("release_review_status")
+        if current_review != prior_review and not (
+            prior_review == "NOT_READY" and current_review == "READY"
+        ):
+            errors.append(f"invalid Experience review transition: {key}")
+
+    current_transfers = {
+        item.get("transfer_id"): item
+        for item in backlog.get("transfer_evaluations", [])
+        if isinstance(item, dict) and isinstance(item.get("transfer_id"), str)
+    }
+    mutable_transfer_keys = {
+        "all_attempts_retained",
+        "assisted",
+        "baseline",
+        "outcome",
+        "status",
+    }
+    frozen_arm_keys = {"context_code", "environment_code", "workspace_code"}
+    for prior in previous.get("transfer_evaluations", []):
+        if not isinstance(prior, dict) or not isinstance(prior.get("transfer_id"), str):
+            continue
+        transfer_id = prior["transfer_id"]
+        current = current_transfers.get(transfer_id)
+        if current is None:
+            errors.append(f"committed transfer evaluation was deleted: {transfer_id}")
+            continue
+        if prior.get("status") in {"COMPLETED", "INVALID"}:
+            if current != prior:
+                errors.append(f"terminal transfer evaluation was rewritten: {transfer_id}")
+            continue
+        prior_frozen = {
+            key: value for key, value in prior.items() if key not in mutable_transfer_keys
+        }
+        current_frozen = {
+            key: value for key, value in current.items() if key not in mutable_transfer_keys
+        }
+        if current_frozen != prior_frozen:
+            errors.append(f"preregistered transfer freeze was rewritten: {transfer_id}")
+        for arm_name in ("baseline", "assisted"):
+            prior_arm = prior.get(arm_name)
+            current_arm = current.get(arm_name)
+            if not isinstance(prior_arm, dict) or not isinstance(current_arm, dict):
+                continue
+            if any(prior_arm.get(key) != current_arm.get(key) for key in frozen_arm_keys):
+                errors.append(
+                    f"preregistered {arm_name} isolation was rewritten: {transfer_id}"
+                )
+    return errors
 
 
 def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
@@ -345,6 +508,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append(f"quarantined channel lacks two consecutive failures: {channel_code}")
 
     candidate_ids: set[str] = set()
+    candidate_by_id: dict[str, dict[str, Any]] = {}
     dedupe: set[tuple[str, int]] = set()
     for candidate in backlog.get("candidates", []):
         candidate_id = candidate.get("candidate_id")
@@ -354,6 +518,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append("candidate IDs must be unique strings")
         else:
             candidate_ids.add(candidate_id)
+            candidate_by_id[candidate_id] = candidate
         if not isinstance(repository, str) or not REPOSITORY_RE.fullmatch(repository):
             errors.append(f"invalid repository for {candidate_id}")
         if not isinstance(number, int) or number <= 0:
@@ -374,6 +539,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append(f"invalid category for {candidate_id}")
 
     task_ids: set[str] = set()
+    task_by_id: dict[str, dict[str, Any]] = {}
     in_progress: list[dict[str, Any]] = []
     for task in backlog.get("work_items", []):
         task_id = task.get("task_id")
@@ -381,6 +547,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             errors.append("task IDs must be unique strings")
         else:
             task_ids.add(task_id)
+            task_by_id[task_id] = task
         if task.get("status") not in TASK_STATUSES:
             errors.append(f"invalid status for {task_id}")
         channel_code = task.get("channel_code")
@@ -392,6 +559,414 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             in_progress.append(task)
             if not isinstance(task.get("claim"), dict):
                 errors.append(f"in-progress task {task_id} has no claim")
+
+    experiences = backlog.get("experiences")
+    if not isinstance(experiences, list):
+        errors.append("experiences must be a list")
+        experiences = []
+    experience_by_key: dict[tuple[str, int], dict[str, Any]] = {}
+    ready_versions_by_id: dict[str, int] = {}
+    for experience in experiences:
+        if not isinstance(experience, dict):
+            errors.append("Experience records must be objects")
+            continue
+        experience_id = experience.get("experience_id")
+        version = experience.get("version")
+        key = (experience_id, version)
+        if (
+            not isinstance(experience_id, str)
+            or not EXPERIENCE_ID_RE.fullmatch(experience_id)
+            or not isinstance(version, int)
+            or version <= 0
+            or key in experience_by_key
+        ):
+            errors.append("Experience identity/version must be unique and well formed")
+            continue
+        experience_by_key[key] = experience
+        source_candidates = experience.get("source_candidate_ids")
+        builders = experience.get("builder_task_ids")
+        if (
+            not isinstance(source_candidates, list)
+            or not source_candidates
+            or any(not isinstance(item, str) for item in source_candidates)
+            or len(set(source_candidates)) != len(source_candidates)
+            or not set(source_candidates).issubset(candidate_ids)
+        ):
+            errors.append(f"invalid source candidates for {experience_id} v{version}")
+        elif any(
+            candidate_by_id[item].get("category") == "HELD_OUT_TRANSFER"
+            for item in source_candidates
+        ):
+            errors.append(f"held-out candidate used to build {experience_id} v{version}")
+        if (
+            not isinstance(builders, list)
+            or not builders
+            or any(not isinstance(item, str) for item in builders)
+            or len(set(builders)) != len(builders)
+            or not set(builders).issubset(task_ids)
+        ):
+            errors.append(f"invalid builder tasks for {experience_id} v{version}")
+        elif any(task_by_id[item].get("stage") == "TRANSFER_EVALUATION" for item in builders):
+            errors.append(f"transfer task used to build {experience_id} v{version}")
+        artifact_path = experience.get("artifact_path")
+        artifact_path_valid = not (
+            not isinstance(artifact_path, str)
+            or not artifact_path.startswith("foundry/experiences/")
+            or artifact_path.startswith("/")
+            or ".." in Path(artifact_path).parts
+            or len(Path(artifact_path).parts) != 3
+            or not artifact_path.endswith(".json")
+        )
+        if not artifact_path_valid:
+            errors.append(f"invalid artifact path for {experience_id} v{version}")
+        else:
+            artifact_file = root / artifact_path
+            artifact_sha = experience.get("artifact_sha256")
+            if not artifact_file.is_file():
+                errors.append(f"missing Experience artifact for {experience_id} v{version}")
+            elif not isinstance(artifact_sha, str) or not SHA256_RE.fullmatch(artifact_sha):
+                errors.append(f"invalid artifact digest for {experience_id} v{version}")
+            elif sha256_bytes(artifact_file.read_bytes()) != artifact_sha:
+                errors.append(f"artifact digest mismatch for {experience_id} v{version}")
+            else:
+                artifact = load_json(artifact_file)
+                if not isinstance(artifact, dict) or set(artifact) != EXPERIENCE_ARTIFACT_KEYS:
+                    errors.append(f"artifact fields are not allowlisted for {experience_id} v{version}")
+                else:
+                    if (
+                        artifact.get("schema_version") != 1
+                        or artifact.get("experience_id") != experience_id
+                        or artifact.get("version") != version
+                        or artifact.get("family") != experience.get("family")
+                        or artifact.get("source_candidate_ids") != source_candidates
+                    ):
+                        errors.append(f"artifact identity/provenance mismatch for {experience_id} v{version}")
+                    for field in (
+                        "problem_signature_codes",
+                        "precondition_codes",
+                        "limitation_codes",
+                    ):
+                        values = artifact.get(field)
+                        if (
+                            not isinstance(values, list)
+                            or (field != "limitation_codes" and not values)
+                            or any(
+                                not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                                for item in values
+                            )
+                            or len(set(values)) != len(values)
+                        ):
+                            errors.append(f"invalid allowlisted {field} for {experience_id} v{version}")
+                    if not isinstance(artifact.get("oracle_kind"), str) or not CODE_VALUE_RE.fullmatch(
+                        artifact.get("oracle_kind", "")
+                    ):
+                        errors.append(f"invalid artifact oracle for {experience_id} v{version}")
+                    steps = artifact.get("procedure_steps")
+                    if not isinstance(steps, list) or not steps:
+                        errors.append(f"missing artifact procedure for {experience_id} v{version}")
+                    else:
+                        for step in steps:
+                            if not isinstance(step, dict) or set(step) != {
+                                "action_code",
+                                "verification_code",
+                            } or any(
+                                not isinstance(value, str) or not CODE_VALUE_RE.fullmatch(value)
+                                for value in step.values()
+                            ):
+                                errors.append(
+                                    f"invalid allowlisted procedure step for {experience_id} v{version}"
+                                )
+                                break
+        if experience.get("family") != backlog.get("discovery", {}).get("selected_family"):
+            errors.append(f"Experience family drift for {experience_id} v{version}")
+        review_status = experience.get("release_review_status")
+        if review_status not in {"NOT_READY", "READY"}:
+            errors.append(f"invalid release review status for {experience_id} v{version}")
+        elif review_status == "READY":
+            if experience_id in ready_versions_by_id:
+                errors.append(f"multiple release-ready versions for {experience_id}")
+            ready_versions_by_id[experience_id] = version
+
+    transfer_evaluations = backlog.get("transfer_evaluations")
+    if not isinstance(transfer_evaluations, list):
+        errors.append("transfer_evaluations must be a list")
+        transfer_evaluations = []
+    transfer_ids: set[str] = set()
+    transfer_targets: set[tuple[str, int, str]] = set()
+    transfer_attempt_ids: set[str] = set()
+    completed_transfer_keys: set[tuple[str, int]] = set()
+    for transfer in transfer_evaluations:
+        if not isinstance(transfer, dict):
+            errors.append("transfer evaluation records must be objects")
+            continue
+        transfer_id = transfer.get("transfer_id")
+        if set(transfer) != TRANSFER_EVALUATION_KEYS:
+            errors.append(f"transfer fields are not allowlisted for {transfer_id}")
+        if (
+            not isinstance(transfer_id, str)
+            or not TRANSFER_ID_RE.fullmatch(transfer_id)
+            or transfer_id in transfer_ids
+        ):
+            errors.append("transfer IDs must be unique and well formed")
+        else:
+            transfer_ids.add(transfer_id)
+        transfer_experience_id = transfer.get("experience_id")
+        transfer_experience_version = transfer.get("experience_version")
+        if not isinstance(transfer_experience_id, str) or not isinstance(
+            transfer_experience_version, int
+        ):
+            errors.append(f"invalid Experience reference for {transfer_id}")
+            experience_key = ("INVALID", -1)
+        else:
+            experience_key = (transfer_experience_id, transfer_experience_version)
+        experience = experience_by_key.get(experience_key)
+        if experience is None:
+            errors.append(f"unknown Experience version for {transfer_id}")
+        target_id = transfer.get("target_candidate_id")
+        target = candidate_by_id.get(target_id) if isinstance(target_id, str) else None
+        if (
+            target is None
+            or target.get("category") != "HELD_OUT_TRANSFER"
+            or target.get("qualification") != "QUALIFIED"
+        ):
+            errors.append(f"transfer target must be a qualified held-out candidate for {transfer_id}")
+        target_key = (*experience_key, target_id if isinstance(target_id, str) else "INVALID")
+        if target_key in transfer_targets:
+            errors.append(f"duplicate Experience/target transfer for {transfer_id}")
+        transfer_targets.add(target_key)
+        task_id = transfer.get("task_id")
+        task = task_by_id.get(task_id)
+        if task is None or task.get("stage") != "TRANSFER_EVALUATION" or target_id not in task.get(
+            "candidate_ids", []
+        ):
+            errors.append(f"invalid transfer work item for {transfer_id}")
+        if experience and (
+            target_id in experience.get("source_candidate_ids", [])
+            or task_id in experience.get("builder_task_ids", [])
+        ):
+            errors.append(f"held-out separation violated for {transfer_id}")
+        if not isinstance(transfer.get("target_revision"), str) or not SHA_RE.fullmatch(
+            transfer.get("target_revision", "")
+        ):
+            errors.append(f"invalid frozen target revision for {transfer_id}")
+        if not isinstance(transfer.get("oracle_kind"), str) or not transfer.get("oracle_kind"):
+            errors.append(f"missing frozen oracle for {transfer_id}")
+        if not isinstance(transfer.get("oracle_version"), int) or transfer.get(
+            "oracle_version", 0
+        ) <= 0:
+            errors.append(f"invalid oracle version for {transfer_id}")
+        try:
+            parse_time(transfer.get("preregistered_at", ""))
+        except ConfigError:
+            errors.append(f"invalid preregistration time for {transfer_id}")
+        model_config = transfer.get("model_config")
+        if not isinstance(model_config, dict) or not model_config.get("model") or not model_config.get(
+            "reasoning_effort"
+        ):
+            errors.append(f"invalid frozen model config for {transfer_id}")
+        budget = transfer.get("budget")
+        if not isinstance(budget, dict) or any(
+            not isinstance(budget.get(field), int) or budget[field] < minimum
+            for field, minimum in (("max_seconds", 1), ("max_worker_starts", 1), ("max_retries", 0))
+        ):
+            errors.append(f"invalid frozen transfer budget for {transfer_id}")
+        if transfer.get("run_order") not in {"BASELINE_FIRST", "ASSISTED_FIRST"}:
+            errors.append(f"invalid frozen run order for {transfer_id}")
+        if transfer.get("decision_rule_code") != TRANSFER_DECISION_RULE:
+            errors.append(f"invalid frozen decision rule for {transfer_id}")
+        if not isinstance(transfer.get("retry_rule_code"), str) or not transfer.get(
+            "retry_rule_code"
+        ):
+            errors.append(f"missing retry rule for {transfer_id}")
+        if not isinstance(transfer.get("tool_permission_profile"), str) or not transfer.get(
+            "tool_permission_profile"
+        ):
+            errors.append(f"missing shared tool permission profile for {transfer_id}")
+        if transfer.get("evaluator_feedback_visible_to_assisted") is not False:
+            errors.append(f"evaluator feedback leakage not forbidden for {transfer_id}")
+        visibility = transfer.get("visible_material_codes")
+        experience_token = f"EXPERIENCE:{experience_key[0]}:V{experience_key[1]}"
+        if (
+            not isinstance(visibility, dict)
+            or set(visibility) != {"baseline", "assisted"}
+            or not isinstance(visibility.get("baseline"), list)
+            or not isinstance(visibility.get("assisted"), list)
+            or any(
+                not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                for arm_values in visibility.values()
+                if isinstance(arm_values, list)
+                for item in arm_values
+            )
+            or any(item.startswith("EXPERIENCE:") for item in visibility.get("baseline", []))
+            or [
+                item for item in visibility.get("assisted", []) if item.startswith("EXPERIENCE:")
+            ]
+            != [experience_token]
+        ):
+            errors.append(f"invalid arm visibility freeze for {transfer_id}")
+        arms: dict[str, dict[str, Any]] = {}
+        preregistered_at: datetime | None = None
+        try:
+            preregistered_at = parse_time(transfer.get("preregistered_at", ""))
+        except ConfigError:
+            pass
+        for arm_name in ("baseline", "assisted"):
+            arm = transfer.get(arm_name)
+            if not isinstance(arm, dict):
+                errors.append(f"missing {arm_name} arm for {transfer_id}")
+                continue
+            arms[arm_name] = arm
+            if set(arm) != TRANSFER_ARM_KEYS:
+                errors.append(f"{arm_name} arm fields are not allowlisted for {transfer_id}")
+            if not isinstance(arm.get("context_code"), str) or not CODE_VALUE_RE.fullmatch(
+                arm.get("context_code", "")
+            ):
+                errors.append(f"missing {arm_name} context for {transfer_id}")
+            if not isinstance(arm.get("workspace_code"), str) or not CODE_VALUE_RE.fullmatch(
+                arm.get("workspace_code", "")
+            ):
+                errors.append(f"missing {arm_name} workspace for {transfer_id}")
+            if not isinstance(arm.get("environment_code"), str) or not CODE_VALUE_RE.fullmatch(
+                arm.get("environment_code", "")
+            ):
+                errors.append(f"missing {arm_name} environment for {transfer_id}")
+            if arm.get("run_status") not in {"PENDING", "VALID", "INVALID", "FAILED"}:
+                errors.append(f"invalid {arm_name} run status for {transfer_id}")
+            if arm.get("oracle_observation") not in {"PENDING", "SUCCESS", "FAILURE", "NOT_RUN"}:
+                errors.append(f"invalid {arm_name} oracle observation for {transfer_id}")
+            attempts = arm.get("attempts")
+            if not isinstance(attempts, list):
+                errors.append(f"invalid {arm_name} attempt ledger for {transfer_id}")
+                attempts = []
+            max_attempts = (
+                budget.get("max_retries", -1) + 1 if isinstance(budget, dict) else 0
+            )
+            if len(attempts) > max_attempts:
+                errors.append(f"{arm_name} attempt ledger exceeds frozen retry budget for {transfer_id}")
+            for attempt_number, attempt in enumerate(attempts, 1):
+                if not isinstance(attempt, dict) or set(attempt) != TRANSFER_ATTEMPT_KEYS:
+                    errors.append(f"invalid {arm_name} attempt fields for {transfer_id}")
+                    continue
+                attempt_id = attempt.get("attempt_id")
+                if (
+                    not isinstance(attempt_id, str)
+                    or not CODE_VALUE_RE.fullmatch(attempt_id)
+                    or attempt_id in transfer_attempt_ids
+                ):
+                    errors.append(f"invalid or duplicate transfer attempt ID for {transfer_id}")
+                else:
+                    transfer_attempt_ids.add(attempt_id)
+                if attempt.get("attempt_number") != attempt_number:
+                    errors.append(f"non-sequential {arm_name} attempt ledger for {transfer_id}")
+                attempt_status = attempt.get("run_status")
+                attempt_observation = attempt.get("oracle_observation")
+                if attempt_status not in {"VALID", "INVALID", "FAILED"}:
+                    errors.append(f"invalid {arm_name} attempt status for {transfer_id}")
+                if attempt_observation not in {"SUCCESS", "FAILURE", "NOT_RUN"}:
+                    errors.append(f"invalid {arm_name} attempt observation for {transfer_id}")
+                if attempt_status == "VALID" and attempt_observation not in {
+                    "SUCCESS",
+                    "FAILURE",
+                }:
+                    errors.append(f"valid {arm_name} attempt lacks oracle result for {transfer_id}")
+                if attempt_status != "VALID" and attempt_observation == "SUCCESS":
+                    errors.append(f"non-valid {arm_name} attempt claims success for {transfer_id}")
+                command = attempt.get("command_argv")
+                if (
+                    not isinstance(command, list)
+                    or not command
+                    or any(not isinstance(item, str) or not item for item in command)
+                ):
+                    errors.append(f"missing {arm_name} oracle command for {transfer_id}")
+                if not isinstance(attempt.get("exit_code"), int):
+                    errors.append(f"missing {arm_name} oracle exit status for {transfer_id}")
+                if not isinstance(attempt.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+                    attempt.get("evidence_digest_sha256", "")
+                ):
+                    errors.append(f"invalid {arm_name} evidence digest for {transfer_id}")
+                evidence_codes = attempt.get("evidence_summary_codes")
+                if (
+                    not isinstance(evidence_codes, list)
+                    or not evidence_codes
+                    or any(
+                        not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                        for item in evidence_codes
+                    )
+                    or len(set(evidence_codes)) != len(evidence_codes)
+                ):
+                    errors.append(f"invalid {arm_name} evidence summary for {transfer_id}")
+                solver_code = attempt.get("solver_code")
+                oracle_executor_code = attempt.get("oracle_executor_code")
+                if (
+                    not isinstance(solver_code, str)
+                    or not CODE_VALUE_RE.fullmatch(solver_code)
+                    or not isinstance(oracle_executor_code, str)
+                    or not CODE_VALUE_RE.fullmatch(oracle_executor_code)
+                    or solver_code == oracle_executor_code
+                ):
+                    errors.append(f"independent oracle executor missing for {transfer_id}")
+                try:
+                    started_at = parse_time(attempt.get("started_at", ""))
+                    finished_at = parse_time(attempt.get("finished_at", ""))
+                    if (
+                        preregistered_at is None
+                        or started_at < preregistered_at
+                        or finished_at < started_at
+                    ):
+                        errors.append(f"attempt timing violates preregistration for {transfer_id}")
+                except ConfigError:
+                    errors.append(f"invalid {arm_name} attempt timing for {transfer_id}")
+            if attempts:
+                terminal = attempts[-1]
+                if any(item.get("run_status") == "VALID" for item in attempts[:-1]):
+                    errors.append(f"{arm_name} retried after a valid terminal attempt for {transfer_id}")
+                if (
+                    arm.get("run_status") != terminal.get("run_status")
+                    or arm.get("oracle_observation") != terminal.get("oracle_observation")
+                ):
+                    errors.append(f"{arm_name} summary does not match terminal attempt for {transfer_id}")
+        if len(arms) == 2 and (
+            arms["baseline"].get("context_code") == arms["assisted"].get("context_code")
+            or arms["baseline"].get("workspace_code") == arms["assisted"].get("workspace_code")
+            or arms["baseline"].get("environment_code")
+            == arms["assisted"].get("environment_code")
+        ):
+            errors.append(f"baseline and assisted isolation violated for {transfer_id}")
+        status = transfer.get("status")
+        outcome = transfer.get("outcome")
+        if status not in {"PREREGISTERED", "COMPLETED", "INVALID"}:
+            errors.append(f"invalid transfer status for {transfer_id}")
+        if outcome not in {"PENDING", "POSITIVE", "NEUTRAL", "HARMFUL", "INVALID", "FAILED"}:
+            errors.append(f"invalid transfer outcome for {transfer_id}")
+        if status == "PREREGISTERED" and outcome != "PENDING":
+            errors.append(f"preregistered transfer has a terminal outcome for {transfer_id}")
+        if status == "COMPLETED":
+            if transfer.get("all_attempts_retained") is not True or any(
+                arm.get("run_status") != "VALID" or not arm.get("attempts")
+                for arm in arms.values()
+            ):
+                errors.append(f"completed transfer lacks complete valid attempts for {transfer_id}")
+            else:
+                completed_transfer_keys.add(experience_key)
+            observations = tuple(
+                arms.get(name, {}).get("oracle_observation") for name in ("baseline", "assisted")
+            )
+            expected = {
+                "POSITIVE": ("FAILURE", "SUCCESS"),
+                "HARMFUL": ("SUCCESS", "FAILURE"),
+            }
+            if outcome in expected and observations != expected[outcome]:
+                errors.append(f"{outcome} transfer arm results disagree for {transfer_id}")
+            if outcome == "NEUTRAL" and observations[0] != observations[1]:
+                errors.append(f"NEUTRAL transfer arm results disagree for {transfer_id}")
+            if outcome not in {"POSITIVE", "NEUTRAL", "HARMFUL"}:
+                errors.append(f"completed transfer lacks a valid outcome for {transfer_id}")
+
+    for experience_key, experience in experience_by_key.items():
+        if experience.get("release_review_status") == "READY" and experience_key not in completed_transfer_keys:
+            errors.append(
+                f"release-ready Experience lacks an independent completed transfer: {experience_key}"
+            )
     active = state.get("active_round")
     if active is None and in_progress:
         errors.append("in-progress task exists without active round")
@@ -409,6 +984,8 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     for state_list in ("external_users", "human_decision_queue", "integrity_incidents"):
         if not isinstance(state.get(state_list), list):
             errors.append(f"{state_list} must be a list")
+
+    errors.extend(validate_committed_foundry_history(root, backlog))
 
     seen_rounds: set[str] = set()
     successful = 0
@@ -1222,14 +1799,22 @@ def resume(root: Path, now: datetime | None = None) -> dict[str, Any]:
 def _counts(backlog: dict[str, Any]) -> dict[str, int]:
     candidates = backlog["candidates"]
     work = backlog["work_items"]
+    experiences = backlog.get("experiences", [])
+    transfers = backlog.get("transfer_evaluations", [])
     return {
         "candidates": len(candidates),
         "qualified": sum(item["qualification"] == "QUALIFIED" for item in candidates),
         "behavior_verified": sum(item.get("behavior_verification") == "PASSED" for item in candidates),
-        "release_review_experiences": sum(item.get("release_review") == "READY" for item in candidates),
+        "release_review_experiences": len(
+            {
+                item.get("experience_id")
+                for item in experiences
+                if item.get("release_review_status") == "READY"
+            }
+        ),
         "held_out_positive_transfers": sum(
-            item.get("category") == "HELD_OUT_TRANSFER" and item.get("transfer_outcome") == "POSITIVE"
-            for item in candidates
+            item.get("status") == "COMPLETED" and item.get("outcome") == "POSITIVE"
+            for item in transfers
         ),
         "ready_work": sum(item["status"] == "READY" for item in work),
         "blocked_environment": sum(item["status"] == "BLOCKED_ENVIRONMENT" for item in work),
@@ -1545,7 +2130,11 @@ def _changed_paths(root: Path) -> set[str]:
 
 def _allowed_with_reports(path: str, bootstrap: bool) -> bool:
     allowed = BOOTSTRAP_PATHS if bootstrap else PUBLIC_RUNTIME_PATHS
-    return path in allowed or path.startswith("foundry/reports/")
+    return (
+        path in allowed
+        or path.startswith("foundry/reports/")
+        or path.startswith("foundry/experiences/")
+    )
 
 
 def persist(root: Path, run_id: str, push: bool, bootstrap: bool = False) -> dict[str, Any]:
@@ -1559,6 +2148,7 @@ def persist(root: Path, run_id: str, push: bool, bootstrap: bool = False) -> dic
             raise LeaseError("reconcile the prior external effect before persistence")
         if state.get("last_round_id") != run_id:
             raise ConfigError("persist run ID is not the last completed round")
+        validate(root, check_git=False)
         scan = audit_public(root)
         if not scan["ok"]:
             raise ConfigError("public audit failed: " + "; ".join(scan["errors"]))

@@ -35,6 +35,27 @@ completed. Untrusted code, installation, and tests require the charter's clean
 disposable-environment gate. Keep raw logs and model output only in
 `.aeg-foundry-private/`; never read historical `.aeg` state.
 
+Create Experience artifacts only as direct JSON files under
+`foundry/experiences/`, using the controller's code-only allowlist and a digest
+recorded in `backlog.json`. Record the Experience entity separately from its
+source candidates and builder tasks. Never hand-edit release or transfer
+counts: they are derived only from validated `experiences[]` and
+`transfer_evaluations[]` records.
+
+Before either arm of a held-out transfer begins, preregister the immutable
+Experience version, qualified held-out target and revision, oracle and version,
+model configuration, budget, retry and decision rules, order, tool permissions,
+and visible materials. Baseline and assisted must use distinct contexts,
+workspaces, and disposable environments. Retain every attempt in order with its
+command, exit code, timing, status, oracle observation, evidence digest and
+summary codes; the terminal arm summary must match the final attempt. The
+deterministic oracle executor must be distinct from the solver. Baseline cannot
+see any Experience or evaluator feedback, and the assisted arm may see only the
+declared Experience version. A release-ready Experience requires at least one
+completed transfer whose target and transfer task did not build it. Never alter
+a committed Experience version, a preregistered frozen field, or a terminal
+transfer result; create a new version or transfer record instead.
+
 Finish with the actual oracle result using `finish-round`. `SUCCESS` requires a
 deterministic `PASSED` oracle. Use `UNKNOWN` for unobservable founder time,
 tokens, or cost. For `FAILURE` or `BLOCKED`, supply an explicit

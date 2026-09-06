@@ -25,9 +25,21 @@
   before writing `EXPIRED` and `final.md`. The scheduler is instructed to audit
   and push that terminal checkpoint. An explicit operator pause remains
   network-quiet and requires human resolution if an effect is still pending.
+- Experience and transfer integrity: release-review and held-out-positive counts
+  now come only from first-class Experience and transfer-evaluation records.
+  Experience artifacts are exact-shape, code-only JSON with pinned SHA-256
+  digests. A transfer freezes its decision rule and experimental configuration,
+  uses isolated baseline and assisted contexts/workspaces/environments, retains
+  ordered command/exit/oracle evidence for every attempt, and requires an
+  independent deterministic-oracle executor. A release-ready Experience must
+  have a completed transfer that did not participate in construction. Git
+  history validation rejects rewrites of committed Experience versions,
+  preregistered freezes, and terminal transfer outcomes.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,
-  channel-local auth pause, continued work on an unrelated active channel, and
-  normal schema validation. Full validation results are recorded in the Draft
-  PR after execution.
+  channel-local auth pause, continued work on an unrelated active channel,
+  count-spoof rejection, immutable artifact digests, exact artifact fields,
+  independent-transfer release gating, arm isolation, outcome consistency, and
+  fail-closed malformed targets. Full validation results are recorded in the
+  Draft PR after execution.

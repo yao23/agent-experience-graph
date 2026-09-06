@@ -38,6 +38,20 @@ the charter's clean disposable-environment gate is already satisfied. Never
 read historical `.aeg` content. Keep raw logs and model output only in
 `.aeg-foundry-private/`.
 
+For an Experience stage, write only the code-only, digest-pinned artifact shape
+accepted under `foundry/experiences/`, and register its sources and builder
+tasks in `experiences[]`. For a held-out transfer, preregister all frozen fields
+in `transfer_evaluations[]` before starting either arm. Use separate contexts,
+workspaces, and disposable environments; keep the same target revision, oracle,
+model budget, tool permissions, and tests. Preserve every attempt in order with
+command, exit status, timing, failure/validity state, oracle observation, and
+evidence digest. Do not expose any Experience or evaluator feedback to the
+baseline. Do not mark an Experience release-ready until a completed independent
+transfer passes controller validation. Never hand-edit derived release-review
+or positive-transfer counts. Committed Experience versions, preregistered
+frozen fields, and terminal transfer results are append-only; use a new version
+or transfer ID rather than rewriting history.
+
 Finish with the actual deterministic oracle outcome using
 `python3 scripts/aeg_foundry.py finish-round`; `SUCCESS` requires `PASSED`.
 For `FAILURE` or `BLOCKED`, classify the cause with `--failure-class` and retain
