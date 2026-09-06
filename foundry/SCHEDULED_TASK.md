@@ -48,9 +48,18 @@ For `CLONE_PUBLIC_REPOSITORY`, `INSTALL_PINNED_DEPENDENCIES`, or
 and `record-intent` must receive `--environment-id <AEG-E-NNN>`. The controller
 accepts only an unexpired qualification receipt that proves one-time freshness,
 no host/company mounts, no model or GitHub-write credentials, and separately
-recorded dependency/test network policy. Its first intent permanently consumes
-the environment for that round. Do not fabricate a receipt, reactivate the
-channel by hand, reuse an environment, or issue these effects from maintenance.
+recorded dependency/test network policy. Each effect names its execution
+environment. A round may claim multiple one-time environments so isolated arms
+can use different IDs, while clone/install/oracle steps for one arm may share
+that arm's ID. Every claimed environment is permanently consumed by that round.
+Do not fabricate a receipt, reactivate the channel by hand, reuse an environment
+in another round, or issue these effects from maintenance.
+
+A `RUN_FROZEN_ORACLE` intent must also supply `--target-revision <SHA>`. Resolve
+a completed run with its JSON command argv, integer exit code, actual
+`SUCCESS`/`FAILURE` observation, SHA-256 evidence digest, and one or more summary
+codes; resolve an executor failure with a failure code. The controller rejects
+a generic completed outcome with no execution receipt.
 
 Do not rewrite a committed candidate classification or put verification flags
 on candidates. A behavior-verification stage writes a first-class
@@ -80,7 +89,12 @@ enters the external-success numerator. Never count the founder, this loop, its
 agents, or project CI as an external user.
 
 Finish with the actual deterministic oracle outcome using
-`python3 scripts/aeg_foundry.py finish-round`; `SUCCESS` requires `PASSED`.
+`python3 scripts/aeg_foundry.py finish-round`; `SUCCESS` requires `PASSED` and
+stage-specific evidence. Reproduction requires a current-round failure receipt,
+repair a success receipt, verification a completed isolated behavior record,
+transfer a terminal two-arm record, and release material an Experience built by
+the current task. Verification and transfer arm environment codes must be two
+distinct disposable-runtime IDs claimed by the current round.
 The controller charges the scheduled worker at claim time, including crashes;
 register every extra worker against the active round ID and let finish infer the
 total from those events.

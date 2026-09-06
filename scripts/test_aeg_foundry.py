@@ -81,7 +81,7 @@ class FoundryFixture(unittest.TestCase):
                 "rounds_started": 0,
                 "runtime_environment_claims": [],
                 "runtime_environments": [],
-                "schema_version": 3,
+                "schema_version": 4,
                 "worker_events": [],
             },
         )
@@ -1432,6 +1432,7 @@ class FoundryTests(FoundryFixture):
                 "RUN_FROZEN_ORACLE",
                 "FROZEN_TARGET_ORACLE",
                 environment_id="AEG-E-001",
+                target_revision="a" * 40,
                 now=self.start + timedelta(seconds=1),
             )
         self.assertIn("lacks a verified qualification receipt", str(missing_receipt.exception))
@@ -1451,6 +1452,7 @@ class FoundryTests(FoundryFixture):
                 "RUN_FROZEN_ORACLE",
                 "FROZEN_TARGET_ORACLE",
                 environment_id="AEG-E-001",
+                target_revision="a" * 40,
                 now=self.start + timedelta(seconds=2),
             )
         self.assertIn("channel is not ACTIVE", str(blocked_channel.exception))
@@ -1482,7 +1484,7 @@ class FoundryTests(FoundryFixture):
         )
         state = self.load("state")
         self.assertEqual(clone["environment_id"], "AEG-E-001")
-        self.assertEqual(state["active_round"]["runtime_environment_id"], "AEG-E-001")
+        self.assertEqual(state["active_round"]["runtime_environment_ids"], ["AEG-E-001"])
         self.assertEqual(len(state["runtime_environment_claims"]), 1)
         foundry.resolve_intent(
             self.root,
@@ -1533,6 +1535,231 @@ class FoundryTests(FoundryFixture):
                 now=self.start + timedelta(hours=12, seconds=1),
             )
         self.assertIn("already consumed", str(raised.exception))
+
+    def test_one_round_may_claim_multiple_distinct_disposable_runtimes(self) -> None:
+        self.prepare_disposable_runtime()
+        state = self.load("state")
+        state["runtime_environments"].append(self.runtime_receipt("AEG-E-002"))
+        self.write("state", state)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        for index, environment_id in enumerate(("AEG-E-001", "AEG-E-002"), 1):
+            intent = foundry.record_intent(
+                self.root,
+                claim["round_id"],
+                "CLONE_PUBLIC_REPOSITORY",
+                f"ISOLATED_ARM_{index}",
+                environment_id=environment_id,
+                now=self.start + timedelta(seconds=index),
+            )
+            foundry.resolve_intent(
+                self.root,
+                intent["effect_id"],
+                "COMPLETED",
+                now=self.start + timedelta(seconds=index + 2),
+            )
+        state = self.load("state")
+        self.assertEqual(
+            state["active_round"]["runtime_environment_ids"],
+            ["AEG-E-001", "AEG-E-002"],
+        )
+        self.assertEqual(len(state["runtime_environment_claims"]), 2)
+        foundry.validate(self.root, check_git=False)
+
+    def test_frozen_oracle_completion_requires_atomic_evidence_receipt(self) -> None:
+        self.prepare_disposable_runtime()
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "REPRODUCTION"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        intent = foundry.record_intent(
+            self.root,
+            claim["round_id"],
+            "RUN_FROZEN_ORACLE",
+            "FROZEN_TARGET_ORACLE",
+            environment_id="AEG-E-001",
+            target_revision="a" * 40,
+            now=self.start + timedelta(seconds=1),
+        )
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.resolve_intent(
+                self.root,
+                intent["effect_id"],
+                "COMPLETED",
+                now=self.start + timedelta(seconds=2),
+            )
+        self.assertIn("requires command argv", str(raised.exception))
+        self.assertEqual(self.load("state")["pending_effect"]["effect_id"], intent["effect_id"])
+        receipt = foundry.resolve_intent(
+            self.root,
+            intent["effect_id"],
+            "COMPLETED",
+            command_argv=["python3", "frozen_oracle.py"],
+            exit_code=1,
+            oracle_observation="FAILURE",
+            evidence_digest_sha256="e" * 64,
+            evidence_summary_codes=["EXPECTED_FAILURE_REPRODUCED"],
+            now=self.start + timedelta(seconds=3),
+        )
+        self.assertEqual(receipt["oracle_observation"], "FAILURE")
+        self.assertEqual(receipt["target_revision"], "a" * 40)
+        self.assertEqual(
+            set(receipt),
+            foundry.ORACLE_EFFECT_COMPLETED_KEYS,
+        )
+        foundry.validate(self.root, check_git=False)
+
+    def test_reproduction_success_requires_failure_observation_receipt(self) -> None:
+        self.prepare_disposable_runtime()
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "REPRODUCTION"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as missing:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "REPAIR_REPRODUCED_FAILURE",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("FAILURE receipt", str(missing.exception))
+        for index, observation in enumerate(("SUCCESS", "FAILURE"), 1):
+            intent = foundry.record_intent(
+                self.root,
+                claim["round_id"],
+                "RUN_FROZEN_ORACLE",
+                f"REPRODUCTION_ORACLE_{index}",
+                environment_id="AEG-E-001",
+                target_revision="a" * 40,
+                now=self.start + timedelta(seconds=index + 1),
+            )
+            foundry.resolve_intent(
+                self.root,
+                intent["effect_id"],
+                "COMPLETED",
+                command_argv=["python3", "frozen_oracle.py"],
+                exit_code=0 if observation == "SUCCESS" else 1,
+                oracle_observation=observation,
+                evidence_digest_sha256=("e" if observation == "SUCCESS" else "f") * 64,
+                evidence_summary_codes=[f"OBSERVED_{observation}"],
+                now=self.start + timedelta(seconds=index + 3),
+            )
+            if observation == "SUCCESS":
+                with self.assertRaises(foundry.ConfigError) as wrong_observation:
+                    foundry.finish_round(
+                        self.root,
+                        claim["round_id"],
+                        "SUCCESS",
+                        "PASSED",
+                        "REPAIR_REPRODUCED_FAILURE",
+                        now=self.start + timedelta(seconds=8),
+                    )
+                self.assertIn("FAILURE receipt", str(wrong_observation.exception))
+        result = foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "REPAIR_REPRODUCED_FAILURE",
+            now=self.start + timedelta(seconds=9),
+        )
+        self.assertEqual(result["stage"], "REPRODUCTION")
+
+    def test_repair_success_requires_success_observation_receipt(self) -> None:
+        self.prepare_disposable_runtime()
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "REPAIR"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        intent = foundry.record_intent(
+            self.root,
+            claim["round_id"],
+            "RUN_FROZEN_ORACLE",
+            "REPAIR_ORACLE",
+            environment_id="AEG-E-001",
+            target_revision="b" * 40,
+            now=self.start + timedelta(seconds=1),
+        )
+        foundry.resolve_intent(
+            self.root,
+            intent["effect_id"],
+            "COMPLETED",
+            command_argv=["python3", "frozen_oracle.py"],
+            exit_code=1,
+            oracle_observation="FAILURE",
+            evidence_digest_sha256="e" * 64,
+            evidence_summary_codes=["REPAIR_DID_NOT_PASS"],
+            now=self.start + timedelta(seconds=2),
+        )
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "VERIFY_REPAIR",
+                now=self.start + timedelta(seconds=3),
+            )
+        self.assertIn("SUCCESS receipt", str(raised.exception))
+
+    def test_verification_success_requires_first_class_behavior_evidence(self) -> None:
+        self.prepare_disposable_runtime()
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "VERIFICATION"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("isolated behavior evidence", str(raised.exception))
+
+    def test_transfer_success_requires_first_class_terminal_evidence(self) -> None:
+        self.prepare_disposable_runtime()
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "TRANSFER_EVALUATION"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("terminal transfer", str(raised.exception))
+
+    def test_release_success_requires_experience_built_by_current_task(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "RELEASE_MATERIAL"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.finish_round(
+                self.root,
+                claim["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(seconds=1),
+            )
+        self.assertIn("Experience built by this task", str(raised.exception))
+
+    def test_unknown_stage_is_rejected(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["stage"] = "UNCONTROLLED_STAGE"
+        self.write("backlog", backlog)
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.validate(self.root, check_git=False)
+        self.assertIn("invalid stage", str(raised.exception))
 
     def test_runtime_receipt_rejects_credentials_mounts_and_open_network_shape(self) -> None:
         state = self.load("state")

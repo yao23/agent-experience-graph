@@ -51,11 +51,23 @@ Clone, install, and frozen-oracle effects require a `DISPOSABLE_RUNTIME` task
 and `record-intent --environment-id <AEG-E-NNN>`. The referenced immutable
 receipt must be unexpired and prove a fresh one-time runtime with no host or
 company-data mounts, no model or GitHub-write credentials, and distinct
-dependency/test network policies. The first untrusted effect permanently binds
-and consumes that environment for the round; later effects in the same round
-must name the same ID. Never fabricate a receipt, manually unlock the channel,
-reuse a claimed environment, or create an untrusted-execution maintenance
+dependency/test network policies. Each untrusted effect names the environment
+where it occurs. One round may permanently claim multiple distinct one-time
+environments for isolated arms; clone, install, and oracle effects for one arm
+may reuse that arm's ID, but no environment may belong to a second round.
+Baseline/repaired and baseline/assisted arms must name different claimed IDs.
+Never fabricate a receipt, manually unlock the channel, reuse a claimed
+environment in another round, or create an untrusted-execution maintenance
 intent.
+
+Record a frozen oracle only with an immutable revision, for example
+`record-intent --effect-type RUN_FROZEN_ORACLE --environment-id <AEG-E-NNN>
+--target-revision <SHA>`. Resolve `COMPLETED` atomically with
+`--command-argv-json`, `--exit-code`, `--oracle-observation`,
+`--evidence-digest-sha256`, and one or more `--evidence-summary-code` values.
+Use `FAILED --failure-code <CODE>` for an attempted executor failure, and
+`NOT_PERFORMED` only when no execution occurred. A generic `COMPLETED` outcome
+without this receipt is rejected.
 
 Candidate records use the controller's exact field shape. Once committed, their
 identity, category, contamination and qualification are immutable; add a new
@@ -95,10 +107,16 @@ counts in the external-success numerator. Founder, Foundry agents, and project
 CI are never external users.
 
 Finish with the actual oracle result using `finish-round`. `SUCCESS` requires a
-deterministic `PASSED` oracle. The scheduled worker start is charged when the
-round is claimed, including a later crash. Register every extra worker with the
-active `--round-id`; `finish-round` derives the total from those immutable
-events, so do not hand-edit or double-count it. Record the
+deterministic `PASSED` oracle plus stage evidence: reproduction needs a
+current-round frozen-oracle `FAILURE` receipt; repair needs `SUCCESS`;
+verification needs a completed `VERIFIED_REPAIR` record whose two environment
+codes are distinct IDs claimed by the round; transfer needs a terminal
+positive, neutral, or harmful record in two distinct claimed IDs; and release
+material needs a globally valid Experience built by the current task. The
+scheduled worker start is charged when the round is claimed, including a later
+crash. Register every extra worker with the active `--round-id`;
+`finish-round` derives the total from those immutable events, so do not
+hand-edit or double-count it. Record the
 configured model separately from the observed model and attestation, plus call
 method, input/output/total tokens, retries, quota observation, actual cost basis,
 and any market-price estimate with its source. Use `UNKNOWN` for unobservable

@@ -76,6 +76,13 @@
   credentials and separately bounded dependency/test networking, and an
   environment ID not claimed by another round. Maintenance mode cannot create
   these intents, and status reports both receipt and available-runtime counts.
+- Stage-evidence enforcement: state schema v4 permits a round to claim multiple
+  distinct one-time environments for isolated arms while permanently preventing
+  cross-round reuse. Frozen-oracle completion now records immutable revision,
+  command, exit, observed result, evidence digest, and summary codes atomically.
+  Reproduction, repair, verification, transfer, and release-material success
+  each fail closed unless their corresponding current-round first-class evidence
+  is present; a generic `PASSED` label cannot complete those stages.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

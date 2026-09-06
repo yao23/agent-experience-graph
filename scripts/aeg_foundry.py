@@ -114,6 +114,15 @@ TASK_STATUSES = {
     "BLOCKED_APPROVAL",
     "BLOCKED_UNCERTAIN_EFFECT",
 }
+STAGES = {
+    "DISCOVERY",
+    "REPRODUCTION",
+    "REPAIR",
+    "VERIFICATION",
+    "TRANSFER_EVALUATION",
+    "RELEASE_MATERIAL",
+    "REPORTING",
+}
 OUTCOMES = {"SUCCESS", "FAILURE", "NEUTRAL", "HARMFUL", "INVALID", "BLOCKED"}
 ORACLE_STATUSES = {"PASSED", "FAILED", "NOT_RUN", "INVALID"}
 CHANNEL_STATUSES = {"ACTIVE", "PAUSED", "QUARANTINED", "BLOCKED_ENVIRONMENT"}
@@ -142,6 +151,7 @@ BEHAVIOR_ID_RE = re.compile(r"^AEG-V-[0-9]{3}$")
 EXTERNAL_USER_ID_RE = re.compile(r"^AEG-U-[0-9]{3}$")
 EXTERNAL_REUSE_ID_RE = re.compile(r"^AEG-ER-[0-9]{3}$")
 INTEGRITY_INCIDENT_ID_RE = re.compile(r"^AEG-II-[0-9]{3}$")
+EFFECT_ID_RE = re.compile(r"^AEG-I-[0-9a-f]{32}$")
 RUNTIME_ENVIRONMENT_ID_RE = re.compile(r"^AEG-E-[0-9]{3}$")
 RUNTIME_CLAIM_ID_RE = re.compile(r"^AEG-EC-[0-9A-F]{32}$")
 CODE_VALUE_RE = re.compile(r"^[A-Z0-9][A-Z0-9_.:-]{0,127}$")
@@ -248,6 +258,34 @@ RUNTIME_CLAIM_KEYS = {
     "claimed_at",
     "environment_id",
     "round_id",
+}
+ORACLE_EFFECT_INTENT_KEYS = {
+    "effect_id",
+    "effect_type",
+    "environment_id",
+    "oracle_kind",
+    "recorded_at",
+    "round_id",
+    "target_code",
+    "target_revision",
+}
+ORACLE_EFFECT_COMPLETED_KEYS = ORACLE_EFFECT_INTENT_KEYS | {
+    "command_argv",
+    "evidence_digest_sha256",
+    "evidence_summary_codes",
+    "exit_code",
+    "oracle_observation",
+    "outcome",
+    "resolved_at",
+}
+ORACLE_EFFECT_FAILED_KEYS = ORACLE_EFFECT_INTENT_KEYS | {
+    "failure_code",
+    "outcome",
+    "resolved_at",
+}
+ORACLE_EFFECT_NOT_PERFORMED_KEYS = ORACLE_EFFECT_INTENT_KEYS | {
+    "outcome",
+    "resolved_at",
 }
 EXPERIENCE_ARTIFACT_KEYS = {
     "schema_version",
@@ -870,7 +908,7 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
         source_remote_head_ref(pilot)
     except (KeyError, ConfigError) as error:
         errors.append(str(error))
-    if backlog.get("schema_version") != 2 or state.get("schema_version") != 3:
+    if backlog.get("schema_version") != 2 or state.get("schema_version") != 4:
         errors.append("unsupported backlog or state schema")
 
     channels = state.get("channels")
@@ -1001,6 +1039,91 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
                 errors.append(f"runtime claim falls outside qualification window for {claim_id}")
         except ConfigError:
             errors.append(f"runtime claim has invalid time for {claim_id}")
+
+    effect_events = state.get("effect_events")
+    if not isinstance(effect_events, list):
+        errors.append("effect_events must be a list")
+        effect_events = []
+    oracle_effect_records = [
+        item
+        for item in [*effect_events, state.get("pending_effect")]
+        if isinstance(item, dict) and item.get("effect_type") == "RUN_FROZEN_ORACLE"
+    ]
+    for effect in oracle_effect_records:
+        effect_id = effect.get("effect_id")
+        outcome = effect.get("outcome")
+        if outcome is None:
+            expected_keys = ORACLE_EFFECT_INTENT_KEYS
+        elif outcome == "COMPLETED":
+            expected_keys = ORACLE_EFFECT_COMPLETED_KEYS
+        elif outcome == "FAILED":
+            expected_keys = ORACLE_EFFECT_FAILED_KEYS
+        elif outcome == "NOT_PERFORMED":
+            expected_keys = ORACLE_EFFECT_NOT_PERFORMED_KEYS
+        else:
+            expected_keys = set()
+            errors.append(f"invalid frozen-oracle effect outcome for {effect_id}")
+        if set(effect) != expected_keys:
+            errors.append(f"frozen-oracle effect fields are not allowlisted for {effect_id}")
+        if not isinstance(effect_id, str) or not EFFECT_ID_RE.fullmatch(effect_id):
+            errors.append("frozen-oracle effect ID is not well formed")
+        environment_id = effect.get("environment_id")
+        round_id = effect.get("round_id")
+        if environment_id not in runtime_environment_ids or not any(
+            claim.get("environment_id") == environment_id and claim.get("round_id") == round_id
+            for claim in runtime_claims
+            if isinstance(claim, dict)
+        ):
+            errors.append(f"frozen-oracle effect lacks its runtime claim for {effect_id}")
+        for field in ("oracle_kind", "target_code"):
+            if not isinstance(effect.get(field), str) or not CODE_VALUE_RE.fullmatch(
+                effect.get(field, "")
+            ):
+                errors.append(f"invalid frozen-oracle {field} for {effect_id}")
+        if not isinstance(effect.get("target_revision"), str) or not SHA_RE.fullmatch(
+            effect.get("target_revision", "")
+        ):
+            errors.append(f"invalid frozen-oracle target revision for {effect_id}")
+        try:
+            recorded_at = parse_time(effect.get("recorded_at", ""))
+            if outcome is not None:
+                resolved_at = parse_time(effect.get("resolved_at", ""))
+                if resolved_at < recorded_at:
+                    errors.append(f"frozen-oracle effect timing is reversed for {effect_id}")
+        except ConfigError:
+            errors.append(f"invalid frozen-oracle effect timing for {effect_id}")
+        if outcome == "COMPLETED":
+            command = effect.get("command_argv")
+            if (
+                not isinstance(command, list)
+                or not command
+                or any(not isinstance(item, str) or not item for item in command)
+            ):
+                errors.append(f"frozen-oracle effect lacks command argv for {effect_id}")
+            if type(effect.get("exit_code")) is not int:
+                errors.append(f"frozen-oracle effect lacks exit status for {effect_id}")
+            if effect.get("oracle_observation") not in {"SUCCESS", "FAILURE"}:
+                errors.append(f"frozen-oracle effect has invalid observation for {effect_id}")
+            if not isinstance(effect.get("evidence_digest_sha256"), str) or not SHA256_RE.fullmatch(
+                effect.get("evidence_digest_sha256", "")
+            ):
+                errors.append(f"frozen-oracle effect lacks evidence digest for {effect_id}")
+            evidence_codes = effect.get("evidence_summary_codes")
+            if (
+                not isinstance(evidence_codes, list)
+                or not evidence_codes
+                or any(
+                    not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                    for item in evidence_codes
+                )
+                or len(set(evidence_codes)) != len(evidence_codes)
+            ):
+                errors.append(f"frozen-oracle effect has invalid evidence summary for {effect_id}")
+        elif outcome == "FAILED" and (
+            not isinstance(effect.get("failure_code"), str)
+            or not CODE_VALUE_RE.fullmatch(effect.get("failure_code", ""))
+        ):
+            errors.append(f"failed frozen-oracle effect lacks a failure code for {effect_id}")
 
     worker_event_ids: set[str] = set()
     worker_events = state.get("worker_events")
@@ -1152,6 +1275,8 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
             task_by_id[task_id] = task
         if task.get("status") not in TASK_STATUSES:
             errors.append(f"invalid status for {task_id}")
+        if task.get("stage") not in STAGES:
+            errors.append(f"invalid stage for {task_id}")
         channel_code = task.get("channel_code")
         if channel_code not in channels:
             errors.append(f"unknown execution channel for {task_id}")
@@ -1735,8 +1860,18 @@ def validate(root: Path, check_git: bool = True) -> dict[str, Any]:
     if active is not None:
         if len(in_progress) != 1 or in_progress[0].get("task_id") != active.get("task_id"):
             errors.append("active round and claimed task disagree")
-        runtime_environment_id = active.get("runtime_environment_id")
-        if runtime_environment_id is not None:
+        bound_runtime_environment_ids = active.get("runtime_environment_ids", [])
+        if (
+            not isinstance(bound_runtime_environment_ids, list)
+            or any(
+                not isinstance(item, str) or not RUNTIME_ENVIRONMENT_ID_RE.fullmatch(item)
+                for item in bound_runtime_environment_ids
+            )
+            or len(set(bound_runtime_environment_ids)) != len(bound_runtime_environment_ids)
+        ):
+            errors.append("active round has an invalid disposable runtime binding list")
+            bound_runtime_environment_ids = []
+        for runtime_environment_id in bound_runtime_environment_ids:
             matching_claims = [
                 claim
                 for claim in runtime_claims
@@ -2571,7 +2706,7 @@ def begin_round(
             "qualified_count_at_start": sum(
                 item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
             ),
-            "runtime_environment_id": None,
+            "runtime_environment_ids": [],
             "scheduled_worker_start_counted": True,
             "acquisition_strategy_version_at_start": backlog["discovery"].get(
                 "acquisition_strategy_version", 1
@@ -2637,9 +2772,9 @@ def _bind_disposable_runtime(
         < parse_time(environment["expires_at"])
     ):
         raise ConfigError("disposable runtime qualification is not currently valid")
-    bound_environment_id = active.get("runtime_environment_id")
-    if bound_environment_id not in {None, environment_id}:
-        raise ConfigError("active round cannot switch disposable runtime environments")
+    bound_environment_ids = active.get("runtime_environment_ids")
+    if not isinstance(bound_environment_ids, list):
+        raise ConfigError("active round has an invalid disposable runtime binding list")
     claims = state.setdefault("runtime_environment_claims", [])
     existing = [
         claim
@@ -2657,7 +2792,8 @@ def _bind_disposable_runtime(
                 "round_id": active["round_id"],
             }
         )
-    active["runtime_environment_id"] = environment_id
+    if environment_id not in bound_environment_ids:
+        bound_environment_ids.append(environment_id)
 
 
 def record_intent(
@@ -2666,6 +2802,7 @@ def record_intent(
     effect_type: str,
     target_code: str,
     environment_id: str | None = None,
+    target_revision: str | None = None,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
@@ -2674,7 +2811,7 @@ def record_intent(
         raise ConfigError("fixed pilot control contract changed")
     with control_lock(root, pilot):
         validate(root, check_git=False)
-        _, _, state = load_all(root)
+        _, backlog, state = load_all(root)
         active = state.get("active_round")
         if not active or active["round_id"] != round_id:
             raise LeaseError("intent round does not own the active lease")
@@ -2685,9 +2822,17 @@ def record_intent(
         if not isinstance(target_code, str) or not CODE_VALUE_RE.fullmatch(target_code):
             raise ConfigError("invalid external effect target code")
         if effect_type in UNTRUSTED_EXECUTION_EFFECT_TYPES:
+            if effect_type == "RUN_FROZEN_ORACLE" and (
+                not isinstance(target_revision, str) or not SHA_RE.fullmatch(target_revision)
+            ):
+                raise ConfigError("frozen oracle effect requires an immutable target revision")
+            if effect_type != "RUN_FROZEN_ORACLE" and target_revision is not None:
+                raise ConfigError("target revision is valid only for frozen-oracle effects")
             _bind_disposable_runtime(state, active, environment_id, now)
-        elif environment_id is not None:
-            raise ConfigError("environment ID is valid only for untrusted execution effects")
+        elif environment_id is not None or target_revision is not None:
+            raise ConfigError(
+                "environment ID and target revision are valid only for untrusted execution effects"
+            )
         effect = {
             "effect_id": f"AEG-I-{uuid.uuid4().hex}",
             "effect_type": effect_type,
@@ -2697,6 +2842,16 @@ def record_intent(
         }
         if environment_id is not None:
             effect["environment_id"] = environment_id
+        if effect_type == "RUN_FROZEN_ORACLE":
+            task = next(
+                item for item in backlog["work_items"] if item["task_id"] == active["task_id"]
+            )
+            effect.update(
+                {
+                    "oracle_kind": task["oracle_kind"],
+                    "target_revision": target_revision,
+                }
+            )
         state["pending_effect"] = effect
         atomic_write_json(paths(root)["state"], state)
         return effect
@@ -2733,7 +2888,17 @@ def record_maintenance_intent(
 
 
 def resolve_intent(
-    root: Path, effect_id: str, outcome: str, now: datetime | None = None
+    root: Path,
+    effect_id: str,
+    outcome: str,
+    *,
+    command_argv: list[str] | None = None,
+    exit_code: int | None = None,
+    oracle_observation: str | None = None,
+    evidence_digest_sha256: str | None = None,
+    evidence_summary_codes: list[str] | None = None,
+    failure_code: str | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
     pilot, backlog, state = load_all(root)
@@ -2746,11 +2911,167 @@ def resolve_intent(
             raise ConfigError("push effects are resolved only by remote reconciliation")
         if outcome not in {"COMPLETED", "FAILED", "NOT_PERFORMED"}:
             raise ConfigError("invalid effect outcome")
+        oracle_evidence = (
+            command_argv,
+            exit_code,
+            oracle_observation,
+            evidence_digest_sha256,
+            evidence_summary_codes,
+            failure_code,
+        )
+        is_frozen_oracle = pending.get("effect_type") == "RUN_FROZEN_ORACLE"
+        if not is_frozen_oracle and any(value is not None for value in oracle_evidence):
+            raise ConfigError("oracle evidence is valid only for frozen-oracle effects")
         result = {**pending, "outcome": outcome, "resolved_at": format_time(now)}
+        if is_frozen_oracle:
+            if outcome == "COMPLETED":
+                if (
+                    not isinstance(command_argv, list)
+                    or not command_argv
+                    or any(not isinstance(item, str) or not item for item in command_argv)
+                ):
+                    raise ConfigError("completed frozen oracle requires command argv")
+                if type(exit_code) is not int:
+                    raise ConfigError("completed frozen oracle requires an integer exit code")
+                if oracle_observation not in {"SUCCESS", "FAILURE"}:
+                    raise ConfigError("completed frozen oracle requires an actual observation")
+                if (
+                    not isinstance(evidence_digest_sha256, str)
+                    or not SHA256_RE.fullmatch(evidence_digest_sha256)
+                ):
+                    raise ConfigError("completed frozen oracle requires a SHA-256 evidence digest")
+                if (
+                    not isinstance(evidence_summary_codes, list)
+                    or not evidence_summary_codes
+                    or any(
+                        not isinstance(item, str) or not CODE_VALUE_RE.fullmatch(item)
+                        for item in evidence_summary_codes
+                    )
+                    or len(set(evidence_summary_codes)) != len(evidence_summary_codes)
+                ):
+                    raise ConfigError("completed frozen oracle requires unique evidence summary codes")
+                if failure_code is not None:
+                    raise ConfigError("completed frozen oracle cannot carry a failure code")
+                result.update(
+                    {
+                        "command_argv": command_argv,
+                        "evidence_digest_sha256": evidence_digest_sha256,
+                        "evidence_summary_codes": evidence_summary_codes,
+                        "exit_code": exit_code,
+                        "oracle_observation": oracle_observation,
+                    }
+                )
+            elif outcome == "FAILED":
+                if any(value is not None for value in oracle_evidence[:-1]):
+                    raise ConfigError("failed frozen oracle cannot carry completion evidence")
+                if not isinstance(failure_code, str) or not CODE_VALUE_RE.fullmatch(failure_code):
+                    raise ConfigError("failed frozen oracle requires a failure code")
+                result["failure_code"] = failure_code
+            elif any(value is not None for value in oracle_evidence):
+                raise ConfigError("unperformed frozen oracle cannot carry execution evidence")
         state.setdefault("effect_events", []).append(result)
         state["pending_effect"] = None
         atomic_write_json(paths(root)["state"], state)
         return result
+
+
+def _require_stage_success_evidence(
+    backlog: dict[str, Any],
+    state: dict[str, Any],
+    active: dict[str, Any],
+    task: dict[str, Any],
+) -> None:
+    def arm_environment_codes(
+        record: dict[str, Any] | None, arm_names: tuple[str, str]
+    ) -> list[str]:
+        if not isinstance(record, dict):
+            return []
+        arms = [record.get(name) for name in arm_names]
+        if any(not isinstance(arm, dict) for arm in arms):
+            return []
+        return [arm.get("environment_code") for arm in arms]
+
+    stage = task["stage"]
+    bound_environment_ids = active.get("runtime_environment_ids", [])
+    bound_environment_id_set = (
+        set(bound_environment_ids)
+        if isinstance(bound_environment_ids, list)
+        and all(isinstance(item, str) for item in bound_environment_ids)
+        else set()
+    )
+    if stage in {"REPRODUCTION", "REPAIR"}:
+        required_observation = "FAILURE" if stage == "REPRODUCTION" else "SUCCESS"
+        matching_receipts = [
+            effect
+            for effect in state.get("effect_events", [])
+            if isinstance(effect, dict)
+            and effect.get("effect_type") == "RUN_FROZEN_ORACLE"
+            and effect.get("round_id") == active["round_id"]
+            and effect.get("outcome") == "COMPLETED"
+            and effect.get("oracle_kind") == task["oracle_kind"]
+            and effect.get("oracle_observation") == required_observation
+            and effect.get("environment_id") in bound_environment_id_set
+        ]
+        if not matching_receipts:
+            raise ConfigError(
+                f"{stage} SUCCESS requires a current-round frozen-oracle "
+                f"{required_observation} receipt"
+            )
+    elif stage == "VERIFICATION":
+        verification = next(
+            (
+                item
+                for item in backlog.get("behavior_verifications", [])
+                if isinstance(item, dict)
+                and item.get("task_id") == task["task_id"]
+                and item.get("status") == "COMPLETED"
+                and item.get("outcome") == "VERIFIED_REPAIR"
+            ),
+            None,
+        )
+        environments = arm_environment_codes(verification, ("baseline", "repaired"))
+        if (
+            verification is None
+            or len(environments) != 2
+            or any(not isinstance(item, str) for item in environments)
+            or len(set(environments)) != 2
+            or not set(environments).issubset(bound_environment_id_set)
+        ):
+            raise ConfigError(
+                "VERIFICATION SUCCESS requires isolated behavior evidence in two "
+                "runtime environments claimed by the current round"
+            )
+    elif stage == "TRANSFER_EVALUATION":
+        transfer = next(
+            (
+                item
+                for item in backlog.get("transfer_evaluations", [])
+                if isinstance(item, dict)
+                and item.get("task_id") == task["task_id"]
+                and item.get("status") == "COMPLETED"
+                and item.get("outcome") in {"POSITIVE", "NEUTRAL", "HARMFUL"}
+            ),
+            None,
+        )
+        environments = arm_environment_codes(transfer, ("baseline", "assisted"))
+        if (
+            transfer is None
+            or len(environments) != 2
+            or any(not isinstance(item, str) for item in environments)
+            or len(set(environments)) != 2
+            or not set(environments).issubset(bound_environment_id_set)
+        ):
+            raise ConfigError(
+                "TRANSFER_EVALUATION SUCCESS requires a terminal transfer in two "
+                "runtime environments claimed by the current round"
+            )
+    elif stage == "RELEASE_MATERIAL" and not any(
+        isinstance(experience, dict)
+        and isinstance(experience.get("builder_task_ids"), list)
+        and task["task_id"] in experience["builder_task_ids"]
+        for experience in backlog.get("experiences", [])
+    ):
+        raise ConfigError("RELEASE_MATERIAL SUCCESS requires an Experience built by this task")
 
 
 def observe_source_ref(
@@ -2845,6 +3166,7 @@ def finish_round(
         active = state.get("active_round")
         if not active or active["round_id"] != round_id:
             raise LeaseError("round does not own the active lease")
+        task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
         if state.get("pending_effect"):
             raise LeaseError("resolve or verify the pending effect before finishing")
         if not active.get("source_ref_verified_at"):
@@ -2857,6 +3179,8 @@ def finish_round(
             raise ConfigError("SUCCESS cannot carry a failure class")
         if outcome in {"FAILURE", "BLOCKED"} and failure_class == "NONE":
             raise ConfigError(f"{outcome} requires an explicit failure class")
+        if outcome == "SUCCESS":
+            _require_stage_success_evidence(backlog, state, active, task)
         for field, value in (
             ("founder_hours", founder_hours),
             ("compute_usd", compute_usd),
@@ -2905,7 +3229,6 @@ def finish_round(
             if counter["worker_starts"] >= pilot["budgets"]["max_worker_starts_per_day"]:
                 raise BudgetError("worker-start accounting would exceed the daily budget")
             counter["worker_starts"] += 1
-        task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
         channel_code = task["channel_code"]
         if task["oracle_kind"] == "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK":
             candidate_gain = len(backlog["candidates"]) - active["candidate_count_at_start"]
@@ -3755,6 +4078,7 @@ def parser() -> argparse.ArgumentParser:
     intent.add_argument("--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"}))
     intent.add_argument("--target-code", required=True)
     intent.add_argument("--environment-id")
+    intent.add_argument("--target-revision")
     observe_source = commands.add_parser("observe-source-ref")
     observe_source.add_argument("--round-id", required=True)
     observe_source.add_argument("--effect-id", required=True)
@@ -3766,6 +4090,12 @@ def parser() -> argparse.ArgumentParser:
     resolve = commands.add_parser("resolve-intent")
     resolve.add_argument("--effect-id", required=True)
     resolve.add_argument("--outcome", required=True, choices=("COMPLETED", "FAILED", "NOT_PERFORMED"))
+    resolve.add_argument("--command-argv-json")
+    resolve.add_argument("--exit-code", type=int)
+    resolve.add_argument("--oracle-observation", choices=("SUCCESS", "FAILURE"))
+    resolve.add_argument("--evidence-digest-sha256")
+    resolve.add_argument("--evidence-summary-code", action="append")
+    resolve.add_argument("--failure-code")
     finish = commands.add_parser("finish-round")
     finish.add_argument("--round-id", required=True)
     finish.add_argument("--outcome", required=True, choices=sorted(OUTCOMES))
@@ -3858,6 +4188,7 @@ def main(argv: list[str] | None = None) -> int:
                     arguments.effect_type,
                     arguments.target_code,
                     environment_id=arguments.environment_id,
+                    target_revision=arguments.target_revision,
                 )
             )
         elif arguments.command == "observe-source-ref":
@@ -3865,7 +4196,27 @@ def main(argv: list[str] | None = None) -> int:
         elif arguments.command == "record-maintenance-intent":
             output(record_maintenance_intent(root, arguments.effect_type, arguments.target_code))
         elif arguments.command == "resolve-intent":
-            output(resolve_intent(root, arguments.effect_id, arguments.outcome))
+            command_argv = None
+            if arguments.command_argv_json is not None:
+                try:
+                    command_argv = json.loads(arguments.command_argv_json)
+                except json.JSONDecodeError as error:
+                    raise ConfigError("command argv JSON is invalid") from error
+                if not isinstance(command_argv, list):
+                    raise ConfigError("command argv JSON must encode a list")
+            output(
+                resolve_intent(
+                    root,
+                    arguments.effect_id,
+                    arguments.outcome,
+                    command_argv=command_argv,
+                    exit_code=arguments.exit_code,
+                    oracle_observation=arguments.oracle_observation,
+                    evidence_digest_sha256=arguments.evidence_digest_sha256,
+                    evidence_summary_codes=arguments.evidence_summary_code,
+                    failure_code=arguments.failure_code,
+                )
+            )
         elif arguments.command == "finish-round":
             output(
                 finish_round(
