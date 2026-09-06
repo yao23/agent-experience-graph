@@ -25,6 +25,11 @@
   before writing `EXPIRED` and `final.md`. The scheduler is instructed to audit
   and push that terminal checkpoint. An explicit operator pause remains
   network-quiet and requires human resolution if an effect is still pending.
+- Budget-safe recovery ordering: active-run daily and total budget gates now
+  precede push reconciliation. A budget-blocked invocation leaves the committed
+  pending intent untouched instead of creating an uncommitted receipt that
+  would make the following scheduled validation dirty. Expiry still reconciles
+  first so the terminal checkpoint includes the verified effect.
 - Experience and transfer integrity: release-review and held-out-positive counts
   now come only from first-class Experience and transfer-evaluation records.
   Experience artifacts are exact-shape, code-only JSON with pinned SHA-256

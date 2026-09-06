@@ -15,6 +15,12 @@ Start one round with `python3 scripts/aeg_foundry.py begin-round
 uncertain effect, or no ready work, do not invent work or retry a blocked
 channel.
 
+For an active, non-expired pilot, budget gates run before prior-push
+reconciliation. If the current UTC-day or total budget is exhausted, leave the
+committed push intent untouched for a later eligible invocation; do not create
+an uncommitted reconciliation receipt. Expiry remains the exception and
+reconciles before writing the terminal checkpoint.
+
 An `EXPIRED` result may have generated the terminal state and `final.md`. If
 there is no pending effect, run `audit-public` and persist that terminal
 checkpoint with the `last_round_id`, then notify the conclusion. If an explicit

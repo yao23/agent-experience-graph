@@ -551,6 +551,34 @@ class FoundryTests(FoundryFixture):
         self.write("state", state)
         with self.assertRaises(foundry.BudgetError):
             foundry.begin_round(self.root, now=self.start, check_git=False)
+
+    def test_budget_block_leaves_committed_push_intent_for_a_later_eligible_run(self) -> None:
+        state = self.load("state")
+        state["counters_by_utc_day"] = {
+            "2026-09-06": {"round_starts": 2, "worker_starts": 3}
+        }
+        state["pending_effect"] = {
+            "effect_id": "AEG-I-budget-safe-reconcile",
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T07:59:00Z",
+            "round_id": "AEG-R-PRIOR",
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        with mock.patch.object(foundry, "_remote_contains_push_intent") as remote_check:
+            with self.assertRaises(foundry.BudgetError):
+                foundry.begin_round(
+                    self.root,
+                    now=self.start,
+                    reconcile_prior_push=True,
+                    check_git=False,
+                )
+        remote_check.assert_not_called()
+        after = self.load("state")
+        self.assertEqual(
+            after["pending_effect"]["effect_id"], "AEG-I-budget-safe-reconcile"
+        )
+        self.assertEqual(after["effect_events"], [])
         state = self.load("state")
         state["rounds_started"] = 0
         state["counters_by_utc_day"] = {

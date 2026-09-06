@@ -12,7 +12,9 @@ record from that checkout.
 Run `python3 scripts/aeg_foundry.py validate`, then
 `python3 scripts/aeg_foundry.py begin-round --reconcile-push`. Respect its
 pause, expiry, budget, lease, unresolved-effect, and no-work exits. If no work
-or no meaningful change exists, remain quiet.
+or no meaningful change exists, remain quiet. An active-run budget exit occurs
+before push reconciliation and intentionally preserves the committed pending
+intent for the next eligible invocation; expiry still reconciles first.
 
 If `begin-round` reports `EXPIRED`, inspect the state it just wrote. When no
 effect remains pending, run `audit-public` and persist the generated terminal

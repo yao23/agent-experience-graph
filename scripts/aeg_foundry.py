@@ -1337,14 +1337,6 @@ def begin_round(
                 generate_due_reports(root, pilot, backlog, state, now)
                 render_status(root, pilot, backlog, state, now)
             raise PausedError(f"pilot is {state['pilot_status']}")
-        if reconcile_prior_push:
-            reconciliation = reconcile_push(root, pilot, state, now)
-        elif state.get("pending_effect"):
-            raise LeaseError("an external effect is unresolved; reconciliation is required")
-        recovery = _recover_expired_round(backlog, state, now)
-        active = state.get("active_round")
-        if active:
-            raise LeaseError(f"round {active['round_id']} holds the lease until {active['expires_at']}")
         budgets = pilot["budgets"]
         if state["rounds_started"] >= budgets["max_rounds_total"]:
             raise BudgetError("total round budget exhausted")
@@ -1353,6 +1345,14 @@ def begin_round(
             raise BudgetError("daily round budget exhausted")
         if counter["worker_starts"] >= budgets["max_worker_starts_per_day"]:
             raise BudgetError("daily worker-start budget exhausted")
+        if reconcile_prior_push:
+            reconciliation = reconcile_push(root, pilot, state, now)
+        elif state.get("pending_effect"):
+            raise LeaseError("an external effect is unresolved; reconciliation is required")
+        recovery = _recover_expired_round(backlog, state, now)
+        active = state.get("active_round")
+        if active:
+            raise LeaseError(f"round {active['round_id']} holds the lease until {active['expires_at']}")
         ready = sorted(
             (
                 item
