@@ -1,0 +1,172 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "AEG-C-001",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "LOW",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 1781,
+      "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+      "qualification": "QUALIFIED",
+      "repository": "linkwarden/linkwarden",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/linkwarden/linkwarden/issues/1781"
+    },
+    {
+      "candidate_id": "AEG-C-002",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "MODERATE",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 244,
+      "oracle_kind": "CLI_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "vercel-labs/agent-browser",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/vercel-labs/agent-browser/issues/244"
+    },
+    {
+      "candidate_id": "AEG-C-003",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "MODERATE",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 3,
+      "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "gravity-ui/uikit-perf-stats",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/gravity-ui/uikit-perf-stats/issues/3"
+    },
+    {
+      "candidate_id": "AEG-C-004",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "UNKNOWN",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 165,
+      "oracle_kind": "APPLICATION_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "browser-use/web-ui",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/browser-use/web-ui/issues/165"
+    },
+    {
+      "candidate_id": "AEG-C-005",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "MODERATE",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 233,
+      "oracle_kind": "PUBLIC_API_BROWSER_LAUNCH",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "gcui-art/suno-api",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/gcui-art/suno-api/issues/233"
+    },
+    {
+      "candidate_id": "AEG-C-006",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 327,
+      "oracle_kind": "VISUAL_TEST_COMMAND",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "lost-pixel/lost-pixel",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/lost-pixel/lost-pixel/issues/327"
+    },
+    {
+      "candidate_id": "AEG-C-007",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "MODERATE",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 297,
+      "oracle_kind": "SNAPSHOT_CI_JOB",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "uswds/uswds-elements",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/uswds/uswds-elements/issues/297"
+    },
+    {
+      "candidate_id": "AEG-C-008",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+      "issue_number": 385,
+      "oracle_kind": "VERSION_DRIFT_UNIT_GUARD",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "agigante80/actual-mcp-server",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/agigante80/actual-mcp-server/issues/385"
+    },
+    {
+      "candidate_id": "AEG-C-009",
+      "category": "RETROSPECTIVE_REPRODUCTION",
+      "contamination": "HIGH",
+      "family": "PLAYWRIGHT_STRICT_LOCATOR_AMBIGUITY",
+      "issue_number": 768,
+      "oracle_kind": "FOCUSED_PLAYWRIGHT_SPEC",
+      "qualification": "NOT_QUALIFIED",
+      "repository": "Kuadrant/kuadrant-console-plugin",
+      "source_state": "CLOSED",
+      "source_url": "https://github.com/Kuadrant/kuadrant-console-plugin/issues/768"
+    },
+    {
+      "candidate_id": "AEG-C-010",
+      "category": "PROSPECTIVE_REPAIR",
+      "contamination": "LOW",
+      "family": "PLAYWRIGHT_STRICT_LOCATOR_AMBIGUITY",
+      "issue_number": 570,
+      "oracle_kind": "FOCUSED_PLAYWRIGHT_SPEC",
+      "qualification": "QUALIFIED",
+      "repository": "bufbuild/vscode-buf",
+      "source_state": "OPEN",
+      "source_url": "https://github.com/bufbuild/vscode-buf/issues/570"
+    }
+  ],
+  "discovery": {
+    "current_refresh_at": "2026-09-06T07:22:29Z",
+    "deduplication_key": "repository+issue_number",
+    "first_ten_complete": true,
+    "historical_lead_revision": "999dbb4399e6a6190474a9c9bee88785f8bb7e9f",
+    "selected_family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT"
+  },
+  "schema_version": 1,
+  "work_items": [
+    {
+      "attempts": 0,
+      "candidate_ids": [
+        "AEG-C-001",
+        "AEG-C-002",
+        "AEG-C-003",
+        "AEG-C-004",
+        "AEG-C-005",
+        "AEG-C-006",
+        "AEG-C-007",
+        "AEG-C-008",
+        "AEG-C-009",
+        "AEG-C-010"
+      ],
+      "claim": null,
+      "failure_code": null,
+      "next_step_code": "FINALIZE_INITIAL_FAMILY_SELECTION",
+      "oracle_kind": "PUBLIC_ISSUE_METADATA_REFRESH",
+      "priority": 100,
+      "stage": "DISCOVERY",
+      "status": "READY",
+      "task_id": "AEG-W-001"
+    },
+    {
+      "attempts": 0,
+      "candidate_ids": [
+        "AEG-C-001"
+      ],
+      "claim": null,
+      "failure_code": "BLOCKED_ENVIRONMENT_NO_DISPOSABLE_RUNTIME",
+      "frozen_target_revision": "UNFROZEN_NOT_EXECUTED",
+      "next_step_code": "PROVISION_CLEAN_ONE_TIME_EXECUTION_ENVIRONMENT",
+      "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+      "priority": 90,
+      "stage": "REPRODUCTION",
+      "status": "BLOCKED_ENVIRONMENT",
+      "task_id": "AEG-W-002"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "active_round": null,
+  "automation": {
+    "id": null,
+    "status": "NOT_CREATED"
+  },
+  "counters_by_utc_day": {},
+  "last_charter_sha256": null,
+  "last_remote_ref_sha": null,
+  "last_round_id": null,
+  "pause": null,
+  "pending_effect": null,
+  "pilot_status": "ACTIVE",
+  "rounds_completed": 0,
+  "rounds_started": 0,
+  "schema_version": 1,
+  "worker_events": []
+}

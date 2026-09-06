@@ -1,0 +1,54 @@
+{
+  "activation": {
+    "ends_at": "2026-10-18T07:22:29Z",
+    "starts_at": "2026-09-06T07:22:29Z"
+  },
+  "authorization": {
+    "external_communication": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "new_paid_api_usd": 0,
+    "new_paid_cloud_usd": 0,
+    "production_merge": "REQUIRES_SEPARATE_AUTHORIZATION",
+    "registry_promotion": "REQUIRES_SEPARATE_AUTHORIZATION"
+  },
+  "budgets": {
+    "max_round_seconds": 2700,
+    "max_rounds_per_day": 2,
+    "max_rounds_total": 84,
+    "max_worker_starts_per_day": 6
+  },
+  "config_version": "0.1.0",
+  "execution": {
+    "concurrency": 1,
+    "private_directory": ".aeg-foundry-private",
+    "required_branch": "codex/aeg-experience-foundry-pilot-v0.1",
+    "runtime_class": "LOCAL_PROJECT",
+    "untrusted_execution_gate": "BLOCKED_ENVIRONMENT"
+  },
+  "model_policy": {
+    "automation_model": "gpt-5.6-terra",
+    "automation_reasoning_effort": "low",
+    "discovery_preference": "gpt-5.6-luna",
+    "repair_preference": "gpt-5.6-terra",
+    "server_attestation": "UNKNOWN_UNLESS_REPORTED_BY_CLIENT"
+  },
+  "pilot_id": "AEG-EXPERIENCE-FOUNDRY-PILOT-V0.1",
+  "schedule": {
+    "cadence": "PT12H",
+    "notification_policy": "MEANINGFUL_CHANGE_OR_ACTION_ONLY"
+  },
+  "schema_version": 1,
+  "source": {
+    "bootstrap_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+    "charter_path": "foundry/CHARTER.md",
+    "remote": "origin",
+    "remote_ref": "refs/remotes/origin/main",
+    "remote_url": "https://github.com/yao23/agent-experience-graph.git"
+  },
+  "targets": {
+    "deduplicated_external_candidates": 30,
+    "independently_behavior_verified_tasks": 10,
+    "qualified_tasks": 15,
+    "release_review_experiences_max": 8,
+    "release_review_experiences_min": 5
+  }
+}
