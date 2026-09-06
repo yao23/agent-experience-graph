@@ -120,6 +120,12 @@ defense in depth, not permission to upload arbitrary free text. Intent is
 persisted before an external effect. An unresolved effect is verified before it
 can be retried.
 
+A push retry is allowed only after a read proves the pending intent is absent
+from the remote tip. The committed `HEAD` must contain that same intent, the
+worktree must be clean, and the observed remote tip must be its ancestor. The
+controller uses a non-force push and re-verifies the remote; any divergence or
+failed re-verification preserves the unresolved intent and stops work.
+
 Round completion is a recoverable local transaction. Before changing the
 public backlog, state, round ledger, status, or generated reports, the
 controller writes their exact checkpoint to an ignored PREPARED journal under

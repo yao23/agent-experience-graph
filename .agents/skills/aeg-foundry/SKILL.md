@@ -27,6 +27,13 @@ committed push intent untouched for a later eligible invocation; do not create
 an uncommitted reconciliation receipt. Expiry remains the exception and
 reconciles before writing the terminal checkpoint.
 
+Push reconciliation first reads the remote tip. If it proves the intent is
+missing, the controller may retry only the same committed checkpoint, from a
+clean worktree, when the observed remote is an ancestor of local `HEAD`; the
+retry is non-force and must then be re-read from the remote. Divergence, a
+different committed intent, push failure, or failed re-verification leaves the
+original intent unresolved and stops the run.
+
 An `EXPIRED` result may have generated the terminal state and `final.md`. If
 there is no pending effect, run `audit-public` and persist that terminal
 checkpoint with the `last_round_id`, then notify the conclusion. If an explicit

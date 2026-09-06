@@ -19,6 +19,12 @@ Treat `foundry/pilot.json` as a closed, immutable control contract. Never edit
 its activation, authorization, budget, execution, model, schedule, source, or
 target/gate fields to make a run start or a result pass.
 
+Reconciliation reads the remote before any retry. A remote-missing intent may
+retry only its identical committed checkpoint from a clean worktree when the
+remote tip is an ancestor of local `HEAD`; use a normal non-force push and
+verify the remote again. Any divergence or failed verification remains
+unresolved and stops the invocation.
+
 If `begin-round` reports `EXPIRED`, inspect the state it just wrote. When no
 effect remains pending, run `audit-public` and persist the generated terminal
 state and `foundry/reports/final.md` with the recorded `last_round_id`, then

@@ -1093,6 +1093,101 @@ class FoundryTests(FoundryFixture):
         )
         self.assertEqual(after["effect_events"], [])
 
+    def test_verified_missing_push_is_retried_nonforce_and_reverified(self) -> None:
+        remote_directory = Path(tempfile.mkdtemp(prefix="aeg-foundry-test-remote-"))
+        self.addCleanup(shutil.rmtree, remote_directory, True)
+        subprocess.run(
+            ["git", "init", "--bare", "-q", str(remote_directory)],
+            text=True,
+            check=True,
+            capture_output=True,
+        )
+        self._git("remote", "set-url", "origin", str(remote_directory))
+        branch_ref = "refs/heads/codex/aeg-experience-foundry-pilot-v0.1"
+        self._git("push", "-q", "origin", f"HEAD:{branch_ref}")
+        initial_remote_sha = self._git("rev-parse", "HEAD").stdout.strip()
+        state = self.load("state")
+        effect_id = "AEG-I-verified-missing-retry"
+        state["pending_effect"] = {
+            "effect_id": effect_id,
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T07:59:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        self._git("add", "foundry/state.json")
+        self._git("commit", "-q", "-m", "checkpoint pending push")
+        intended_sha = self._git("rev-parse", "HEAD").stdout.strip()
+        state = self.load("state")
+        result = foundry.reconcile_push(
+            self.root, self.load("pilot"), state, self.start
+        )
+        remote_sha = subprocess.run(
+            ["git", "--git-dir", str(remote_directory), "rev-parse", branch_ref],
+            text=True,
+            check=True,
+            capture_output=True,
+        ).stdout.strip()
+        self.assertEqual(remote_sha, intended_sha)
+        self.assertEqual(result["initial_remote_sha"], initial_remote_sha)
+        self.assertEqual(
+            result["resolution_code"], "PUSH_RETRIED_AFTER_VERIFIED_MISSING"
+        )
+        self.assertEqual(result["outcome"], "COMPLETED_VERIFIED")
+        self.assertIsNone(state["pending_effect"])
+
+    def test_failed_verified_missing_push_retry_keeps_intent_unresolved(self) -> None:
+        state = self.load("state")
+        effect_id = "AEG-I-retry-still-failed"
+        state["pending_effect"] = {
+            "effect_id": effect_id,
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T07:59:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        with mock.patch.object(
+            foundry,
+            "_remote_contains_push_intent",
+            return_value=(False, "a" * 40),
+        ):
+            with mock.patch.object(
+                foundry,
+                "_retry_verified_missing_push",
+                side_effect=foundry.UnsafeRepositoryError("retry failed"),
+            ):
+                with self.assertRaisesRegex(foundry.UnsafeRepositoryError, "retry failed"):
+                    foundry.reconcile_push(
+                        self.root, self.load("pilot"), state, self.start
+                    )
+        self.assertEqual(state["pending_effect"]["effect_id"], effect_id)
+        self.assertEqual(state["effect_events"], [])
+
+    def test_verified_missing_push_refuses_divergent_remote_tip(self) -> None:
+        state = self.load("state")
+        effect_id = "AEG-I-divergent-retry"
+        state["pending_effect"] = {
+            "effect_id": effect_id,
+            "effect_type": "PUSH_PILOT_BRANCH",
+            "recorded_at": "2026-09-06T07:59:00Z",
+            "round_id": None,
+            "target_code": "ORIGIN_PILOT_BRANCH",
+        }
+        self.write("state", state)
+        self._git("add", "foundry/state.json")
+        self._git("commit", "-q", "-m", "checkpoint pending divergent push")
+        tree = self._git("write-tree").stdout.strip()
+        divergent_sha = self._git("commit-tree", tree, "-m", "divergent remote").stdout.strip()
+        with self.assertRaisesRegex(foundry.UnsafeRepositoryError, "not an ancestor"):
+            foundry._retry_verified_missing_push(
+                self.root,
+                self.load("pilot"),
+                effect_id,
+                divergent_sha,
+            )
+        self.assertEqual(self.load("state")["pending_effect"]["effect_id"], effect_id)
+
     def test_failed_or_missing_oracle_cannot_be_success(self) -> None:
         claim = foundry.begin_round(self.root, now=self.start, check_git=False)
         with self.assertRaises(foundry.ConfigError):

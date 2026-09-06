@@ -105,6 +105,11 @@
   final validation before marking COMMITTED, and restores on failure. Every CLI
   entry recovers an interrupted PREPARED journal or only clears a COMMITTED
   marker under the controller mutex; unsafe journal paths fail closed.
+- Verified-missing push recovery: reconciliation can now recover a push that
+  definitely did not reach the remote without an operator's manual Git command.
+  It retries only the identical intent-bearing committed checkpoint from a
+  clean worktree, only across a fast-forward ancestry, never force-pushes, and
+  requires a second remote read before clearing the intent.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

@@ -3017,6 +3017,51 @@ def _remote_contains_push_intent(root: Path, pilot: dict[str, Any], effect_id: s
     return isinstance(observed, dict) and observed.get("effect_id") == effect_id, remote_sha
 
 
+def _retry_verified_missing_push(
+    root: Path,
+    pilot: dict[str, Any],
+    effect_id: str,
+    observed_remote_sha: str | None,
+) -> None:
+    if _changed_paths(root):
+        raise UnsafeRepositoryError("verified-missing push retry requires a clean worktree")
+    committed_state = run_git(root, "show", "HEAD:foundry/state.json", check=False)
+    if committed_state.returncode != 0:
+        raise UnsafeRepositoryError("cannot read the committed push intent")
+    try:
+        committed_pending = json.loads(committed_state.stdout).get("pending_effect")
+    except json.JSONDecodeError as error:
+        raise UnsafeRepositoryError("committed state is not valid JSON") from error
+    if not isinstance(committed_pending, dict) or committed_pending.get("effect_id") != effect_id:
+        raise UnsafeRepositoryError("HEAD does not contain the verified-missing push intent")
+    if observed_remote_sha is not None:
+        ancestor = run_git(
+            root,
+            "merge-base",
+            "--is-ancestor",
+            observed_remote_sha,
+            "HEAD",
+            check=False,
+        )
+        if ancestor.returncode != 0:
+            raise UnsafeRepositoryError(
+                "remote pilot branch is not an ancestor of the intended checkpoint"
+            )
+    remote = pilot["source"]["remote"]
+    branch = pilot["execution"]["required_branch"]
+    retry = run_git(
+        root,
+        "push",
+        remote,
+        f"HEAD:refs/heads/{branch}",
+        check=False,
+    )
+    if retry.returncode != 0:
+        raise UnsafeRepositoryError(
+            "verified-missing push retry did not report success; intent remains unresolved"
+        )
+
+
 def reconcile_push(root: Path, pilot: dict[str, Any], state: dict[str, Any], now: datetime) -> dict[str, Any] | None:
     pending = state.get("pending_effect")
     if not pending:
@@ -3024,12 +3069,27 @@ def reconcile_push(root: Path, pilot: dict[str, Any], state: dict[str, Any], now
     if pending.get("effect_type") != "PUSH_PILOT_BRANCH":
         raise LeaseError("a non-push external effect is unresolved; verify it before retry")
     completed, remote_sha = _remote_contains_push_intent(root, pilot, pending["effect_id"])
+    initial_remote_sha = remote_sha
+    resolution_code = "REMOTE_ALREADY_CONTAINED_INTENT"
     if not completed:
-        raise LeaseError(
-            "prior push intent is not present at the remote tip; effect is unresolved and was not retried"
+        _retry_verified_missing_push(
+            root,
+            pilot,
+            pending["effect_id"],
+            remote_sha,
         )
+        completed, remote_sha = _remote_contains_push_intent(
+            root, pilot, pending["effect_id"]
+        )
+        if not completed:
+            raise UnsafeRepositoryError(
+                "retried push could not be verified at the remote tip; intent remains unresolved"
+            )
+        resolution_code = "PUSH_RETRIED_AFTER_VERIFIED_MISSING"
     result = {
         "effect_id": pending["effect_id"],
+        "initial_remote_sha": initial_remote_sha,
+        "resolution_code": resolution_code,
         "remote_sha": remote_sha,
         "verified_at": format_time(now),
         "outcome": "COMPLETED_VERIFIED",
