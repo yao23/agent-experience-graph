@@ -43,6 +43,7 @@ class FoundryFixture(unittest.TestCase):
                 "active_round": None,
                 "automation": {"id": None, "status": "NOT_CREATED"},
                 "counters_by_utc_day": {},
+                "discovery_no_qualified_streak": 0,
                 "effect_events": [],
                 "last_charter_sha256": None,
                 "last_remote_ref_sha": None,
@@ -100,8 +101,57 @@ class FoundryTests(FoundryFixture):
         )
         self.assertEqual(record["outcome"], "SUCCESS")
         self.assertEqual(foundry.validate(self.root, check_git=False)["completed_round_count"], 1)
-        with self.assertRaises(foundry.NoWorkError):
-            foundry.begin_round(self.root, now=self.start + timedelta(hours=12), check_git=False)
+        resumed = foundry.begin_round(
+            self.root, now=self.start + timedelta(hours=12), check_git=False
+        )
+        self.assertTrue(resumed["synthesized_work_item"])
+        self.assertEqual(resumed["task_id"], "AEG-W-003")
+        self.assertEqual(resumed["source_ref_sha"], claim["source_ref_sha"])
+
+    def test_synthesized_discovery_success_requires_a_candidate_gain(self) -> None:
+        first = foundry.begin_round(self.root, now=self.start, check_git=False)
+        foundry.finish_round(
+            self.root,
+            first["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "NEXT",
+            now=self.start + timedelta(minutes=1),
+        )
+        second = foundry.begin_round(
+            self.root, now=self.start + timedelta(hours=12), check_git=False
+        )
+        with self.assertRaises(foundry.ConfigError):
+            foundry.finish_round(
+                self.root,
+                second["round_id"],
+                "SUCCESS",
+                "PASSED",
+                "NEXT",
+                now=self.start + timedelta(hours=12, minutes=1),
+            )
+
+    def test_two_no_qualified_cycles_force_one_strategy_version_change(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        state = self.load("state")
+        state["discovery_no_qualified_streak"] = 2
+        self.write("state", state)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        self.assertEqual(claim["oracle_kind"], "ONE_ACQUISITION_STRATEGY_VERSION_INCREMENT")
+        backlog = self.load("backlog")
+        backlog["discovery"]["acquisition_strategy_version"] += 1
+        self.write("backlog", backlog)
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "DISCOVER_AND_SCREEN_NEXT_FAMILY_LOCKED_BATCH",
+            now=self.start + timedelta(minutes=1),
+        )
+        self.assertEqual(self.load("state")["discovery_no_qualified_streak"], 0)
 
     def test_duplicate_start_is_rejected(self) -> None:
         first = foundry.begin_round(self.root, now=self.start, check_git=False)

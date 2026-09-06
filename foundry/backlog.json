@@ -122,6 +122,7 @@
     }
   ],
   "discovery": {
+    "acquisition_strategy_version": 1,
     "current_refresh_at": "2026-09-06T07:22:29Z",
     "deduplication_key": "repository+issue_number",
     "first_ten_complete": true,

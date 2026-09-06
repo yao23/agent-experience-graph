@@ -464,6 +464,62 @@ def _recover_expired_round(
     }
 
 
+def _next_work_item_id(backlog: dict[str, Any]) -> str:
+    numbers = []
+    for item in backlog["work_items"]:
+        match = re.fullmatch(r"AEG-W-([0-9]{3})", item["task_id"])
+        if not match:
+            raise ConfigError(f"unsupported task ID format: {item['task_id']}")
+        numbers.append(int(match.group(1)))
+    return f"AEG-W-{max(numbers, default=0) + 1:03d}"
+
+
+def synthesize_next_work(
+    backlog: dict[str, Any], state: dict[str, Any], pilot: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Create one bounded continuation unit when the queue is empty but a target is unmet."""
+
+    candidates = backlog["candidates"]
+    if len(candidates) >= pilot["targets"]["deduplicated_external_candidates"]:
+        return None
+    task_id = _next_work_item_id(backlog)
+    if state.get("discovery_no_qualified_streak", 0) >= 2:
+        task = {
+            "attempts": 0,
+            "candidate_ids": [],
+            "claim": None,
+            "failure_code": None,
+            "generated_by_controller": True,
+            "next_step_code": "CHANGE_EXACTLY_ONE_ACQUISITION_STRATEGY",
+            "oracle_kind": "ONE_ACQUISITION_STRATEGY_VERSION_INCREMENT",
+            "priority": 80,
+            "stage": "DISCOVERY",
+            "status": "READY",
+            "task_id": task_id,
+        }
+    else:
+        task = {
+            "attempts": 0,
+            "candidate_ids": [],
+            "claim": None,
+            "failure_code": None,
+            "family": backlog["discovery"]["selected_family"],
+            "generated_by_controller": True,
+            "next_step_code": "DISCOVER_AND_SCREEN_NEXT_FAMILY_LOCKED_BATCH",
+            "oracle_kind": "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK",
+            "priority": 80,
+            "stage": "DISCOVERY",
+            "status": "READY",
+            "target_candidate_count": min(
+                len(candidates) + 10,
+                pilot["targets"]["deduplicated_external_candidates"],
+            ),
+            "task_id": task_id,
+        }
+    backlog["work_items"].append(task)
+    return task
+
+
 def _remote_contains_push_intent(root: Path, pilot: dict[str, Any], effect_id: str) -> tuple[bool, str | None]:
     remote = pilot["source"]["remote"]
     branch = pilot["execution"]["required_branch"]
@@ -599,6 +655,11 @@ def begin_round(
             (item for item in backlog["work_items"] if item["status"] == "READY"),
             key=lambda item: (-item["priority"], item["task_id"]),
         )
+        synthesized = None
+        if not ready:
+            synthesized = synthesize_next_work(backlog, state, pilot)
+            if synthesized is not None:
+                ready = [synthesized]
         if not ready:
             if recovery or reconciliation:
                 atomic_write_json(paths(root)["backlog"], backlog)
@@ -627,6 +688,13 @@ def begin_round(
             "source_ref": pilot["source"]["remote_ref"],
             "source_ref_sha": source_sha,
             "charter_sha256": charter_sha,
+            "candidate_count_at_start": len(backlog["candidates"]),
+            "qualified_count_at_start": sum(
+                item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
+            ),
+            "acquisition_strategy_version_at_start": backlog["discovery"].get(
+                "acquisition_strategy_version", 1
+            ),
         }
         state["last_remote_ref_sha"] = source_sha
         state["last_charter_sha256"] = charter_sha
@@ -647,6 +715,7 @@ def begin_round(
             "charter_sha256": charter_sha,
             "recovery": recovery,
             "push_reconciliation": reconciliation,
+            "synthesized_work_item": synthesized is not None,
         }
 
 
@@ -755,6 +824,27 @@ def finish_round(
         if counter["worker_starts"] + worker_starts > pilot["budgets"]["max_worker_starts_per_day"]:
             raise BudgetError("worker-start accounting would exceed the daily budget")
         task = next(item for item in backlog["work_items"] if item["task_id"] == active["task_id"])
+        if task["oracle_kind"] == "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK":
+            candidate_gain = len(backlog["candidates"]) - active["candidate_count_at_start"]
+            qualified_now = sum(
+                item.get("qualification") == "QUALIFIED" for item in backlog["candidates"]
+            )
+            qualified_gain = qualified_now - active["qualified_count_at_start"]
+            if outcome == "SUCCESS" and candidate_gain <= 0:
+                raise ConfigError("candidate-batch SUCCESS requires at least one new deduplicated candidate")
+            if oracle_status == "PASSED" and qualified_gain <= 0:
+                state["discovery_no_qualified_streak"] = state.get(
+                    "discovery_no_qualified_streak", 0
+                ) + 1
+            elif qualified_gain > 0:
+                state["discovery_no_qualified_streak"] = 0
+        elif task["oracle_kind"] == "ONE_ACQUISITION_STRATEGY_VERSION_INCREMENT":
+            previous_version = active["acquisition_strategy_version_at_start"]
+            current_version = backlog["discovery"].get("acquisition_strategy_version")
+            if outcome == "SUCCESS" and current_version != previous_version + 1:
+                raise ConfigError("strategy-change SUCCESS requires exactly one version increment")
+            if outcome == "SUCCESS":
+                state["discovery_no_qualified_streak"] = 0
         if task_status is None:
             task_status = "COMPLETED" if outcome == "SUCCESS" else "FAILED"
         if task_status not in TASK_STATUSES or task_status in {"READY", "IN_PROGRESS"}:
