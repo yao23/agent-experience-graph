@@ -1,8 +1,15 @@
 {
   "active_round": null,
   "automation": {
-    "id": null,
-    "status": "NOT_CREATED"
+    "id": "aeg-experience-foundry-pilot-v0-1",
+    "kind": "CRON",
+    "location_code": "LOCAL_PROJECT_NEW_PROJECT",
+    "model": "gpt-5.6-terra",
+    "next_run_at": "2026-09-06T19:36:50Z",
+    "project_id": "local-3c2d5b47ae3f282074bdf431918e7e6d",
+    "reasoning_effort": "low",
+    "recorded_at": "2026-09-06T07:38:20Z",
+    "status": "ACTIVE"
   },
   "counters_by_utc_day": {
     "2026-09-06": {
@@ -10,14 +17,31 @@
       "worker_starts": 2
     }
   },
+  "effect_events": [
+    {
+      "effect_id": "AEG-I-bab930c171de4c2784ca407f37e2894c",
+      "outcome": "COMPLETED_VERIFIED",
+      "remote_sha": "b1f72dd0989fc85c802bfe28009804870bb6ee9f",
+      "verified_at": "2026-09-06T07:33:56Z"
+    },
+    {
+      "effect_id": "AEG-I-0214a47834994297abfd8d2ed419f174",
+      "effect_type": "CREATE_OR_UPDATE_DRAFT_PR",
+      "outcome": "COMPLETED",
+      "recorded_at": "2026-09-06T07:35:33Z",
+      "resolved_at": "2026-09-06T07:36:06Z",
+      "round_id": "AEG-R-20260906T073046Z-0c86db97",
+      "target_code": "BOOTSTRAP_DRAFT_PR"
+    }
+  ],
   "last_charter_sha256": "63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff",
   "last_remote_ref_sha": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
   "last_round_id": "AEG-R-20260906T073046Z-0c86db97",
   "pause": null,
   "pending_effect": {
-    "effect_id": "AEG-I-bab930c171de4c2784ca407f37e2894c",
+    "effect_id": "AEG-I-0c1c34fc7b624565a9ad8aa9fe01211c",
     "effect_type": "PUSH_PILOT_BRANCH",
-    "recorded_at": "2026-09-06T07:32:39Z",
+    "recorded_at": "2026-09-06T07:38:57Z",
     "round_id": "AEG-R-20260906T073046Z-0c86db97",
     "target_code": "ORIGIN_PILOT_BRANCH"
   },

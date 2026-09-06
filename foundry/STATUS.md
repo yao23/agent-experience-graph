@@ -1,9 +1,12 @@
 # AEG Experience Foundry Pilot status
 
-Generated: `2026-09-06T07:32:39Z`
+Generated: `2026-09-06T07:38:57Z`
 
 - Pilot: `ACTIVE`
-- Automation: `NOT_CREATED`
+- Automation: `ACTIVE`
+- Automation ID: `aeg-experience-foundry-pilot-v0-1`
+- Automation model: `gpt-5.6-terra` / `low`
+- Next scheduled run: `2026-09-06T19:36:50Z`
 - Required branch: `codex/aeg-experience-foundry-pilot-v0.1`
 - Source: `origin` / `refs/remotes/origin/main` / `999efa64e9ba016efc9d3327df4b70e1fc79b804`
 - Charter SHA-256: `63a58fdc87714617b1bed861a4b667fae2c1b1f654a3ff371fb7545e3602e2ff`

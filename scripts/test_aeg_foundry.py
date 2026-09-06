@@ -25,6 +25,38 @@ class FoundryFixture(unittest.TestCase):
         (self.root / "foundry").mkdir()
         for name in ("CHARTER.md", "pilot.json", "backlog.json", "state.json", "rounds.jsonl"):
             shutil.copy2(source_root / "foundry" / name, self.root / "foundry" / name)
+        backlog = json.loads((self.root / "foundry" / "backlog.json").read_text(encoding="utf-8"))
+        first = backlog["work_items"][0]
+        first.update(
+            {
+                "attempts": 0,
+                "claim": None,
+                "failure_code": None,
+                "next_step_code": "FINALIZE_INITIAL_FAMILY_SELECTION",
+                "status": "READY",
+            }
+        )
+        foundry.atomic_write_json(self.root / "foundry" / "backlog.json", backlog)
+        foundry.atomic_write_json(
+            self.root / "foundry" / "state.json",
+            {
+                "active_round": None,
+                "automation": {"id": None, "status": "NOT_CREATED"},
+                "counters_by_utc_day": {},
+                "effect_events": [],
+                "last_charter_sha256": None,
+                "last_remote_ref_sha": None,
+                "last_round_id": None,
+                "pause": None,
+                "pending_effect": None,
+                "pilot_status": "ACTIVE",
+                "rounds_completed": 0,
+                "rounds_started": 0,
+                "schema_version": 1,
+                "worker_events": [],
+            },
+        )
+        foundry.atomic_write(self.root / "foundry" / "rounds.jsonl", "")
         self._git("init", "-q")
         self._git("checkout", "-q", "-b", "codex/aeg-experience-foundry-pilot-v0.1")
         self._git("config", "user.name", "Test")
@@ -173,6 +205,23 @@ class FoundryTests(FoundryFixture):
             "NEXT",
             now=self.start + timedelta(minutes=4),
         )
+
+    def test_maintenance_effect_keeps_sanitized_resolution_receipt(self) -> None:
+        intent = foundry.record_maintenance_intent(
+            self.root,
+            "CREATE_OR_UPDATE_DRAFT_PR",
+            "BOOTSTRAP_DRAFT_PR",
+            now=self.start,
+        )
+        result = foundry.resolve_intent(
+            self.root,
+            intent["effect_id"],
+            "COMPLETED",
+            now=self.start + timedelta(seconds=1),
+        )
+        state = self.load("state")
+        self.assertIsNone(state["pending_effect"])
+        self.assertEqual(state["effect_events"][-1], result)
 
     def test_public_summary_never_reads_private_runtime_content(self) -> None:
         pilot, backlog, state = foundry.load_all(self.root)

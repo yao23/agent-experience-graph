@@ -503,6 +503,7 @@ def reconcile_push(root: Path, pilot: dict[str, Any], state: dict[str, Any], now
         "verified_at": format_time(now),
         "outcome": "COMPLETED_VERIFIED",
     }
+    state.setdefault("effect_events", []).append(result)
     state["pending_effect"] = None
     return result
 
@@ -521,7 +522,13 @@ def reconcile_push_command(root: Path, now: datetime | None = None) -> dict[str,
 
 
 def set_automation(
-    root: Path, automation_id: str, status: str, now: datetime | None = None
+    root: Path,
+    automation_id: str,
+    status: str,
+    next_run_at: str,
+    project_id: str,
+    location_code: str,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or utc_now()
     pilot, backlog, state = load_all(root)
@@ -532,8 +539,15 @@ def set_automation(
             raise ConfigError("invalid automation status")
         if not automation_id or any(character.isspace() for character in automation_id):
             raise ConfigError("invalid automation ID")
+        parse_time(next_run_at)
         state["automation"] = {
             "id": automation_id,
+            "kind": "CRON",
+            "location_code": location_code,
+            "model": pilot["model_policy"]["automation_model"],
+            "next_run_at": next_run_at,
+            "project_id": project_id,
+            "reasoning_effort": pilot["model_policy"]["automation_reasoning_effort"],
             "recorded_at": format_time(now),
             "status": status,
         }
@@ -658,6 +672,29 @@ def record_intent(
         return effect
 
 
+def record_maintenance_intent(
+    root: Path, effect_type: str, target_code: str, now: datetime | None = None
+) -> dict[str, Any]:
+    now = now or utc_now()
+    pilot, backlog, state = load_all(root)
+    del backlog
+    with control_lock(root, pilot):
+        if state.get("active_round") or state.get("pending_effect"):
+            raise LeaseError("maintenance intent requires no active or unresolved work")
+        if effect_type not in EFFECT_TYPES or effect_type == "PUSH_PILOT_BRANCH":
+            raise ConfigError("invalid maintenance effect type")
+        effect = {
+            "effect_id": f"AEG-I-{uuid.uuid4().hex}",
+            "effect_type": effect_type,
+            "recorded_at": format_time(now),
+            "round_id": state.get("last_round_id"),
+            "target_code": target_code,
+        }
+        state["pending_effect"] = effect
+        atomic_write_json(paths(root)["state"], state)
+        return effect
+
+
 def resolve_intent(
     root: Path, effect_id: str, outcome: str, now: datetime | None = None
 ) -> dict[str, Any]:
@@ -673,6 +710,7 @@ def resolve_intent(
         if outcome not in {"COMPLETED", "FAILED", "NOT_PERFORMED"}:
             raise ConfigError("invalid effect outcome")
         result = {**pending, "outcome": outcome, "resolved_at": format_time(now)}
+        state.setdefault("effect_events", []).append(result)
         state["pending_effect"] = None
         atomic_write_json(paths(root)["state"], state)
         return result
@@ -888,6 +926,9 @@ def render_status(
         "",
         f"- Pilot: `{state['pilot_status']}`",
         f"- Automation: `{state['automation']['status']}`",
+        f"- Automation ID: `{state['automation'].get('id') or 'NONE'}`",
+        f"- Automation model: `{state['automation'].get('model') or pilot['model_policy']['automation_model']}` / `{state['automation'].get('reasoning_effort') or pilot['model_policy']['automation_reasoning_effort']}`",
+        f"- Next scheduled run: `{state['automation'].get('next_run_at') or 'NOT_SCHEDULED'}`",
         f"- Required branch: `{pilot['execution']['required_branch']}`",
         f"- Source: `{pilot['source']['remote']}` / `{pilot['source']['remote_ref']}` / `{state.get('last_remote_ref_sha') or 'NOT_OBSERVED'}`",
         f"- Charter SHA-256: `{state.get('last_charter_sha256') or 'NOT_OBSERVED'}`",
@@ -1091,6 +1132,11 @@ def parser() -> argparse.ArgumentParser:
     intent.add_argument("--round-id", required=True)
     intent.add_argument("--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"}))
     intent.add_argument("--target-code", required=True)
+    maintenance_intent = commands.add_parser("record-maintenance-intent")
+    maintenance_intent.add_argument(
+        "--effect-type", required=True, choices=sorted(EFFECT_TYPES - {"PUSH_PILOT_BRANCH"})
+    )
+    maintenance_intent.add_argument("--target-code", required=True)
     resolve = commands.add_parser("resolve-intent")
     resolve.add_argument("--effect-id", required=True)
     resolve.add_argument("--outcome", required=True, choices=("COMPLETED", "FAILED", "NOT_PERFORMED"))
@@ -1124,6 +1170,9 @@ def parser() -> argparse.ArgumentParser:
     automation = commands.add_parser("set-automation")
     automation.add_argument("--id", required=True)
     automation.add_argument("--status", required=True, choices=("ACTIVE", "PAUSED", "DELETED"))
+    automation.add_argument("--next-run-at", required=True)
+    automation.add_argument("--project-id", required=True)
+    automation.add_argument("--location-code", required=True)
     commands.add_parser("audit-public")
     persistence = commands.add_parser("persist")
     persistence.add_argument("--run-id", required=True)
@@ -1146,6 +1195,8 @@ def main(argv: list[str] | None = None) -> int:
             output(begin_round(root, reconcile_prior_push=arguments.reconcile_push))
         elif arguments.command == "record-intent":
             output(record_intent(root, arguments.round_id, arguments.effect_type, arguments.target_code))
+        elif arguments.command == "record-maintenance-intent":
+            output(record_maintenance_intent(root, arguments.effect_type, arguments.target_code))
         elif arguments.command == "resolve-intent":
             output(resolve_intent(root, arguments.effect_id, arguments.outcome))
         elif arguments.command == "finish-round":
@@ -1187,7 +1238,16 @@ def main(argv: list[str] | None = None) -> int:
         elif arguments.command == "reconcile-push":
             output(reconcile_push_command(root))
         elif arguments.command == "set-automation":
-            output(set_automation(root, arguments.id, arguments.status))
+            output(
+                set_automation(
+                    root,
+                    arguments.id,
+                    arguments.status,
+                    arguments.next_run_at,
+                    arguments.project_id,
+                    arguments.location_code,
+                )
+            )
         elif arguments.command == "audit-public":
             result = audit_public(root)
             output(result)
