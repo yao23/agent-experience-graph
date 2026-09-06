@@ -107,6 +107,18 @@ candidate, completed verification task, frozen revisions/oracle/model/budget,
 isolated baseline failure and repaired success receipts, and a verifier distinct
 from the solver. Candidate annotations never count as verification.
 
+During an active discovery round, write the exact batch envelope
+`{"schema_version":1,"round_id":"<ROUND_ID>","candidates":[...]}` as a
+direct JSON file in `.aeg-foundry-private/`, then run `python3
+scripts/aeg_foundry.py register-candidates --round-id <ROUND_ID> --batch-json
+.aeg-foundry-private/<FILE>.json`. Do not hand-edit candidate state. The
+controller rejects symlinks and out-of-directory input, wrong round binding,
+extra candidate fields, duplicate IDs or repository/issue pairs, a source URL
+that disagrees with that pair, a family outside the frozen focus, or a batch
+that exceeds the task's frozen target. Validation is batch-wide before the
+public backlog is written; registration binds accepted candidate IDs to the
+active task but does not finish the round.
+
 The 30-candidate target is a minimum, not an early stop that overrides the
 15-qualified-task target. When both ordinary work and due reporting are absent,
 the controller continues bounded, family-locked discovery batches until both

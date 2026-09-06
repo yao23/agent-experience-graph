@@ -93,6 +93,16 @@ on candidates. A behavior-verification stage writes a first-class
 runs the frozen oracle in isolated baseline and repaired environments and saves
 both command/exit/evidence receipts. Baseline must fail and repaired must pass.
 
+In a discovery round, stage the exact private batch envelope
+`{"schema_version":1,"round_id":"<ROUND_ID>","candidates":[...]}` as a direct,
+non-symlink JSON file under `.aeg-foundry-private/`, then ingest it only with
+`python3 scripts/aeg_foundry.py register-candidates --round-id <ROUND_ID>
+--batch-json .aeg-foundry-private/<FILE>.json`. Never append candidates or task
+bindings by hand. The controller validates the whole batch before writing:
+round binding, exact fields, unique ID and repository/issue identity, canonical
+source URL, frozen family, and frozen candidate-count target must all pass.
+Registration does not complete the discovery round.
+
 Treat 30 candidates as the minimum discovery target, not a cap. If fewer than
 15 tasks are qualified when that minimum is reached, continue new,
 family-locked, deduplicated candidate batches until both minima are satisfied or

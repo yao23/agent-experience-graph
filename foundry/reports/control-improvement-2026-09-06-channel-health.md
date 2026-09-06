@@ -130,6 +130,15 @@
   activation remains derived at the next eligible round start, after the
   receipt checkpoint is audited and persisted through the normal push-intent
   workflow.
+- Controlled discovery-batch ingestion: an active discovery round now accepts
+  candidates only through `register-candidates` from one direct non-symlink
+  JSON file in the ignored private directory. The command binds the envelope to
+  the active lease, reuses the exact candidate validator, checks canonical
+  repository/issue URLs, deduplicates both IDs and source pairs across the
+  existing ledger and the whole batch, enforces the frozen family and count
+  target, and writes no backlog change if any item fails. Accepted IDs are
+  attached to the active task; the normal deterministic oracle must still pass
+  before the round can finish.
 - Policy unchanged: authorization, budget, qualification, oracle, and fixed
   expiry values were not modified.
 - Verification: dedicated tests cover same-error streak reset and quarantine,

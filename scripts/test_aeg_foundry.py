@@ -108,23 +108,26 @@ class FoundryFixture(unittest.TestCase):
     def write(self, name: str, value: dict) -> None:
         foundry.atomic_write_json(self.root / "foundry" / f"{name}.json", value)
 
+    def candidate_record(
+        self, number: int, qualification: str = "NOT_QUALIFIED"
+    ) -> dict:
+        return {
+            "candidate_id": f"AEG-C-{number:03d}",
+            "category": "PROSPECTIVE_REPAIR",
+            "contamination": "LOW",
+            "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
+            "issue_number": number,
+            "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
+            "qualification": qualification,
+            "repository": f"example/project-{number}",
+            "source_state": "OPEN",
+            "source_url": f"https://github.com/example/project-{number}/issues/{number}",
+        }
+
     def append_candidate(
         self, backlog: dict, number: int, qualification: str = "NOT_QUALIFIED"
     ) -> None:
-        backlog["candidates"].append(
-            {
-                "candidate_id": f"AEG-C-{number:03d}",
-                "category": "PROSPECTIVE_REPAIR",
-                "contamination": "LOW",
-                "family": "PLAYWRIGHT_BROWSER_ARTIFACT_VERSION_DRIFT",
-                "issue_number": number,
-                "oracle_kind": "CONTAINER_BROWSER_LAUNCH",
-                "qualification": qualification,
-                "repository": f"example/project-{number}",
-                "source_state": "OPEN",
-                "source_url": f"https://github.com/example/project-{number}/issues/{number}",
-            }
-        )
+        backlog["candidates"].append(self.candidate_record(number, qualification))
 
     def runtime_receipt(self, environment_id: str = "AEG-E-001") -> dict:
         return {
@@ -656,6 +659,153 @@ class FoundryTests(FoundryFixture):
                 now=self.start + timedelta(hours=12, minutes=1),
             )
         self.assertIn("frozen candidate-count target", str(raised.exception))
+
+    def test_register_candidate_batch_reaches_frozen_target_atomically(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        active_backlog = self.load("backlog")
+        task = next(
+            item
+            for item in active_backlog["work_items"]
+            if item["task_id"] == claim["task_id"]
+        )
+        batch_size = task["target_candidate_count"] - len(active_backlog["candidates"])
+        candidates = [
+            self.candidate_record(
+                900 + offset, "QUALIFIED" if offset == 0 else "NOT_QUALIFIED"
+            )
+            for offset in range(batch_size)
+        ]
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir(exist_ok=True)
+        batch_path = private / "candidate-batch.json"
+        foundry.atomic_write_json(
+            batch_path,
+            {
+                "candidates": candidates,
+                "round_id": claim["round_id"],
+                "schema_version": 1,
+            },
+        )
+        result = foundry.register_candidate_batch(
+            self.root,
+            claim["round_id"],
+            batch_path,
+            now=self.start + timedelta(minutes=1),
+        )
+        after = self.load("backlog")
+        updated_task = next(
+            item for item in after["work_items"] if item["task_id"] == claim["task_id"]
+        )
+        self.assertEqual(result["candidate_count_after"], task["target_candidate_count"])
+        self.assertEqual(result["qualified_gain"], 1)
+        self.assertEqual(updated_task["candidate_ids"], result["candidate_ids"])
+        foundry.finish_round(
+            self.root,
+            claim["round_id"],
+            "SUCCESS",
+            "PASSED",
+            "CONTINUE_QUALIFIED_PIPELINE",
+            now=self.start + timedelta(minutes=2),
+        )
+
+    def test_register_candidate_batch_rejects_source_mismatch_and_cross_family_without_write(
+        self,
+    ) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir(exist_ok=True)
+        batch_path = private / "invalid-candidate-batch.json"
+        candidate = self.candidate_record(900)
+        candidate["source_url"] = "https://github.com/example/other/issues/900"
+        candidate["family"] = "UNFROZEN_OTHER_FAMILY"
+        foundry.atomic_write_json(
+            batch_path,
+            {
+                "candidates": [candidate],
+                "round_id": claim["round_id"],
+                "schema_version": 1,
+            },
+        )
+        before = (self.root / "foundry" / "backlog.json").read_bytes()
+        with self.assertRaises(foundry.ConfigError) as raised:
+            foundry.register_candidate_batch(
+                self.root,
+                claim["round_id"],
+                batch_path,
+                now=self.start + timedelta(minutes=1),
+            )
+        self.assertIn("source URL disagrees", str(raised.exception))
+        self.assertIn("frozen focus", str(raised.exception))
+        self.assertEqual((self.root / "foundry" / "backlog.json").read_bytes(), before)
+
+    def test_register_candidate_batch_rejects_over_target_without_write(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        active_backlog = self.load("backlog")
+        task = next(
+            item
+            for item in active_backlog["work_items"]
+            if item["task_id"] == claim["task_id"]
+        )
+        batch_size = (
+            task["target_candidate_count"] - len(active_backlog["candidates"]) + 1
+        )
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir(exist_ok=True)
+        batch_path = private / "over-target-candidate-batch.json"
+        foundry.atomic_write_json(
+            batch_path,
+            {
+                "candidates": [
+                    self.candidate_record(900 + offset) for offset in range(batch_size)
+                ],
+                "round_id": claim["round_id"],
+                "schema_version": 1,
+            },
+        )
+        before = (self.root / "foundry" / "backlog.json").read_bytes()
+        with self.assertRaisesRegex(foundry.ConfigError, "frozen candidate-count target"):
+            foundry.register_candidate_batch(
+                self.root,
+                claim["round_id"],
+                batch_path,
+                now=self.start + timedelta(minutes=1),
+            )
+        self.assertEqual((self.root / "foundry" / "backlog.json").read_bytes(), before)
+
+    def test_register_candidate_batch_rejects_wrong_round_binding_without_write(self) -> None:
+        backlog = self.load("backlog")
+        backlog["work_items"][0]["status"] = "COMPLETED"
+        self.write("backlog", backlog)
+        claim = foundry.begin_round(self.root, now=self.start, check_git=False)
+        private = self.root / ".aeg-foundry-private"
+        private.mkdir(exist_ok=True)
+        batch_path = private / "wrong-round-candidate-batch.json"
+        foundry.atomic_write_json(
+            batch_path,
+            {
+                "candidates": [self.candidate_record(900)],
+                "round_id": claim["round_id"],
+                "schema_version": 1,
+            },
+        )
+        before = (self.root / "foundry" / "backlog.json").read_bytes()
+        with self.assertRaisesRegex(foundry.LeaseError, "active lease"):
+            foundry.register_candidate_batch(
+                self.root,
+                "AEG-R-20260906T080000Z-FFFFFFFF",
+                batch_path,
+                now=self.start + timedelta(minutes=1),
+            )
+        self.assertEqual((self.root / "foundry" / "backlog.json").read_bytes(), before)
 
     def test_discovery_continues_past_candidate_minimum_until_qualified_minimum(self) -> None:
         backlog = self.load("backlog")

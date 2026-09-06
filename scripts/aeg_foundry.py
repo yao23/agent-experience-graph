@@ -870,6 +870,70 @@ def _runtime_environment_record_errors(
     return errors, environment_id if valid_identity else None, window
 
 
+def _candidate_record_errors(
+    candidate: Any,
+    existing_ids: set[str],
+    existing_sources: set[tuple[str, int]],
+) -> tuple[list[str], str | None, tuple[str, int] | None]:
+    errors: list[str] = []
+    if not isinstance(candidate, dict):
+        return ["candidate records must be objects"], None, None
+    candidate_id = candidate.get("candidate_id")
+    repository = candidate.get("repository")
+    number = candidate.get("issue_number")
+    valid_identity = (
+        isinstance(candidate_id, str)
+        and CANDIDATE_ID_RE.fullmatch(candidate_id) is not None
+        and candidate_id not in existing_ids
+    )
+    if not valid_identity:
+        errors.append("candidate IDs must be unique and well formed")
+    if set(candidate) != CANDIDATE_KEYS:
+        errors.append(f"candidate fields are not allowlisted for {candidate_id}")
+    valid_repository = (
+        isinstance(repository, str) and REPOSITORY_RE.fullmatch(repository) is not None
+    )
+    if not valid_repository:
+        errors.append(f"invalid repository for {candidate_id}")
+    valid_number = isinstance(number, int) and number > 0
+    if not valid_number:
+        errors.append(f"invalid issue number for {candidate_id}")
+    source_identity: tuple[str, int] | None = None
+    if valid_repository and valid_number:
+        source_identity = (repository.lower(), number)
+        if source_identity in existing_sources:
+            errors.append(f"duplicate candidate source {source_identity}")
+    url = candidate.get("source_url")
+    if not isinstance(url, str) or not GITHUB_ISSUE_RE.fullmatch(url):
+        errors.append(f"invalid source URL for {candidate_id}")
+    elif valid_repository and valid_number and url != (
+        f"https://github.com/{repository}/issues/{number}"
+    ):
+        errors.append(f"candidate source URL disagrees with repository and issue for {candidate_id}")
+    if candidate.get("category") not in {
+        "RETROSPECTIVE_REPRODUCTION",
+        "PROSPECTIVE_REPAIR",
+        "HELD_OUT_TRANSFER",
+    }:
+        errors.append(f"invalid category for {candidate_id}")
+    if candidate.get("qualification") not in {"QUALIFIED", "NOT_QUALIFIED"}:
+        errors.append(f"invalid qualification for {candidate_id}")
+    if candidate.get("contamination") not in {"LOW", "MODERATE", "HIGH", "UNKNOWN"}:
+        errors.append(f"invalid contamination for {candidate_id}")
+    if candidate.get("source_state") not in {"OPEN", "CLOSED"}:
+        errors.append(f"invalid source state for {candidate_id}")
+    for field in ("family", "oracle_kind"):
+        if not isinstance(candidate.get(field), str) or not CODE_VALUE_RE.fullmatch(
+            candidate.get(field, "")
+        ):
+            errors.append(f"invalid {field} for {candidate_id}")
+    return (
+        errors,
+        candidate_id if valid_identity else None,
+        source_identity,
+    )
+
+
 def _walk_public(value: Any, location: str = "root") -> list[str]:
     errors: list[str] = []
     if isinstance(value, dict):
@@ -1411,52 +1475,15 @@ def validate(
     candidate_by_id: dict[str, dict[str, Any]] = {}
     dedupe: set[tuple[str, int]] = set()
     for candidate in backlog.get("candidates", []):
-        if not isinstance(candidate, dict):
-            errors.append("candidate records must be objects")
-            continue
-        candidate_id = candidate.get("candidate_id")
-        repository = candidate.get("repository")
-        number = candidate.get("issue_number")
-        if (
-            not isinstance(candidate_id, str)
-            or not CANDIDATE_ID_RE.fullmatch(candidate_id)
-            or candidate_id in candidate_ids
-        ):
-            errors.append("candidate IDs must be unique and well formed")
-        else:
+        candidate_errors, candidate_id, source_identity = _candidate_record_errors(
+            candidate, candidate_ids, dedupe
+        )
+        errors.extend(candidate_errors)
+        if candidate_id is not None:
             candidate_ids.add(candidate_id)
             candidate_by_id[candidate_id] = candidate
-        if set(candidate) != CANDIDATE_KEYS:
-            errors.append(f"candidate fields are not allowlisted for {candidate_id}")
-        if not isinstance(repository, str) or not REPOSITORY_RE.fullmatch(repository):
-            errors.append(f"invalid repository for {candidate_id}")
-        if not isinstance(number, int) or number <= 0:
-            errors.append(f"invalid issue number for {candidate_id}")
-        elif isinstance(repository, str):
-            identity = (repository.lower(), number)
-            if identity in dedupe:
-                errors.append(f"duplicate candidate source {identity}")
-            dedupe.add(identity)
-        url = candidate.get("source_url")
-        if not isinstance(url, str) or not GITHUB_ISSUE_RE.fullmatch(url):
-            errors.append(f"invalid source URL for {candidate_id}")
-        if candidate.get("category") not in {
-            "RETROSPECTIVE_REPRODUCTION",
-            "PROSPECTIVE_REPAIR",
-            "HELD_OUT_TRANSFER",
-        }:
-            errors.append(f"invalid category for {candidate_id}")
-        if candidate.get("qualification") not in {"QUALIFIED", "NOT_QUALIFIED"}:
-            errors.append(f"invalid qualification for {candidate_id}")
-        if candidate.get("contamination") not in {"LOW", "MODERATE", "HIGH", "UNKNOWN"}:
-            errors.append(f"invalid contamination for {candidate_id}")
-        if candidate.get("source_state") not in {"OPEN", "CLOSED"}:
-            errors.append(f"invalid source state for {candidate_id}")
-        for field in ("family", "oracle_kind"):
-            if not isinstance(candidate.get(field), str) or not CODE_VALUE_RE.fullmatch(
-                candidate.get(field, "")
-            ):
-                errors.append(f"invalid {field} for {candidate_id}")
+        if source_identity is not None:
+            dedupe.add(source_identity)
 
     task_ids: set[str] = set()
     task_by_id: dict[str, dict[str, Any]] = {}
@@ -3956,22 +3983,137 @@ def finish_round(
         return record
 
 
-def _private_runtime_receipt_path(
-    root: Path, pilot: dict[str, Any], receipt_path: Path
+def _private_json_input_path(
+    root: Path, pilot: dict[str, Any], input_path: Path, label: str
 ) -> Path:
-    candidate = receipt_path if receipt_path.is_absolute() else root / receipt_path
+    candidate = input_path if input_path.is_absolute() else root / input_path
     if candidate.is_symlink():
-        raise UnsafeRepositoryError("runtime receipt must not be a symbolic link")
+        raise UnsafeRepositoryError(f"{label} must not be a symbolic link")
     try:
         resolved = candidate.resolve(strict=True)
     except OSError as error:
-        raise ConfigError("runtime receipt file does not exist") from error
+        raise ConfigError(f"{label} file does not exist") from error
     private = private_directory(root, pilot).resolve()
     if resolved.parent != private or resolved.suffix != ".json" or not resolved.is_file():
         raise UnsafeRepositoryError(
-            "runtime receipt must be a direct JSON file in .aeg-foundry-private"
+            f"{label} must be a direct JSON file in .aeg-foundry-private"
         )
     return resolved
+
+
+def register_candidate_batch(
+    root: Path,
+    round_id: str,
+    batch_path: Path,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    now = now or utc_now()
+    _recover_incomplete_finish(root)
+    pilot, backlog, state = load_all(root)
+    with control_lock(root, pilot):
+        validate(root, check_git=False)
+        active = state.get("active_round")
+        if not active or active.get("round_id") != round_id:
+            raise LeaseError("candidate batch round does not own the active lease")
+        claimed_at = parse_time(active["claimed_at"])
+        expires_at = parse_time(active["expires_at"])
+        if not (claimed_at <= now <= expires_at):
+            raise BudgetError("candidate batch is outside the active round time budget")
+        if state.get("pending_effect"):
+            raise LeaseError("resolve the pending source-read effect before candidate ingestion")
+        if not active.get("source_ref_verified_at"):
+            raise ConfigError("candidate ingestion requires a verified current source ref")
+        task = next(
+            item
+            for item in backlog["work_items"]
+            if item["task_id"] == active["task_id"]
+        )
+        if task.get("stage") != "DISCOVERY" or task.get("oracle_kind") not in {
+            "PUBLIC_ISSUE_METADATA_REFRESH",
+            "CANDIDATE_BATCH_SCHEMA_DEDUP_AND_SOURCE_CHECK",
+        }:
+            raise ConfigError("candidate ingestion requires a candidate-discovery task")
+        resolved_batch_path = _private_json_input_path(
+            root, pilot, batch_path, "candidate batch"
+        )
+        batch = load_json(resolved_batch_path)
+        if not isinstance(batch, dict) or set(batch) != {
+            "candidates",
+            "round_id",
+            "schema_version",
+        }:
+            raise ConfigError("candidate batch has an invalid top-level schema")
+        if batch.get("schema_version") != 1 or batch.get("round_id") != round_id:
+            raise ConfigError("candidate batch version or round binding is invalid")
+        candidates = batch.get("candidates")
+        if not isinstance(candidates, list) or not candidates:
+            raise ConfigError("candidate batch must contain at least one candidate")
+        existing_ids = {
+            item.get("candidate_id")
+            for item in backlog.get("candidates", [])
+            if isinstance(item, dict) and isinstance(item.get("candidate_id"), str)
+        }
+        existing_sources = {
+            (item["repository"].lower(), item["issue_number"])
+            for item in backlog.get("candidates", [])
+            if isinstance(item, dict)
+            and isinstance(item.get("repository"), str)
+            and isinstance(item.get("issue_number"), int)
+        }
+        errors: list[str] = []
+        candidate_ids: list[str] = []
+        selected_family = backlog.get("discovery", {}).get("selected_family")
+        required_family = task.get("family") or (
+            selected_family
+            if backlog.get("discovery", {}).get("first_ten_complete") is True
+            else None
+        )
+        for index, candidate in enumerate(candidates, 1):
+            candidate_errors, candidate_id, source_identity = _candidate_record_errors(
+                candidate, existing_ids, existing_sources
+            )
+            errors.extend(
+                f"candidate batch item {index}: {error}" for error in candidate_errors
+            )
+            if (
+                isinstance(candidate, dict)
+                and required_family is not None
+                and candidate.get("family") != required_family
+            ):
+                errors.append(
+                    f"candidate batch item {index}: candidate family violates the frozen focus"
+                )
+            if candidate_id is not None:
+                existing_ids.add(candidate_id)
+                candidate_ids.append(candidate_id)
+            if source_identity is not None:
+                existing_sources.add(source_identity)
+        target_count = task.get("target_candidate_count")
+        if not isinstance(target_count, int) or target_count <= len(backlog["candidates"]):
+            errors.append("candidate-discovery task has no usable frozen candidate-count target")
+        elif len(backlog["candidates"]) + len(candidates) > target_count:
+            errors.append("candidate batch would exceed the frozen candidate-count target")
+        if errors or len(candidate_ids) != len(candidates):
+            raise ConfigError("invalid candidate batch: " + "; ".join(errors))
+        before_count = len(backlog["candidates"])
+        backlog["candidates"].extend(candidates)
+        task_candidate_ids = task.get("candidate_ids")
+        if not isinstance(task_candidate_ids, list):
+            raise ConfigError("candidate-discovery task has invalid candidate bindings")
+        task_candidate_ids.extend(candidate_ids)
+        atomic_write_json(paths(root)["backlog"], backlog)
+        render_status(root, pilot, backlog, state, now)
+        return {
+            "batch_digest_sha256": sha256_bytes(resolved_batch_path.read_bytes()),
+            "candidate_count_after": len(backlog["candidates"]),
+            "candidate_count_before": before_count,
+            "candidate_ids": candidate_ids,
+            "qualified_gain": sum(
+                candidate.get("qualification") == "QUALIFIED" for candidate in candidates
+            ),
+            "round_id": round_id,
+            "target_candidate_count": target_count,
+        }
 
 
 def register_runtime_environment(
@@ -3988,7 +4130,9 @@ def register_runtime_environment(
             raise PausedError("cannot register a runtime while the pilot is paused")
         if state.get("active_round") or state.get("pending_effect"):
             raise LeaseError("runtime registration requires no active or unresolved work")
-        receipt = load_json(_private_runtime_receipt_path(root, pilot, receipt_path))
+        receipt = load_json(
+            _private_json_input_path(root, pilot, receipt_path, "runtime receipt")
+        )
         existing_ids = {
             item.get("environment_id")
             for item in state.get("runtime_environments", [])
@@ -4810,6 +4954,9 @@ def parser() -> argparse.ArgumentParser:
     worker.add_argument("--round-id")
     runtime = commands.add_parser("register-runtime")
     runtime.add_argument("--receipt-json", required=True, type=Path)
+    candidates = commands.add_parser("register-candidates")
+    candidates.add_argument("--round-id", required=True)
+    candidates.add_argument("--batch-json", required=True, type=Path)
     worker_finish = commands.add_parser("finish-worker")
     worker_finish.add_argument("--event-id", required=True)
     worker_finish.add_argument(
@@ -4944,6 +5091,12 @@ def main(argv: list[str] | None = None) -> int:
             )
         elif arguments.command == "register-runtime":
             output(register_runtime_environment(root, arguments.receipt_json))
+        elif arguments.command == "register-candidates":
+            output(
+                register_candidate_batch(
+                    root, arguments.round_id, arguments.batch_json
+                )
+            )
         elif arguments.command == "finish-worker":
             output(
                 finish_worker(

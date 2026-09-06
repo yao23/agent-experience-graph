@@ -126,6 +126,14 @@ defense in depth, not permission to upload arbitrary free text. Intent is
 persisted before an external effect. An unresolved effect is verified before it
 can be retried.
 
+Discovery candidate batches enter tracked state only through the controller's
+active-round ingestion command. Its ignored private JSON input is bound to that
+round and accepted only as one exact-shape, family-locked, deduplicated batch
+within the frozen count target. Repository, issue number, and canonical source
+URL must agree. All records are checked before the backlog is atomically
+replaced; raw acquisition material remains private and only allowlisted
+candidate fields are published.
+
 A push retry is allowed only after a read proves the pending intent is absent
 from the remote tip. The committed `HEAD` must contain that same intent, the
 worktree must be clean, and the observed remote tip must be its ancestor. The
