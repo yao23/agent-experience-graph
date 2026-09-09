@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260909t072129z-intake-handoff-ready",
+  "source_task": "AEG Startup OS",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-09T07:21:29Z",
+  "classification": "EXACT_INTAKE_OBJECTS_READY_AWAITING_CODEX_IMPORT_OAC01_WAITING_FOR_OPERATOR_SEND_EVIDENCE",
+  "phase": "FIX_FUNNEL_PERSEVERE_WITH_ONE_OWNER_COMMITMENT_PAUSE_FOUNDRY_EXPANSION",
+  "hypothesis": {
+    "target_persona": "The hands-on contributor who reported repeated CI failures in vscode-buf #570.",
+    "pain": "A public flaky failure is not yet bound to an immutable revision, reproducible failure signal, objective pass oracle, and dated artifact review commitment.",
+    "proposed_behavior": "After the operator manually sends the approved request, the contributor supplies all six required packet fields and commits to a specific review date within seven days.",
+    "measurable_signal": "One complete owner-backed OAC-01 packet for the fixed 1/1 target.",
+    "threshold": "1/1 packet with 6/6 required fields; partial packets do not pass.",
+    "current_result": "0/6 required fields; message-send evidence absent; deadline not started.",
+    "budget": "At most 15 founder-minutes, 15 agent-minutes, and USD 0.",
+    "invalidation": "After a confirmed manual send and the fixed seven-day window, no response, an incomplete packet, an obsolete issue, or a failure that cannot be made reproducible invalidates this contact attempt without replacing the sample."
+  },
+  "experiment": {
+    "status": "WAITING_FOR_OPERATOR_SEND_EVIDENCE",
+    "smallest_credible_test": "The operator manually sends the single approved #570 request. Startup OS only assesses public evidence; no outreach, external reproduction, repair, transfer, or code execution is performed here.",
+    "intake_checkpoint": "A verified exact-object handoff now makes INTAKE-DRAFT-01 import-ready for the authorized local Codex consumer. It does not create a branch, Draft PR, live form, or market signal."
+  },
+  "facts": [
+    {
+      "text": "The trusted bootstrap AUTHORIZATION.json raw-byte SHA-256 matched 2f4f97c33521e860736dc9984be8092772d8af5fa716f1d74f08c4e8ee7e5cc5.",
+      "evidence_kind": "MEASURED"
+    },
+    {
+      "text": "At coordination tip 53b72e2ad1a453ca971cb0893f93545867b10bc2, the exact intake bundle and manifest identify head cfd2445312f7ba0c8cd08bb3bde4fad00f6763f8, tree 4ba0c16f8802e79c7073ecf818bf85522c9f125d, and parent 999efa64e9ba016efc9d3327df4b70e1fc79b804; the manifest reports an isolated import check passed.",
+      "evidence_kind": "PUBLIC_REPORTED_AND_MANIFEST_VERIFIED"
+    },
+    {
+      "text": "The remote branch codex/field-test-intake-v1 was absent and no pull request existed for that head at observation time.",
+      "evidence_kind": "MEASURED"
+    },
+    {
+      "text": "The only consumer receipt is BOOTSTRAP_READ; it reports the existing local automation was updated, but there is no claim/result receipt for intake import, push, Draft PR, or OAC-01.",
+      "evidence_kind": "PUBLIC_CONSUMER_SELF_REPORT"
+    },
+    {
+      "text": "AEG Discussion #34 had zero comments, zero reactions, and no external participant; vscode-buf #570 had no update after 2026-04-27 and no AEG message or owner commitment.",
+      "evidence_kind": "MEASURED"
+    },
+    {
+      "text": "Foundry expansion, repair, Capture, runtime scheduling, transfer, external reproduction, and outbound contact remain paused.",
+      "evidence_kind": "POLICY_BOUNDARY"
+    }
+  ],
+  "metrics": {
+    "authorization_hash": "PASS",
+    "exact_intake_object_handoff": "1/1",
+    "remote_intake_branch": "0/1",
+    "intake_draft_pr": "0/1",
+    "scheduled_consumer_task_results": "0",
+    "oac01_operator_send_evidence": "0/1",
+    "oac01_required_fields": "0/6",
+    "oac01_deadline_started": false,
+    "external_discussion_participants": 0,
+    "external_artifact_actions": 0,
+    "pmf_signal": 0
+  },
+  "decision": "PERSEVERE_WITH_ONE_OWNER_COMMITMENT; INTAKE READY FOR AUTHORIZED LOCAL CODEX IMPORT; NEED MORE DATA; PAUSE FOUNDRY EXPANSION.",
+  "product_changes": [],
+  "feedback_themes": [
+    "No external feedback is yet available to distinguish demand from funnel friction.",
+    "Artifact availability is no longer the intake blocker; a real local consumer result is.",
+    "OAC-01 remains unevaluated until the operator supplies actual send evidence."
+  ],
+  "distribution": {
+    "published": false,
+    "substantive_update": "AEG fixed a funnel blocker without expanding the Foundry: the exact, previously approved low-friction intake Git objects are now available and independently import-checked. This is an operational handoff, not a live form or demand signal. The market test remains one owner-backed public failure packet for vscode-buf #570; without manual send evidence, the seven-day window has not started.",
+    "short_variant": "Exact intake objects are ready; Draft PR and owner commitment are still 0. AEG remains paused at one owner-backed public failure packet.",
+    "cta": "For the fixed #570 test, confirm one immutable public revision, failing command/signature, pass oracle, public reproduction permission, and a specific review date.",
+    "proposed_replies": [
+      {
+        "objection": "The bundle means the intake is live.",
+        "reply": "No. It only enables the authorized local consumer to import the exact approved commit and open a Draft PR; merge and live availability remain outside scope."
+      },
+      {
+        "objection": "No response means the owner test failed.",
+        "reply": "No. There is no confirmed manual send, so the seven-day clock has not started and the hypothesis remains unevaluated."
+      }
+    ]
+  },
+  "founder_action": "Manually send the already approved single #570 owner-commitment message and preserve actual sent-at evidence. No new product or Foundry approval is requested.",
+  "limitations": [
+    "The Git bundle was not executed during this run.",
+    "The manifest's isolated-import result is a public setup report, not an independent demand or product-efficacy result.",
+    "No local consumer result for INTAKE-DRAFT-01 exists yet.",
+    "No private conversations, email content, employer data, or non-public feedback were used."
+  ],
+  "proposed_tasks": [],
+  "cost": {
+    "actual_usd": 0,
+    "agent_minutes": 7,
+    "founder_minutes": 0,
+    "measurement_note": "Agent minutes are elapsed wall-clock rounded up from the observed run start through this checkpoint; no cash or founder action occurred."
+  },
+  "sources": [
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/commit/53b72e2ad1a453ca971cb0893f93545867b10bc2",
+      "revision": "53b72e2ad1a453ca971cb0893f93545867b10bc2",
+      "observed_at": "2026-09-09T07:21:29Z",
+      "purpose": "Immutable coordination snapshot and intake object handoff"
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/blob/53b72e2ad1a453ca971cb0893f93545867b10bc2/coordination/artifacts/field-test-intake-cfd2445.json",
+      "revision": "53b72e2ad1a453ca971cb0893f93545867b10bc2",
+      "observed_at": "2026-09-09T07:21:29Z",
+      "purpose": "Exact-object manifest"
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/blob/53b72e2ad1a453ca971cb0893f93545867b10bc2/coordination/receipts/codex-bootstrap-read-20260909t052644z.json",
+      "revision": "53b72e2ad1a453ca971cb0893f93545867b10bc2",
+      "observed_at": "2026-09-09T07:21:29Z",
+      "purpose": "Consumer bootstrap receipt"
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/discussions/34",
+      "revision": "live state observed 2026-09-09",
+      "observed_at": "2026-09-09T07:21:29Z",
+      "purpose": "Public funnel feedback"
+    },
+    {
+      "url": "https://github.com/bufbuild/vscode-buf/issues/570",
+      "revision": "updated_at 2026-04-27T13:40:55Z",
+      "observed_at": "2026-09-09T07:21:29Z",
+      "purpose": "Fixed OAC-01 target"
+    }
+  ]
+}
