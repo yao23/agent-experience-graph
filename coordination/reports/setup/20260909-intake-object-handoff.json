@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "setup-20260909-intake-object-handoff",
+  "source_task": "setup",
+  "source_run_id": "CURRENT_OBJECT_HANDOFF_TURN_NOT_SCHEDULED_RUN",
+  "observed_at": "2026-09-09T05:28:39.100261+00:00",
+  "classification": "APPROVED_OBJECTS_AVAILABLE_FOR_IMPORT",
+  "task_id": "INTAKE-DRAFT-01",
+  "facts": [
+    {
+      "text": "Original approved commit was recovered and exported as a 2261-byte incremental Git bundle.",
+      "evidence_kind": "DIRECT_OBJECT_OBSERVATION"
+    },
+    {
+      "text": "An isolated repository fetched the prerequisite from the public HTTPS repository, had no approved head initially, and imported the bundle successfully without shared objects.",
+      "evidence_kind": "INDEPENDENT_IMPORT_CHECK"
+    },
+    {
+      "text": "Imported commit, tree, parent, commit bytes and two-path diff matched the approved source.",
+      "evidence_kind": "INDEPENDENT_IMPORT_CHECK"
+    },
+    {
+      "text": "A public BOOTSTRAP_READ receipt reports that the existing local automation was updated. This is not a scheduled-run or end-to-end result.",
+      "evidence_kind": "PUBLIC_CONSUMER_SELF_REPORT"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/commit/999efa64e9ba016efc9d3327df4b70e1fc79b804",
+      "observed_at": "2026-09-09T05:28:39.100261+00:00",
+      "purpose": "Public prerequisite"
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/blob/83f70cba8607aa5bf01e9fdae3eec3b729220c29/coordination/receipts/codex-bootstrap-read-20260909t052644z.json",
+      "observed_at": "2026-09-09T05:28:39.100261+00:00",
+      "purpose": "Existing consumer bootstrap receipt"
+    }
+  ],
+  "object_handoff": {
+    "bundle_path": "coordination/artifacts/field-test-intake-cfd2445.bundle",
+    "manifest_path": "coordination/artifacts/field-test-intake-cfd2445.json",
+    "bundle_sha256": "80dcee8a8f71d27d0f01d9389cb83e916f8fa250bec388b58ea0c136befb0250",
+    "head": "cfd2445312f7ba0c8cd08bb3bde4fad00f6763f8",
+    "tree": "4ba0c16f8802e79c7073ecf818bf85522c9f125d",
+    "parent": "999efa64e9ba016efc9d3327df4b70e1fc79b804"
+  },
+  "limitations": [
+    "This delivers Git objects; it does not itself create the intake feature branch or Draft PR.",
+    "No production test, external code execution, scheduler run, owner contact or demand evidence is claimed.",
+    "Fixed authorization bytes and the existing task list are not changed."
+  ],
+  "proposed_tasks": [],
+  "recommended_disposition": "Reevaluate INTAKE-DRAFT-01 using this exact object handoff within its existing authorization and remaining budget. Do not create a replacement task.",
+  "cost": {
+    "actual_usd": "UNKNOWN",
+    "agent_minutes": "UNKNOWN",
+    "founder_minutes": "UNKNOWN"
+  }
+}

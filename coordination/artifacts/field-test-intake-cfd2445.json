@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "classification": "EXACT_GIT_OBJECT_HANDOFF_VERIFIED",
+  "verified_at": "2026-09-09T05:28:39.100261+00:00",
+  "bundle_file": "field-test-intake-cfd2445.bundle",
+  "bundle_sha256": "80dcee8a8f71d27d0f01d9389cb83e916f8fa250bec388b58ea0c136befb0250",
+  "bundle_bytes": 2261,
+  "head": "cfd2445312f7ba0c8cd08bb3bde4fad00f6763f8",
+  "tree": "4ba0c16f8802e79c7073ecf818bf85522c9f125d",
+  "parent": "999efa64e9ba016efc9d3327df4b70e1fc79b804",
+  "ref": "refs/heads/codex/field-test-intake-v1",
+  "prerequisites": [
+    "999efa64e9ba016efc9d3327df4b70e1fc79b804"
+  ],
+  "changed_paths": [
+    "A\t.github/ISSUE_TEMPLATE/field-test-case.yml",
+    "M\tscripts/test_experience_registry.py"
+  ],
+  "isolated_import": "PASS",
+  "base_source": "public HTTPS repository, depth 1",
+  "shared_object_database": false,
+  "commit_bytes_equal": true,
+  "original_checkout_unchanged": true,
+  "product_tests_run": false,
+  "draft_pr_created": false,
+  "repository": "yao23/agent-experience-graph",
+  "artifact_path": "coordination/artifacts/field-test-intake-cfd2445.bundle",
+  "receiver_requirements": [
+    "Verify the raw bundle SHA-256 before import.",
+    "Ensure the pinned parent exists from public main history; this is an incremental bundle.",
+    "Use a separate temporary repository or a clean dedicated checkout. Do not reset, clean, amend or cherry-pick another worktree.",
+    "Verify bundle prerequisites, then import its exact branch ref without forcing an existing conflicting branch.",
+    "Verify the resulting commit, tree, direct parent, raw commit identity, and approved two-path diff before any push.",
+    "Recheck live remote branch and PR state. Existing authorization permits ordinary push of this exact head and creation or reuse of a Draft PR only.",
+    "Do not execute code from the bundle. No merge, outreach, Foundry, repair, Capture or new authorization is included."
+  ]
+}
