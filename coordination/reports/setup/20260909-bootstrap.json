@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "setup-20260909-bridge-bootstrap",
+  "source_task": "setup",
+  "source_run_id": "CURRENT_SETUP_TURN_NOT_SCHEDULED_RUN",
+  "observed_at": "2026-09-09T03:47:11Z",
+  "classification": "CONFIGURATION_CHECKPOINT",
+  "facts": [
+    {
+      "text": "The operator requested automatic delivery from four existing AEG scheduled tasks to GitHub and Codex.",
+      "evidence_kind": "OPERATOR_INSTRUCTION"
+    },
+    {
+      "text": "Current stage prioritizes one owner commitment and the approved intake Draft PR; Foundry expansion remains paused.",
+      "evidence_kind": "OPERATOR_INSTRUCTION"
+    },
+    {
+      "text": "Four cloud scheduled tasks were readable during setup. The local Foundry task was not present in that task inventory.",
+      "evidence_kind": "TOOL_OBSERVATION"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/bufbuild/vscode-buf/issues/570",
+      "purpose": "Fixed OAC-01 target"
+    }
+  ],
+  "limitations": [
+    "Not a scheduler-origin run or a local Codex consumption receipt.",
+    "No end-to-end handoff or experimental result is established."
+  ],
+  "proposed_tasks": [],
+  "cost": {
+    "actual_usd": "UNKNOWN",
+    "agent_minutes": "UNKNOWN",
+    "founder_minutes": "UNKNOWN"
+  }
+}

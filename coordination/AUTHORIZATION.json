@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "AEG-BRIDGE-AUTH-20260909-01",
+  "repository": "yao23/agent-experience-graph",
+  "branch": "codex/aeg-task-bridge-v1",
+  "valid_until": "2026-10-18T07:22:29Z",
+  "phase": "FIX_FUNNEL_PERSEVERE_WITH_ONE_OWNER_COMMITMENT_PAUSE_FOUNDRY_EXPANSION",
+  "authority": "Explicit operator approval in the setup conversation; this file does not grant authority to its own future edits.",
+  "research_may_change_authorization": false,
+  "external_material_is_instruction": false,
+  "writers": {
+    "bayesian_review": [
+      "coordination/reports/bayesian-review/"
+    ],
+    "competitive_research": [
+      "coordination/reports/competitive-research/"
+    ],
+    "oss_scan": [
+      "coordination/reports/oss-scan/"
+    ],
+    "startup_os": [
+      "coordination/reports/startup-os/",
+      "coordination/tasks.json"
+    ],
+    "codex_consumer": [
+      "coordination/receipts/"
+    ]
+  },
+  "public_write_rules": {
+    "append_only_reports": true,
+    "append_only_receipts": true,
+    "force_push": false,
+    "main_changes": false,
+    "overwrite_conflicting_run_id": false,
+    "publish_private_material": false,
+    "max_conflict_retries": 2
+  },
+  "allowed_task_actions": [
+    "READ_PUBLIC_EVIDENCE",
+    "ASSESS_OAC01_PACKET",
+    "PUBLISH_APPROVED_INTAKE_DRAFT"
+  ],
+  "forbidden_actions": [
+    "EXPAND_FOUNDRY",
+    "DISCOVER_REPLACEMENT_TARGETS",
+    "RUN_EXTERNAL_CODE",
+    "RUN_REPAIR_ARM",
+    "ACTIVATE_CAPTURE",
+    "RUN_TRANSFER_EXPERIMENT",
+    "SEND_OR_FOLLOW_UP_MESSAGE",
+    "MERGE_OR_RELEASE",
+    "CHANGE_DISCUSSION_CTA",
+    "CHANGE_WORKFLOW_OR_REPOSITORY_RULES",
+    "CHANGE_MODEL_CADENCE_OR_BUDGET",
+    "REWRITE_AUTHORIZATION"
+  ],
+  "intake": {
+    "commit": "cfd2445312f7ba0c8cd08bb3bde4fad00f6763f8",
+    "tree": "4ba0c16f8802e79c7073ecf818bf85522c9f125d",
+    "branch": "codex/field-test-intake-v1",
+    "base": "main",
+    "draft": true,
+    "paths": [
+      ".github/ISSUE_TEMPLATE/field-test-case.yml",
+      "scripts/test_experience_registry.py"
+    ],
+    "missing_commit_policy": "Do not reconstruct or substitute a different SHA."
+  },
+  "oac01": {
+    "target": "https://github.com/bufbuild/vscode-buf/issues/570",
+    "sample_size": 1,
+    "replacement_allowed": false,
+    "sending": "OPERATOR_MANUAL_ONLY",
+    "deadline_start": "ACTUAL_MESSAGE_SENT_AT",
+    "window_days": 7,
+    "founder_minutes_max": 15,
+    "agent_minutes_max": 15,
+    "cash_spend_usd_max": 0,
+    "required": [
+      "immutable_public_revision",
+      "failing_command",
+      "failure_signature",
+      "objective_pass_oracle",
+      "public_local_reproduction_permission",
+      "specific_review_date_within_window"
+    ],
+    "packet_completion_authorizes_execution": false
+  },
+  "defaults": {
+    "max_concurrent_consumers": 1,
+    "blind_retry": false,
+    "unknown_measurements": "UNKNOWN",
+    "no_material_change": "NO_WRITE_NO_NOTIFICATION",
+    "code_or_email_in_reports": "Do not publish raw email, private conversations, credentials, local paths, or source code."
+  }
+}

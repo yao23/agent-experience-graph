@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "revision": 1,
+  "policy_id": "AEG-BRIDGE-AUTH-20260909-01",
+  "writer": "startup-os",
+  "updated_at": "2026-09-09T03:47:11Z",
+  "delivery_state": "LOCAL_CODEX_NOT_CONNECTED",
+  "tasks": [
+    {
+      "task_id": "INTAKE-DRAFT-01",
+      "revision": 1,
+      "action": "PUBLISH_APPROVED_INTAKE_DRAFT",
+      "status": "READY_WITH_EXISTING_AUTHORIZATION",
+      "priority": 1,
+      "source": "coordination/AUTHORIZATION.json#/intake",
+      "success": "Remote branch and Draft PR head equal approved commit; record PR URL and actual checks, without merge.",
+      "last_observation": "Prior attempt could not authenticate Git push; no remote branch or PR was found then. Recheck live state before action."
+    },
+    {
+      "task_id": "OAC-01",
+      "revision": 1,
+      "action": "ASSESS_OAC01_PACKET",
+      "status": "WAITING_FOR_OPERATOR_SEND_EVIDENCE",
+      "priority": 2,
+      "source": "https://github.com/bufbuild/vscode-buf/issues/570",
+      "sent_at": null,
+      "deadline_at": null,
+      "success": "All six required fields in AUTHORIZATION.json and the review commitment are evidenced.",
+      "latest_result": "NO_CONFIRMED_SEND_OR_OWNER_COMMITMENT",
+      "execution_allowed": false
+    }
+  ]
+}
