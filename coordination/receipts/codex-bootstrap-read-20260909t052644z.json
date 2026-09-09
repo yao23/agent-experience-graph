@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-bootstrap-read-20260909t052644z",
+  "task_id": "BOOTSTRAP_READ",
+  "task_revision": 1,
+  "read_commit": "b1c2c93cc52ba1c05eff570ad3e11d76b153a878",
+  "policy_sha256": "2f4f97c33521e860736dc9984be8092772d8af5fa716f1d74f08c4e8ee7e5cc5",
+  "run_id": "UNKNOWN",
+  "started_at": "2026-09-09T05:26:44Z",
+  "finished_at": "2026-09-09T05:26:44Z",
+  "result": "DONE",
+  "actual_actions": [
+    "VERIFIED_BOOTSTRAP_COMMIT",
+    "VERIFIED_AUTHORIZATION_RAW_BYTES_SHA256",
+    "UPDATED_EXISTING_LOCAL_AUTOMATION_IN_PLACE",
+    "READ_TASKS_AND_EXISTING_RECEIPT_DIRECTORY"
+  ],
+  "evidence_urls": [
+    "https://github.com/yao23/agent-experience-graph/tree/b1c2c93cc52ba1c05eff570ad3e11d76b153a878/coordination"
+  ],
+  "measurements": {
+    "actual_usd": "UNKNOWN",
+    "agent_minutes": "UNKNOWN",
+    "founder_minutes": "UNKNOWN"
+  },
+  "remaining_blocker": "NONE"
+}
