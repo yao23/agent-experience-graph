@@ -1,36 +1,48 @@
 {
-  "schema_version": "1.0.0",
-  "revision": 2,
-  "policy_id": "AEG-BRIDGE-AUTH-20260909-01",
+  "schema_version": "2.0.0",
+  "revision": 3,
+  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-09T07:21:29Z",
-  "delivery_state": "STARTUP_OS_REPORT_DELIVERED_AWAITING_CODEX_CONSUMER_RESULT",
-  "tasks": [
-    {
-      "task_id": "INTAKE-DRAFT-01",
-      "revision": 2,
-      "action": "PUBLISH_APPROVED_INTAKE_DRAFT",
-      "status": "READY_FOR_CODEX_IMPORT_WITH_VERIFIED_OBJECT_HANDOFF",
-      "priority": 1,
-      "source": "coordination/AUTHORIZATION.json#/intake",
-      "handoff_manifest": "coordination/artifacts/field-test-intake-cfd2445.json",
-      "success": "Remote branch and Draft PR head equal approved commit; record PR URL and actual checks, without merge.",
-      "last_observation": "Exact approved Git objects are available and isolated-import verification is reported at coordination tip 53b72e2ad1a453ca971cb0893f93545867b10bc2. Remote feature branch and Draft PR remain absent; no consumer task receipt exists.",
-      "execution_allowed": true,
-      "completed": false
-    },
-    {
-      "task_id": "OAC-01",
-      "revision": 1,
-      "action": "ASSESS_OAC01_PACKET",
-      "status": "WAITING_FOR_OPERATOR_SEND_EVIDENCE",
-      "priority": 2,
-      "source": "https://github.com/bufbuild/vscode-buf/issues/570",
-      "sent_at": null,
-      "deadline_at": null,
-      "success": "All six required fields in AUTHORIZATION.json and the review commitment are evidenced.",
-      "latest_result": "NO_CONFIRMED_SEND_OR_OWNER_COMMITMENT",
-      "execution_allowed": false
-    }
-  ]
+  "updated_at": "2026-09-11T00:33:38-07:00",
+  "sprint": {
+    "starts_on": "2026-09-11",
+    "valid_until": "2026-09-24T23:59:00-07:00",
+    "timezone": "America/Los_Angeles"
+  },
+  "delivery_state": "CLOUD_POLICY_MIGRATED_LOCAL_CONSUMER_PENDING",
+  "tasks": [],
+  "local_consumer": {
+    "name": "aeg-experience-foundry-pilot-v0-1",
+    "state": "PENDING_SEPARATE_LOCAL_HANDOFF",
+    "max_concurrent_consumers": 1
+  },
+  "historical_queue": {
+    "immutable_snapshot": "https://github.com/yao23/agent-experience-graph/blob/dd999ab9ac5d59735b2a754d5473ecfaad28737b/coordination/tasks.json",
+    "disposition": "OUT_OF_ACTIVE_SPRINT_PRESERVED_WITHOUT_MARKING_COMPLETE_OR_FAILED",
+    "tasks": [
+      {
+        "task_id": "INTAKE-DRAFT-01",
+        "revision": 2,
+        "prior_status": "READY_FOR_CODEX_IMPORT_WITH_VERIFIED_OBJECT_HANDOFF",
+        "prior_execution_allowed": true,
+        "completed": false
+      },
+      {
+        "task_id": "OAC-01",
+        "revision": 1,
+        "prior_status": "WAITING_FOR_OPERATOR_SEND_EVIDENCE",
+        "prior_execution_allowed": false,
+        "completed": false,
+        "market_failure": false
+      }
+    ]
+  },
+  "limits": {
+    "candidate_max_per_day": 3,
+    "new_cases_max_per_rolling_7_days": 2,
+    "cases_max_total": 4,
+    "local_validation_minutes_max_per_case": 90,
+    "transfer_checks_max_total": 1,
+    "transfer_check_minutes_max_total": 90
+  }
 }

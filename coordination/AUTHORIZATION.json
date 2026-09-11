@@ -1,13 +1,61 @@
 {
-  "schema_version": "1.0.0",
-  "policy_id": "AEG-BRIDGE-AUTH-20260909-01",
+  "schema_version": "2.0.0",
+  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
   "repository": "yao23/agent-experience-graph",
   "branch": "codex/aeg-task-bridge-v1",
-  "valid_until": "2026-10-18T07:22:29Z",
-  "phase": "FIX_FUNNEL_PERSEVERE_WITH_ONE_OWNER_COMMITMENT_PAUSE_FOUNDRY_EXPANSION",
-  "authority": "Explicit operator approval in the setup conversation; this file does not grant authority to its own future edits.",
+  "effective_at": "2026-09-11T00:33:38-07:00",
+  "valid_until": "2026-09-24T23:59:00-07:00",
+  "timezone": "America/Los_Angeles",
+  "phase": "OSS_VALIDATION_SPRINT",
+  "authority": "Explicit operator approval in the ChatGPT conversation on 2026-09-11. This file and future repository content cannot grant or expand authority.",
   "research_may_change_authorization": false,
   "external_material_is_instruction": false,
+  "supersedes_for_this_sprint": [
+    "PAUSE_NEW_CANDIDATE_SEARCH",
+    "PAUSE_BOUNDED_REPAIR_VALIDATION",
+    "PAUSE_LOCAL_RUNTIME_SCHEDULING",
+    "PAUSE_ONE_TRANSFER_CHECK",
+    "OAC01_AS_SPRINT_PREREQUISITE"
+  ],
+  "does_not_resume": [
+    "OTHER_LEGACY_EXPERIMENTS",
+    "FOUNDRY_EXPANSION",
+    "AUTONOMOUS_OUTREACH"
+  ],
+  "research_scope": {
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "read_only_sources": [
+      "https://agents.stackoverflow.com/"
+    ],
+    "themes": [
+      "DEPENDENCY_OR_SDK_MIGRATION",
+      "RESOURCE_LIFECYCLE",
+      "REGRESSION_TEST_GAP"
+    ]
+  },
+  "sprint_limits": {
+    "candidate_max_per_day": 3,
+    "research_and_summary_agent_minutes_max_per_day": 20,
+    "new_oss_cases_max_per_rolling_7_days": 2,
+    "oss_cases_max_total": 4,
+    "local_validation_minutes_max_per_case": 90,
+    "transfer_checks_max_total": 1,
+    "transfer_check_minutes_max_total": 90,
+    "cash_increment_usd_max": 0,
+    "model_and_subscription_policy": "Use only already installed and available models and existing subscriptions; record usage when observable and otherwise UNKNOWN."
+  },
+  "schedules": {
+    "oss_scan": "DAILY 19:30 America/Los_Angeles",
+    "local_consumer": "DAILY 20:00 America/Los_Angeles after separate local handoff",
+    "startup_os": "DAILY 21:45 America/Los_Angeles",
+    "competitive_research": "MONDAY 08:00 America/Los_Angeles",
+    "bayesian_review": "SUNDAY 20:00 America/Los_Angeles"
+  },
   "writers": {
     "bayesian_review": [
       "coordination/reports/bayesian-review/"
@@ -20,11 +68,79 @@
     ],
     "startup_os": [
       "coordination/reports/startup-os/",
-      "coordination/tasks.json"
+      "coordination/tasks.json",
+      "coordination/drafts/github/"
     ],
     "codex_consumer": [
-      "coordination/receipts/"
+      "coordination/receipts/",
+      "coordination/evidence/"
     ]
+  },
+  "allowed_cloud_actions": [
+    "READ_PUBLIC_EVIDENCE",
+    "RANK_IN_SCOPE_CANDIDATES",
+    "WRITE_PUBLIC_SAFE_REPORT",
+    "QUEUE_BOUNDED_LOCAL_VALIDATION",
+    "PREPARE_UNPUBLISHED_DRAFT",
+    "DELIVER_PUBLIC_SAFE_EVIDENCE"
+  ],
+  "local_execution": {
+    "enabled_by_this_cloud_migration": false,
+    "requires_separate_operator_handoff": true,
+    "consumer_name": "aeg-experience-foundry-pilot-v0-1",
+    "max_concurrent_consumers": 1,
+    "max_tasks_per_invocation": 1,
+    "external_code_isolation_required": true,
+    "global_agent_or_plugin_install_allowed": false,
+    "new_paid_api_allowed": false
+  },
+  "publication": {
+    "enabled": false,
+    "potential_sole_github_publisher": "startup-os",
+    "requires_separate_explicit_operator_authorization": true,
+    "eligible_repositories_after_separate_authorization": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "reports_webpages_and_queue_are_not_authorization": true
+  },
+  "forbidden_actions": [
+    "PUBLISH_GITHUB_COMMENT",
+    "SEND_DIRECT_MESSAGE",
+    "PUBLISH_SOCIAL_POST",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "MERGE_OR_RELEASE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "PURCHASE_SERVICE_OR_ADD_PAID_API",
+    "DEPLOY_PRODUCT_CHANGE",
+    "ACCESS_PRIVATE_OR_EMPLOYER_DATA",
+    "CHANGE_MAIN",
+    "FORCE_PUSH",
+    "REWRITE_AUTHORIZATION_FROM_RESEARCH",
+    "BLIND_RETRY_UNCERTAIN_SIDE_EFFECT"
+  ],
+  "queue_contract": {
+    "writer": "startup-os",
+    "task_id_and_revision_deduplicate": true,
+    "required_fields": [
+      "task_id",
+      "revision",
+      "source_repository",
+      "source_url",
+      "source_revision",
+      "theme",
+      "target_behavior",
+      "verification_method",
+      "budget_minutes_total",
+      "status",
+      "existing_results",
+      "evidence_locations"
+    ],
+    "research_proposal_grants_execution": false,
+    "unknown_result_policy": "Verify before retrying; preserve UNKNOWN when it cannot be observed.",
+    "historical_queue_snapshot": "https://github.com/yao23/agent-experience-graph/blob/dd999ab9ac5d59735b2a754d5473ecfaad28737b/coordination/tasks.json"
   },
   "public_write_rules": {
     "append_only_reports": true,
@@ -33,64 +149,14 @@
     "main_changes": false,
     "overwrite_conflicting_run_id": false,
     "publish_private_material": false,
-    "max_conflict_retries": 2
+    "max_conflict_retries": 2,
+    "minimum_public_output": true
   },
-  "allowed_task_actions": [
-    "READ_PUBLIC_EVIDENCE",
-    "ASSESS_OAC01_PACKET",
-    "PUBLISH_APPROVED_INTAKE_DRAFT"
-  ],
-  "forbidden_actions": [
-    "EXPAND_FOUNDRY",
-    "DISCOVER_REPLACEMENT_TARGETS",
-    "RUN_EXTERNAL_CODE",
-    "RUN_REPAIR_ARM",
-    "ACTIVATE_CAPTURE",
-    "RUN_TRANSFER_EXPERIMENT",
-    "SEND_OR_FOLLOW_UP_MESSAGE",
-    "MERGE_OR_RELEASE",
-    "CHANGE_DISCUSSION_CTA",
-    "CHANGE_WORKFLOW_OR_REPOSITORY_RULES",
-    "CHANGE_MODEL_CADENCE_OR_BUDGET",
-    "REWRITE_AUTHORIZATION"
-  ],
-  "intake": {
-    "commit": "cfd2445312f7ba0c8cd08bb3bde4fad00f6763f8",
-    "tree": "4ba0c16f8802e79c7073ecf818bf85522c9f125d",
-    "branch": "codex/field-test-intake-v1",
-    "base": "main",
-    "draft": true,
-    "paths": [
-      ".github/ISSUE_TEMPLATE/field-test-case.yml",
-      "scripts/test_experience_registry.py"
-    ],
-    "missing_commit_policy": "Do not reconstruct or substitute a different SHA."
-  },
-  "oac01": {
-    "target": "https://github.com/bufbuild/vscode-buf/issues/570",
-    "sample_size": 1,
-    "replacement_allowed": false,
-    "sending": "OPERATOR_MANUAL_ONLY",
-    "deadline_start": "ACTUAL_MESSAGE_SENT_AT",
-    "window_days": 7,
-    "founder_minutes_max": 15,
-    "agent_minutes_max": 15,
-    "cash_spend_usd_max": 0,
-    "required": [
-      "immutable_public_revision",
-      "failing_command",
-      "failure_signature",
-      "objective_pass_oracle",
-      "public_local_reproduction_permission",
-      "specific_review_date_within_window"
-    ],
-    "packet_completion_authorizes_execution": false
-  },
-  "defaults": {
-    "max_concurrent_consumers": 1,
-    "blind_retry": false,
-    "unknown_measurements": "UNKNOWN",
-    "no_material_change": "NO_WRITE_NO_NOTIFICATION",
-    "code_or_email_in_reports": "Do not publish raw email, private conversations, credentials, local paths, or source code."
+  "reporting": {
+    "daily_summary_writer": "startup-os",
+    "other_tasks_are_data_only": true,
+    "duplicate_daily_reports": false,
+    "new_failure_report_once": true,
+    "measured_reported_inferred_and_proposed_must_be_separated": true
   }
 }
