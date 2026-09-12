@@ -1,0 +1,127 @@
+diff --git a/skills/mcp-builder/scripts/test_connections.py b/skills/mcp-builder/scripts/test_connections.py
+index f914eba..3078e1b 100644
+--- a/skills/mcp-builder/scripts/test_connections.py
++++ b/skills/mcp-builder/scripts/test_connections.py
+@@ -6,10 +6,15 @@ Verifies that:
+ - argument validation operates as expected for missing parameters or unsupported transports
+ """
+ 
++from contextlib import asynccontextmanager
++
++import anyio
+ import pytest
+ import sys
+ from pathlib import Path
+ 
++import mcp.client.streamable_http as streamable_http_module
++
+ # Add scripts directory to sys.path
+ SCRIPT_DIR = Path(__file__).resolve().parent
+ if str(SCRIPT_DIR) not in sys.path:
+@@ -24,6 +29,58 @@ from connections import (
+ )
+ 
+ 
++class ExpectedInitializationError(RuntimeError):
++    """Sentinel error used to verify initialization-failure cleanup."""
++
++
++class StubClientSession:
++    """Minimal session stub; transport and HTTP-client lifecycles stay real."""
++
++    initialize_error = None
++
++    def __init__(self, read, write):
++        self.read = read
++        self.write = write
++
++    async def __aenter__(self):
++        return self
++
++    async def __aexit__(self, exc_type, exc_val, exc_tb):
++        return False
++
++    async def initialize(self):
++        if self.initialize_error is not None:
++            raise self.initialize_error
++
++
++@pytest.fixture
++def captured_production_http_client(monkeypatch):
++    """Capture the real client passed into the real SDK transport context."""
++    captured = {}
++    real_streamable_http_client = streamable_http_client
++
++    @asynccontextmanager
++    async def observing_streamable_http_client(*args, **kwargs):
++        captured["client"] = kwargs.get("http_client")
++        async with real_streamable_http_client(*args, **kwargs) as streams:
++            yield streams
++
++    async def no_network_post_writer(self, *args, **kwargs):
++        await anyio.sleep_forever()
++
++    monkeypatch.setattr(
++        "connections.streamable_http_client", observing_streamable_http_client
++    )
++    monkeypatch.setattr(
++        streamable_http_module.StreamableHTTPTransport,
++        "post_writer",
++        no_network_post_writer,
++    )
++    monkeypatch.setattr("connections.ClientSession", StubClientSession)
++    StubClientSession.initialize_error = None
++    return captured
++
++
+ def test_streamable_http_client_imported():
+     """Verify that streamable_http_client function is successfully resolved."""
+     assert callable(streamable_http_client)
+@@ -55,6 +112,47 @@ def test_create_http_connection():
+         assert ctx is not None
+ 
+ 
++@pytest.mark.asyncio
++async def test_custom_header_http_client_closed_after_normal_exit(
++    captured_production_http_client,
++):
++    """A caller-owned SDK client created by MCPConnectionHTTP is closed."""
++    connection = MCPConnectionHTTP(
++        url="https://example.invalid/mcp",
++        headers={"X-Replay-Test": "sentinel"},
++    )
++
++    async with connection:
++        client = captured_production_http_client["client"]
++        assert client is not None
++        assert client.headers["X-Replay-Test"] == "sentinel"
++        assert client.is_closed is False
++
++    assert client.is_closed is True
++
++
++@pytest.mark.asyncio
++async def test_custom_header_http_client_closed_after_initialize_error(
++    captured_production_http_client,
++):
++    """The same client is closed when ClientSession.initialize fails."""
++    expected_error = ExpectedInitializationError("expected initialize failure")
++    StubClientSession.initialize_error = expected_error
++    connection = MCPConnectionHTTP(
++        url="https://example.invalid/mcp",
++        headers={"X-Replay-Test": "sentinel"},
++    )
++
++    with pytest.raises(ExpectedInitializationError, match="expected initialize failure"):
++        async with connection:
++            pytest.fail("connection unexpectedly entered after initialize failure")
++
++    client = captured_production_http_client["client"]
++    assert client is not None
++    assert client.headers["X-Replay-Test"] == "sentinel"
++    assert client.is_closed is True
++
++
+ def test_validation_errors():
+     """Verify parameter validation."""
+     with pytest.raises(ValueError, match="Command is required"):

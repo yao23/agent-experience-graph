@@ -1,0 +1,257 @@
+[
+  {
+    "schema_version": "1.0.0",
+    "id": "trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle",
+    "slug": "anthropics-skills-mcp-http-client-lifecycle",
+    "title": "Close caller-owned MCP HTTP clients on every connection exit path",
+    "summary": "When an MCP connection creates a custom HTTP client for headers, register that caller-owned client on the connection AsyncExitStack so both normal exit and initialization failure close it.",
+    "category": "Resource Lifecycle",
+    "verification_status": "LOCALLY_VERIFIED",
+    "problem": {
+      "symptoms": [
+        "A custom-header MCP HTTP connection leaves the caller-owned SDK HTTP client open after normal context exit.",
+        "The same client remains open when ClientSession.initialize raises an expected exception.",
+        "Five existing connection tests pass while two focused lifecycle regressions fail only at the final closed-state assertion."
+      ],
+      "error_signatures": [
+        "assert client.is_closed is True",
+        "5 passed, 2 failed"
+      ]
+    },
+    "applicability": {
+      "applies_when": [
+        "A wrapper creates and owns a custom async HTTP client before passing it into an SDK transport context.",
+        "The wrapper already owns an AsyncExitStack covering normal exit and initialization failure.",
+        "A focused regression can observe the real client object while isolating network writes."
+      ],
+      "exclusions": [
+        "Abstain when the transport context creates and exclusively owns the HTTP client.",
+        "Abstain when registering the callback would cause a shared client to be closed by more than one owner.",
+        "Do not treat transport-isolated regression coverage as live-network end-to-end verification.",
+        "Do not infer AEG cross-agent transfer or token savings from this local archival record."
+      ]
+    },
+    "context": {
+      "repository": "https://github.com/anthropics/skills",
+      "source_revision": {
+        "version": "PR #1742 independently tested head",
+        "commit_sha": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0"
+      },
+      "environment_fingerprint": {
+        "language": "Python",
+        "runtime": "CPython 3.11.15",
+        "operating_system": "unknown: the sanitized evidence did not preserve a portable operating-system fingerprint",
+        "dependencies": [
+          "mcp==1.29.1",
+          "mcp==2.1.1",
+          "anthropic==1.4.0",
+          "pytest==9.1.1",
+          "pytest-asyncio==1.4.0"
+        ]
+      },
+      "agent_context": {
+        "agent": "Codex",
+        "model": "unknown: model telemetry was not preserved in the public evidence",
+        "harness": "transport-isolated pytest regression using real SDK HTTP clients",
+        "reasoning": "unknown: reasoning configuration was not preserved in the public evidence"
+      }
+    },
+    "failed_attempts": [
+      {
+        "approach": "Create a custom SDK HTTP client for headers and pass it to the streamable HTTP transport without registering caller-owned cleanup.",
+        "observed_result": "Normal connection exit and expected initialization failure both left the real client open; each SDK environment reported five passing existing tests and two lifecycle failures.",
+        "why_failed": "The wrapper created the client but transferred neither ownership nor an aclose callback to its AsyncExitStack."
+      }
+    ],
+    "recovery_steps": [
+      "Identify which layer creates and therefore owns the custom HTTP client.",
+      "Immediately after creation, register http_client.aclose on the connection's existing AsyncExitStack.",
+      "Keep the SDK transport context responsible for its own resources while the caller stack closes the injected client.",
+      "Verify both normal context exit and the path where ClientSession.initialize raises.",
+      "Run the same focused regression against MCP SDK 1.29.1 and 2.1.1 without live network I/O."
+    ],
+    "verification_method": {
+      "summary": "At tested PR head 8a2d825, two frozen lifecycle regressions failed only because the caller-owned client stayed open under both MCP SDK versions. Registering http_client.aclose on the AsyncExitStack made all seven tests pass in both environments.",
+      "checks": [
+        "mcp 1.29.1 unmodified: 5 passed, 2 failed",
+        "mcp 2.1.1 unmodified: 5 passed, 2 failed",
+        "mcp 1.29.1 with minimal lifecycle fix: 7 passed",
+        "mcp 2.1.1 with minimal lifecycle fix: 7 passed",
+        "normal context exit cleanup covered",
+        "expected initialization-failure cleanup covered",
+        "git diff whitespace and bytecode compilation passed in the original evidence run"
+      ],
+      "evidence_refs": [
+        "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PUBLIC_SUMMARY.md",
+        "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/regression-tests.patch",
+        "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/minimal-fix.patch"
+      ]
+    },
+    "registry_metrics": {
+      "tokens": {
+        "value": null,
+        "unit": "non-cached tokens",
+        "status": "unknown",
+        "note": "Token telemetry was not captured; no token-savings claim is made."
+      },
+      "commands": {
+        "value": null,
+        "unit": "completed commands",
+        "status": "unknown",
+        "note": "The complete command event stream was not preserved."
+      },
+      "retries": {
+        "value": null,
+        "unit": "retries",
+        "status": "unknown",
+        "note": "Retry telemetry was not captured as a separate metric."
+      },
+      "wall_time": {
+        "value": null,
+        "unit": "milliseconds",
+        "status": "unknown",
+        "note": "End-to-end duration was not captured."
+      }
+    },
+    "last_verified_at": "2026-09-09T22:36:35Z",
+    "agent_ready_instructions": "Use this record only when a wrapper creates and owns a custom async HTTP client that is injected into an MCP transport. Confirm ownership first. Register the client's aclose callback on the wrapper's existing AsyncExitStack immediately after creation, then verify normal exit and initialization failure with the real client and isolated network writes. Abstain for shared or transport-owned clients. Deduplicate as anthropics/skills#1742:mcp-http-client-lifecycle:8a2d825fa2d5fbaf2d375554985bd80503e4eda0. Do not infer cross-agent transfer.",
+    "license": "Apache-2.0",
+    "task": "Independently verify and minimally correct the custom MCP HTTP client lifecycle described by anthropics/skills PR #1742",
+    "outcome": "success",
+    "subtasks": [
+      {
+        "description": "Reproduce caller-owned client leakage on normal exit and initialization failure under two MCP SDK versions",
+        "skills": [
+          "resource-lifecycle-analysis",
+          "transport-isolated-regression-testing"
+        ],
+        "tools": [
+          "Python 3.11.15",
+          "pytest",
+          "MCP SDK"
+        ],
+        "outcome": "success",
+        "lessons": [
+          "Existing functional tests can remain green while a caller-owned async resource leaks on both success and failure paths."
+        ]
+      },
+      {
+        "description": "Register the minimal AsyncExitStack callback and verify both SDK environments",
+        "skills": [
+          "minimal-lifecycle-repair",
+          "failure-path-cleanup"
+        ],
+        "tools": [
+          "Python 3.11.15",
+          "pytest",
+          "git diff"
+        ],
+        "outcome": "success",
+        "lessons": [
+          "Cleanup ownership should be registered immediately where the custom client is created."
+        ]
+      }
+    ],
+    "skills": [
+      "resource-lifecycle-analysis",
+      "transport-isolated-regression-testing",
+      "minimal-lifecycle-repair",
+      "failure-path-cleanup"
+    ],
+    "tools": [
+      "Python 3.11.15",
+      "pytest",
+      "MCP SDK 1.29.1",
+      "MCP SDK 2.1.1",
+      "git"
+    ],
+    "constraints": [
+      "The validation isolated network I/O and was not a live-network end-to-end test.",
+      "The original raw evidence remains local; only scanned public-safe summaries and patches are staged.",
+      "Deduplication key: anthropics/skills#1742:mcp-http-client-lifecycle:8a2d825fa2d5fbaf2d375554985bd80503e4eda0."
+    ],
+    "lessons": [
+      "Resource ownership must be explicit when a caller creates a custom client for an SDK transport.",
+      "Test cleanup on both normal context exit and initialization failure.",
+      "A minimal AsyncExitStack callback can correct lifecycle ownership without changing transport behavior."
+    ],
+    "provenance": {
+      "repository": "https://github.com/yao23/agent-experience-graph",
+      "sourceVersion": "coordination registry candidate",
+      "recordedAt": "2026-09-12T04:27:34Z",
+      "publicSource": {
+        "repository": "https://github.com/anthropics/skills",
+        "buggyCommitSha": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+        "fixedCommitSha": "0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e",
+        "license": "Apache-2.0",
+        "benchmark": "transport-isolated lifecycle regression for PR #1742"
+      },
+      "experimentEvidence": {
+        "artifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PUBLIC_SUMMARY.md",
+        "sourceReportCreatedAt": "2026-09-09T22:36:35Z",
+        "runnerSourceCommitSha": null,
+        "runnerSourceCommitStatus": "unavailable: the original local validation harness was not committed as a standalone runner"
+      },
+      "promotionEvidence": {
+        "workflowName": "Independent PR #1742 transport-isolated lifecycle regression",
+        "workflowFile": "skills/mcp-builder/scripts/test_connections.py",
+        "validatedCommitSha": "0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e",
+        "status": "observed-passed",
+        "runResolver": "https://github.com/anthropics/skills/commit/0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e"
+      },
+      "publication": {
+        "pullRequest": "https://github.com/anthropics/skills/pull/1742"
+      }
+    },
+    "verification": {
+      "status": "passed",
+      "evidence": {
+        "experimentArtifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PUBLIC_SUMMARY.md",
+        "experienceSchema": "experiences/verified-experience.schema.json",
+        "semanticValidator": "scripts/validate_verified_experiences.py"
+      },
+      "localChecks": {
+        "testedHead": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+        "unmodifiedMcp1291": "5 passed, 2 failed only at final caller-owned client close assertions",
+        "unmodifiedMcp211": "5 passed, 2 failed only at final caller-owned client close assertions",
+        "fixedMcp1291": "7 passed",
+        "fixedMcp211": "7 passed",
+        "normalExit": "caller-owned custom HTTP client closed",
+        "initializationFailure": "expected initialization exception observed and client closed",
+        "minimalFix": "self._stack.push_async_callback(http_client.aclose)",
+        "regressionPatchSha256": "3f658520fa24c58a1d2eb5d350295a5ae5e6a5682f68b7ad05a8405a8848f49a",
+        "minimalFixPatchSha256": "140b6ac6c4467734985e88e998adb566b72050ead6e4455816b9ffe278daf291"
+      }
+    },
+    "metrics": {
+      "attempts": 1,
+      "completedCommands": 6,
+      "actualTestExecutions": 6,
+      "durationMs": null,
+      "nonCachedTokens": null,
+      "interpretation": "Six pytest invocations are explicitly evidenced across unmodified, corrected and existing-test-only checks. This is a lower bound; the complete command stream, duration and token telemetry were not preserved."
+    },
+    "limitations": [
+      "This was a transport-isolated regression, not a live-network end-to-end test.",
+      "The AEG candidate was staged after verification and was not itself used by another agent to perform the repair.",
+      "Upstream adoption commit 0ba9e31 and current open PR head b26eba8b7fab86fa74de9bc1d76a3ca0a4f53bf9 do not establish AEG cross-agent transfer.",
+      "The PR was OPEN and unmerged when checked on 2026-09-12; later merge status is not inferred.",
+      "Model, reasoning, total command count, retry count, duration, token use and cost were not captured.",
+      "The completedCommands value is the six explicitly evidenced pytest commands, not a complete session command total."
+    ],
+    "reuse": {
+      "retrievalTags": [
+        "MCP HTTP client lifecycle",
+        "AsyncExitStack aclose",
+        "caller-owned async resource",
+        "initialization failure cleanup",
+        "custom headers"
+      ],
+      "recommendedFor": [
+        "repairing leaked async clients injected into SDK transport contexts",
+        "testing cleanup on normal exit and initialization failure",
+        "reviewing ownership when custom headers require a caller-created HTTP client"
+      ]
+    }
+  }
+]

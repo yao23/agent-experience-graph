@@ -1,0 +1,13 @@
+diff --git a/skills/mcp-builder/scripts/connections.py b/skills/mcp-builder/scripts/connections.py
+index 2f1b7f3..0698cf2 100644
+--- a/skills/mcp-builder/scripts/connections.py
++++ b/skills/mcp-builder/scripts/connections.py
+@@ -119,6 +119,8 @@ class MCPConnectionHTTP(MCPConnection):
+     def _create_context(self):
+         if create_mcp_http_client is not None:
+             http_client = create_mcp_http_client(headers=self.headers) if self.headers else None
++            if http_client is not None:
++                self._stack.push_async_callback(http_client.aclose)
+             return streamable_http_client(url=self.url, http_client=http_client)
+         else:
+             try:
