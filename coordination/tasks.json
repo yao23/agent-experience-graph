@@ -1,20 +1,25 @@
 {
   "schema_version": "2.0.0",
-  "revision": 3,
+  "revision": 4,
   "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-11T00:33:38-07:00",
+  "updated_at": "2026-09-11T22:17:27-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "CLOUD_POLICY_MIGRATED_LOCAL_CONSUMER_PENDING",
+  "delivery_state": "LOCAL_CONSUMER_CONFIGURED_NO_READY_TASK_SCHEDULED_ACTIVATION_PENDING",
   "tasks": [],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "PENDING_SEPARATE_LOCAL_HANDOFF",
-    "max_concurrent_consumers": 1
+    "state": "CONFIGURED_AWAITING_FIRST_SCHEDULED_QUEUE_READ",
+    "max_concurrent_consumers": 1,
+    "evidence_location": "coordination/receipts/codex-bootstrap-read-20260912t042604z.json",
+    "limitations": [
+      "The configuration receipt is manual and does not prove a scheduler-origin run.",
+      "No task CLAIM or RESULT exists for the sprint queue."
+    ]
   },
   "historical_queue": {
     "immutable_snapshot": "https://github.com/yao23/agent-experience-graph/blob/dd999ab9ac5d59735b2a754d5473ecfaad28737b/coordination/tasks.json",
