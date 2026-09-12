@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-result-pr1742-archival-20260912t043041z",
+  "receipt_type": "ARCHIVAL_RESULT",
+  "trigger_source": "manual",
+  "source_task_id": "PR-1742-ARCHIVAL-BACKFILL",
+  "source_task_revision": 1,
+  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+  "policy_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5",
+  "additive_authorization": "OPERATOR_APPROVED_VERIFIED_EXPERIENCE_ARCHIVAL_2026-09-11",
+  "started_at": "2026-09-12T04:27:34Z",
+  "finished_at": "2026-09-12T04:30:41Z",
+  "classification": "REGISTRY_CANDIDATE_PERSISTED",
+  "promotion_state": "STAGED_NOT_IN_MAIN",
+  "scheduled_execution_occurred": false,
+  "claim_created": false,
+  "experiment_executed": false,
+  "external_comment_sent": false,
+  "experience_id": "trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle",
+  "deduplication_key": "anthropics/skills#1742:mcp-http-client-lifecycle:8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+  "candidate_path": "coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json",
+  "candidate_sha256": "1106651882c3272cecfa5ac03b081949b1f5cc0579ab66be56ced1e3221aca18",
+  "coordination_commit": "94f25c36bab3f4729413ebc20dbb4d310c64ea23",
+  "evidence": [
+    {
+      "path": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PUBLIC_SUMMARY.md",
+      "sha256": "766d09a3deef3bb1d622b5582b835d88a0573ad68f35a17748d0427d1019e6b2"
+    },
+    {
+      "path": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/regression-tests.patch",
+      "sha256": "3f658520fa24c58a1d2eb5d350295a5ae5e6a5682f68b7ad05a8405a8848f49a"
+    },
+    {
+      "path": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/minimal-fix.patch",
+      "sha256": "140b6ac6c4467734985e88e998adb566b72050ead6e4455816b9ffe278daf291"
+    }
+  ],
+  "upstream": {
+    "repository": "https://github.com/anthropics/skills",
+    "pull_request": "https://github.com/anthropics/skills/pull/1742",
+    "state_checked_at": "2026-09-12T04:27:34Z",
+    "state": "OPEN",
+    "merged": false,
+    "tested_head": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+    "adoption_commit": "0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e",
+    "current_head": "b26eba8b7fab86fa74de9bc1d76a3ca0a4f53bf9",
+    "source_license": "Apache-2.0"
+  },
+  "validation_results": [
+    {
+      "command": "python3 scripts/validate_verified_experiences.py --library <candidate>",
+      "result": "PASSED: schemaValidation passed, experienceCount 1, uniqueIds 1"
+    },
+    {
+      "command": "merge canonical Registry and candidate in memory, then run validate_verified_experiences.py",
+      "result": "PASSED: schemaValidation passed, experienceCount 3, uniqueIds 3"
+    },
+    {
+      "command": "run build_registry registry_index and expected_outputs in memory",
+      "result": "PASSED: 3 unique IDs, 3 unique slugs, 8 generated outputs"
+    },
+    {
+      "command": "git apply --check regression-tests.patch at tested head, apply it, then git apply --check minimal-fix.patch",
+      "result": "PASSED"
+    },
+    {
+      "command": "scan candidate and evidence for credential-like strings, private paths and local usernames",
+      "result": "PASSED: no matches"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASSED"
+    }
+  ],
+  "verified_facts": [
+    "CPython 3.11.15",
+    "mcp 1.29.1 unmodified: 5 passed, 2 failed; corrected: 7 passed",
+    "mcp 2.1.1 unmodified: 5 passed, 2 failed; corrected: 7 passed",
+    "Both failures were caller-owned custom HTTP client lifecycle assertions",
+    "Normal context exit and expected initialization failure were covered",
+    "Minimal intervention registered http_client.aclose on the connection AsyncExitStack",
+    "Validation was transport-isolated and not live-network end-to-end"
+  ],
+  "remaining_limitations": [
+    "The candidate is staged on the coordination branch and is not in the canonical Registry on main.",
+    "No independent AEG cross-agent transfer experiment occurred.",
+    "No token-savings evidence exists.",
+    "The current rebased PR head was not rerun during this archival-only action.",
+    "Model, reasoning, complete command count, retry count, duration and cost are unknown."
+  ]
+}
