@@ -23,3 +23,27 @@ Use this entry only after the operator supplies the immutable coordination commi
 ## Acceptance output
 
 Return the actual local task name and ID, enabled state, next run time, model, project path, trusted commit and digest, manual result and evidence location, plus any remaining blocker. End-to-end status remains pending until one real scheduled producer report, one local consumer receipt and one deduplicating subsequent read are all observed.
+
+## Terminal archival requirement
+
+This section is an additive operator authorization recorded during the local migration; it does not replace or relax `AUTHORIZATION.json`.
+
+Before an objectively verified task result is marked completed, the local consumer must produce exactly one of these archival outcomes:
+
+- `REGISTRY_CANDIDATE_PERSISTED`: a migration-ready, public-safe structured experience and auditable evidence were committed to this coordination branch;
+- `REGISTRY_CANDIDATE_ALREADY_EXISTS`: the same stable experience or deduplication key already exists and was verified;
+- `REGISTRY_CANDIDATE_BLOCKED`: an `ARCHIVAL_BLOCKED` receipt identifies the missing evidence and why the record cannot be archived;
+- `NOT_OBJECTIVELY_VERIFIED`: the result does not meet the objective verification threshold; or
+- `NOT_PUBLIC_SAFE`: the result cannot be represented without disallowed private material.
+
+Thanks, replies, drafts, claims and unverified hypotheses are not verified experiences. A task is not archived merely because a log, patch, GitHub comment or RESULT receipt exists.
+
+Use the existing `experiences/verified-experience.schema.json` and stable experience IDs. Stage each candidate as a single-element array under `coordination/evidence/registry-candidates/`, with sanitized case evidence under `coordination/evidence/cases/`. Each record must preserve the problem signature; environment and versions; applicability, non-applicability and abstention conditions; failed approach; root cause; minimal intervention; predeclared verification procedure and observed result; evidence provenance and hashes; upstream issue, pull request and commit references; verification level; limitations; and a deduplication key. Unknown metrics must remain unknown with a reason.
+
+Before writing a terminal archival result, validate JSON Schema conformance, semantic rules, stable-ID and deduplication integrity in a temporary merged Registry, Registry index generation, patch integrity, public redaction, `git diff --check` and SHA-256 hashes. Write through the existing non-force coordination-branch protocol.
+
+Local verification, upstream adoption and cross-agent transfer are distinct states. Never describe local verification or upstream adoption as AEG cross-agent transfer; only an independently executed transfer experiment can establish transfer.
+
+## Local dispatch tolerance
+
+The local consumer's stored schedule anchor remains 20:00 America/Los_Angeles, represented during this sprint as 03:00 UTC on the following UTC calendar day. A scheduler-computed occurrence may be accepted only when it is 0 through 300 seconds after the anchor, stays on the same local date and planned time window, does not start early, and does not exceed the sprint deadline. This tolerance represents dispatch delay only and does not change frequency, budget or deadline.
