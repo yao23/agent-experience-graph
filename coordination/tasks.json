@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 6,
+  "revision": 7,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-12T23:14:51-07:00",
+  "updated_at": "2026-09-13T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_TRANSFER_CHECK_READY_V3_LOCAL_HANDOFF_PENDING",
+  "delivery_state": "ONE_TRANSFER_CHECK_READY_THREE_HISTORICAL_BACKLOG_V3_ACCEPTED",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -53,17 +53,119 @@
         "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
         "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
       ]
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 2,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "source_revision": "base 9bdc03d54e59e28f08307c2dba0e429a64b171c9; repair 23102e3e330a84a98602170c12f62e16e4e50a5e; merge 1216c536937819070981e63177b258b79a615bfd",
+      "theme": "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "target_behavior": "Tool names and URI-template variable names containing a trailing newline are rejected without changing valid-name behavior.",
+      "verification_method": {
+        "design": "Historical pre/post replay on the frozen base and repair commits with the same upstream regression cases and targeted valid-name tests.",
+        "technical_oracle": [
+          "Apply the upstream regression cases to the frozen base and confirm both trailing-newline cases fail for the intended reason.",
+          "Apply the frozen repair and confirm the targeted tool-name and URI-template tests pass.",
+          "Run the existing targeted files and confirm valid-name behavior does not regress."
+        ],
+        "safety": "Local isolated checkout only; preserve upstream authorship; do not publish or comment upstream."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #3076; no local replay, Registry candidate, independent transfer, or external adoption is yet established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260913-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9bdc03d54e59e28f08307c2dba0e429a64b171c9",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/23102e3e330a84a98602170c12f62e16e4e50a5e"
+      ],
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or live contribution.",
+        "Backport PR #3086 is the same root cause and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:regex-fullmatch-trailing-newline:3076"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2816-CALLTOOL-RESULT",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 3,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+      "source_revision": "base 0fa03ec69fe58174c8b258713014f248382f3f51; repair 7b97c4e883d0293d107b5439a51b064ad482fcb4; merge fda4c543624ddfa3479ccd89c0c16bd051b489c2",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "target_behavior": "MCPServer.call_tool always returns CallToolResult with correct content and structured_content for direct, unstructured and structured tool modes.",
+      "verification_method": {
+        "design": "Historical pre/post replay on frozen pre-release revisions with the upstream discriminating result-shape test and targeted static/runtime checks.",
+        "technical_oracle": [
+          "Add the upstream discriminating result-shape test to the frozen base and confirm it fails.",
+          "Apply the frozen repair and confirm the same test passes.",
+          "Run targeted MCPServer, tool-manager, pyright and ruff checks."
+        ],
+        "safety": "Local isolated checkout only; preserve upstream authorship and disclosed AI assistance; do not publish or comment upstream."
+      },
+      "budget_minutes_total": 75,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #2816; no local replay, Registry candidate, independent transfer, or external adoption is yet established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260913-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/0fa03ec69fe58174c8b258713014f248382f3f51",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/7b97c4e883d0293d107b5439a51b064ad482fcb4"
+      ],
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or maintainer adoption by AEG.",
+        "The repair changes a public v2 return contract and must remain pinned to its frozen pre-release revisions."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcpserver-call-tool-result-contract:2816"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2977-DOCS-PACKAGE-PATH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 4,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+      "source_revision": "base 411a6d398028123a3d2a3ec95327b2e1fca2efce; repair 27290cf928c58b0deab5fcd1a1640b073eb7377a; merge 3a8da8c0c3c87f63171bdaa023dbee71502bdb11",
+      "theme": "CI_OR_DEPLOYMENT_FAILURE",
+      "target_behavior": "Generated API pages use importable mcp_types.* identifiers and emit both mcp and mcp_types API trees.",
+      "verification_method": {
+        "design": "Historical replay of only the bounded documentation path defect on frozen pre/post commits; network-dependent full documentation builds are excluded from the primary oracle.",
+        "technical_oracle": [
+          "On the frozen base, run the local docs page generator and assert at least one hyphenated identifier or missing mcp_types API path.",
+          "Apply only the frozen docs-path repair subset and rerun the same generator assertions.",
+          "Treat full mkdocs network failure as non-oracle setup noise."
+        ],
+        "safety": "Local isolated checkout only; preserve upstream authorship and disclosed AI assistance; do not publish or comment upstream."
+      },
+      "budget_minutes_total": 75,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #2977; no bounded local replay, Registry candidate, independent transfer, or external adoption is yet established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260913-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/411a6d398028123a3d2a3ec95327b2e1fca2efce",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/27290cf928c58b0deab5fcd1a1640b073eb7377a"
+      ],
+      "limitations": [
+        "The upstream PR bundles release, packaging and docs changes; replay only the docs identifier/path defect.",
+        "Full mkdocs strict build fetches external inventories and is not the primary oracle."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcp-types-docs-import-path:2977"
     }
   ],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "PREDECESSOR_CONFIGURED_V3_ACCEPTANCE_PENDING",
+    "state": "V3_CONFIGURATION_ACCEPTED_READY_TASK_AWAITING_SCHEDULED_CLAIM",
     "max_concurrent_consumers": 1,
-    "evidence_location": "coordination/receipts/codex-bootstrap-read-20260912t042604z.json",
+    "evidence_location": "coordination/receipts/codex-bootstrap-read-20260913t062948z.json",
     "limitations": [
-      "The prior manual configuration receipt does not accept v3 or prove scheduled execution.",
-      "The existing READY task identity, revision, source, oracle and budget are unchanged by configuration migration.",
-      "Consume only after the Mac accepts the new trusted policy commit/hash; cloud research and queueing may proceed meanwhile."
+      "The v3 BOOTSTRAP_READ/CONFIGURATION_ACCEPTED receipt is valid configuration evidence but is not a scheduler-origin CLAIM or RESULT.",
+      "No experiment has run; the next eligible local action is a future scheduler-origin claim of the single READY revision.",
+      "The #3494 baseline and treatment must use fresh isolated solver contexts; otherwise return BLOCKED_TRANSFER_ISOLATION."
     ]
   },
   "historical_queue": {
