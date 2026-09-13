@@ -1,0 +1,256 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260913-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-13:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-13T14:37:00Z",
+  "observed_local_date": "2026-09-13",
+  "slot": "morning",
+  "classification": "THREE_QUALIFIED_HISTORICAL_REPLAYS",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "2b48dc68607abe0d6660fed55baff0b6dd16e170"
+  },
+  "funnel": {
+    "reviewed_total": 8,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION/ENVIRONMENT_DRIFT": 2,
+      "HISTORICAL_REPLAY/MISLEADING_REPAIR_OR_REPEATED_FAILURE": 2,
+      "HISTORICAL_REPLAY/CROSS_MODULE_REGRESSION": 1,
+      "HISTORICAL_REPLAY/CI_OR_DEPLOYMENT_FAILURE": 2,
+      "HISTORICAL_REPLAY/AUTHENTICATION_EXCLUDED": 1
+    },
+    "qualified": 3,
+    "excluded_by_reason": {
+      "COMPLETE_OR_ACTIVE_SOLUTION_ALREADY_PRESENT_FOR_LIVE_CASE": 2,
+      "DUPLICATE_BACKPORT_SAME_ROOT_CAUSE": 1,
+      "NO_DISCRIMINATING_TEST_ORACLE": 1,
+      "HARD_EXCLUSION_AUTHENTICATION_OR_SECURITY": 1
+    },
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_REACHED",
+    "ready_queue_age": "Approximately 8h17m at the fixed snapshot; one TRANSFER_CHECK is READY and v3 local acceptance remains represented separately by a later receipt.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-13T02:32:01Z",
+    "live_checked_through": "2026-09-13T14:37:00Z",
+    "historical_window_start": "2026-06-15",
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-13T14:37:00Z"
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "source_updated_at": "2026-07-10T12:56:55Z",
+      "source_revision": {
+        "base_commit": "9bdc03d54e59e28f08307c2dba0e429a64b171c9",
+        "repair_commit": "23102e3e330a84a98602170c12f62e16e4e50a5e",
+        "merge_commit": "1216c536937819070981e63177b258b79a615bfd"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "mechanism": "Python regex `$` plus re.match accepts a single trailing newline; strict full-string validation is required.",
+      "target_behavior": "Tool names and URI-template variable names containing a trailing newline are rejected without changing valid-name behavior.",
+      "objective_verification": [
+        "Apply the upstream regression cases to the frozen base; both trailing-newline cases must fail for the intended reason.",
+        "Apply the frozen repair; targeted tool-name and URI-template tests must pass.",
+        "Run the existing targeted files to detect valid-name regressions."
+      ],
+      "estimated_total_minutes": 45,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+        "authorship": "Upstream contributor; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or live contribution.",
+        "Backport PR #3086 is the same root cause and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:regex-fullmatch-trailing-newline:3076"
+    },
+    {
+      "rank": 2,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+      "source_updated_at": "2026-06-26T08:42:54Z",
+      "source_revision": {
+        "base_commit": "0fa03ec69fe58174c8b258713014f248382f3f51",
+        "repair_commit": "7b97c4e883d0293d107b5439a51b064ad482fcb4",
+        "merge_commit": "fda4c543624ddfa3479ccd89c0c16bd051b489c2"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "mechanism": "Public MCPServer.call_tool annotation and wrapper conversion shapes diverged; conversion must return one CallToolResult contract across direct, unstructured and structured tools.",
+      "target_behavior": "MCPServer.call_tool always returns CallToolResult with correct content and structured_content for all three result modes.",
+      "objective_verification": [
+        "Add the upstream discriminating result-shape test to the frozen base and confirm it fails.",
+        "Apply the frozen repair and confirm the same test passes.",
+        "Run targeted MCPServer, tool-manager, pyright and ruff checks."
+      ],
+      "estimated_total_minutes": 75,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+        "authorship": "Upstream contributor with disclosed AI assistance; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or maintainer adoption by AEG.",
+        "The patch changes a public v2 return contract; replay must stay on its frozen pre-release revisions."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcpserver-call-tool-result-contract:2816"
+    },
+    {
+      "rank": 3,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+      "source_updated_at": "2026-06-26T11:16:11Z",
+      "source_revision": {
+        "base_commit": "411a6d398028123a3d2a3ec95327b2e1fca2efce",
+        "repair_commit": "27290cf928c58b0deab5fcd1a1640b073eb7377a",
+        "merge_commit": "3a8da8c0c3c87f63171bdaa023dbee71502bdb11"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "CI_OR_DEPLOYMENT_FAILURE",
+      "mechanism": "A split distribution directory was mistaken for an import package, generating green documentation with unimportable `mcp-types.mcp_types.*` identifiers and broken API paths.",
+      "target_behavior": "Generated API pages use importable mcp_types.* identifiers and emit both mcp and mcp_types API trees.",
+      "objective_verification": [
+        "On the frozen base, run the local docs page generator and assert at least one hyphenated identifier or missing mcp_types API path.",
+        "Apply only the frozen docs-path repair subset and rerun the same generator assertions.",
+        "Do not require network-fetched inventories; treat full mkdocs network failure as non-oracle setup noise."
+      ],
+      "estimated_total_minutes": 75,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+        "authorship": "Upstream contributor with disclosed AI assistance; replay only the bounded docs-path subrepair."
+      },
+      "limitations": [
+        "The upstream PR bundles release, packaging and docs changes; this candidate is explicitly limited to the docs identifier/path defect.",
+        "Full mkdocs strict build fetches external inventories and is not the primary oracle."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcp-types-docs-import-path:2977"
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "source_revision": "base 9bdc03d54e59e28f08307c2dba0e429a64b171c9; repair 23102e3e330a84a98602170c12f62e16e4e50a5e",
+      "theme": "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "target_behavior": "Tool names and URI-template variable names containing a trailing newline are rejected without changing valid-name behavior.",
+      "verification_method": [
+        "Apply the upstream regression cases to the frozen base; both trailing-newline cases must fail for the intended reason.",
+        "Apply the frozen repair; targeted tool-name and URI-template tests must pass.",
+        "Run the existing targeted files to detect valid-name regressions."
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/3076; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9bdc03d54e59e28f08307c2dba0e429a64b171c9",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/23102e3e330a84a98602170c12f62e16e4e50a5e"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:regex-fullmatch-trailing-newline:3076"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2816-CALLTOOL-RESULT",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+      "source_revision": "base 0fa03ec69fe58174c8b258713014f248382f3f51; repair 7b97c4e883d0293d107b5439a51b064ad482fcb4",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "target_behavior": "MCPServer.call_tool always returns CallToolResult with correct content and structured_content for all three result modes.",
+      "verification_method": [
+        "Add the upstream discriminating result-shape test to the frozen base and confirm it fails.",
+        "Apply the frozen repair and confirm the same test passes.",
+        "Run targeted MCPServer, tool-manager, pyright and ruff checks."
+      ],
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2816; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2816",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/0fa03ec69fe58174c8b258713014f248382f3f51",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/7b97c4e883d0293d107b5439a51b064ad482fcb4"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcpserver-call-tool-result-contract:2816"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2977-DOCS-PACKAGE-PATH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+      "source_revision": "base 411a6d398028123a3d2a3ec95327b2e1fca2efce; repair 27290cf928c58b0deab5fcd1a1640b073eb7377a",
+      "theme": "CI_OR_DEPLOYMENT_FAILURE",
+      "target_behavior": "Generated API pages use importable mcp_types.* identifiers and emit both mcp and mcp_types API trees.",
+      "verification_method": [
+        "On the frozen base, run the local docs page generator and assert at least one hyphenated identifier or missing mcp_types API path.",
+        "Apply only the frozen docs-path repair subset and rerun the same generator assertions.",
+        "Do not require network-fetched inventories; treat full mkdocs network failure as non-oracle setup noise."
+      ],
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2977; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2977",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/411a6d398028123a3d2a3ec95327b2e1fca2efce",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/27290cf928c58b0deab5fcd1a1640b073eb7377a"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:mcp-types-docs-import-path:2977"
+    }
+  ],
+  "current_state": {
+    "queue_revision": 6,
+    "ready_tasks": 1,
+    "new_case_starts_rolling_7_days": 0,
+    "sprint_case_starts": 0,
+    "transfer_checks_started": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "slot_cap_agent_minutes": 6,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Sunday slot cap is reserved. No duplicate slot budget is claimed."
+  },
+  "actions_taken": [
+    "READ_PUBLIC_EVIDENCE",
+    "RANK_IN_SCOPE_CANDIDATES",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
