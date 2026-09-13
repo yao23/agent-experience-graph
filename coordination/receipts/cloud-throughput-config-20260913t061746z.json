@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_type": "CLOUD_CONFIGURATION_ACCEPTED",
+  "observed_at": "2026-09-13T06:17:46.491023+00:00",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+  "policy_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+  "policy_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+  "configuration_snapshot": "coordination/evidence/configurations/cloud-throughput-20260913.json",
+  "configuration_snapshot_sha256": "de1bcede7d2a526e44a806b76eba1ed9c41187e03c1163a09c0f24d02a2a3ae3",
+  "existing_cloud_task_count": 4,
+  "new_cloud_tasks_created": 0,
+  "all_existing_cloud_tasks_enabled": true,
+  "prompt_and_schedule_readback_exact_match": true,
+  "scheduler_next_run_times": "UNKNOWN",
+  "recurrence_validation": "Scan and Startup OS each have 24 planned occurrences, weekly jobs each have two; every occurrence is within the original deadline. COUNT is used for cloud schedules because the scheduler normalized away the UNTIL UTC suffix.",
+  "repository_file_sha256": {
+    "coordination/AUTHORIZATION.json": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "coordination/CODEX_ENTRY.md": "97a7e4ef264e1be070ec39d88786f6dc4a00057504cc9b8069081033b5ddfd98",
+    "coordination/README.md": "010b3dc1cba1af0daef7d78e8b885366a77bc59cecbf4ae1e825206f80c38245",
+    "coordination/SEARCH_CHECKLIST.md": "7d93fbd76187c7bce471a624be77b4016ca6c0082109f4f9b908aeaa8da3262b",
+    "coordination/tasks.json": "823ff1b04a5aab703179ccb6e2a264c3c0c389d7576cfc1eb5255d3953efb6a3"
+  },
+  "existing_queue_task_payloads_unchanged_sha256": "2da5f9026c369041b345d1de704d445def06a6890e8cf7059b93c5e9094833f5",
+  "local_consumer_state": "V3_HANDOFF_PENDING",
+  "local_configuration_modified_by_this_migration": false,
+  "new_configuration_scheduled_execution_observed": false,
+  "manual_experiment_executed": false,
+  "external_comments_or_messages_sent": false,
+  "main_modified": false,
+  "new_model_api_calls": false,
+  "limits": {
+    "cloud_agent_minutes_per_day": 30,
+    "local_agent_minutes_per_day": 120,
+    "local_agent_minutes_per_rolling_7_days": 600,
+    "case_minutes": 90,
+    "case_starts_per_rolling_7_days": 12,
+    "case_starts_sprint_total": 12,
+    "live_case_starts_per_rolling_7_days": 2,
+    "transfer_checks_sprint_total": 1,
+    "cash_increment_usd": 0
+  },
+  "measurement_window": [
+    "2026-09-13",
+    "2026-09-19"
+  ],
+  "unchanged_sprint_deadline": "2026-09-24T23:59:00-07:00"
+}
