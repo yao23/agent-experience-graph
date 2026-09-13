@@ -1,0 +1,54 @@
+{
+  "receipt_type": "FORMAT_UPDATE",
+  "format": "provenance.record",
+  "format_version": "1.0.0",
+  "created_at": "2026-09-13T17:32:22.015011Z",
+  "base_commit": "739c79ef6b54189bb2ca9ac21985c9fdcbec0598",
+  "branch": "codex/aeg-task-bridge-v1",
+  "source_request": "Operator requested minimal Provenance Record format and direct GitHub implementation in the current conversation.",
+  "changed_files_sha256": {
+    "coordination/CODEX_ENTRY.md": "0ead4b625dfdf18dc2d086363c5bb5be11e74b106d25fd31c1b18d870940091c",
+    "coordination/PROVENANCE_ARCHIVAL.md": "cf7b7acb00381e4ffd685b4032bd59eb337c8c1a0abe259ab2fc35b963b4b1a6",
+    "coordination/README.md": "cb385bbe7db813b0f0d9b100f42409275c13d558da5d5d711ce503b28df78b1b",
+    "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PROVENANCE_NOTES.md": "37918c23ad0f8b9112b1c62a218eac9272b00e1caccc9523881102f7eaecf77a",
+    "coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json": "3171957eb27b316c081d152df3398b3abc057492d164d0d13eb83f8057214d3c",
+    "docs/experience-registry.md": "83a4b858bf85a7cc1fd5700c93fe94bc164ab6ff2b06149d1029395c50825669",
+    "docs/provenance-record.md": "2b2fac68e3aed788b0ac207f0022f9de37f9e89918c3d932bb41024055b5f5d4",
+    "experiences/verified-experience.schema.json": "a0d5eef63b0c938aacffb398020b98c35d6f2e034f31a9f8b3907638d853e439",
+    "scripts/test_provenance_record.py": "83321ec4cb36da015a5e5abd28e2afe70277798f021e258248fd55335f493b93",
+    "scripts/validate_verified_experiences.py": "3b99b3cc57422731b03b27991d69be3d5f6cdb12397f4cdf924002b773abae3d"
+  },
+  "validation": {
+    "provenance_unit_and_cli_tests_passed": 16,
+    "legacy_registry_records_schema_and_semantics": "passed: 2 records",
+    "previous_candidate_without_extension": "passed",
+    "updated_candidate_schema_semantics_and_actual_evidence_digests": "passed",
+    "temporary_merged_registry_unique_ids": 3,
+    "generated_output_dry_validation": {
+      "outputs": 8,
+      "complete_provenance_preserved_in_machine_json": true
+    },
+    "original_case_evidence_bytes": "unchanged",
+    "canonical_registry_bytes": "unchanged",
+    "frozen_verified_json_bytes": "unchanged; predates the current Registry schema and retains the identical pre-existing validation mismatch",
+    "authorization_and_queue_bytes": "unchanged",
+    "diff_check": "passed"
+  },
+  "case_update": {
+    "experience_id": "trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle",
+    "verification_status": "LOCALLY_VERIFIED",
+    "upstream_promotion_evidence_status": "reported-passed",
+    "external_replay_evidence_status": "SELF_REPORTED",
+    "external_replay_tested_commit_sha": null,
+    "archival_state": "STAGED_NOT_IN_MAIN"
+  },
+  "local_adoption": "PENDING: GitHub metadata format is available; Mac task prompt adoption has not been executed or read back by this operation.",
+  "scheduled_execution_occurred": false,
+  "upstream_repair_experiments_run": false,
+  "model_api_experiments_run": false,
+  "external_comments_or_messages_sent": false,
+  "main_modified": false,
+  "schedules_or_budgets_modified": false,
+  "frozen_transfer_source_commit": "94f25c36bab3f4729413ebc20dbb4d310c64ea23",
+  "frozen_transfer_input_modified": false
+}

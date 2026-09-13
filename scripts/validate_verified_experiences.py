@@ -3,10 +3,11 @@
 
 import argparse
 import datetime
+import hashlib
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from urllib.parse import urlsplit
 
 
@@ -16,6 +17,17 @@ if str(ROOT) not in sys.path:
 DEFAULT_LIBRARY = ROOT / "experiences" / "registry.json"
 ID_RE = re.compile(r"^trace-[a-z0-9][a-z0-9.-]+$")
 COMMIT_RE = re.compile(r"^[a-f0-9]{40}$")
+SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+PROVENANCE_TIMESTAMP_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+    r"(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+)
+PROVENANCE_REFS = {
+    "models_and_harnesses_ref": "/context/agent_context",
+    "environment_ref": "/context/environment_fingerprint",
+    "verification_ref": "/verification_method",
+    "negative_results_ref": "/failed_attempts",
+}
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SCHEMA_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 VERIFICATION_STATES = {
@@ -77,12 +89,143 @@ def validate_timestamp(value, path):
     require(parsed.tzinfo is not None, f"{path} must include a timezone")
 
 
-def validate_safe_url(value, path):
+def validate_safe_url(value, path, allow_fragment=False):
     require(isinstance(value, str), f"{path} must be a URL string")
-    parsed = urlsplit(value)
-    require(parsed.scheme == "https" and bool(parsed.netloc), f"{path} must be an absolute HTTPS URL")
-    require(not parsed.username and not parsed.password, f"{path} must not contain URL credentials")
-    require(not parsed.fragment, f"{path} must not contain a fragment")
+    require(not re.search(r"[\s\x00-\x1f\x7f\\]", value), f"{path} contains invalid URL characters")
+    try:
+        parsed = urlsplit(value)
+        valid_host = bool(parsed.hostname)
+        parsed.port  # Reject malformed or out-of-range ports.
+    except ValueError as error:
+        raise ValidationError(f"{path} is not a valid URL") from error
+    require(parsed.scheme == "https" and valid_host, f"{path} must be an absolute HTTPS URL")
+    require(parsed.username is None and parsed.password is None, f"{path} must not contain URL credentials")
+    require(allow_fragment or not parsed.fragment, f"{path} must not contain a fragment")
+
+
+def validate_provenance_timestamp(value, path):
+    require(isinstance(value, str) and PROVENANCE_TIMESTAMP_RE.fullmatch(value), f"{path} must be an ISO timestamp with a timezone")
+    validate_timestamp(value, path)
+
+
+def validate_digest_metadata(digest, path):
+    """Check public metadata without accessing artifact files."""
+    require(isinstance(digest, dict), f"{path} must be an object")
+    artifact = digest.get("artifact")
+    require(isinstance(artifact, str) and artifact, f"{path}.artifact must be a non-empty path")
+    relative = Path(artifact)
+    require(
+        not relative.is_absolute() and not PureWindowsPath(artifact).drive
+        and ".." not in relative.parts and "\\" not in artifact
+        and not re.search(r"[\x00-\x1f\x7f]", artifact),
+        f"{path}.artifact must stay repository-relative",
+    )
+    sha256 = digest.get("sha256")
+    require(isinstance(sha256, str) and SHA256_RE.fullmatch(sha256), f"{path}.sha256 must be a SHA-256 hex digest")
+    require(isinstance(digest.get("scope"), str) and digest["scope"], f"{path}.scope must be a non-empty string")
+
+
+def validate_provenance_record(experience, path):
+    """Validate disclosures; this does not establish truth, independence, or rights."""
+    provenance = experience.get("provenance", {})
+    if "record" not in provenance:
+        return
+    record = provenance["record"]
+    path = f"{path}.provenance.record"
+    require(isinstance(record, dict), f"{path} must be an object")
+    require(record.get("schema_version") == "1.0.0", f"{path}.schema_version is unsupported")
+    for field, expected in PROVENANCE_REFS.items():
+        require(record.get(field) == expected, f"{path}.{field} must reference {expected}")
+        target = experience
+        for component in expected.lstrip("/").split("/"):
+            require(isinstance(target, dict) and component in target, f"{path}.{field} does not resolve")
+            target = target[component]
+        require(target is not None, f"{path}.{field} does not resolve to an existing value")
+
+    def public_url(value, location):
+        validate_safe_url(value, location, allow_fragment=True)
+
+    def public_urls(values, location):
+        require(isinstance(values, list), f"{location} must be an array")
+        for index, value in enumerate(values):
+            public_url(value, f"{location}[{index}]")
+
+    def commit(value, location):
+        require(value is None or (isinstance(value, str) and COMMIT_RE.fullmatch(value)), f"{location} must be null or a full commit SHA")
+
+    origin = record.get("task_origin")
+    require(isinstance(origin, dict), f"{path}.task_origin must be an object")
+    public_url(origin.get("url"), f"{path}.task_origin.url")
+    commit(origin.get("revision"), f"{path}.task_origin.revision")
+    prior_art = record.get("prior_art")
+    require(isinstance(prior_art, list), f"{path}.prior_art must be an array")
+    for index, source in enumerate(prior_art):
+        source_path = f"{path}.prior_art[{index}]"
+        require(isinstance(source, dict), f"{source_path} must be an object")
+        public_url(source.get("url"), f"{source_path}.url")
+        commit(source.get("revision"), f"{source_path}.revision")
+    contributors = record.get("contributors")
+    require(isinstance(contributors, list) and contributors, f"{path}.contributors must be a non-empty array")
+    for index, contributor in enumerate(contributors):
+        contributor_path = f"{path}.contributors[{index}]"
+        require(isinstance(contributor, dict), f"{contributor_path} must be an object")
+        public_urls(contributor.get("evidence_urls"), f"{contributor_path}.evidence_urls")
+    digests = record.get("trace_digest")
+    require(isinstance(digests, list) and digests, f"{path}.trace_digest must be a non-empty array")
+    for index, digest in enumerate(digests):
+        validate_digest_metadata(digest, f"{path}.trace_digest[{index}]")
+
+    replays = record.get("independent_replays")
+    require(isinstance(replays, list), f"{path}.independent_replays must be an array")
+    seen_replay_ids = set()
+    for index, replay in enumerate(replays):
+        replay_path = f"{path}.independent_replays[{index}]"
+        require(isinstance(replay, dict), f"{replay_path} must be an object")
+        replay_id = replay.get("id")
+        require(isinstance(replay_id, str) and replay_id, f"{replay_path}.id is required")
+        require(replay_id not in seen_replay_ids, f"{replay_path} has duplicate replay ID: {replay_id}")
+        seen_replay_ids.add(replay_id)
+        public_url(replay.get("source_url"), f"{replay_path}.source_url")
+        validate_provenance_timestamp(replay.get("reported_at"), f"{replay_path}.reported_at")
+        status = replay.get("evidence_status")
+        require(status in {"SELF_REPORTED", "EVIDENCE_ATTACHED", "AUDITED"}, f"{replay_path}.evidence_status is invalid")
+        commit(replay.get("tested_commit_sha"), f"{replay_path}.tested_commit_sha")
+        artifacts = replay.get("artifacts")
+        require(isinstance(artifacts, list), f"{replay_path}.artifacts must be an array")
+        for artifact_index, artifact in enumerate(artifacts):
+            validate_digest_metadata(artifact, f"{replay_path}.artifacts[{artifact_index}]")
+        if status in {"EVIDENCE_ATTACHED", "AUDITED"}:
+            require(replay.get("tested_commit_sha") is not None and artifacts, f"{replay_path} evidence status requires a tested commit SHA and artifacts")
+        require("audit" in replay, f"{replay_path}.audit is required")
+        audit = replay.get("audit")
+        if status == "AUDITED":
+            require(isinstance(audit, dict), f"{replay_path} AUDITED status requires an audit disclosure")
+        if audit is not None:
+            require(isinstance(audit, dict), f"{replay_path}.audit must be null or an object")
+            for field in ("reviewer", "scope", "independence_basis"):
+                require(isinstance(audit.get(field), str) and audit[field], f"{replay_path}.audit.{field} is required")
+            validate_provenance_timestamp(audit.get("reviewed_at"), f"{replay_path}.audit.reviewed_at")
+            require(audit.get("evidence_urls"), f"{replay_path}.audit requires evidence URLs")
+            public_urls(audit.get("evidence_urls"), f"{replay_path}.audit.evidence_urls")
+
+    disputes = record.get("disputes_and_limits")
+    require(isinstance(disputes, dict), f"{path}.disputes_and_limits must be an object")
+    require(disputes.get("status") in {"NOT_ASSESSED", "NONE_REPORTED", "OPEN", "RESOLVED"}, f"{path}.disputes_and_limits.status is invalid")
+    public_urls(disputes.get("evidence_urls"), f"{path}.disputes_and_limits.evidence_urls")
+    licenses = record.get("license_and_consent")
+    require(isinstance(licenses, dict), f"{path}.license_and_consent must be an object")
+    upstream = licenses.get("upstream_licenses")
+    require(isinstance(upstream, list), f"{path}.license_and_consent.upstream_licenses must be an array")
+    for index, source in enumerate(upstream):
+        source_path = f"{path}.license_and_consent.upstream_licenses[{index}]"
+        require(isinstance(source, dict), f"{source_path} must be an object")
+        public_url(source.get("evidence_url"), f"{source_path}.evidence_url")
+    consent_status = licenses.get("consent_status")
+    require(consent_status in {"NOT_REQUESTED", "GRANTED", "NOT_REQUIRED", "UNKNOWN"}, f"{path}.license_and_consent.consent_status is invalid")
+    consent_evidence = licenses.get("consent_evidence_urls")
+    public_urls(consent_evidence, f"{path}.license_and_consent.consent_evidence_urls")
+    if consent_status == "GRANTED":
+        require(consent_evidence, f"{path}.license_and_consent GRANTED consent requires evidence URLs")
 
 
 def validate_repository_reference(value, path, root=ROOT):
@@ -110,6 +253,18 @@ def validate_json_schema(library, schema_path=None):
 
     schema_path = Path(schema_path or ROOT / "experiences" / "verified-experience.schema.json")
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    def require_local_refs(value):
+        if isinstance(value, dict):
+            if "$ref" in value:
+                reference = value["$ref"]
+                require(isinstance(reference, str) and reference.startswith("#/"), "JSON Schema references must be local; network resolution is disabled")
+            for child in value.values():
+                require_local_refs(child)
+        elif isinstance(value, list):
+            for child in value:
+                require_local_refs(child)
+
+    require_local_refs(schema)
     errors = sorted(Draft7Validator(schema).iter_errors(library), key=lambda error: list(error.absolute_path))
     if errors:
         error = errors[0]
@@ -119,7 +274,7 @@ def validate_json_schema(library, schema_path=None):
 
 
 def validate_evidence_files(library, root=ROOT):
-    """Require promoted-library evidence references to resolve inside the repository."""
+    """Check repository-contained evidence files and the content integrity of digests."""
     root = Path(root).resolve()
     for index, experience in enumerate(library):
         evidence = experience.get("verification", {}).get("evidence", {})
@@ -135,6 +290,28 @@ def validate_evidence_files(library, root=ROOT):
                 f"experiences[{index}].verification_method.evidence_refs[{ref_index}]",
                 root,
             )
+        record = experience.get("provenance", {}).get("record")
+        if record is None:
+            continue
+        record_path = f"experiences[{index}].provenance.record"
+        digests = [
+            (digest, f"{record_path}.trace_digest[{digest_index}]")
+            for digest_index, digest in enumerate(record.get("trace_digest", []))
+        ]
+        for replay_index, replay in enumerate(record.get("independent_replays", [])):
+            digests.extend(
+                (digest, f"{record_path}.independent_replays[{replay_index}].artifacts[{digest_index}]")
+                for digest_index, digest in enumerate(replay.get("artifacts", []))
+            )
+        for digest, digest_path in digests:
+            validate_digest_metadata(digest, digest_path)
+            artifact = digest["artifact"]
+            validate_repository_reference(artifact, f"{digest_path}.artifact", root)
+            try:
+                actual = hashlib.sha256((root / artifact).read_bytes()).hexdigest()
+            except OSError as error:
+                raise ValidationError(f"{digest_path}.artifact cannot be read") from error
+            require(actual == digest["sha256"], f"{digest_path}.sha256 does not match artifact bytes")
 
 
 def validate_library(library):
@@ -211,6 +388,7 @@ def validate_library(library):
             require(isinstance(promoted_sha, str) and COMMIT_RE.fullmatch(promoted_sha), f"{path} observed promotion evidence requires a commit SHA")
             validate_safe_url(promotion.get("runResolver"), f"{path}.provenance.promotionEvidence.runResolver")
         require("workflowRun" not in provenance and "workflowRunId" not in provenance, f"{path} uses ambiguous workflow provenance")
+        validate_provenance_record(experience, path)
 
         verification = experience.get("verification", {})
         require(verification.get("status") in {"passed", "failed", "partial"}, f"{path}.verification.status is invalid")
@@ -252,14 +430,20 @@ def validate_library(library):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library", default=str(DEFAULT_LIBRARY))
+    parser.add_argument(
+        "--check-evidence", action="store_true",
+        help="Check repository-contained evidence files and artifact digests for the selected library.",
+    )
     args = parser.parse_args()
     library_path = Path(args.library)
     library = json.loads(library_path.read_text(encoding="utf-8"))
     schema_result = validate_json_schema(library)
     result = validate_library(library)
     result["schemaValidation"] = schema_result["status"]
-    if library_path.resolve() == DEFAULT_LIBRARY.resolve():
-        validate_evidence_files(library)
+    is_default_library = library_path.resolve() == DEFAULT_LIBRARY.resolve()
+    if is_default_library or args.check_evidence:
+        validate_evidence_files(library, root=ROOT)
+    if is_default_library:
         from experiences.safety.known_partial_gate import validate_safety_artifacts
 
         result["recommendationSafety"] = validate_safety_artifacts()

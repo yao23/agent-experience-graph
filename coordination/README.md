@@ -57,3 +57,12 @@ Every verified terminal result must persist a Registry candidate plus auditable 
 ## Acceptance
 
 Saved/enabled configuration, a manual bootstrap read, actual scheduled execution and subsequent deduplication are separate observations. Do not invent a scheduler run ID when unavailable; preserve UNKNOWN and use attributable run history/receipts where available. End-to-end evidence requires a scheduled producer report, local scheduled claim/result, and a subsequent deduplicating read.
+
+## Provenance archival format
+
+[`PROVENANCE_ARCHIVAL.md`](PROVENANCE_ARCHIVAL.md) and
+[`docs/provenance-record.md`](../docs/provenance-record.md) define the additive
+v1 provenance metadata. This is separate from execution authorization; it does
+not change the schedules, queue payloads, budgets or frozen solver inputs.
+The local consumer must adopt the supplied immutable format commit before its
+future output is claimed to use the extension.

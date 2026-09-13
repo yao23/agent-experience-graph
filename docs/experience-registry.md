@@ -88,3 +88,12 @@ python3 scripts/build_registry.py --check
 python3 -m unittest scripts.test_experience_registry scripts.test_site
 node scripts/test_registry_client.js
 ```
+
+## Versioned provenance extension
+
+New archival work can include `provenance.record` v1.0.0 for attributable claims,
+prior work, contributor roles, digest-addressed artifacts, external replay
+reports and scoped licenses/consent. See [Provenance Record](provenance-record.md)
+and the [consumer addendum](../coordination/PROVENANCE_ARCHIVAL.md).
+Existing records remain valid; verification states are not automatically
+promoted. The entire extension is preserved in exported machine JSON.

@@ -168,8 +168,164 @@
         "workflowName": {"$ref": "#/definitions/nonEmptyString"},
         "workflowFile": {"$ref": "#/definitions/nonEmptyString"},
         "validatedCommitSha": {"$ref": "#/definitions/nullableCommitSha"},
-        "status": {"enum": ["expected-on-pull-request", "observed-passed", "observed-failed"]},
+        "status": {"enum": ["expected-on-pull-request", "observed-passed", "observed-failed", "reported-passed"]},
         "runResolver": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "provenanceHttpsUrl": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uri",
+      "pattern": "^https://[^\\s/?#]+(?:[/?#][^\\s]*)?$"
+    },
+    "provenanceHttpsUrlArray": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/provenanceHttpsUrl"}
+    },
+    "provenanceTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]+)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "provenanceSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "revision", "description"],
+      "properties": {
+        "url": {"$ref": "#/definitions/provenanceHttpsUrl"},
+        "revision": {"$ref": "#/definitions/nullableCommitSha"},
+        "description": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "provenanceContributor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "role", "contribution", "evidence_urls"],
+      "properties": {
+        "identity": {"$ref": "#/definitions/nonEmptyString"},
+        "role": {"$ref": "#/definitions/nonEmptyString"},
+        "contribution": {"$ref": "#/definitions/nonEmptyString"},
+        "evidence_urls": {"$ref": "#/definitions/provenanceHttpsUrlArray"}
+      }
+    },
+    "provenanceArtifactDigest": {
+      "type": "object",
+      "description": "Matching hashes establish content integrity; they do not establish immutability or authorship.",
+      "additionalProperties": false,
+      "required": ["artifact", "sha256", "scope"],
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A repository-relative artifact path; the semantic validator checks containment and the file digest.",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\:\\u0000-\\u001f]+$"
+        },
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "scope": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "provenanceReplayAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer", "reviewed_at", "scope", "independence_basis", "evidence_urls"],
+      "properties": {
+        "reviewer": {"$ref": "#/definitions/nonEmptyString"},
+        "reviewed_at": {"$ref": "#/definitions/provenanceTimestamp"},
+        "scope": {"$ref": "#/definitions/nonEmptyString"},
+        "independence_basis": {"$ref": "#/definitions/nonEmptyString"},
+        "evidence_urls": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/provenanceHttpsUrl"}}
+      }
+    },
+    "provenanceIndependentReplay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reporter", "source_url", "reported_at", "evidence_status", "tested_commit_sha", "environment", "result", "artifacts", "limitations", "audit"],
+      "properties": {
+        "id": {"$ref": "#/definitions/nonEmptyString"},
+        "reporter": {"$ref": "#/definitions/nonEmptyString"},
+        "source_url": {"$ref": "#/definitions/provenanceHttpsUrl"},
+        "reported_at": {"$ref": "#/definitions/provenanceTimestamp"},
+        "evidence_status": {"enum": ["SELF_REPORTED", "EVIDENCE_ATTACHED", "AUDITED"]},
+        "tested_commit_sha": {"$ref": "#/definitions/nullableCommitSha"},
+        "environment": {"$ref": "#/definitions/nonEmptyString"},
+        "result": {"$ref": "#/definitions/nonEmptyString"},
+        "artifacts": {"type": "array", "items": {"$ref": "#/definitions/provenanceArtifactDigest"}},
+        "limitations": {"$ref": "#/definitions/stringArray"},
+        "audit": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/provenanceReplayAudit"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"evidence_status": {"enum": ["EVIDENCE_ATTACHED", "AUDITED"]}}},
+          "then": {
+            "properties": {
+              "tested_commit_sha": {"$ref": "#/definitions/commitSha"},
+              "artifacts": {"minItems": 1}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"evidence_status": {"const": "AUDITED"}}},
+          "then": {"properties": {"audit": {"$ref": "#/definitions/provenanceReplayAudit"}}}
+        }
+      ]
+    },
+    "provenanceDisputesAndLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "notes", "evidence_urls"],
+      "properties": {
+        "status": {"enum": ["NOT_ASSESSED", "NONE_REPORTED", "OPEN", "RESOLVED"]},
+        "notes": {"$ref": "#/definitions/nonEmptyStringArray"},
+        "evidence_urls": {"$ref": "#/definitions/provenanceHttpsUrlArray"}
+      }
+    },
+    "provenanceUpstreamLicense": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "license", "evidence_url"],
+      "properties": {
+        "scope": {"$ref": "#/definitions/nonEmptyString"},
+        "license": {"$ref": "#/definitions/nonEmptyString"},
+        "evidence_url": {"$ref": "#/definitions/provenanceHttpsUrl"}
+      }
+    },
+    "provenanceLicenseAndConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_license", "upstream_licenses", "consent_status", "consent_evidence_urls", "reuse_limits"],
+      "properties": {
+        "record_license": {"$ref": "#/definitions/nonEmptyString"},
+        "upstream_licenses": {"type": "array", "items": {"$ref": "#/definitions/provenanceUpstreamLicense"}},
+        "consent_status": {"enum": ["NOT_REQUESTED", "GRANTED", "NOT_REQUIRED", "UNKNOWN"]},
+        "consent_evidence_urls": {"$ref": "#/definitions/provenanceHttpsUrlArray"},
+        "reuse_limits": {"$ref": "#/definitions/nonEmptyStringArray"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"consent_status": {"const": "GRANTED"}}},
+          "then": {"properties": {"consent_evidence_urls": {"minItems": 1}}}
+        }
+      ]
+    },
+    "provenanceRecord": {
+      "type": "object",
+      "description": "Versioned provenance assertions. Validation establishes structural and evidence consistency, not the truth of claims, reporter independence, consent validity, or legal rights.",
+      "additionalProperties": false,
+      "required": ["schema_version", "claim", "task_origin", "prior_art", "contributors", "models_and_harnesses_ref", "environment_ref", "trace_digest", "verification_ref", "independent_replays", "negative_results_ref", "disputes_and_limits", "license_and_consent"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "claim": {"$ref": "#/definitions/nonEmptyString"},
+        "task_origin": {"$ref": "#/definitions/provenanceSource"},
+        "prior_art": {"type": "array", "items": {"$ref": "#/definitions/provenanceSource"}},
+        "contributors": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/provenanceContributor"}},
+        "models_and_harnesses_ref": {"const": "/context/agent_context"},
+        "environment_ref": {"const": "/context/environment_fingerprint"},
+        "trace_digest": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/provenanceArtifactDigest"}},
+        "verification_ref": {"const": "/verification_method"},
+        "independent_replays": {"type": "array", "items": {"$ref": "#/definitions/provenanceIndependentReplay"}},
+        "negative_results_ref": {"const": "/failed_attempts"},
+        "disputes_and_limits": {"$ref": "#/definitions/provenanceDisputesAndLimits"},
+        "license_and_consent": {"$ref": "#/definitions/provenanceLicenseAndConsent"}
       }
     },
     "provenance": {
@@ -186,7 +342,8 @@
         "publication": {
           "type": "object", "additionalProperties": false, "required": ["pullRequest"],
           "properties": {"pullRequest": {"type": "string", "pattern": "^https://"}}
-        }
+        },
+        "record": {"$ref": "#/definitions/provenanceRecord"}
       }
     },
     "verification": {

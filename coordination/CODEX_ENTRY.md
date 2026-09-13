@@ -59,3 +59,13 @@ Before invoking either solver, save a manifest/hash of each exact input and veri
 Use SEARCH_CHECKLIST.md and AUTHORIZATION.json for the recovered seven categories, the three work types and admission criteria. Category tags do not create extra tasks or budget pools. Deterministic local fixtures are allowed; broad production deployment, security/auth/payment repairs, private infrastructure and unbounded flaky investigations remain excluded. Do not resurrect historical benchmark runs.
 
 The current queue may hold a backlog, but this consumer executes one task per invocation and never starts a second active consumer. If verification/archival is incomplete at a cap, preserve evidence and remaining budget accurately; never mark the case completed merely to meet a daily target. Input isolation, minimal verification and automatic archival checks are sufficient; do not request per-case operator approval for already authorized work.
+
+## Provenance Record v1 adoption
+
+For newly archived experiences, apply `coordination/PROVENANCE_ARCHIVAL.md` after
+the operator supplies its immutable format commit to the local consumer. Preserve
+the trusted execution policy and frozen task inputs. The extension is required
+for new-format archival, optional for legacy records; source/replay unknowns are
+explicit, and external testimony never automatically upgrades verification.
+This format change is not proof that the Mac task has adopted it. Read back the
+consumer's prompt before reporting adoption.

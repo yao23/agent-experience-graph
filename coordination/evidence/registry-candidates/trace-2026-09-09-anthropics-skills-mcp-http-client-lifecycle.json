@@ -193,14 +193,176 @@
         "runnerSourceCommitStatus": "unavailable: the original local validation harness was not committed as a standalone runner"
       },
       "promotionEvidence": {
-        "workflowName": "Independent PR #1742 transport-isolated lifecycle regression",
+        "workflowName": "PR author-reported lifecycle tests; not an independently observed workflow run",
         "workflowFile": "skills/mcp-builder/scripts/test_connections.py",
         "validatedCommitSha": "0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e",
-        "status": "observed-passed",
-        "runResolver": "https://github.com/anthropics/skills/commit/0ba9e31cf27a69bb9b7f71f1d0e6f58c08d3ff1e"
+        "status": "reported-passed",
+        "runResolver": "https://api.github.com/repos/anthropics/skills/issues/comments/5614929511"
       },
       "publication": {
         "pullRequest": "https://github.com/anthropics/skills/pull/1742"
+      },
+      "record": {
+        "schema_version": "1.0.0",
+        "claim": "At PR head 8a2d825fa2d5fbaf2d375554985bd80503e4eda0, registering the custom caller-owned HTTP client on the connection AsyncExitStack closes it after normal exit and an asserted initialize failure in the two tested SDK environments. This is transport-isolated regression evidence; no AEG transfer or token savings is established.",
+        "task_origin": {
+          "url": "https://github.com/anthropics/skills/pull/1742#pullrequestreview-5162966723",
+          "revision": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+          "description": "Lifecycle defect identified while reviewing the custom-header path of the MCP SDK migration PR. The original migration request is issue #1668, credited separately as prior work."
+        },
+        "prior_art": [
+          {
+            "url": "https://github.com/anthropics/skills/issues/1668",
+            "revision": null,
+            "description": "WillO-OlliW reported the import/API migration problem; issue has no single source commit established here."
+          },
+          {
+            "url": "https://github.com/anthropics/skills/commit/8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+            "revision": "8a2d825fa2d5fbaf2d375554985bd80503e4eda0",
+            "description": "Original PR implementation and five connection tests by Kuldeeep18; the tested starting point, not an AEG-authored initial implementation."
+          },
+          {
+            "url": "https://github.com/modelcontextprotocol/python-sdk/blob/v2.1.1/src/mcp/client/streamable_http.py#L664-L678",
+            "revision": null,
+            "description": "SDK caller-owned client contract referenced by the initial review. Tag v2.1.1 is known; its resolved commit was not captured in this record."
+          }
+        ],
+        "contributors": [
+          {
+            "identity": "https://github.com/WillO-OlliW",
+            "role": "original_problem_reporter",
+            "contribution": "Reported the MCP import/API migration problem motivating the PR.",
+            "evidence_urls": [
+              "https://github.com/anthropics/skills/issues/1668"
+            ]
+          },
+          {
+            "identity": "https://github.com/Kuldeeep18",
+            "role": "implementation_author",
+            "contribution": "Authored the original PR, adopted lifecycle cleanup, added regression coverage and later hardened assertions. Project maintainer status is not asserted.",
+            "evidence_urls": [
+              "https://github.com/anthropics/skills/pull/1742",
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5614929511",
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5635044430"
+            ]
+          },
+          {
+            "identity": "https://github.com/yao23",
+            "role": "reviewer_and_reproduction_contributor",
+            "contribution": "Identified cleanup/test coverage gaps, organized and published AI-assisted local reproduction and minimal correction, and requested non-vacuous capture assertions.",
+            "evidence_urls": [
+              "https://github.com/anthropics/skills/pull/1742#pullrequestreview-5162966723",
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5614638047",
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5630437195"
+            ]
+          },
+          {
+            "identity": "Codex (AI assistance; exact historical model and harness version unknown)",
+            "role": "assisting_system",
+            "contribution": "Assisted analysis, regression preparation and local execution. Human and system contributions are not independently separable into percentages from the archived evidence.",
+            "evidence_urls": [
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5614638047"
+            ]
+          },
+          {
+            "identity": "https://github.com/98zc5g5jyw-arch",
+            "role": "external_replay_reporter",
+            "contribution": "Reported a clean-environment 7/7 pass. This is attributed testimony; underlying execution and independence have not been audited.",
+            "evidence_urls": [
+              "https://github.com/anthropics/skills/pull/1742#issuecomment-5652579839"
+            ]
+          }
+        ],
+        "models_and_harnesses_ref": "/context/agent_context",
+        "environment_ref": "/context/environment_fingerprint",
+        "trace_digest": [
+          {
+            "artifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PUBLIC_SUMMARY.md",
+            "sha256": "766d09a3deef3bb1d622b5582b835d88a0573ad68f35a17748d0427d1019e6b2",
+            "scope": "Sanitized summary of the original local evidence; not the private raw execution trace."
+          },
+          {
+            "artifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/regression-tests.patch",
+            "sha256": "3f658520fa24c58a1d2eb5d350295a5ae5e6a5682f68b7ad05a8405a8848f49a",
+            "scope": "Frozen public regression patch for the independently tested original PR head."
+          },
+          {
+            "artifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/minimal-fix.patch",
+            "sha256": "140b6ac6c4467734985e88e998adb566b72050ead6e4455816b9ffe278daf291",
+            "scope": "Frozen public lifecycle correction patch; not a hash of the later upstream commit."
+          },
+          {
+            "artifact": "coordination/evidence/cases/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle/PROVENANCE_NOTES.md",
+            "sha256": "37918c23ad0f8b9112b1c62a218eac9272b00e1caccc9523881102f7eaecf77a",
+            "scope": "Original factual attribution summary and metadata correction; not a new execution result."
+          }
+        ],
+        "verification_ref": "/verification_method",
+        "independent_replays": [
+          {
+            "id": "github-anthropics-skills-comment-5652579839",
+            "reporter": "https://github.com/98zc5g5jyw-arch",
+            "source_url": "https://github.com/anthropics/skills/pull/1742#issuecomment-5652579839",
+            "reported_at": "2026-09-13T09:59:27Z",
+            "evidence_status": "SELF_REPORTED",
+            "tested_commit_sha": null,
+            "environment": "Reported: clean venv; Python 3.11; latest mcp 2.x; pytest 9.1. Exact Python patch/MCP/pytest versions and OS were not supplied.",
+            "result": "Reporter states 7/7 tests passed, including custom-client cleanup on normal exit and initialization failure.",
+            "artifacts": [],
+            "audit": null,
+            "limitations": [
+              "Exact tested SHA and execution artifacts were not provided; the current observed PR head must not fill this unknown.",
+              "Public account identity and independence from other contributors have not been independently established.",
+              "No use of AEG instructions, cross-model transfer, savings or project-maintainer acceptance was reported.",
+              "The MCP < 2 skip-path observation does not demonstrate running a regression under MCP < 2."
+            ]
+          }
+        ],
+        "negative_results_ref": "/failed_attempts",
+        "disputes_and_limits": {
+          "status": "NOT_ASSESSED",
+          "notes": [
+            "Attribution reflects linked public reports; no comprehensive originality or rights dispute review was conducted.",
+            "The external report is self-reported, and historical model/harness details and full private traces are unavailable.",
+            "PR author adoption is distinct from maintainer acceptance. Observed head on 2026-09-13: b26eba8b7fab86fa74de9bc1d76a3ca0a4f53bf9; PR open and unmerged.",
+            "Legacy promotionEvidence is corrected to reported-passed: its commit is the PR author-reported adoption, not an independent AEG workflow run.",
+            "Our tested subject is 8a2d825fa2d5fbaf2d375554985bd80503e4eda0 plus the frozen patches; later commits were not rerun in this update.",
+            "No new bug case, AEG transfer result or token saving is added. Frozen source for #3494 at 94f25c36bab3f4729413ebc20dbb4d310c64ea23 is unchanged."
+          ],
+          "evidence_urls": [
+            "https://github.com/anthropics/skills/pull/1742#issuecomment-5614638047",
+            "https://github.com/anthropics/skills/pull/1742#issuecomment-5614929511",
+            "https://github.com/anthropics/skills/pull/1742#issuecomment-5652579839"
+          ]
+        },
+        "license_and_consent": {
+          "record_license": "MIT-0 (AEG-authored metadata only)",
+          "upstream_licenses": [
+            {
+              "scope": "Upstream mcp-builder code and derived code patches",
+              "license": "Apache-2.0",
+              "evidence_url": "https://github.com/anthropics/skills/blob/8a2d825fa2d5fbaf2d375554985bd80503e4eda0/skills/mcp-builder/LICENSE.txt"
+            },
+            {
+              "scope": "AEG-authored metadata; excludes third-party source content",
+              "license": "MIT-0",
+              "evidence_url": "https://github.com/yao23/agent-experience-graph/blob/739c79ef6b54189bb2ca9ac21985c9fdcbec0598/LICENSE"
+            },
+            {
+              "scope": "Third-party GitHub comment prose",
+              "license": "UNKNOWN: no separate reuse grant recorded; retain links and original factual summaries only",
+              "evidence_url": "https://github.com/anthropics/skills/pull/1742#issuecomment-5652579839"
+            }
+          ],
+          "consent_status": "NOT_REQUESTED",
+          "consent_evidence_urls": [],
+          "reuse_limits": [
+            "No separate permission to republish full third-party comments or raw conversations is asserted.",
+            "Preserve upstream Apache-2.0 license and applicable notices for source-derived code; metadata licensing does not relicense upstream work.",
+            "Public source visibility and hashes do not imply consent or prove authorship.",
+            "Do not include private paths, credentials, employer material or private raw traces in exported evidence."
+          ]
+        }
       }
     },
     "verification": {
