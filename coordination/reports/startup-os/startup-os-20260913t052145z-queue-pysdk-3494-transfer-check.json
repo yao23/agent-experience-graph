@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260913t052145z-queue-pysdk-3494-transfer-check",
+  "source_task": "AEG Startup OS",
+  "source_run_id": "UNKNOWN",
+  "trigger_source": "scheduled_automation_context_run_id_unavailable",
+  "observed_at": "2026-09-13T05:21:45Z",
+  "observed_local_date": "2026-09-12",
+  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+  "authorization": {
+    "bootstrap_commit": "00de33e8732cf92000ca3dc74fd56f5c00dc9a6d",
+    "expected_raw_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5",
+    "observed_raw_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5",
+    "result": "PASS",
+    "fixed_coordination_revision": "0a61629e991371ad4b236396455cfe5608857e24"
+  },
+  "classification": "ONE_TRANSFER_CHECK_QUEUED_AWAITING_LOCAL_CLAIM",
+  "hypothesis": {
+    "target_persona": "A coding agent diagnosing MCP Streamable HTTP resource-lifecycle failures.",
+    "pain": "A superficially similar verified lifecycle repair can be harmful when resource ownership differs; the agent must transfer the diagnostic principle without copying the wrong fix.",
+    "proposed_behavior": "Given the verified #1742 experience, a fresh treatment agent diagnoses #3494 at least as correctly as a no-experience baseline, explicitly abstains from the caller-owned-client aclose repair, and reaches the restart-state oracle with measurably less effort.",
+    "measurable_signal": "Paired baseline/treatment technical score plus completed steps, non-cached tokens and wall time.",
+    "threshold": "Treatment is no less correct and improves >=1 observable efficiency metric: >=20% fewer steps, >=15% fewer non-cached tokens, or >=20% lower wall time.",
+    "budget": "One transfer check, <=90 cumulative local-validation minutes, USD 0.",
+    "invalidation": "Treatment is less correct, misapplies aclose, fails to reproduce the fixed oracle, or records no qualifying efficiency improvement. Missing efficiency telemetry yields INCONCLUSIVE rather than success."
+  },
+  "experiment": {
+    "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+    "revision": 1,
+    "status": "READY",
+    "smallest_credible_test": "Two fresh isolated contexts receive the same frozen issue body and checkout; only treatment receives the immutable #1742 experience. Public issue comments are withheld from both solvers and used only as evaluator evidence.",
+    "why_this_candidate": "The issue is open, has an immutable source revision and deterministic dependency/lifecycle controls, and lacks a complete production repair. Its disclosed competing mechanisms make it unsuitable for blind root-cause discovery but suitable for a bounded applicability/abstention transfer test.",
+    "execution_authority": "Separate configured local consumer only; this cloud run did not execute code."
+  },
+  "evidence": {
+    "measured": [
+      "Authorization raw-byte SHA-256 matched the trusted digest.",
+      "At coordination tip 0a61629e991371ad4b236396455cfe5608857e24, the active task queue was empty and no new CLAIM or RESULT receipt existed.",
+      "Issue #3494 remained open and unassigned at updated_at 2026-09-12T16:39:14Z.",
+      "The daily OSS scan reviewed two updates and proposed one candidate."
+    ],
+    "public_reported": [
+      "The issue author reports incomplete initialize responses under repeated server restarts.",
+      "Independent public comments report a 3.4.11 failure / 3.0.2 pass / diagnostic-reset pass matrix and falsify a final-send patch for the restart path."
+    ],
+    "inference": [
+      "The #1742 experience should transfer only as an ownership/applicability heuristic; its concrete aclose repair is excluded by its own stated boundary.",
+      "A paired near-transfer test offers more market learning than another standalone reproduction."
+    ],
+    "negative": [
+      "No production fix is known.",
+      "No fresh-process CPU-contention explanation is included.",
+      "No independent cross-agent efficacy or efficiency result exists yet."
+    ]
+  },
+  "metrics": {
+    "oss_scan_candidates_reviewed_today": "2/3",
+    "candidates_selected": "1",
+    "ready_primary_tasks": "1/1 maximum",
+    "new_case_claims_rolling_7_days": 0,
+    "sprint_cases_started": 0,
+    "transfer_checks_queued": 1,
+    "transfer_checks_claimed": 0,
+    "independent_cross_agent_transfers": 0,
+    "efficacy_measurements_completed": 0
+  },
+  "decision": "PERSEVERE_WITH_ONE_BOUNDED_TRANSFER_CHECK; QUEUE REVISION 1; AWAIT CLAIM/RESULT BEFORE ANY SUCCESS CLAIM.",
+  "product_changes": [],
+  "blockers": [
+    "The configured local consumer has not produced a scheduler-origin CLAIM or RESULT for this task.",
+    "The issue's public comments disclose the evaluator oracle, requiring strict separation from both solving contexts.",
+    "Efficiency telemetry must be captured or the result remains INCONCLUSIVE."
+  ],
+  "next_action": "The local consumer may claim only OSS-PYSDK-3494-RESTART-LIFECYCLE revision 1, run the frozen paired comparison within 90 minutes, and append public-safe CLAIM/RESULT receipts. Startup OS must reconcile receipts before changing status.",
+  "founder_decision_needed": "None before the bounded local check. Any GitHub reply, upstream PR, publication or product change still requires separate explicit approval.",
+  "distribution": {
+    "published": false,
+    "draft_created": false
+  },
+  "proposed_tasks": [],
+  "cost": {
+    "actual_usd": 0,
+    "agent_minutes": 4,
+    "founder_minutes": 0,
+    "daily_task_cap_minutes": 8,
+    "oss_scan_agent_minutes": 4,
+    "combined_observed_public_research_and_summary_minutes": 8,
+    "daily_public_research_and_summary_cap_minutes": 20,
+    "measurement_note": "Startup OS elapsed time rounded up. Together with the same-local-day OSS scan, observed cloud research and summary cost is 8 minutes."
+  },
+  "sources": [
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/commit/0a61629e991371ad4b236396455cfe5608857e24",
+      "revision": "0a61629e991371ad4b236396455cfe5608857e24",
+      "observed_at": "2026-09-13T05:21:45Z",
+      "purpose": "Fixed coordination snapshot."
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/blob/0a61629e991371ad4b236396455cfe5608857e24/coordination/reports/oss-scan/oss-scan-20260913t023201z-python-sdk-3494.json",
+      "revision": "6780cc3cd11bdd5c9a4514e2cacd5f28ba5955d7",
+      "observed_at": "2026-09-13T05:21:45Z",
+      "purpose": "Candidate scan and cost record."
+    },
+    {
+      "url": "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+      "revision": "updated_at 2026-09-12T16:39:14Z",
+      "observed_at": "2026-09-13T05:21:45Z",
+      "purpose": "Frozen issue body and evaluator evidence."
+    },
+    {
+      "url": "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6",
+      "revision": "9972c21aa42054fb1450c5fc614761ed11847ec6",
+      "observed_at": "2026-09-13T05:21:45Z",
+      "purpose": "Immutable validation checkout."
+    },
+    {
+      "url": "https://github.com/yao23/agent-experience-graph/blob/0a61629e991371ad4b236396455cfe5608857e24/coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json",
+      "revision": "2e96ec6124de335ff534cf6c939a12d83db99f93",
+      "observed_at": "2026-09-13T05:21:45Z",
+      "purpose": "Treatment experience and applicability boundary."
+    }
+  ]
+}

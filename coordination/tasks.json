@@ -1,24 +1,68 @@
 {
   "schema_version": "2.0.0",
-  "revision": 4,
+  "revision": 5,
   "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-11T22:17:27-07:00",
+  "updated_at": "2026-09-12T22:21:45-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "LOCAL_CONSUMER_CONFIGURED_NO_READY_TASK_SCHEDULED_ACTIVATION_PENDING",
-  "tasks": [],
+  "delivery_state": "ONE_TRANSFER_CHECK_READY_LOCAL_CONSUMER_CONFIGURED",
+  "tasks": [
+    {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "revision": 1,
+      "task_type": "TRANSFER_CHECK",
+      "priority": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+      "source_revision": "9972c21aa42054fb1450c5fc614761ed11847ec6",
+      "source_issue_revision": "updated_at 2026-09-12T16:39:14Z",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "In two fresh, isolated agent contexts, compare diagnosis of the frozen #3494 issue body with and without the verified #1742 lifecycle experience. The treatment must use the experience's ownership/applicability boundary to avoid applying the caller-owned-client aclose repair to dependency-owned global state, then produce a correct verifier-bound diagnosis and regression plan for the restart-specific SSE shutdown-state leak.",
+      "verification_method": {
+        "design": "Paired baseline/treatment on the same model, reasoning setting, immutable checkout, dependency matrix and frozen issue body; baseline receives no AEG experience, treatment additionally receives the immutable staged lifecycle experience. Issue comments and later public analyses are withheld from both solving contexts and reserved for the evaluator oracle.",
+        "frozen_inputs": [
+          "Repository checkout 9972c21aa42054fb1450c5fc614761ed11847ec6",
+          "Issue #3494 body as observed at updated_at 2026-09-12T16:39:14Z",
+          "Treatment-only experience coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json"
+        ],
+        "technical_oracle": [
+          "Reproduce first initialization success and second initialization failure with sse-starlette 3.4.11 under sequential Uvicorn restarts.",
+          "Show the same second initialization succeeds with sse-starlette 3.0.2.",
+          "Show a diagnostic-only AppStatus.should_exit reset restores the second initialization under 3.4.11.",
+          "Reject the final-send ordering change as sufficient for the restart path.",
+          "Do not apply or recommend the #1742 caller-owned HTTP-client aclose repair because ownership and leak location differ."
+        ],
+        "efficacy_threshold": "Treatment must be at least as technically correct as baseline and improve at least one recorded efficiency measure by >=20% fewer completed diagnostic steps, >=15% fewer non-cached tokens, or >=20% lower wall time. If metrics are unavailable, the result is INCONCLUSIVE; if treatment misapplies the experience or is less correct, the transfer hypothesis fails.",
+        "safety": "Use an isolated temporary checkout without publishing credentials. No upstream comment, pull request, production fix, main-branch change, global Agent/plugin installation or paid API."
+      },
+      "budget_minutes_total": 90,
+      "status": "READY",
+      "existing_results": {
+        "issue_author_reported": "Repeated server starts produce incomplete SSE initialization responses on MCP 2.2.0 and 1.30.0; a reused single server does not show the same pattern.",
+        "public_independent_reported": "At the frozen SDK revision, sse-starlette 3.4.11 fails on the second initialization, while 3.0.2 and a diagnostic AppStatus reset succeed.",
+        "falsified_alternative": "A final-send ordering patch fixes a controlled plain-SSE interleaving but does not fix the actual restart path.",
+        "limitations": "No production repair is established; fresh-process CPU-contention failures remain out of scope; public comments disclose the evaluator oracle and must not enter either solving context."
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260913t023201z-python-sdk-3494.json",
+        "coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
+      ]
+    }
+  ],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "CONFIGURED_AWAITING_FIRST_SCHEDULED_QUEUE_READ",
+    "state": "CONFIGURED_READY_TASK_AVAILABLE_AWAITING_CLAIM",
     "max_concurrent_consumers": 1,
     "evidence_location": "coordination/receipts/codex-bootstrap-read-20260912t042604z.json",
     "limitations": [
       "The configuration receipt is manual and does not prove a scheduler-origin run.",
-      "No task CLAIM or RESULT exists for the sprint queue."
+      "No CLAIM or RESULT exists yet for OSS-PYSDK-3494-RESTART-LIFECYCLE revision 1."
     ]
   },
   "historical_queue": {
