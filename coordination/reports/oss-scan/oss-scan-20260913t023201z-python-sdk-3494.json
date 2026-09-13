@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260913t023201z-python-sdk-3494",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-13T02:32:01Z",
+  "observed_local_date": "2026-09-12",
+  "classification": "NEW_IN_SCOPE_CANDIDATE",
+  "authorization": {
+    "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+    "bootstrap_commit": "00de33e8732cf92000ca3dc74fd56f5c00dc9a6d",
+    "expected_raw_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5",
+    "observed_raw_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5",
+    "result": "PASS",
+    "fixed_coordination_revision": "ffaa16161d126d4d93db5f17b43f1e553d4dd54c"
+  },
+  "metrics": {
+    "new_activity_items_reviewed": 2,
+    "qualified_candidates": 1,
+    "active_tasks": 0,
+    "new_case_starts_rolling_7_days": 0,
+    "sprint_cases_started": 0,
+    "transfer_checks_started": 0
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+      "source_revision": {
+        "issue_node_id": "I_kwDOM2n80s8AAAABQ2BGGw",
+        "issue_updated_at": "2026-09-12T16:39:14Z",
+        "repository_commit": "9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "repository_commit_url": "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
+      },
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "Two sequential Streamable HTTP MCP server instances on one event loop both complete initialize responses; shutdown state from the first instance must not cancel the second response.",
+      "verification_method": [
+        "Use an isolated temporary checkout fixed at 9972c21aa42054fb1450c5fc614761ed11847ec6.",
+        "Run the published two-restart reproducer with Uvicorn 0.52.4 and sse-starlette 3.4.11, recording both initialize outcomes and AppStatus.should_exit.",
+        "Run the same oracle with sse-starlette 3.0.2 as a dependency-version control.",
+        "Run the 3.4.11 case with the published diagnostic reset control only to test causality; do not treat the reset as a proposed production fix.",
+        "Pass criterion for a future correction: both sequential initializations return complete HTTP/SSE bodies without manual global-state reset, and the relevant existing transport tests remain green."
+      ],
+      "estimated_total_budget_minutes": 75,
+      "existing_results": {
+        "author_reported": "The issue reports incomplete SSE bodies on mcp 2.2.0 and 1.30.0, with failures increasing under CPU contention and repeated server restarts.",
+        "independently_reported": "A new public experiment reports that sse-starlette 3.4.11 fails on the second initialization, while 3.0.2 and a diagnostic reset of AppStatus.should_exit succeed under the same restart setup.",
+        "falsification_result": "A separate final-send ordering patch repaired a controlled plain-SSE interleaving but did not repair the actual MCP restart failure; that hypothesis is therefore excluded for this narrow task.",
+        "complete_solution_available": false,
+        "related_pull_request_found": false
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "https://github.com/modelcontextprotocol/python-sdk/blob/9972c21aa42054fb1450c5fc614761ed11847ec6/CONTRIBUTING.md"
+      ],
+      "fact_types": {
+        "measured_by_this_scan": [
+          "Issue remains open, unassigned and unlocked.",
+          "No pull request referencing #3494 was found.",
+          "The repository contribution policy requires assignment or help-wanted status before an outside PR."
+        ],
+        "author_reported": [
+          "The original failure-rate table and incomplete-response symptom."
+        ],
+        "third_party_reported": [
+          "Dependency-version matrix, restart-state observation and final-send countercheck."
+        ],
+        "inference": [
+          "A bounded dependency/lifecycle reproduction is likely decidable within 75 minutes; a production fix is not assumed."
+        ]
+      },
+      "limitations": [
+        "The public discussion already exposes two competing mechanisms, so this is not a blind root-cause-discovery case.",
+        "The fresh-process CPU-contention failure remains unexplained and is outside the proposed 75-minute task.",
+        "The diagnostic AppStatus reset is not an acceptable production repair.",
+        "No upstream comment or pull request is authorized; any future PR would require maintainer assignment or a help-wanted label."
+      ]
+    }
+  ],
+  "excluded_updates": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3467",
+      "reason": "A complete fix and regression-test PR (#3468) already exists, and a new contributor has requested assignment to reproduce the same published solution."
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "revision": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+      "source_revision": "9972c21aa42054fb1450c5fc614761ed11847ec6; issue updated_at 2026-09-12T16:39:14Z",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "Reproduce and discriminate the restart-specific SSE shutdown-state leak using a frozen dependency matrix.",
+      "verification_method": "Two sequential initialize requests across fixed dependency variants with complete-body and AppStatus assertions.",
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Public issue contains independent restart and final-send experiments; no complete repair or linked PR exists.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3494"
+      ]
+    }
+  ],
+  "cost": {
+    "actual_usd": 0,
+    "agent_minutes": 4,
+    "founder_minutes": 0,
+    "daily_task_cap_minutes": 12,
+    "other_same_day_recorded_agent_minutes": 0,
+    "combined_same_day_observed_agent_minutes": 4,
+    "daily_public_research_and_summary_cap_minutes": 20,
+    "measurement_note": "Elapsed from the run-context start at 2026-09-13T02:29:25Z to report preparation, rounded up. No same-local-day cloud-task cost report was present at the fixed coordination revision."
+  },
+  "actions_taken": [
+    "READ_PUBLIC_EVIDENCE",
+    "RANK_IN_SCOPE_CANDIDATES",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
