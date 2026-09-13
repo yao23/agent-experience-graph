@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700",
+  "receipt_type": "RESULT",
+  "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+  "task_revision": 1,
+  "task_type": "TRANSFER_CHECK",
+  "claim_receipt_id": "codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700",
+  "claim_commit": "c9e24832a07ef78ee8f675097c5b0a1aa67d4037",
+  "read_commit": "c9e24832a07ef78ee8f675097c5b0a1aa67d4037",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+  "policy_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+  "trigger_source": "scheduled",
+  "started_at": "2026-09-13T17:00:51Z",
+  "finished_at": "2026-09-13T17:01:00Z",
+  "result": "BLOCKED_TRANSFER_ISOLATION",
+  "classification": "NOT_OBJECTIVELY_VERIFIED",
+  "actual_actions": [
+    "VERIFIED_TRUSTED_POLICY_AND_ENTRY_DOCUMENT_HASHES",
+    "FETCHED_AND_PINNED_COORDINATION_TIP",
+    "RECONCILED_READY_TASK_AGAINST_EXISTING_CLAIM_AND_RESULT_RECEIPTS",
+    "CREATED_AND_READ_BACK_PUBLIC_SAFE_CLAIM",
+    "EVALUATED_FRESH_SOLVER_CONTEXT_REQUIREMENT_WITHOUT_STARTING_SOLVERS"
+  ],
+  "isolation_assessment": {
+    "required": "Two fresh, isolated, non-inheriting solver contexts with identical frozen neutral inputs; treatment alone receives the #1742 experience.",
+    "observed": "This scheduled consumer context had already read the queue and evaluator oracle. It had no authorized mechanism to create two fresh solver contexts that can be demonstrated not to inherit that context or access excluded materials.",
+    "solver_contexts_started": 0,
+    "external_repository_code_executed": false,
+    "valid_ab_comparison": false
+  },
+  "evidence_locations": {
+    "public": [
+      "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json"
+    ],
+    "private": "AEG private evidence directory; run record 20260913t1701-0700"
+  },
+  "measurements": {
+    "actual_usd": 0,
+    "agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes_retained": 90,
+    "non_cached_tokens": "UNKNOWN",
+    "wall_time": "UNKNOWN"
+  },
+  "limitations": [
+    "No technical oracle step was run and no transfer efficacy or token-savings claim is made.",
+    "The reserved allocation remains accounted for because usage is unknown.",
+    "No registry candidate is produced because the result is not objectively verified."
+  ]
+}
