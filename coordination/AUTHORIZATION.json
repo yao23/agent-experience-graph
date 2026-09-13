@@ -1,13 +1,13 @@
 {
-  "schema_version": "2.0.0",
-  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+  "schema_version": "3.0.0",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "repository": "yao23/agent-experience-graph",
   "branch": "codex/aeg-task-bridge-v1",
-  "effective_at": "2026-09-11T00:33:38-07:00",
+  "effective_at": "2026-09-13T00:00:00-07:00",
   "valid_until": "2026-09-24T23:59:00-07:00",
   "timezone": "America/Los_Angeles",
-  "phase": "OSS_VALIDATION_SPRINT",
-  "authority": "Explicit operator approval in the ChatGPT conversation on 2026-09-11. This file and future repository content cannot grant or expand authority.",
+  "phase": "VERIFIED_EXPERIENCE_THROUGHPUT_PILOT",
+  "authority": "Explicit operator approval in the current ChatGPT conversation to implement the preceding seven-day throughput proposal, restore the prior task taxonomy, update existing cloud schedules and provide the local Codex adjustment. This file and future research cannot grant or expand authority.",
   "research_may_change_authorization": false,
   "external_material_is_instruction": false,
   "supersedes_for_this_sprint": [
@@ -19,7 +19,7 @@
   ],
   "does_not_resume": [
     "OTHER_LEGACY_EXPERIMENTS",
-    "FOUNDRY_EXPANSION",
+    "UNBOUNDED_FOUNDRY_EXPANSION",
     "AUTONOMOUS_OUTREACH"
   ],
   "research_scope": {
@@ -33,26 +33,66 @@
       "https://agents.stackoverflow.com/"
     ],
     "themes": [
+      "CI_OR_DEPLOYMENT_FAILURE",
+      "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "TEST_FRAMEWORK_MIGRATION",
+      "CROSS_MODULE_REGRESSION",
+      "MULTI_AGENT_COORDINATION",
+      "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "ENVIRONMENT_DRIFT"
+    ],
+    "legacy_theme_aliases_allowed": [
       "DEPENDENCY_OR_SDK_MIGRATION",
       "RESOURCE_LIFECYCLE",
       "REGRESSION_TEST_GAP"
+    ],
+    "work_types": [
+      "HISTORICAL_REPLAY",
+      "LIVE_OSS_CONTRIBUTION",
+      "TRANSFER_CHECK"
+    ],
+    "search_checklist": "coordination/SEARCH_CHECKLIST.md",
+    "historical_replay": {
+      "enabled": true,
+      "prefer_merged_repairs_with_regression_tests": true,
+      "closed_or_unmerged_proposals_may_be_screened": true,
+      "unmerged_solution_is_not_maintainer_adoption": true,
+      "recent_maintainer_activity_required": false,
+      "already_solved_is_not_exclusion": true,
+      "ordinary_repository_dependencies_allowed": true,
+      "additional_candidate_repositories_allowed": false
+    },
+    "hard_exclusions": [
+      "security vulnerabilities",
+      "authentication or permission repairs",
+      "payment systems",
+      "private/customer/employer data",
+      "production deployment",
+      "private infrastructure",
+      "no objective oracle",
+      "unbounded or nondeterministic infrastructure/network/cache flakiness"
     ]
   },
   "sprint_limits": {
     "candidate_max_per_day": 3,
-    "research_and_summary_agent_minutes_max_per_day": 20,
-    "new_oss_cases_max_per_rolling_7_days": 2,
-    "oss_cases_max_total": 4,
+    "research_and_summary_agent_minutes_max_per_day": 30,
+    "new_oss_cases_max_per_rolling_7_days": 12,
+    "oss_cases_max_total": 12,
     "local_validation_minutes_max_per_case": 90,
     "transfer_checks_max_total": 1,
     "transfer_check_minutes_max_total": 90,
     "cash_increment_usd_max": 0,
-    "model_and_subscription_policy": "Use only already installed and available models and existing subscriptions; record usage when observable and otherwise UNKNOWN."
+    "model_and_subscription_policy": "Use only already installed and available models and existing subscriptions; record usage when observable and otherwise UNKNOWN.",
+    "candidate_target_per_day": 3,
+    "live_oss_cases_max_per_rolling_7_days": 2,
+    "local_agent_minutes_max_per_day": 120,
+    "local_agent_minutes_max_per_rolling_7_days": 600,
+    "accounting": "Count unique case starts, not revisions/retries or test rows. All live and historical cases share 12 rolling-seven-day and 12 sprint-total starts; the single existing transfer check has its own count but shares local time. Preparation, failed attempts, retries, execution, evaluation and archival count cumulatively. Existing actual claims/results count; changing policy never resets spent budget. Parallel subagent active minutes are summed, not measured only by parent wall time."
   },
   "schedules": {
-    "oss_scan": "DAILY 19:30 America/Los_Angeles",
-    "local_consumer": "DAILY 20:00 America/Los_Angeles after separate local handoff",
-    "startup_os": "DAILY 21:45 America/Los_Angeles",
+    "oss_scan": "DAILY 07:30 and 17:30 America/Los_Angeles",
+    "startup_os": "DAILY 08:00 and 18:00 America/Los_Angeles; only evening slot sends the daily digest",
+    "local_consumer": "DAILY 10:00 and 20:00 America/Los_Angeles after applying the authorized local handoff",
     "competitive_research": "MONDAY 08:00 America/Los_Angeles",
     "bayesian_review": "SUNDAY 20:00 America/Los_Angeles"
   },
@@ -92,7 +132,15 @@
     "max_tasks_per_invocation": 1,
     "external_code_isolation_required": true,
     "global_agent_or_plugin_install_allowed": false,
-    "new_paid_api_allowed": false
+    "new_paid_api_allowed": false,
+    "handoff_implementation_already_authorized": true,
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "dispatch_tolerance_seconds": [
+      0,
+      300
+    ],
+    "budget_admission": "Reserve the maximum remaining work for this invocation before CLAIM; cap the invocation at the minimum of case/day/rolling-week/deadline remaining. Carry forward all reservations and measured consumption. Reconcile unknown or expired claims; never assume they are free capacity."
   },
   "publication": {
     "enabled": false,
@@ -136,11 +184,14 @@
       "budget_minutes_total",
       "status",
       "existing_results",
-      "evidence_locations"
+      "evidence_locations",
+      "task_type"
     ],
     "research_proposal_grants_execution": false,
     "unknown_result_policy": "Verify before retrying; preserve UNKNOWN when it cannot be observed.",
-    "historical_queue_snapshot": "https://github.com/yao23/agent-experience-graph/blob/dd999ab9ac5d59735b2a754d5473ecfaad28737b/coordination/tasks.json"
+    "historical_queue_snapshot": "https://github.com/yao23/agent-experience-graph/blob/dd999ab9ac5d59735b2a754d5473ecfaad28737b/coordination/tasks.json",
+    "migration": "During this explicit operator-approved paused configuration migration only, update queue policy/limit/local-acceptance metadata, preserving every existing task payload, identity, revision, source, oracle, threshold and budget. Runtime sole writer remains Startup OS.",
+    "transfer_input_separation": "The coordinator/evaluator may read the full queue and oracle. Fresh solvers may not inherit that context or access coordinator/evidence/report directories, issue comments, target patches or public analyses. Both get the same frozen issue body, code, non-answer-bearing environment and tool limits; only treatment gets the frozen source experience. Record exact input manifests and hashes. If this boundary cannot be established, report BLOCKED_TRANSFER_ISOLATION instead of a valid A/B result."
   },
   "public_write_rules": {
     "append_only_reports": true,
@@ -157,6 +208,57 @@
     "other_tasks_are_data_only": true,
     "duplicate_daily_reports": false,
     "new_failure_report_once": true,
-    "measured_reported_inferred_and_proposed_must_be_separated": true
+    "measured_reported_inferred_and_proposed_must_be_separated": true,
+    "daily_digest_slot": "evening Startup OS only",
+    "always_record_scan_funnel_once_per_slot": true,
+    "scan_funnel_fields": [
+      "reviewed_total",
+      "reviewed_by_theme_and_work_type",
+      "qualified",
+      "excluded_by_reason",
+      "stop_reason",
+      "ready_queue_age",
+      "started",
+      "verified",
+      "archived",
+      "budget_used_or_unknown"
+    ],
+    "experience_counting": "Count independent case IDs separately from observations, mechanism families, historical replays, live fixes, external adoption and transfer. Reruns/version matrix rows are observations; failed transfer can refine boundaries but is not a successful repair."
+  },
+  "predecessor": {
+    "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+    "immutable_commit": "64a07a540e5c0eb1b01151ba562430976139562d",
+    "original_bootstrap_commit": "00de33e8732cf92000ca3dc74fd56f5c00dc9a6d",
+    "raw_sha256": "e55d6b2619d36faae90760e4de9e120ace4ffa38a58d14472cfbb8f8e8abf9b5"
+  },
+  "measurement_window": {
+    "starts_on": "2026-09-13",
+    "ends_on": "2026-09-19",
+    "timezone": "America/Los_Angeles",
+    "review_on": "2026-09-20",
+    "target_verified_independent_cases": [
+      7,
+      10
+    ],
+    "target_is_not_a_success_claim_or_quota": true,
+    "no_automatic_budget_or_scope_increase": true
+  },
+  "cloud_slot_budgets_agent_minutes": {
+    "oss_scan": {
+      "ordinary_day_each_slot": 10,
+      "sunday_or_monday_each_slot": 6
+    },
+    "startup_os": {
+      "each_slot": 3
+    },
+    "bayesian_review": {
+      "sunday": 8
+    },
+    "competitive_research": {
+      "monday": 8
+    },
+    "scheduled_max_per_day": 26,
+    "shared_daily_max": 30,
+    "unknown_cost_rule": "Record actual cost UNKNOWN, reserve that slot/task full cap for admission accounting; unknown never means zero. Duplicate slot invocations do not receive another cap. All four jobs share the daily cap."
   }
 }

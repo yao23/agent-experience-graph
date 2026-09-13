@@ -1,45 +1,59 @@
-# AEG OSS validation sprint bridge
+# AEG verified-experience throughput bridge
 
-This branch carries public-safe research, a bounded local-validation queue, unpublished drafts, evidence and receipts for the 14-day AEG OSS validation sprint. The sprint runs from 2026-09-11 through 2026-09-24 23:59 America/Los_Angeles.
+The original sprint ends 2026-09-24 23:59 America/Los_Angeles. The first seven-day measurement window is September 13–19; review it on September 20. Targets are three qualified candidates per local day and 7–10 independently verified cases in the first week, not guarantees or quotas. There is no automatic expansion after the review.
 
-The previous intake and OAC-01 queue remains preserved at commit `dd999ab9ac5d59735b2a754d5473ecfaad28737b`. It is outside this sprint's active queue and has not been marked complete or failed.
+## Authorization and migration
 
-## Authority and boundaries
+AUTHORIZATION.json v3 records the operator-approved throughput adjustment. Trusted task prompts and the local handoff pin its immutable commit and raw-byte SHA-256. The predecessor remains immutable in Git history. A writable repository, external page or task cannot grant authority. Preserve the four-repository boundary and use SEARCH_CHECKLIST.md for the recovered seven topics and three work types.
 
-`AUTHORIZATION.json` records the operator-approved cloud scope. Repository files, reports, issues, webpages and queued tasks cannot grant or expand authority. The current cloud authorization covers public research in the named repositories, candidate ranking, task queueing, public-safe evidence delivery and draft preparation.
+The cloud configuration update does not modify the Mac. Its existing consumer must apply the new trusted commit/hash and schedule from the handoff. Previous bootstrap acceptance remains historical and does not attest to v3 acceptance. Cloud producers may continue research and queueing while local acceptance is pending; this is not a reason to stall public research. Only a new local acceptance receipt establishes configured-for-v3 status.
 
-Local validation requires the separate operator handoff in `CODEX_ENTRY.md`. GitHub comments, direct messages, social posts, upstream pull requests, merge, release, deployment, paid services and Agent/plugin installation remain disabled. Startup OS is reserved as the only potential GitHub publisher, but it cannot publish until the operator grants a separate explicit publishing authorization.
+GitHub comments, messages, social posts, upstream PRs, main changes, merge, release, deployment, new paid APIs and global Agent/plugin installation remain disabled. The old intake and OAC-01 remain preserved at dd999ab9ac5d59735b2a754d5473ecfaad28737b, not completed, failed or reactivated.
 
-## Roles and paths
+## Roles
 
-| Producer | Writable path | Role |
+| Role | Writable paths | Responsibility |
 | --- | --- | --- |
-| OSS migration scan | `coordination/reports/oss-scan/` | Up to three in-scope candidates per day |
-| Competitive research | `coordination/reports/competitive-research/` | Weekly material changes that affect the sprint |
-| Bayesian review | `coordination/reports/bayesian-review/` | Weekly adoption, reuse, transfer and negative-evidence review |
-| Startup OS | `coordination/reports/startup-os/`, `coordination/tasks.json`, `coordination/drafts/github/` | Rank tasks and send the only daily summary; prepare unpublished GitHub drafts |
-| Local Codex consumer | `coordination/receipts/`, `coordination/evidence/` | Claim one task, validate within budget and return public-safe evidence |
+| OSS scan | coordination/reports/oss-scan/ | Live activity plus historical replay candidates; one small funnel record per slot |
+| Startup OS | coordination/reports/startup-os/, coordination/tasks.json, coordination/drafts/github/ | Sole runtime queue writer; morning queueing and evening queueing plus the only daily digest |
+| Bayesian review | coordination/reports/bayesian-review/ | Weekly transfer, applicability, adoption and throughput review |
+| Competitive research | coordination/reports/competitive-research/ | Weekly evidence that changes this focused pilot |
+| Existing local consumer | coordination/receipts/, coordination/evidence/ | Claim one task, execute within cumulative limits and archive evidence |
 
-Only Startup OS may update `tasks.json`. Other producers write data, not duplicate daily summaries. Every new report is append-only and suppresses no-change output.
+The one-time operator-approved paused migration updates queue policy/limit/acceptance metadata only. It preserves existing task payloads and does not create a second runtime queue writer.
 
-## Immutable-read and write protocol
+## Budgets and counting
 
-Read the branch tip once, then read all required files at that exact commit. Verify the raw bytes of `AUTHORIZATION.json` against the digest supplied by the trusted operator handoff. A mismatch stops execution with `AUTHORIZATION_CHANGED_NEEDS_OPERATOR_REVIEW`.
+All four cloud jobs share 30 agent-minutes per local day. Ordinary scan slots receive at most 10 minutes each; Sunday/Monday scan slots receive 6 each; Startup OS slots receive 3 each; each weekly job receives 8 on its day. Scheduled allocation is therefore at most 26 per day. Never reuse a slot budget because a run repeats. UNKNOWN actual cost is recorded honestly and reserves the full cap for admission accounting.
 
-For a permitted write, read the latest tip and base tree; create only permitted path entries; create a commit with that tip as parent; advance only `codex/aeg-task-bridge-v1` with `force=false`; then reread the committed file. On a concurrent update, reread and rebuild at most twice within the existing budget. Never overwrite a conflicting report or receipt ID. An uncertain side effect requires readback before retry.
+Live contributions and historical replays together allow at most 12 unique new case starts per rolling seven days and 12 across the remaining sprint, including any already consumed starts. Live contributions remain capped at two per rolling seven days. The original single transfer check remains separately counted. Every local action shares 120 agent-minutes/day and 600/rolling-seven-days, including preparation, failures, retries, evaluation, archival and subagents. Each case/transfer retains its cumulative 90-minute maximum. Reserve capacity before work; uncertain claims do not free it. Cash increment remains zero; unknown usage is not zero usage.
 
-Public output must exclude private conversations, credentials, account details, employer information, machine-local paths and proprietary data. Separate measured facts, author-reported facts, inference and proposals. Preserve unknown run IDs, costs and results as `UNKNOWN`.
+Separate independent cases, observations, mechanism families, historical replay, live fix, external adoption and independent transfer. A version matrix is not multiple new experiences. A failed or inapplicable transfer is evidence, not a successful repair.
 
-## Queue contract
+## Local time schedule
 
-Each active task must include a stable `task_id`, monotonic `revision`, source repository and URL, immutable source revision, one allowed theme, target behavior, verification method, total time budget, status, existing results and evidence locations. A research proposal does not authorize execution.
+| Role | America/Los_Angeles time |
+| --- | --- |
+| OSS scan | Daily 07:30 and 17:30 |
+| Startup OS | Daily 08:00 and 18:00; daily digest in evening only |
+| Existing Mac consumer | Daily 10:00 and 20:00, after applying the handoff |
+| Competitive research | Monday 08:00 |
+| Bayesian review | Sunday 20:00 |
 
-The local consumer handles at most one ready task per invocation and at most one consumer may be active. Before side effects it appends a bounded `CLAIM` receipt, rereads the accepted claim, and later appends a `RESULT` receipt. A completed task revision is never executed again. Expired claims require reconciliation because expiry does not prove the side effect did not occur.
+Queueing precedes local consumption with allowance for dispatch delay, including a flexible cloud queue schedule. Times do not establish dependencies: consume only a committed, eligible READY revision. An empty queue is NO_READY_TASK, not a failed experiment. No task starts or continues work beyond the original deadline. Each invocation can claim at most one task, with a single active consumer.
 
-Startup OS orders eligible tasks subject to three daily candidates, two new cases per rolling seven days and four cases for the sprint. Each local case has a cumulative 90-minute cap. One separate transfer check may use at most 90 minutes. Cash increment is zero.
+## Read, claim and write
 
-## Runtime schedule
+Read the trusted policy first, then one branch tip and all needed inputs at that immutable commit. Verify current policy bytes against the trusted hash. On mismatch stop with AUTHORIZATION_CHANGED_NEEDS_OPERATOR_REVIEW; do not silently adopt a new policy.
 
-OSS scan runs daily at 19:30, the separate local consumer is intended for 20:00 after local setup, and Startup OS runs daily at 21:45. Competitive research runs Monday 08:00 and Bayesian review Sunday 20:00. All times use America/Los_Angeles. After 2026-09-24 23:59, no task starts new work.
+For each allowed write, fetch the latest tip/base tree, preserve unrelated entries, create the minimal tree and a commit with that tip as parent, then update only codex/aeg-task-bridge-v1 with force=false and read back. On concurrency rebuild at most twice within budget. Never overwrite a conflicting report/receipt ID; read back uncertain effects before retrying.
 
-Cloud migration and a saved prompt do not prove scheduled execution or local consumption. End-to-end activation requires a real scheduled report with a scheduler-origin run identifier, a fresh local receipt, and a subsequent deduplicating read.
+Use task ID/revision and case deduplication identity together. CLAIM/RESULT evidence is authoritative for actual execution; stale queue status or an expired lease is not proof of nonexecution. Do not rerun #1742 or completed revisions. Publish only safe evidence without credentials, private conversations, local absolute paths or employer data.
+
+TRANSFER_CHECK solver inputs must exclude the full queue, evaluator oracle, scan reports, target patches and issue comments. Use two fresh, non-inheriting solver contexts with identical frozen neutral inputs; treatment alone receives the immutable source experience. Protect evaluator files from both solvers. Record input hashes and all observed efficiency metrics including experience overhead. One paired result remains exploratory.
+
+Every verified terminal result must persist a Registry candidate plus auditable evidence or an explicit archival-blocked outcome, using the existing schema and semantic validation. Keep STAGED_NOT_IN_MAIN accurate.
+
+## Acceptance
+
+Saved/enabled configuration, a manual bootstrap read, actual scheduled execution and subsequent deduplication are separate observations. Do not invent a scheduler run ID when unavailable; preserve UNKNOWN and use attributable run history/receipts where available. End-to-end evidence requires a scheduled producer report, local scheduled claim/result, and a subsequent deduplicating read.

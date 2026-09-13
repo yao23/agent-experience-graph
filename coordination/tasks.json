@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 5,
-  "policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+  "revision": 6,
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-12T22:21:45-07:00",
+  "updated_at": "2026-09-12T23:14:51-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_TRANSFER_CHECK_READY_LOCAL_CONSUMER_CONFIGURED",
+  "delivery_state": "ONE_TRANSFER_CHECK_READY_V3_LOCAL_HANDOFF_PENDING",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -57,12 +57,13 @@
   ],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "CONFIGURED_READY_TASK_AVAILABLE_AWAITING_CLAIM",
+    "state": "PREDECESSOR_CONFIGURED_V3_ACCEPTANCE_PENDING",
     "max_concurrent_consumers": 1,
     "evidence_location": "coordination/receipts/codex-bootstrap-read-20260912t042604z.json",
     "limitations": [
-      "The configuration receipt is manual and does not prove a scheduler-origin run.",
-      "No CLAIM or RESULT exists yet for OSS-PYSDK-3494-RESTART-LIFECYCLE revision 1."
+      "The prior manual configuration receipt does not accept v3 or prove scheduled execution.",
+      "The existing READY task identity, revision, source, oracle and budget are unchanged by configuration migration.",
+      "Consume only after the Mac accepts the new trusted policy commit/hash; cloud research and queueing may proceed meanwhile."
     ]
   },
   "historical_queue": {
@@ -88,10 +89,21 @@
   },
   "limits": {
     "candidate_max_per_day": 3,
-    "new_cases_max_per_rolling_7_days": 2,
-    "cases_max_total": 4,
+    "new_cases_max_per_rolling_7_days": 12,
+    "cases_max_total": 12,
     "local_validation_minutes_max_per_case": 90,
     "transfer_checks_max_total": 1,
-    "transfer_check_minutes_max_total": 90
+    "transfer_check_minutes_max_total": 90,
+    "live_cases_max_per_rolling_7_days": 2,
+    "local_agent_minutes_max_per_day": 120,
+    "local_agent_minutes_max_per_rolling_7_days": 600
+  },
+  "configuration_migration": {
+    "kind": "ONE_TIME_OPERATOR_AUTHORIZED_MAINTENANCE",
+    "predecessor_policy_id": "AEG-OSS-SPRINT-AUTH-20260911-01",
+    "runtime_writer_unchanged": "startup-os",
+    "task_payloads_unchanged_sha256": "2da5f9026c369041b345d1de704d445def06a6890e8cf7059b93c5e9094833f5",
+    "task_execution_occurred": false,
+    "scheduled_execution_occurred": false
   }
 }
