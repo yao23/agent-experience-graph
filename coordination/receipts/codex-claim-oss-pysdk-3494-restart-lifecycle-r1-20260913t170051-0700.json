@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700",
+  "receipt_type": "CLAIM",
+  "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+  "task_revision": 1,
+  "task_type": "TRANSFER_CHECK",
+  "read_commit": "146975923a3e039cdf4fcbc8b98690e26711fd59",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+  "policy_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+  "trigger_source": "scheduled",
+  "observed_target_identity": {
+    "source_repository": "modelcontextprotocol/python-sdk",
+    "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
+    "source_revision": "9972c21aa42054fb1450c5fc614761ed11847ec6"
+  },
+  "started_at": "2026-09-13T17:00:51Z",
+  "lease_expires_at": "2026-09-13T18:30:51Z",
+  "reserved_agent_minutes": 90,
+  "budget_admission": {
+    "case_remaining_minutes": 90,
+    "transfer_check_remaining_minutes": 90,
+    "local_day_remaining_minutes_before_reservation": 120,
+    "local_rolling_7_day_remaining_minutes_before_reservation": 600,
+    "deadline_remaining_minutes": "MORE_THAN_90",
+    "reserved_minutes": 90
+  },
+  "isolation_manifest": {
+    "external_repository_code_executed": false,
+    "solver_contexts_started": 0,
+    "required_solver_boundary": "Two fresh, non-inheriting isolated solver contexts; neither may receive the queue, evaluator oracle, reports, target patches, issue comments, or public analyses.",
+    "current_state": "PENDING_BOUNDARY_CONFIRMATION"
+  },
+  "limitations": [
+    "This receipt reserves capacity only; it does not establish a valid transfer result.",
+    "No external repository code, upstream interaction, or private data was accessed."
+  ]
+}
