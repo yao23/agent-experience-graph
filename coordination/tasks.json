@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 8,
+  "revision": 9,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-13T18:00:00-07:00",
+  "updated_at": "2026-09-14T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_TRANSFER_CHECK_BLOCKED_ISOLATION",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_FIVE_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -161,6 +161,107 @@
         "Full mkdocs strict build fetches external inventories and is not the primary oracle."
       ],
       "dedup_identity": "modelcontextprotocol/python-sdk:mcp-types-docs-import-path:2977"
+    },
+    {
+      "task_id": "OSS-LIVE-PYSDK-3357-SUBSCRIPTIONS-OPT-OUT",
+      "revision": 1,
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+      "source_revision": "issue updated 2026-09-14T00:05:47Z; repository 9972c21aa42054fb1450c5fc614761ed11847ec6",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "An explicit opt-out disables subscriptions/listen, advertises matching false capability flags, returns method-not-found for unsolicited calls, and preserves the default.",
+      "verification_method": {
+        "design": "Local-only preflight on the frozen public revision; no upstream interaction without separate authorization and maintainer assignment.",
+        "technical_oracle": [
+          "Local ASGI/MCP reproducer on the frozen revision",
+          "Capability assertions",
+          "Method-not-found assertion",
+          "Default-path regression test"
+        ],
+        "safety": "Isolated local checkout only; no upstream comment or PR, no private data, no deployment, no paid API."
+      },
+      "budget_minutes_total": 75,
+      "status": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT",
+      "existing_results": "No local validation performed; public #3493 independently reproduces the same family and is deduplicated into #3357.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3493",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:subscriptions-listen-opt-out:3357",
+      "priority": 5,
+      "limitations": [
+        "Public discussion exposes part of the mechanism, so this is not a blind-diagnosis case.",
+        "External contribution requires maintainer assignment/help-wanted status; this proposal authorizes no upstream interaction.",
+        "Deduplicate #3493 and any future reports against the canonical #3357 identity."
+      ]
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2890-PYTEST-PARAMETRIZE",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+      "source_revision": "base 47bbab3bc3a08d27c77feee4cf6f49dc9a7c1f5d; repair bd915fbd21d505f7f9035536c93aa1a5b400e453",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "target_behavior": "pytest 9.1.0 collects and runs all documentation-example tests without the generator-parametrize removal error.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the same regression test and pinned dependency conditions.",
+        "technical_oracle": [
+          "Frozen-base failure under pytest 9.1.0 with warnings as errors",
+          "Frozen-repair pass of tests/test_examples.py",
+          "Ruff on changed file"
+        ],
+        "safety": "Isolated local checkout only; no upstream comment or PR, no private data, no deployment, no paid API."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2890; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/47bbab3bc3a08d27c77feee4cf6f49dc9a7c1f5d",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/bd915fbd21d505f7f9035536c93aa1a5b400e453"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pytest-parametrize-generator-removal:2890",
+      "priority": 6,
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or live contribution.",
+        "PR #2889 must not be counted separately."
+      ]
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2879-LIFESPAN-READY",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+      "source_revision": "base 255650dcd155910fdf3e90cd5772a1726af9c2d7; repair 46971bb2851189e568dede34d43bbd6f139c584b",
+      "theme": "REGRESSION_TEST_GAP",
+      "target_behavior": "Issue-1363 tests synchronize on actual lifespan readiness and pass under a deterministic delayed-start oracle.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the same regression test and pinned dependency conditions.",
+        "technical_oracle": [
+          "Frozen-base failure with a 300 ms injected startup delay",
+          "Frozen-repair pass with the same delay",
+          "Repeated targeted-file regression run"
+        ],
+        "safety": "Isolated local checkout only; no upstream comment or PR, no private data, no deployment, no paid API."
+      },
+      "budget_minutes_total": 60,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2879; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/255650dcd155910fdf3e90cd5772a1726af9c2d7",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/46971bb2851189e568dede34d43bbd6f139c584b"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:lifespan-readiness-handshake:2879",
+      "priority": 7,
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "The original symptom was flaky; qualification relies on the published deterministic delayed-start A/B oracle, not unconstrained stress testing."
+      ]
     }
   ],
   "local_consumer": {
@@ -215,9 +316,9 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-13T18:00:00-07:00",
-    "checked_candidates": 8,
-    "qualified_unique_candidates": 3,
+    "as_of": "2026-09-14T08:00:00-07:00",
+    "checked_candidates": 20,
+    "qualified_unique_candidates": 6,
     "ready_tasks": 1,
     "started": {
       "transfer_checks": 1,
@@ -235,6 +336,12 @@
       "historical_actual": 0,
       "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
     },
-    "cash_increment_usd": 0
+    "cash_increment_usd": 0,
+    "backlog_qualified": 5,
+    "starts_rolling_7_days": {
+      "transfer_checks": 1,
+      "historical_replays": 0,
+      "live_oss_contributions": 0
+    }
   }
 }
