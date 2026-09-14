@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260913-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-13:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-14T00:36:00Z",
+  "observed_local_date": "2026-09-13",
+  "slot": "evening",
+  "classification": "DAILY_CANDIDATE_CAP_REACHED_TRANSFER_CHECK_BLOCKED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "42a924b2b16fa82aac4ab15061fb45eaaa34c766"
+  },
+  "funnel": {
+    "reviewed_total": 0,
+    "reviewed_by_theme_and_work_type": {},
+    "qualified": 0,
+    "qualified_for_local_day_total": 3,
+    "excluded_by_reason": {},
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_ALREADY_REACHED",
+    "ready_queue_age": "Queue revision 7 still says TRANSFER_CHECK READY, but its later authoritative RESULT receipt is terminal BLOCKED_TRANSFER_ISOLATION; it must not be retried as READY.",
+    "started": 1,
+    "verified": 0,
+    "archived": 0,
+    "blocked": 1,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "inherited_live_cursor": "2026-09-13T14:37:00Z",
+    "next_live_cursor": "2026-09-13T14:37:00Z",
+    "cursor_advanced": false,
+    "reason": "No external scan after the daily candidate cap was reached."
+  },
+  "candidates": [],
+  "proposed_tasks": [],
+  "state_changes": [
+    {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "revision": 1,
+      "task_type": "TRANSFER_CHECK",
+      "claim_receipt": "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+      "result_receipt": "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json",
+      "result": "BLOCKED_TRANSFER_ISOLATION",
+      "classification": "NOT_OBJECTIVELY_VERIFIED",
+      "cause": "The scheduled consumer had already read evaluator-only material and could not create two provably fresh, non-inheriting solver contexts.",
+      "solver_contexts_started": 0,
+      "external_repository_code_executed": false,
+      "registry_candidate_created": false,
+      "accounting": {
+        "unique_transfer_checks_started": 1,
+        "reserved_local_agent_minutes_retained": 90,
+        "actual_agent_minutes": "UNKNOWN"
+      },
+      "retry_policy": "Do not retry this revision without a separately demonstrable isolation mechanism and coordinator reconciliation."
+    }
+  ],
+  "current_state": {
+    "queue_revision": 7,
+    "queued_items": 4,
+    "backlog_qualified": 3,
+    "queue_ready_field_count": 1,
+    "authoritative_ready_count": 0,
+    "historical_case_starts_rolling_7_days": 0,
+    "live_case_starts_rolling_7_days": 0,
+    "transfer_checks_started": 1,
+    "verified_independent_cases_in_measurement_window": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "slot_cap_agent_minutes": 6,
+    "prior_same_day_scan_reserved_agent_minutes": 6,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Sunday evening slot cap is reserved. No duplicate slot budget is claimed."
+  },
+  "actions_taken": [
+    "READ_COORDINATION_STATE",
+    "RECORD_SCAN_FUNNEL",
+    "RECORD_AUTHORITATIVE_RESULT_STATE"
+  ],
+  "actions_not_taken": [
+    "SEARCH_AFTER_DAILY_CANDIDATE_CAP",
+    "UPDATE_TASKS_JSON",
+    "RETRY_TRANSFER_CHECK",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
