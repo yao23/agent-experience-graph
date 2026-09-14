@@ -1,0 +1,271 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260914-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-14:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-14T14:36:18Z",
+  "observed_local_date": "2026-09-14",
+  "slot": "morning",
+  "classification": "THREE_QUALIFIED_ONE_LIVE_TWO_HISTORICAL",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "bcda5c768359a2e04b002f69e697ef7bc59a0261"
+  },
+  "funnel": {
+    "reviewed_total": 12,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION/RESOURCE_LIFECYCLE": 2,
+      "LIVE_OSS_CONTRIBUTION/AUTHENTICATION_EXCLUDED": 2,
+      "LIVE_OSS_CONTRIBUTION/ENVIRONMENT_DRIFT": 2,
+      "HISTORICAL_REPLAY/ENVIRONMENT_DRIFT": 2,
+      "HISTORICAL_REPLAY/CI_OR_DEPLOYMENT_FAILURE": 2,
+      "HISTORICAL_REPLAY/REGRESSION_TEST_GAP": 1,
+      "HISTORICAL_REPLAY/CROSS_MODULE_REGRESSION": 1
+    },
+    "qualified": 3,
+    "excluded_by_reason": {
+      "HARD_EXCLUSION_AUTHENTICATION_OR_SECURITY": 2,
+      "COMPLETE_SOLUTION_ALREADY_PRESENT_FOR_LIVE_CASE": 2,
+      "DUPLICATE_LIVE_REPORT_SAME_ROOT_CAUSE": 1,
+      "REQUIRED_LOCALE_ENVIRONMENT_UNAVAILABLE": 1,
+      "UNBOUNDED_NONDETERMINISTIC_CI_FLAKE": 1,
+      "BUNDLED_WITH_NETWORK_FLAKE_NO_BOUNDED_LOCAL_ORACLE": 1,
+      "SCOPE_TOO_LARGE_FOR_NINETY_MINUTES": 1
+    },
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_REACHED",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-13T14:37:00Z",
+    "live_checked_through": "2026-09-14T14:36:18Z",
+    "historical_window_start": "2026-06-15",
+    "historical_older_boundary_used": "2026-06-15",
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-14T14:36:18Z"
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+      "supporting_source_urls": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3493"
+      ],
+      "source_updated_at": "2026-09-14T00:05:47Z",
+      "source_revision": {
+        "repository_commit": "9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "issue_number": 3357
+      },
+      "work_type": "LIVE_OSS_CONTRIBUTION",
+      "theme": "RESOURCE_LIFECYCLE",
+      "fact_type": "CURRENT_PUBLIC_SOURCE_OBSERVATION",
+      "mechanism": "Modern MCP clients can hold subscriptions/listen open indefinitely; servers need an explicit opt-out that also advertises the matching capability state.",
+      "target_behavior": "A public configuration opt-out disables subscriptions/listen, advertises both subscription capability flags as false, returns method-not-found for unsolicited listen calls, and leaves default behavior unchanged.",
+      "objective_verification": [
+        "At the frozen repository commit, use a local ASGI/MCP reproducer and show subscriptions/listen remains open under the current default path.",
+        "Implement or evaluate an explicit opt-out and assert both advertised capability flags are false.",
+        "Assert an unsolicited subscriptions/listen call returns method-not-found and the default configuration remains compatible."
+      ],
+      "estimated_total_minutes": 75,
+      "existing_solution": {
+        "status": "NO_VALID_LINKED_PULL_REQUEST_OBSERVED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+        "authorship": "Issue discussion only; #3493 is a supporting duplicate reproduction, not a separate case."
+      },
+      "limitations": [
+        "Public discussion exposes part of the mechanism, so this is not a blind-diagnosis case.",
+        "External contribution requires maintainer assignment/help-wanted status; this proposal authorizes no upstream interaction.",
+        "Deduplicate #3493 and any future reports against the canonical #3357 identity."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:subscriptions-listen-opt-out:3357"
+    },
+    {
+      "rank": 2,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+      "source_updated_at": "2026-06-26T08:42:43Z",
+      "source_revision": {
+        "base_commit": "47bbab3bc3a08d27c77feee4cf6f49dc9a7c1f5d",
+        "repair_commit": "bd915fbd21d505f7f9035536c93aa1a5b400e453",
+        "merge_commit": "df81c06221169072b223ae8e055e62414eac99e3"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "fact_type": "MERGED_UPSTREAM_REPAIR",
+      "mechanism": "pytest 9.1 rejects generator values passed to parametrize; the documentation-example collector must materialize its generator before collection.",
+      "target_behavior": "With pytest 9.1.0 and warnings treated as errors, tests/test_examples.py collects cleanly and all documentation-example tests pass.",
+      "objective_verification": [
+        "On the frozen base with pytest 9.1.0, run tests/test_examples.py with warnings as errors and confirm collection fails on the removed generator behavior.",
+        "Apply the one-line frozen repair and rerun the same command; collection and all 45 example tests must pass.",
+        "Run ruff on the changed test file."
+      ],
+      "estimated_total_minutes": 45,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+        "authorship": "Upstream contributor; preserve provenance. PR #2889 is the v1 backport of the same root cause."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis or live contribution.",
+        "PR #2889 must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pytest-parametrize-generator-removal:2890"
+    },
+    {
+      "rank": 3,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+      "source_updated_at": "2026-06-16T21:54:08Z",
+      "source_revision": {
+        "base_commit": "255650dcd155910fdf3e90cd5772a1726af9c2d7",
+        "repair_commit": "46971bb2851189e568dede34d43bbd6f139c584b",
+        "merge_commit": "ddb7b78ef4dbf54906a7cb1f7efbf880503baba9"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "REGRESSION_TEST_GAP",
+      "fact_type": "MERGED_UPSTREAM_REPAIR",
+      "mechanism": "Tests synchronize server-thread lifespan startup with a fixed 100 ms sleep; under load requests can arrive before the session manager task group exists.",
+      "target_behavior": "All three issue-1363 tests wait on a bounded readiness handshake and pass even when server-thread startup is deterministically delayed.",
+      "objective_verification": [
+        "On the frozen base, inject a 300 ms startup delay and confirm all three targeted tests fail with the task-group-not-initialized error.",
+        "Apply the frozen readiness-handshake repair and rerun the delayed tests; all three must pass.",
+        "Run the targeted file repeatedly without the injected delay and confirm no semantic regressions."
+      ],
+      "estimated_total_minutes": 60,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+        "authorship": "Upstream contributor with disclosed AI assistance; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "The original symptom was flaky; qualification relies on the published deterministic delayed-start A/B oracle, not unconstrained stress testing."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:lifespan-readiness-handshake:2879"
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "task_id": "OSS-LIVE-PYSDK-3357-SUBSCRIPTIONS-OPT-OUT",
+      "revision": 1,
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+      "source_revision": "issue updated 2026-09-14T00:05:47Z; repository 9972c21aa42054fb1450c5fc614761ed11847ec6",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "An explicit opt-out disables subscriptions/listen, advertises matching false capability flags, returns method-not-found for unsolicited calls, and preserves the default.",
+      "verification_method": [
+        "Local ASGI/MCP reproducer on the frozen revision",
+        "Capability assertions",
+        "Method-not-found assertion",
+        "Default-path regression test"
+      ],
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "No local validation performed; public #3493 independently reproduces the same family and is deduplicated into #3357.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3493",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:subscriptions-listen-opt-out:3357"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2890-PYTEST-PARAMETRIZE",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+      "source_revision": "base 47bbab3bc3a08d27c77feee4cf6f49dc9a7c1f5d; repair bd915fbd21d505f7f9035536c93aa1a5b400e453",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "target_behavior": "pytest 9.1.0 collects and runs all documentation-example tests without the generator-parametrize removal error.",
+      "verification_method": [
+        "Frozen-base failure under pytest 9.1.0 with warnings as errors",
+        "Frozen-repair pass of tests/test_examples.py",
+        "Ruff on changed file"
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2890; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/47bbab3bc3a08d27c77feee4cf6f49dc9a7c1f5d",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/bd915fbd21d505f7f9035536c93aa1a5b400e453"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pytest-parametrize-generator-removal:2890"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2879-LIFESPAN-READY",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+      "source_revision": "base 255650dcd155910fdf3e90cd5772a1726af9c2d7; repair 46971bb2851189e568dede34d43bbd6f139c584b",
+      "theme": "REGRESSION_TEST_GAP",
+      "target_behavior": "Issue-1363 tests synchronize on actual lifespan readiness and pass under a deterministic delayed-start oracle.",
+      "verification_method": [
+        "Frozen-base failure with a 300 ms injected startup delay",
+        "Frozen-repair pass with the same delay",
+        "Repeated targeted-file regression run"
+      ],
+      "budget_minutes_total": 60,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair at https://github.com/modelcontextprotocol/python-sdk/pull/2879; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/255650dcd155910fdf3e90cd5772a1726af9c2d7",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/46971bb2851189e568dede34d43bbd6f139c584b"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:lifespan-readiness-handshake:2879"
+    }
+  ],
+  "current_state": {
+    "queue_revision": 8,
+    "ready_tasks": 1,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "slot_cap_agent_minutes": 6,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Monday slot cap is reserved. No duplicate slot budget is claimed."
+  },
+  "actions_taken": [
+    "READ_PUBLIC_EVIDENCE",
+    "RANK_IN_SCOPE_CANDIDATES",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
