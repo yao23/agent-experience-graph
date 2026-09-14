@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260913t180000-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-13:evening",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-14T01:00:00Z",
+  "observed_local_date": "2026-09-13",
+  "slot": "evening",
+  "classification": "TRANSFER_CHECK_BLOCKED_ISOLATION_ONE_HISTORICAL_REPLAY_READY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "5065a6234e295634f745e404641a9ee1bdb4dc3e"
+  },
+  "hypothesis": {
+    "statement": "A verifier-bound contextual experience can help a fresh agent solve a similar real problem at least as correctly while reducing completed diagnostic steps by 20%, non-cached tokens by 15%, or wall time by 20%.",
+    "metric_vs_threshold": "UNMEASURED: the paired transfer check started 0 solver contexts because isolation could not be demonstrated."
+  },
+  "measured": {
+    "funnel": {
+      "checked": 8,
+      "qualified": 3,
+      "ready": 1,
+      "started": 1,
+      "verified": 0,
+      "archived": 0,
+      "blocked": 1
+    },
+    "transfer": {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "result": "BLOCKED_TRANSFER_ISOLATION",
+      "solver_contexts_started": 0,
+      "external_repository_code_executed": false,
+      "registry_candidate_created": false,
+      "successful_transfers": 0
+    },
+    "historical_replay": {
+      "next_ready_task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "budget_minutes_total": 45,
+      "started": 0
+    },
+    "external_adoption": 0
+  },
+  "reported": {
+    "cause": "The scheduled consumer had already read evaluator-only material and lacked a demonstrable way to create two fresh, non-inheriting solver contexts.",
+    "provenance_format": "provenance.record v1.0.0 was adopted and validated for future archival, but has not yet been used by a scheduler-origin archival."
+  },
+  "inference": [
+    "The transfer hypothesis is neither supported nor falsified; this is an experiment-infrastructure failure, not a product result.",
+    "The 45-minute #3076 replay is the smallest objective-oracle supply task and should be the only next claimable item."
+  ],
+  "queue_changes": [
+    "#3494 revision 1 moved from READY to BLOCKED_TRANSFER_ISOLATION and will not be retried automatically.",
+    "#3076 revision 1 moved from BACKLOG_QUALIFIED to the only READY position.",
+    "#2816 and #2977 remain BACKLOG_QUALIFIED."
+  ],
+  "costs": {
+    "cash_increment_usd": 0,
+    "cloud_agent_minutes_actual": "UNKNOWN",
+    "cloud_reserved_minutes_observed": 18,
+    "cloud_reserved_breakdown": "OSS scan morning 6 + evening 6; Startup OS morning 3 + evening 3.",
+    "local_transfer_agent_minutes_actual": "UNKNOWN",
+    "local_transfer_reserved_minutes": 90,
+    "note": "Unknown consumption remains reserved; the consumer must recompute day and rolling-week capacity before any CLAIM."
+  },
+  "blockers": [
+    "No valid fresh-context isolation mechanism for the paired transfer check.",
+    "No verified independent case or cross-agent transfer yet."
+  ],
+  "next_action": "Allow only the #3076 historical replay to be claimed after local budget admission; require frozen pre/post commits, the same regression tests and dependencies, provenance.record v1.0.0, and evidence-byte validation.",
+  "decisions_needed": [
+    "If the transfer check is to be retried later, provide or approve a demonstrable fresh non-inheriting solver-context mechanism; do not reuse revision 1 automatically."
+  ],
+  "evidence_locations": [
+    "coordination/reports/oss-scan/oss-scan-20260913-am-throughput-funnel.json",
+    "coordination/reports/oss-scan/oss-scan-20260913-pm-throughput-funnel.json",
+    "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+    "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json",
+    "coordination/receipts/codex-provenance-format-adoption-20260913t173950z.json"
+  ],
+  "actions_not_taken": [
+    "RETRY_TRANSFER_CHECK",
+    "EXECUTE_REPOSITORY_CODE",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY",
+    "SEND_MESSAGE",
+    "USE_PAID_API"
+  ]
+}

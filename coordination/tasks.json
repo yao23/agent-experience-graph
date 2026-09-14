@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 7,
+  "revision": 8,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-13T08:00:00-07:00",
+  "updated_at": "2026-09-13T18:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_TRANSFER_CHECK_READY_THREE_HISTORICAL_BACKLOG_V3_ACCEPTED",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_TRANSFER_CHECK_BLOCKED_ISOLATION",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -40,18 +40,24 @@
         "safety": "Use an isolated temporary checkout without publishing credentials. No upstream comment, pull request, production fix, main-branch change, global Agent/plugin installation or paid API."
       },
       "budget_minutes_total": 90,
-      "status": "READY",
+      "status": "BLOCKED_TRANSFER_ISOLATION",
       "existing_results": {
         "issue_author_reported": "Repeated server starts produce incomplete SSE initialization responses on MCP 2.2.0 and 1.30.0; a reused single server does not show the same pattern.",
         "public_independent_reported": "At the frozen SDK revision, sse-starlette 3.4.11 fails on the second initialization, while 3.0.2 and a diagnostic AppStatus reset succeed.",
         "falsified_alternative": "A final-send ordering patch fixes a controlled plain-SSE interleaving but does not fix the actual restart path.",
-        "limitations": "No production repair is established; fresh-process CPU-contention failures remain out of scope; public comments disclose the evaluator oracle and must not enter either solving context."
+        "limitations": "No production repair is established; fresh-process CPU-contention failures remain out of scope; public comments disclose the evaluator oracle and must not enter either solving context.",
+        "transfer_check_result": "BLOCKED_TRANSFER_ISOLATION; no solver context or repository code was started, so transfer efficacy remains unmeasured.",
+        "receipts": [
+          "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+          "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json"
+        ]
       },
       "evidence_locations": [
         "coordination/reports/oss-scan/oss-scan-20260913t023201z-python-sdk-3494.json",
         "coordination/evidence/registry-candidates/trace-2026-09-09-anthropics-skills-mcp-http-client-lifecycle.json",
         "https://github.com/modelcontextprotocol/python-sdk/issues/3494",
-        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6"
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json"
       ]
     },
     {
@@ -74,7 +80,7 @@
         "safety": "Local isolated checkout only; preserve upstream authorship; do not publish or comment upstream."
       },
       "budget_minutes_total": 45,
-      "status": "BACKLOG_QUALIFIED",
+      "status": "READY",
       "existing_results": "Merged upstream repair exists at PR #3076; no local replay, Registry candidate, independent transfer, or external adoption is yet established.",
       "evidence_locations": [
         "coordination/reports/oss-scan/oss-scan-20260913-am-throughput-funnel.json",
@@ -159,13 +165,13 @@
   ],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "V3_CONFIGURATION_ACCEPTED_READY_TASK_AWAITING_SCHEDULED_CLAIM",
+    "state": "V3_ACCEPTED_ONE_HISTORICAL_REPLAY_READY",
     "max_concurrent_consumers": 1,
-    "evidence_location": "coordination/receipts/codex-bootstrap-read-20260913t062948z.json",
+    "evidence_location": "coordination/receipts/codex-provenance-format-adoption-20260913t173950z.json",
     "limitations": [
-      "The v3 BOOTSTRAP_READ/CONFIGURATION_ACCEPTED receipt is valid configuration evidence but is not a scheduler-origin CLAIM or RESULT.",
-      "No experiment has run; the next eligible local action is a future scheduler-origin claim of the single READY revision.",
-      "The #3494 baseline and treatment must use fresh isolated solver contexts; otherwise return BLOCKED_TRANSFER_ISOLATION."
+      "The #3494 revision 1 RESULT is terminal BLOCKED_TRANSFER_ISOLATION and must not be retried without a demonstrable fresh-context boundary.",
+      "Only OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1 is READY; all other tasks remain non-claimable.",
+      "The consumer must perform budget admission before CLAIM. The Sep 13 transfer claim retains a 90-minute reservation with actual use UNKNOWN."
     ]
   },
   "historical_queue": {
@@ -207,5 +213,28 @@
     "task_payloads_unchanged_sha256": "2da5f9026c369041b345d1de704d445def06a6890e8cf7059b93c5e9094833f5",
     "task_execution_occurred": false,
     "scheduled_execution_occurred": false
+  },
+  "measurement_accounting": {
+    "as_of": "2026-09-13T18:00:00-07:00",
+    "checked_candidates": 8,
+    "qualified_unique_candidates": 3,
+    "ready_tasks": 1,
+    "started": {
+      "transfer_checks": 1,
+      "historical_replays": 0,
+      "live_oss_contributions": 0
+    },
+    "verified_independent_cases": 0,
+    "archived_registry_candidates": 0,
+    "blocked_transfer_checks": 1,
+    "successful_cross_agent_transfers": 0,
+    "external_adoption": 0,
+    "local_minutes": {
+      "transfer_reserved": 90,
+      "transfer_actual": "UNKNOWN",
+      "historical_actual": 0,
+      "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
+    },
+    "cash_increment_usd": 0
   }
 }
