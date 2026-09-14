@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "bayesian-review-20260913-window-opening",
+  "report_type": "WINDOW_OPENING_BAYESIAN_REVIEW",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+  "policy_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+  "observed_commit": "8e6e77e297c99e6dc22fdc03ac53a340100aaf91",
+  "evidence_cutoff": "2026-09-13T18:00:00-07:00",
+  "measurement_window": {
+    "starts_on": "2026-09-13",
+    "ends_on": "2026-09-19",
+    "review_on": "2026-09-20"
+  },
+  "substantive_change": true,
+  "headline": "The first scheduled transfer check was claimed but safely terminated before any solver or external code ran because two fresh non-inheriting contexts could not be demonstrated. Candidate supply advanced, but independent verification, transfer efficacy, and adoption remain at zero.",
+  "measured": {
+    "candidates_checked": 8,
+    "qualified_unique_candidates": 3,
+    "ready_tasks": 1,
+    "started_by_work_type": {
+      "TRANSFER_CHECK": 1,
+      "HISTORICAL_REPLAY": 0,
+      "LIVE_OSS_CONTRIBUTION": 0
+    },
+    "transfer_result": "BLOCKED_TRANSFER_ISOLATION",
+    "solver_contexts_started": 0,
+    "external_repository_code_executed": false,
+    "valid_ab_comparisons": 0,
+    "verified_independent_cases": 0,
+    "archived_registry_candidates": 0,
+    "successful_cross_agent_transfers": 0,
+    "external_adoption": 0,
+    "cash_increment_usd": 0,
+    "transfer_reserved_agent_minutes": 90,
+    "transfer_actual_agent_minutes": "UNKNOWN",
+    "token_measurement": "UNKNOWN",
+    "wall_time_measurement": "UNKNOWN",
+    "founder_intervention_minutes": "UNKNOWN"
+  },
+  "evidence_classification": {
+    "repair": "NO_NEW_VERIFIED_REPAIR",
+    "historical_replay": "THREE_QUALIFIED_CANDIDATES; NONE_EXECUTED",
+    "principle_boundary": "The #1742 caller-owned HTTP-client aclose repair is preregistered as inapplicable to #3494 dependency-owned global restart state, but no solver was run; this is an evaluator boundary, not measured transfer benefit.",
+    "external_adoption": "NONE",
+    "independent_reuse": "NONE",
+    "negative_transfer": "NOT_OBSERVED; treatment never received the experience",
+    "orchestration": "A scheduled CLAIM/RESULT path and fail-closed isolation stop were observed. This validates control behavior only."
+  },
+  "hypotheses": [
+    {
+      "hypothesis": "Verified Experience improves correctness or efficiency on an independent task versus no experience or ordinary memory.",
+      "prior_decision_credence": "30-45%",
+      "supporting_evidence": [],
+      "contradicting_evidence": [
+        "No valid A/B solver run occurred; commands, non-cached tokens, wall time, and failure cost remain unmeasured."
+      ],
+      "update": "30-45% (UNCHANGED)",
+      "missing": [
+        "A leak-free baseline/treatment comparison",
+        "An ordinary-memory comparator",
+        "Repeated independent task evidence"
+      ],
+      "next_highest_information_action": "Do not infer efficacy from #3494. Any future transfer study must establish fresh non-inheriting contexts and frozen input hashes before solver start."
+    },
+    {
+      "hypothesis": "The existing scheduled local consumer can execute a valid blind paired transfer check.",
+      "prior_decision_credence": "50-60%",
+      "supporting_evidence": [
+        "It accepted v3, created a scheduled claim, read it back, and stopped before contamination."
+      ],
+      "contradicting_evidence": [
+        "The scheduled context had already read the queue and evaluator oracle and had no demonstrable mechanism for two fresh isolated solver contexts."
+      ],
+      "update": "15-30% (DOWN)",
+      "missing": [
+        "An authorized non-inheriting solver-launch mechanism",
+        "Access-control evidence for excluded coordinator and evaluator material"
+      ],
+      "next_highest_information_action": "Treat revision 1 as terminal. A repeat requires demonstrable isolation plus any needed operator-approved budget or policy change."
+    },
+    {
+      "hypothesis": "Self-sourced public OSS history can supply bounded, objectively replayable Experience candidates.",
+      "prior_decision_credence": "60-70%",
+      "supporting_evidence": [
+        "3 of 8 checked candidates qualified and one 45-minute historical replay is READY with frozen pre/post revisions and a deterministic oracle."
+      ],
+      "contradicting_evidence": [
+        "No candidate has yet completed local replay or archival."
+      ],
+      "update": "65-75% (SLIGHTLY UP FOR SUPPLY; UNCHANGED FOR VERIFIED OUTPUT)",
+      "missing": [
+        "Observed preparation, execution, and archival time for one complete replay",
+        "A Registry candidate or explicit ARCHIVAL_BLOCKED result"
+      ],
+      "next_highest_information_action": "After reconciling the retained unknown transfer reservation, run only the READY #3076 historical replay at an eligible local slot."
+    },
+    {
+      "hypothesis": "The first seven-day window can produce 7-10 independently verified cases without lowering standards.",
+      "prior_decision_credence": "45-60%",
+      "supporting_evidence": [
+        "The opening-day funnel reached the daily cap of 3 qualified unique candidates."
+      ],
+      "contradicting_evidence": [
+        "Opening state is 0 verified cases; the only started work blocked before execution; 90 minutes remain reserved with actual use unknown."
+      ],
+      "update": "25-40% (DOWN, EARLY AND LOW-CONFIDENCE)",
+      "missing": [
+        "Per-case preparation/run/archive cycle time",
+        "Completion rate by work type",
+        "Mechanism-family diversity"
+      ],
+      "next_highest_information_action": "Measure one end-to-end historical replay before adding throughput machinery or changing quotas."
+    },
+    {
+      "hypothesis": "Explicit applicability and ownership boundaries reduce negative transfer.",
+      "prior_decision_credence": "55-65%",
+      "supporting_evidence": [
+        "The #3494 protocol explicitly distinguishes caller-owned resource cleanup from dependency-owned global restart state."
+      ],
+      "contradicting_evidence": [
+        "No agent consumed the Experience, so correct rejection was not observed behavior."
+      ],
+      "update": "55-65% (UNCHANGED)",
+      "missing": [
+        "Treatment behavior on a genuinely inapplicable task",
+        "Comparison with ordinary memory",
+        "Failure/overhead measurement"
+      ],
+      "next_highest_information_action": "Preserve #3494 as an applicability test design, not as positive transfer evidence."
+    }
+  ],
+  "decisions": {
+    "continue": [
+      "The bounded historical-replay path and strict evidence/archival requirements",
+      "Separate counting of cases, observations, mechanism families, adoption, and transfer"
+    ],
+    "adjust": [
+      "Prioritize the READY historical replay over more candidate accumulation",
+      "Record preparation, execution, evaluation, and archival minutes separately",
+      "Treat isolation capability as a prerequisite to transfer experiments, not something a solver prompt can self-attest"
+    ],
+    "pause": [
+      "Any further #3494 execution under revision 1",
+      "Any claim that the ownership-boundary rule improved an agent result",
+      "Additional experiment-harness work beyond the minimum required to complete one real case"
+    ],
+    "falsified_or_not_supported": [
+      "FALSIFIED FOR CURRENT CONSUMER: a scheduled context that has read the oracle can itself serve as both fresh blind solvers",
+      "NOT SUPPORTED: Verified Experience improves success, commands, tokens, cost, or latency",
+      "NOT SUPPORTED: opening-day candidate qualification equals PMF, external adoption, or independent reuse"
+    ]
+  },
+  "slot_accounting": {
+    "role": "bayesian_review",
+    "reserved_agent_minutes": 8,
+    "actual_agent_minutes": "UNKNOWN",
+    "actual_usd": "UNKNOWN",
+    "duplicate_slot_budget_claimed": false,
+    "queue_written": false,
+    "external_contact_or_publication": false
+  }
+}
