@@ -5,6 +5,8 @@ that already have objective, public-safe verification. It is not a social
 network, marketplace, hosted agent, execution service, or generic knowledge
 base. Applying an experience remains BYO-Agent/BYOK and local to the user.
 
+AEG's current design direction is **long working context, sparse external experience**. The Registry therefore serves two distinct consumers: a lightweight routing/index layer that decides whether an experience is worth loading, and a fuller evidence payload that is consulted only after selection. See [`docs/experience-routing.md`](experience-routing.md). This is an incremental design target rather than a claim that every current Registry surface already performs dynamic routing.
+
 ## Canonical source and generated surfaces
 
 `experiences/registry.json` is the evolvable public Registry content source. Its schema is
@@ -29,6 +31,31 @@ machine output diverges from the canonical data.
 The initial corpus intentionally contains two records. Three other historical
 work-queue candidates remain partial and are not promoted to reach an arbitrary
 card count.
+
+## Descriptor and payload model
+
+For future dynamic retrieval, each experience should be separable conceptually into two layers.
+
+The **experience descriptor** should be compact enough to rank or inspect without loading the full historical record. It should capture:
+
+- a concise, narrow trigger;
+- task/failure signatures or mechanism;
+- applicability and exclusions;
+- provenance / verification state / confidence;
+- known staleness or negative-transfer risk when available.
+
+The **full experience payload** may contain:
+
+- failed approaches and why they failed;
+- recovery principle or reusable lesson;
+- evidence and verification method;
+- constraints and environment/version context;
+- validation outcome and measured regressions;
+- limitations, stale conditions, and detailed provenance.
+
+Existing records remain valid. Schema evolution for descriptors should remain backward-compatible until controlled experiments demonstrate that particular descriptor fields improve routing quality. The Registry should not make new mandatory fields merely because they sound useful.
+
+The router must be able to abstain. A weak lexical match, broad trigger, or version-incompatible experience should not be forced into an agent's context.
 
 ## Measurement adapter
 
@@ -67,6 +94,8 @@ external replay reports, successful reproduction, repeat use, external
 Experience contribution, and private-team or paid-pilot interest. Page views,
 likes, founder-only use, and compliments are not primary product-market-fit
 evidence.
+
+For dynamic-routing experiments, additional evidence should be recorded only when the experiment can measure it honestly: retrieval trigger count, relevant vs irrelevant retrievals, abstentions, harmful steering / negative transfer, and whether retrieval changed the repair path. Do not infer these metrics from a final successful outcome.
 
 ## Contributions and replay reports
 
