@@ -1,0 +1,151 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "model-strength-transfer-v1",
+  "status": "PROPOSED_NOT_AUTHORIZED",
+  "research_question": "When the model becomes materially stronger, does a verified prior Experience still improve correctness or the repair path, become unnecessary, or cause negative transfer?",
+  "astra_release_cutoff": "2026-09-03T00:00:00Z",
+  "selected_task": null,
+  "selected_experience": null,
+  "execution_authority": {
+    "authorized": false,
+    "reason": "The active sprint permits no additional transfer check or new paid/external-model execution, and the prior transfer reservation remains unresolved.",
+    "required_before_activation": [
+      "operator-approved policy revision with a new transfer case allowance",
+      "reconciled prior transfer minutes and cash-equivalent budget",
+      "confirmed access to every exact model identifier using existing subscriptions or an explicitly approved paid budget",
+      "fresh non-inheriting solver contexts with evaluator and cross-arm artifact isolation",
+      "frozen public task, repository revision, dependency lock, oracle and Experience digests",
+      "pre-registered arm order and stop conditions"
+    ]
+  },
+  "eligibility": {
+    "experience_recorded_before_astra_release": true,
+    "target_independently_originated": true,
+    "public_and_license_compatible": true,
+    "objective_local_oracle_required": true,
+    "same_frozen_input_across_cells": true,
+    "allowed_task_families": [
+      "CI_OR_DEPLOYMENT_FAILURE",
+      "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "TEST_FRAMEWORK_MIGRATION",
+      "CROSS_MODULE_REGRESSION",
+      "RESOURCE_LIFECYCLE",
+      "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "ENVIRONMENT_DRIFT"
+    ],
+    "excluded_task_families": [
+      "security vulnerability discovery",
+      "exploit development",
+      "authentication or permission repair",
+      "production deployment",
+      "private infrastructure",
+      "private customer or employer data",
+      "unbounded nondeterministic investigation"
+    ]
+  },
+  "models": [
+    {
+      "slot": "frontier",
+      "provider": "openai",
+      "model": "gpt-6-astra",
+      "availability": "UNCONFIRMED_FOR_PROTOCOL_RUNNER"
+    },
+    {
+      "slot": "predecessor",
+      "provider": "openai",
+      "model": "gpt-5.6-sol",
+      "availability": "UNCONFIRMED_FOR_PROTOCOL_RUNNER"
+    },
+    {
+      "slot": "external",
+      "provider": "TBD_EXTERNAL_PROVIDER",
+      "model": "TBD_EXTERNAL_MODEL",
+      "availability": "NOT_SELECTED"
+    }
+  ],
+  "modes": [
+    "control",
+    "aeg-assisted"
+  ],
+  "arm_matrix": [
+    {"model_slot": "frontier", "mode": "control", "status": "NOT_ATTEMPTED"},
+    {"model_slot": "frontier", "mode": "aeg-assisted", "status": "NOT_ATTEMPTED"},
+    {"model_slot": "predecessor", "mode": "control", "status": "NOT_ATTEMPTED"},
+    {"model_slot": "predecessor", "mode": "aeg-assisted", "status": "NOT_ATTEMPTED"},
+    {"model_slot": "external", "mode": "control", "status": "NOT_ATTEMPTED"},
+    {"model_slot": "external", "mode": "aeg-assisted", "status": "NOT_ATTEMPTED"}
+  ],
+  "phases": [
+    {
+      "phase": "paired-smoke",
+      "replicates_per_cell": 1,
+      "planned_arm_runs": 6,
+      "interpretation_limit": "Exploratory feasibility and falsification only; no generalized model or AEG claim."
+    },
+    {
+      "phase": "confirmatory",
+      "replicates_per_cell": 3,
+      "planned_arm_runs": 18,
+      "interpretation_limit": "Requires a separate post-smoke activation gate and still supports only the frozen task family."
+    }
+  ],
+  "input_contract": {
+    "shared": [
+      "frozen public issue body",
+      "frozen repository revision",
+      "frozen dependency and environment specification",
+      "identical tool surface and limits",
+      "identical structured result contract"
+    ],
+    "control": "No external Experience and no substitute repair advice.",
+    "aeg_assisted": "Exactly one frozen compact Experience; no target patch, hidden test, evaluator analysis or adapted answer."
+  },
+  "measurements": [
+    "regression_free_success",
+    "attempts",
+    "completed_commands",
+    "tests_run",
+    "input_tokens",
+    "output_tokens",
+    "wall_time_ms",
+    "experience_disposition",
+    "repair_path_change",
+    "negative_transfer",
+    "abstention_correctness",
+    "protocol_deviations"
+  ],
+  "result_labels": [
+    "SUCCESS",
+    "SUCCESS_WITH_ADAPTATION",
+    "FAILED",
+    "STALE",
+    "INCOMPATIBLE",
+    "APPLICABILITY_UNCLEAR",
+    "NOT_ATTEMPTED"
+  ],
+  "stop_conditions": [
+    "an agent can reach hidden evaluator data or another arm's artifacts",
+    "the Experience contains or reveals the target repair",
+    "the task, oracle, thresholds or metrics change after an outcome is observed",
+    "the target is a trivial one-shot task that cannot discriminate repair paths",
+    "treatment causes an additional regression",
+    "model access, token telemetry, cost accounting or isolation is unresolved",
+    "any run would exceed the approved case, time, cash or deadline budget"
+  ],
+  "interpretation_policy": {
+    "correctness_first": true,
+    "single_pair_is_exploratory": true,
+    "preserve_negative_and_inconclusive_results": true,
+    "model_unavailability_is_not_repair_failure": true,
+    "wall_time_alone_cannot_establish_benefit": true,
+    "cross_model_difference_does_not_by_itself_prove_causality": true
+  },
+  "references": [
+    "experiments/situated-experience-benchmark-v1/MEASUREMENT-CONTRACT.md",
+    "docs/experience-routing.md",
+    "docs/defensive-oss-experience-strategy.md",
+    "coordination/AUTHORIZATION.json",
+    "https://openai.com/index/gpt-6-astra/",
+    "https://openai.com/index/the-defenders-window/"
+  ]
+}

@@ -1,7 +1,8 @@
 # Agent Experience Graph
 
 Agent Experience Graph helps coding agents retrieve verified debugging
-experience instead of solving every problem from scratch.
+experience and tests when that experience should transfer across tasks,
+models, versions, and environments.
 
 The v0.1.6 product-proof release gives the VS Code extension one honest path:
 a task or error becomes an explainable verified match or explicit abstention;
@@ -10,7 +11,11 @@ capsule is copied; the user then records an objective validation outcome and
 local usefulness rating. It retrieves guidance and does not automatically
 solve, send, or run the task.
 
-Think of it like a shared memory of successful work patterns. When an agent starts a new task, it can look at previous tasks, see which parts were similar, and learn which tools, skills, and approaches helped before.
+Model-native memory can record what happened in one provider or session. AEG
+adds a model-neutral qualification layer: it asks whether a compact, verified
+lesson is applicable to a new task, measures whether using it changed the
+outcome or repair path, and preserves negative or inconclusive transfer instead
+of silently treating every remembered lesson as useful.
 
 For example:
 
@@ -115,6 +120,10 @@ Imagine a new employee joining a company. They could try to figure everything ou
 
 Agent Experience Graph gives AI agents that same kind of workplace memory.
 
+More precisely, AEG is not trying to replace a model's own memory. It packages
+public-safe lessons with evidence, applicability boundaries, and observed
+transfer outcomes so different agents can decide whether to reuse or abstain.
+
 Instead of sharing private files or raw conversations, it stores short, cleaned-up summaries:
 
 - what the task was
@@ -181,6 +190,27 @@ No benchmark arm has run, and S2-S6 remain screening rules only.
 python3 experiments/situated-experience-benchmark-v1/run_benchmark.py validate
 python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
 ```
+
+## Model-Strength Transfer v1
+
+`experiments/model-strength-transfer-v1/` contains a preparation-only proposal
+to compare control and AEG-assisted runs across GPT-6 Astra, GPT-5.6 Sol, and
+one external model using the same frozen OSS task and objective oracle. It asks
+whether a stronger model makes a verified Experience useful, unnecessary, or
+harmful.
+
+The protocol is deliberately fail-closed: its status is
+`PROPOSED_NOT_AUTHORIZED`, no task or external model is selected, and no arm may
+run without a new operator-approved authorization, reconciled budget, exact
+model access, and fresh-context/artifact isolation.
+
+```bash
+python3 experiments/model-strength-transfer-v1/validate_protocol.py
+python3 -m unittest experiments/model-strength-transfer-v1/test_validate_protocol.py
+```
+
+See [`docs/defensive-oss-experience-strategy.md`](docs/defensive-oss-experience-strategy.md)
+for the bounded OSS maintenance wedge and product boundary.
 
 In plain English, this repository contains:
 

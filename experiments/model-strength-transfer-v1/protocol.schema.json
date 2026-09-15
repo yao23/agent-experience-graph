@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aeg.example/schemas/model-strength-transfer-v1.protocol.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "status",
+    "research_question",
+    "astra_release_cutoff",
+    "selected_task",
+    "selected_experience",
+    "execution_authority",
+    "eligibility",
+    "models",
+    "modes",
+    "arm_matrix",
+    "phases",
+    "input_contract",
+    "measurements",
+    "result_labels",
+    "stop_conditions",
+    "interpretation_policy",
+    "references"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "experiment_id": {"const": "model-strength-transfer-v1"},
+    "status": {"const": "PROPOSED_NOT_AUTHORIZED"},
+    "research_question": {"type": "string", "minLength": 20},
+    "astra_release_cutoff": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "selected_task": {"type": "null"},
+    "selected_experience": {"type": "null"},
+    "execution_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorized", "reason", "required_before_activation"],
+      "properties": {
+        "authorized": {"const": false},
+        "reason": {"type": "string", "minLength": 20},
+        "required_before_activation": {
+          "type": "array",
+          "minItems": 6,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 10}
+        }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experience_recorded_before_astra_release",
+        "target_independently_originated",
+        "public_and_license_compatible",
+        "objective_local_oracle_required",
+        "same_frozen_input_across_cells",
+        "allowed_task_families",
+        "excluded_task_families"
+      ],
+      "properties": {
+        "experience_recorded_before_astra_release": {"const": true},
+        "target_independently_originated": {"const": true},
+        "public_and_license_compatible": {"const": true},
+        "objective_local_oracle_required": {"const": true},
+        "same_frozen_input_across_cells": {"const": true},
+        "allowed_task_families": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "excluded_task_families": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["slot", "provider", "model", "availability"],
+        "properties": {
+          "slot": {"enum": ["frontier", "predecessor", "external"]},
+          "provider": {"type": "string", "minLength": 1},
+          "model": {"type": "string", "minLength": 1},
+          "availability": {"enum": ["UNCONFIRMED_FOR_PROTOCOL_RUNNER", "NOT_SELECTED"]}
+        }
+      }
+    },
+    "modes": {
+      "const": ["control", "aeg-assisted"]
+    },
+    "arm_matrix": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model_slot", "mode", "status"],
+        "properties": {
+          "model_slot": {"enum": ["frontier", "predecessor", "external"]},
+          "mode": {"enum": ["control", "aeg-assisted"]},
+          "status": {"const": "NOT_ATTEMPTED"}
+        }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase", "replicates_per_cell", "planned_arm_runs", "interpretation_limit"],
+        "properties": {
+          "phase": {"enum": ["paired-smoke", "confirmatory"]},
+          "replicates_per_cell": {"type": "integer", "minimum": 1},
+          "planned_arm_runs": {"type": "integer", "minimum": 6},
+          "interpretation_limit": {"type": "string", "minLength": 20}
+        }
+      }
+    },
+    "input_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shared", "control", "aeg_assisted"],
+      "properties": {
+        "shared": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}},
+        "control": {"type": "string", "minLength": 10},
+        "aeg_assisted": {"type": "string", "minLength": 10}
+      }
+    },
+    "measurements": {"type": "array", "minItems": 10, "uniqueItems": true, "items": {"type": "string"}},
+    "result_labels": {"type": "array", "minItems": 7, "uniqueItems": true, "items": {"type": "string"}},
+    "stop_conditions": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string", "minLength": 10}},
+    "interpretation_policy": {
+      "type": "object",
+      "additionalProperties": {"const": true},
+      "minProperties": 6
+    },
+    "references": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}}
+  }
+}

@@ -24,6 +24,39 @@ The current routing hypothesis is **long working context, sparse external experi
 
 Scope remains anthropics/skills, modelcontextprotocol/python-sdk, andrewyng/context-hub and agentskills/agentskills. SOFA is read-only. Normal dependency installation and source inspection for an in-scope case do not authorize prospecting new repositories. Do not resume old benchmark batches or legacy experiments.
 
+## Defensive OSS maintenance priority
+
+Within the existing repository list, themes, budgets and hard exclusions,
+prefer candidates that can produce a public-safe maintenance evidence chain:
+
+```text
+reproduce -> freeze oracle -> validate -> minimal repair
+          -> regression test -> confirm non-reproduction -> archive
+```
+
+This is a prioritization rule, not a security-scope expansion. In this sprint,
+"defensive OSS maintenance" includes deterministic CI, dependency/framework
+migration, test migration, lifecycle, regression, misleading-repair and
+environment-drift work already authorized by `AUTHORIZATION.json`. Security
+vulnerabilities, exploit development, authentication/permission repairs,
+production systems and private infrastructure remain excluded.
+
+When a candidate could support a later model-strength transfer study, record
+these facts without executing extra arms:
+
+- whether the source Experience was recorded before 2026-09-03;
+- whether the target task originated independently of that Experience;
+- whether the same frozen task and objective oracle could be presented to all
+  model/mode cells;
+- whether treatment can receive only the compact Experience while control
+  receives no substitute advice;
+- whether token, command, attempt, test and wall-time telemetry are available;
+- whether fresh-context and artifact isolation can prevent evaluator leakage.
+
+Mark this only as future study suitability. The current authorization permits
+no additional transfer check, paid model call, external-model execution or
+change to the local consumer's configured model.
+
 ## Each scan slot
 
 1. Read the trusted policy, one current branch snapshot, this checklist, the daily candidate tally, queue and prior scan cursor. Recheck relevant updates since the cursor. Also read `docs/experience-routing.md` when deciding reuse potential; it is a design/evaluation aid, not an authorization source.

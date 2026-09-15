@@ -12,6 +12,7 @@ on:
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
       - "experiments/situated-experience-benchmark-v1/**"
+      - "experiments/model-strength-transfer-v1/**"
       - "experiments/v0.1.6-product-proof/**"
       - "integrations/vscode/**"
       - "scripts/**"
@@ -37,6 +38,7 @@ on:
       - "experiments/public-repair-lab/**"
       - "experiments/natural-transfer-benchmark/**"
       - "experiments/situated-experience-benchmark-v1/**"
+      - "experiments/model-strength-transfer-v1/**"
       - "experiments/v0.1.6-product-proof/**"
       - "integrations/vscode/**"
       - "scripts/**"
@@ -83,6 +85,9 @@ jobs:
           npx --yes ajv-cli@5.0.0 validate --all-errors \
             -s experiments/public-repair-lab/paired-results.schema.json \
             -d experiments/public-repair-lab/results/tr-04-failed-path-prevention-pair.json
+          npx --yes ajv-cli@5.0.0 validate --all-errors --spec=draft2020 \
+            -s experiments/model-strength-transfer-v1/protocol.schema.json \
+            -d experiments/model-strength-transfer-v1/protocol.json
           python3 scripts/validate_verified_experiences.py
           python3 scripts/build_registry.py --check
           python3 experiments/public-repair-lab/validate_paired_results.py
@@ -100,6 +105,7 @@ jobs:
             >/dev/null
           python3 experiments/natural-transfer-benchmark/run_benchmark.py validate
           python3 experiments/situated-experience-benchmark-v1/run_benchmark.py validate
+          python3 experiments/model-strength-transfer-v1/validate_protocol.py
 
       - name: Test retrieval, validation, telemetry, and task preparation
         run: |
@@ -119,6 +125,7 @@ jobs:
           python3 experiments/natural-transfer-benchmark/test_isolation_controller.py
           python3 experiments/situated-experience-benchmark-v1/run_benchmark.py preflight
           python3 experiments/situated-experience-benchmark-v1/test_benchmark.py
+          python3 -m unittest experiments/model-strength-transfer-v1/test_validate_protocol.py
           python3 infrastructure/aeg-arm-execution-substrate/controller.py validate
           python3 -m unittest discover -s infrastructure/aeg-arm-execution-substrate/tests -p 'test_*.py' -v
 

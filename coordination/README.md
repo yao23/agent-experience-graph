@@ -66,3 +66,10 @@ v1 provenance metadata. This is separate from execution authorization; it does
 not change the schedules, queue payloads, budgets or frozen solver inputs.
 The local consumer must adopt the supplied immutable format commit before its
 future output is claimed to use the extension.
+
+## Model-strength transfer proposal
+
+[`MODEL_STRENGTH_TRANSFER_HANDOFF.md`](MODEL_STRENGTH_TRANSFER_HANDOFF.md)
+defines preparation-only routing for the proposed Astra/Sol/external-model
+comparison. It does not amend the active authorization, schedules, budgets,
+queue, local model, or existing transfer limit.
