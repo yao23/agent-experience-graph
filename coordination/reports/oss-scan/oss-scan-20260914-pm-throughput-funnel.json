@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260914-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-14:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-15T00:29:45Z",
+  "observed_local_date": "2026-09-14",
+  "slot": "evening",
+  "classification": "DAILY_CANDIDATE_CAP_REACHED_NO_ADDITIONAL_SCAN",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "325309dd7025c6bdb7542f5cd3f34e7c79264c1f"
+  },
+  "funnel": {
+    "reviewed_total": 0,
+    "reviewed_daily_total": 12,
+    "reviewed_by_theme_and_work_type": {},
+    "qualified": 0,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {},
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_REACHED_BEFORE_SLOT",
+    "ready_queue_age": "UNKNOWN; queue records one READY task but no claimable-state transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-14T14:36:18Z",
+    "live_checked_through": "2026-09-14T14:36:18Z",
+    "search_performed_this_slot": false,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-14T14:36:18Z"
+  },
+  "candidates": [],
+  "proposed_tasks": [],
+  "daily_candidates_already_recorded": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3357",
+      "dedup_identity": "modelcontextprotocol/python-sdk:subscriptions-listen-opt-out:3357",
+      "work_type": "LIVE_OSS_CONTRIBUTION",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT"
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2890",
+      "dedup_identity": "modelcontextprotocol/python-sdk:pytest-parametrize-generator-removal:2890",
+      "work_type": "HISTORICAL_REPLAY",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED"
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2879",
+      "dedup_identity": "modelcontextprotocol/python-sdk:lifespan-readiness-handshake:2879",
+      "work_type": "HISTORICAL_REPLAY",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED"
+    }
+  ],
+  "current_state": {
+    "queue_revision": 9,
+    "checked_candidates_cumulative": 20,
+    "qualified_unique_candidates_cumulative": 6,
+    "ready_tasks": 1,
+    "backlog_qualified": 5,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "slot_cap_agent_minutes": 6,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Monday slot cap is reserved. No search or duplicate candidate budget was claimed after the daily candidate cap was reached."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "ENFORCE_DAILY_CANDIDATE_CAP",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SEARCH_ADDITIONAL_CANDIDATES",
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
