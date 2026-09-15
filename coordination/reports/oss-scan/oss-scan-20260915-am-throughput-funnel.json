@@ -1,0 +1,273 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260915-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-15:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-15T14:32:39Z",
+  "observed_local_date": "2026-09-15",
+  "slot": "morning",
+  "classification": "THREE_QUALIFIED_HISTORICAL_REPLAYS",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "2ce3dc201993ddb6c718a244ebac5a86809ff56a"
+  },
+  "funnel": {
+    "reviewed_total": 11,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION/RESOURCE_LIFECYCLE": 2,
+      "LIVE_OSS_CONTRIBUTION/AUTHENTICATION_EXCLUDED": 2,
+      "LIVE_OSS_CONTRIBUTION/ENVIRONMENT_DRIFT": 1,
+      "LIVE_OSS_CONTRIBUTION/REGRESSION_TEST_GAP": 1,
+      "LIVE_OSS_CONTRIBUTION/DEPENDENCY_OR_FRAMEWORK_UPGRADE": 1,
+      "HISTORICAL_REPLAY/DEPENDENCY_OR_FRAMEWORK_UPGRADE": 2,
+      "HISTORICAL_REPLAY/CROSS_MODULE_REGRESSION": 1,
+      "HISTORICAL_REPLAY/RESOURCE_LIFECYCLE": 1
+    },
+    "qualified": 3,
+    "excluded_by_reason": {
+      "HARD_EXCLUSION_AUTHENTICATION_OR_SECURITY": 2,
+      "COMPLETE_SOLUTION_ALREADY_PRESENT_FOR_LIVE_CASE": 2,
+      "NO_OBJECTIVE_EXECUTABLE_ORACLE": 1,
+      "MULTIPLE_COMPLETE_FIX_ATTEMPTS_AND_HIGH_CONTAMINATION": 1,
+      "SCOPE_EXCEEDS_NINETY_MINUTES": 1,
+      "MULTI_DEFECT_REPORT_WITH_EXACT_FIXES_NO_CLEAN_LIVE_CASE": 1
+    },
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_REACHED",
+    "ready_queue_age": "UNKNOWN; one task is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-14T14:36:18Z",
+    "live_checked_through": "2026-09-15T14:32:39Z",
+    "historical_window_start": "2026-06-17",
+    "historical_older_boundary_used": "2026-03-17",
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-15T14:32:39Z"
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+      "source_updated_at": "2026-04-13T16:03:42Z",
+      "source_revision": {
+        "base_commit": "941089e06aa4f7ea09c58f8cae42e28059bb9c9b",
+        "repair_commit": "76f86dfd0b3052470dc4b162cacb15891e156234",
+        "merge_commit": "5cbd259c3bc97a9fe6ea661941feb637e72551be"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "fact_type": "MERGED_UPSTREAM_REPAIR",
+      "mechanism": "Pydantic 2.13 changed PydanticUserError from a TypeError subclass to a RuntimeError subclass, so an exception filter based only on TypeError stopped catching JSON-schema generation failures.",
+      "target_behavior": "On Pydantic 2.13, registering a tool whose return type cannot produce JSON Schema falls back to unstructured output instead of crashing at decoration time.",
+      "objective_verification": [
+        "At the frozen base with Pydantic 2.13, run the existing unserializable-output-schema regression test and confirm PydanticInvalidForJsonSchema escapes.",
+        "Apply the frozen one-file repair and rerun the same test; registration must succeed with output_schema=None.",
+        "Run the targeted tool-manager tests plus ruff and pyright on the changed file."
+      ],
+      "estimated_total_minutes": 45,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+        "authorship": "Upstream contributor with disclosed AI assistance; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "PR #2435 is the v1 backport of the same root cause and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pydantic-2.13-usererror-schema-fallback:2434"
+    },
+    {
+      "rank": 2,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+      "source_updated_at": "2026-06-10T09:37:55Z",
+      "source_revision": {
+        "base_commit": "494eb11d36b4238226cc0551da6015e1c73f7f3b",
+        "repair_commit": "2be42bc5415c9d52ef2633e38a89851a88e5e0a7",
+        "merge_commit": "2309e5ef974062748e0268c396eba73cfdb6f5e3"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "fact_type": "MERGED_UPSTREAM_REPAIR",
+      "mechanism": "The task-result handler used a different Pydantic serialization path from session delivery, retaining nested optional None fields as JSON null and violating optional-but-not-null client contracts.",
+      "target_behavior": "Completed task payloads omit optional null fields while retaining required related-task metadata and valid content.",
+      "objective_verification": [
+        "Apply the upstream regression test to the frozen base and confirm nested annotations/_meta serialize as null.",
+        "Apply the frozen repair and confirm those keys are absent while related-task metadata remains present.",
+        "Run the task-result-handler and experimental task-server suites plus ruff."
+      ],
+      "estimated_total_minutes": 45,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+        "authorship": "Upstream contributor; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "The affected tasks API was experimental; results apply only to the frozen revisions."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:task-result-exclude-none-contract:2809"
+    },
+    {
+      "rank": 3,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+      "source_updated_at": "2026-03-17T18:40:42Z",
+      "source_revision": {
+        "base_commit": "75a80b6f07f0dfbe0ceb8df50c920a4bda3266d0",
+        "repair_commit": "1e022ab5e2206153db983b5192cb58a157b98e27",
+        "merge_commit": "1a2244f402bdb08f1611bfd4ad34ef36a91a23a7"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": "RESOURCE_LIFECYCLE",
+      "fact_type": "MERGED_UPSTREAM_REPAIR",
+      "mechanism": "Strict UTF-8 decoding raised outside the JSON parsing guard, terminating the stdio receive loop on one malformed line before a subsequent valid message could be processed.",
+      "target_behavior": "A malformed non-UTF-8 line surfaces as an in-stream parse exception while the following valid JSON-RPC message is still delivered.",
+      "objective_verification": [
+        "At the frozen base, feed invalid UTF-8 bytes followed by a valid JSON-RPC line and confirm the receive loop exits with UnicodeDecodeError.",
+        "Apply the frozen repair and confirm the first item is an exception and the second is the valid SessionMessage.",
+        "Run the stdio server tests plus ruff on the changed files."
+      ],
+      "estimated_total_minutes": 45,
+      "existing_solution": {
+        "status": "MERGED_UPSTREAM",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+        "authorship": "Upstream contributor with disclosed AI assistance; preserve provenance."
+      },
+      "limitations": [
+        "Solved historical replay using protocol-invalid input; not evidence about compliant-client behavior.",
+        "PR #2303 is the v1 backport and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:stdio-invalid-utf8-recovery:2302"
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "task_id": "OSS-HIST-PYSDK-2434-PYDANTIC-213-SCHEMA",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+      "source_revision": "base 941089e06aa4f7ea09c58f8cae42e28059bb9c9b; repair 76f86dfd0b3052470dc4b162cacb15891e156234",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "target_behavior": "Pydantic 2.13 unserializable return types fall back to unstructured output without crashing registration.",
+      "verification_method": [
+        "Frozen-base failure with Pydantic 2.13",
+        "Frozen-repair pass of existing regression test",
+        "Targeted tool-manager tests, ruff and pyright"
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/941089e06aa4f7ea09c58f8cae42e28059bb9c9b",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/76f86dfd0b3052470dc4b162cacb15891e156234"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pydantic-2.13-usererror-schema-fallback:2434"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2809-TASK-RESULT-NONE",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+      "source_revision": "base 494eb11d36b4238226cc0551da6015e1c73f7f3b; repair 2be42bc5415c9d52ef2633e38a89851a88e5e0a7",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "target_behavior": "Completed task results omit nested optional nulls while preserving required related-task metadata.",
+      "verification_method": [
+        "Frozen-base regression-test failure",
+        "Frozen-repair targeted test pass",
+        "Experimental task-server suite and ruff"
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/494eb11d36b4238226cc0551da6015e1c73f7f3b",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/2be42bc5415c9d52ef2633e38a89851a88e5e0a7"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:task-result-exclude-none-contract:2809"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2302-STDIO-UTF8",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+      "source_revision": "base 75a80b6f07f0dfbe0ceb8df50c920a4bda3266d0; repair 1e022ab5e2206153db983b5192cb58a157b98e27",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "Malformed non-UTF-8 input yields an in-stream error without preventing delivery of the next valid stdio message.",
+      "verification_method": [
+        "Frozen-base invalid-byte then valid-message failure",
+        "Frozen-repair two-item stream assertion",
+        "Targeted stdio tests and ruff"
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION",
+      "existing_results": "Merged upstream repair; local replay not yet performed.",
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/75a80b6f07f0dfbe0ceb8df50c920a4bda3266d0",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/1e022ab5e2206153db983b5192cb58a157b98e27"
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:stdio-invalid-utf8-recovery:2302"
+    }
+  ],
+  "current_state": {
+    "queue_revision": 9,
+    "checked_candidates_cumulative": 20,
+    "qualified_unique_candidates_cumulative": 6,
+    "ready_tasks": 1,
+    "backlog_qualified": 5,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Tuesday slot cap is reserved. No other Sep 15 cloud-task cost record was present at the fixed snapshot."
+  },
+  "actions_taken": [
+    "READ_PUBLIC_EVIDENCE",
+    "RANK_IN_SCOPE_CANDIDATES",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
