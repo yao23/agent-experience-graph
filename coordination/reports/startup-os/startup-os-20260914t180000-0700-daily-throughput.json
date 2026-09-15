@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260914t180000-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-14:evening",
+  "observed_at": "2026-09-15T01:04:27Z",
+  "observed_local_date": "2026-09-14",
+  "slot": "evening",
+  "classification": "SUPPLY_AVAILABLE_EXECUTION_NOT_STARTED_ONE_READY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "d7194078885ef7f34e9cd01f89cc4c0d998053e1"
+  },
+  "daily_funnel": {
+    "checked": 12,
+    "qualified_unique": 3,
+    "ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0
+  },
+  "cumulative_funnel": {
+    "checked": 20,
+    "qualified_unique": 6,
+    "ready": 1,
+    "backlog_qualified": 5,
+    "case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0
+  },
+  "queue": {
+    "queue_revision": 9,
+    "sole_ready_task": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "task_type": "HISTORICAL_REPLAY",
+      "budget_minutes_total": 45,
+      "status": "READY"
+    },
+    "claim_result_observation": "No scheduler-origin CLAIM or RESULT for revision 1 was present at the fixed coordination revision.",
+    "interpretation": "The historical replay has not started. Absence of a receipt is not classified as an execution failure before the next eligible local consumer slot.",
+    "backlog_order": [
+      "OSS-HIST-PYSDK-2816-CALLTOOL-RESULT",
+      "OSS-HIST-PYSDK-2977-DOCS-PACKAGE-PATH",
+      "OSS-LIVE-PYSDK-3357-SUBSCRIPTIONS-OPT-OUT",
+      "OSS-HIST-PYSDK-2890-PYTEST-PARAMETRIZE",
+      "OSS-HIST-PYSDK-2879-LIFESPAN-READY"
+    ]
+  },
+  "transfer": {
+    "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+    "revision": 1,
+    "status": "BLOCKED_TRANSFER_ISOLATION",
+    "solver_started": false,
+    "efficacy_measured": false,
+    "successful_cross_agent_transfer": 0,
+    "retry_allowed": false
+  },
+  "throughput_assessment": {
+    "supply_state": "ONE_READY_FIVE_QUALIFIED_BACKLOG",
+    "limiting_stage": "READY_TO_CLAIM",
+    "maximum_blocker": "No valid CLAIM/RESULT has appeared for the sole READY historical replay.",
+    "next_action": "At the next eligible local consumer slot, admit and claim only OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1 after daily and rolling budget checks. If no valid claim appears afterward, inspect scheduler/consumer handoff before changing candidate ranking.",
+    "decisions_needed": []
+  },
+  "adoption": {
+    "external_adoption_events": 0,
+    "upstream_adoption_events": 0,
+    "note": "Historical replay, observation count, independent case, upstream adoption and cross-agent transfer remain separate measures."
+  },
+  "cost": {
+    "actual_usd": 0,
+    "cloud_actual_agent_minutes": "UNKNOWN",
+    "cloud_reserved_agent_minutes": 26,
+    "cloud_daily_cap_agent_minutes": 30,
+    "startup_os_evening_reserved_agent_minutes": 3,
+    "local_agent_minutes_observed_for_2026_09_14": "UNKNOWN; no new CLAIM or RESULT receipt was observed",
+    "local_rolling_7_day_reserved_agent_minutes": 90,
+    "local_rolling_7_day_cap_agent_minutes": 600,
+    "accounting_note": "Unknown cloud task costs are charged at their full recorded slot reservations. The prior #3494 90-minute local reservation remains charged because actual use is unobservable."
+  },
+  "evidence_locations": [
+    "coordination/tasks.json",
+    "coordination/reports/oss-scan/oss-scan-20260914-am-throughput-funnel.json",
+    "coordination/reports/oss-scan/oss-scan-20260914-pm-throughput-funnel.json",
+    "coordination/reports/competitive-research/20260914t0847-0700.md",
+    "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+    "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json"
+  ],
+  "changes": [
+    "Recorded the unique evening throughput summary.",
+    "Kept task queue revision 9 unchanged because no task state changed.",
+    "Did not create a duplicate candidate or start another task."
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "LOCAL_VALIDATION",
+    "RETRY_TRANSFER_CHECK",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_EXTERNAL_MESSAGE",
+    "MODIFY_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
