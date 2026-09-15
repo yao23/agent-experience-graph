@@ -2,6 +2,8 @@
 
 This restores the seven-topic list recovered from the 2026-08-21 discussion. It is a classification/search aid, not seven independent queues or seven separate budget pools. General bug repair is a work activity across topics. Resource ownership/lifecycle and regression-test gaps remain priority mechanism tags.
 
+The current routing hypothesis is **long working context, sparse external experience**. Candidate discovery should therefore prefer cases with a narrow, recognizable trigger and a reusable mechanism over cases that merely have large amounts of historical context. See `docs/experience-routing.md`. This does not expand repository scope, budget, execution authority, or the number of transfer experiments.
+
 ## Topic coverage
 
 | Topic ID | Recovered category | Search terms | Bounded admission rule |
@@ -24,14 +26,50 @@ Scope remains anthropics/skills, modelcontextprotocol/python-sdk, andrewyng/cont
 
 ## Each scan slot
 
-1. Read the trusted policy, one current branch snapshot, the daily candidate tally, queue and prior scan cursor. Recheck relevant updates since the cursor.
+1. Read the trusted policy, one current branch snapshot, this checklist, the daily candidate tally, queue and prior scan cursor. Recheck relevant updates since the cursor. Also read `docs/experience-routing.md` when deciding reuse potential; it is a design/evaluation aid, not an authorization source.
 2. Prefer deterministic dependency/SDK changes, lifecycle cleanup and regression-test gaps. Rotate through the seven topic tags over the week; there is no per-topic quota and no need to search every topic on every run.
 3. If fewer than three qualified unique candidates exist for the local day, use the remaining slot budget to search historical small fixes/tests, initially the past 90 days, then older results if useful. Do not stop merely because one new issue was found. Stop at the daily candidate cap, available slot budget, an exhausted bounded search, or an actual access blocker.
 4. Use terms in the table with repository and issue/PR filters. Live scans check open issue/PR activity; historical scans check merged repair/test PRs first. Fix/merge status must be fetched, not inferred from a title or closed issue.
 5. Record reviewed/qualified/rejected counts, rejected reasons, work type/topic, cursor and stop reason even if no candidate qualifies. Write one small append-only scan report per scheduled slot, not a user notification per result. An unchanged replay of the same slot is deduplicated.
-6. Rank by objective-verification likelihood, expected total minutes, evidence novelty and reuse potential. Maintainer activity affects live contributions, not historical replay. Any numeric score is a prioritization heuristic, not measured success probability.
+6. Rank by objective-verification likelihood, expected total minutes, evidence novelty, reuse potential, and descriptor quality. Descriptor quality means the case has a concise trigger, recognizable task/failure signature, bounded applicability/exclusions, and enough provenance to support confidence. A broad story with no clear trigger should rank below a narrower case even when the broad case has more text or traces. Maintainer activity affects live contributions, not historical replay. Any numeric score is a prioritization heuristic, not measured success probability.
 
 Daily three candidates is a supply target and cap, not a requirement to fabricate candidates. Use an existing qualified backlog before scanning the same material again. A backlog of ready work should shift effort toward verification, not generate duplicate tasks.
+
+## Two-layer archival target
+
+For every newly verified Registry candidate, preserve the current schema and evidence requirements, while also making the following two layers explicit in the candidate/report when the source supports them:
+
+### Descriptor
+
+- concise trigger;
+- task/failure signature or reusable mechanism;
+- applicability and explicit exclusions;
+- provenance / verification state / confidence basis;
+- known staleness or negative-transfer risk when observable.
+
+### Full payload
+
+- failed or rejected approaches and why they failed;
+- recovery principle / reusable lesson;
+- evidence and verification method;
+- constraints and environment/version context;
+- validation outcome and measured regressions;
+- limitations and detailed provenance.
+
+Do not invent descriptor fields that the source does not support. Missing evidence remains unknown rather than being inferred. Existing Registry schema stays backward-compatible; this checklist does not authorize a breaking schema migration.
+
+## Routing evidence
+
+When an authorized experiment or replay can observe routing behavior without expanding scope, record the distinction between:
+
+- no external experience;
+- experience supplied up front;
+- experience consulted dynamically/on demand;
+- abstention / no relevant experience.
+
+Do not create new experiment arms solely because this checklist mentions them. When the current authorized protocol does not measure trigger timing or retrieval policy, record those fields as unmeasured.
+
+Useful routing evidence, when genuinely observable, includes retrieval trigger count, relevant/irrelevant retrievals, abstentions, harmful steering/negative transfer, whether retrieval changed the repair path, and any token/time overhead. Correctness remains the first gate.
 
 ## Minimal evidence and counting
 
