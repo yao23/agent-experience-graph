@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 9,
+  "revision": 10,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-14T08:00:00-07:00",
+  "updated_at": "2026-09-15T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_FIVE_QUALIFIED_BACKLOG",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_EIGHT_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -262,6 +262,108 @@
         "Solved historical replay, not independent diagnosis.",
         "The original symptom was flaky; qualification relies on the published deterministic delayed-start A/B oracle, not unconstrained stress testing."
       ]
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2434-PYDANTIC-213-SCHEMA",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 8,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+      "source_revision": "base 941089e06aa4f7ea09c58f8cae42e28059bb9c9b; repair 76f86dfd0b3052470dc4b162cacb15891e156234; merge 5cbd259c3bc97a9fe6ea661941feb637e72551be",
+      "theme": "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+      "target_behavior": "On Pydantic 2.13, registering a tool whose return type cannot produce JSON Schema falls back to unstructured output instead of crashing at decoration time.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with Pydantic 2.13 and the same upstream regression case.",
+        "technical_oracle": [
+          "At the frozen base with Pydantic 2.13, confirm the unserializable-output-schema regression case raises PydanticInvalidForJsonSchema.",
+          "Apply the frozen repair and confirm registration succeeds with output_schema=None.",
+          "Run targeted tool-manager tests plus ruff and pyright on the changed file."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream authorship; no publication, deployment, private data, paid API or global installation."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #2434; no local replay, Registry candidate, independent transfer or external adoption is established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260915-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2434",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/941089e06aa4f7ea09c58f8cae42e28059bb9c9b",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/76f86dfd0b3052470dc4b162cacb15891e156234"
+      ],
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "PR #2435 is the v1 backport of the same root cause and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:pydantic-2.13-usererror-schema-fallback:2434"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2809-TASK-RESULT-NONE",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 9,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+      "source_revision": "base 494eb11d36b4238226cc0551da6015e1c73f7f3b; repair 2be42bc5415c9d52ef2633e38a89851a88e5e0a7; merge 2309e5ef974062748e0268c396eba73cfdb6f5e3",
+      "theme": "CROSS_MODULE_REGRESSION",
+      "target_behavior": "Completed task payloads omit optional null fields while retaining required related-task metadata and valid content.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the upstream discriminating result-shape regression test.",
+        "technical_oracle": [
+          "Apply the upstream regression test to the frozen base and confirm nested annotations/_meta serialize as null.",
+          "Apply the frozen repair and confirm those keys are absent while related-task metadata remains present.",
+          "Run the task-result-handler and experimental task-server suites plus ruff."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream authorship; no publication, deployment, private data, paid API or global installation."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #2809; no local replay, Registry candidate, independent transfer or external adoption is established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260915-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2809",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/494eb11d36b4238226cc0551da6015e1c73f7f3b",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/2be42bc5415c9d52ef2633e38a89851a88e5e0a7"
+      ],
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "The affected tasks API was experimental; results apply only to the frozen revisions."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:task-result-exclude-none-contract:2809"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2302-STDIO-UTF8",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 10,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+      "source_revision": "base 75a80b6f07f0dfbe0ceb8df50c920a4bda3266d0; repair 1e022ab5e2206153db983b5192cb58a157b98e27; merge 1a2244f402bdb08f1611bfd4ad34ef36a91a23a7",
+      "theme": "RESOURCE_LIFECYCLE",
+      "target_behavior": "A malformed non-UTF-8 line surfaces as an in-stream parse exception while the following valid JSON-RPC message is still delivered.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with invalid UTF-8 followed by a valid message using the same regression test.",
+        "technical_oracle": [
+          "At the frozen base, confirm the receive loop exits with UnicodeDecodeError before delivering the next valid message.",
+          "Apply the frozen repair and confirm the first item is an exception and the second is the valid SessionMessage.",
+          "Run targeted stdio server tests plus ruff on changed files."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream authorship; no publication, deployment, private data, paid API or global installation."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": "Merged upstream repair exists at PR #2302; no local replay, Registry candidate, independent transfer or external adoption is established.",
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260915-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2302",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/75a80b6f07f0dfbe0ceb8df50c920a4bda3266d0",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/1e022ab5e2206153db983b5192cb58a157b98e27"
+      ],
+      "limitations": [
+        "Solved historical replay using protocol-invalid input; not evidence about compliant-client behavior.",
+        "PR #2303 is the v1 backport and must not be counted separately."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:stdio-invalid-utf8-recovery:2302"
     }
   ],
   "local_consumer": {
@@ -316,9 +418,9 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-14T08:00:00-07:00",
-    "checked_candidates": 20,
-    "qualified_unique_candidates": 6,
+    "as_of": "2026-09-15T08:00:00-07:00",
+    "checked_candidates": 31,
+    "qualified_unique_candidates": 9,
     "ready_tasks": 1,
     "started": {
       "transfer_checks": 1,
@@ -337,7 +439,7 @@
       "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
     },
     "cash_increment_usd": 0,
-    "backlog_qualified": 5,
+    "backlog_qualified": 8,
     "starts_rolling_7_days": {
       "transfer_checks": 1,
       "historical_replays": 0,
