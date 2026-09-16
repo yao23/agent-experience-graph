@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 10,
+  "revision": 11,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-15T08:00:00-07:00",
+  "updated_at": "2026-09-16T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_EIGHT_QUALIFIED_BACKLOG",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_ELEVEN_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -364,6 +364,191 @@
         "PR #2303 is the v1 backport and must not be counted separately."
       ],
       "dedup_identity": "modelcontextprotocol/python-sdk:stdio-invalid-utf8-recovery:2302"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2200-SSE-STALE-SESSION",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 11,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2200",
+      "source_revision": "base 62575edabd84bfa6e7f143e08468db44abd33fd6; repair 25d75bb35c6f0e2a4396a4243d56415a4b668910; merge b3149d2f33dd929143123195755bf4b9b57efddb",
+      "theme": "RESOURCE_LIFECYCLE",
+      "secondary_themes": [
+        "MISLEADING_REPAIR_OR_REPEATED_FAILURE"
+      ],
+      "target_behavior": "After disconnect, the session entry is absent and a POST using the old session ID returns HTTP 404 rather than entering a closed stream.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the same discriminating upstream regression oracle and pinned dependencies.",
+        "technical_oracle": [
+          "Checkout the fixed base SHA and freeze a deterministic connect-disconnect-POST regression oracle.",
+          "Confirm the oracle fails before repair.",
+          "Apply the minimal registry cleanup, run the focused test, and confirm the old session is rejected.",
+          "Run the adjacent SSE test subset and archive red/green evidence."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream provenance; no publication, upstream interaction, deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 45,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2200",
+          "note": "The merged repair is one registry pop plus a regression test. The PR explicitly corrects its original server-reload explanation; that rejected premise is evidence, not an instruction."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260916-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2200",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/b3149d2f33dd929143123195755bf4b9b57efddb",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/62575edabd84bfa6e7f143e08468db44abd33fd6",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/25d75bb35c6f0e2a4396a4243d56415a4b668910"
+      ],
+      "limitations": [
+        "Historical replay only; the correct repair is public and cannot measure blind diagnosis.",
+        "The original reload claim was inaccurate; the valid scope is one process lifetime.",
+        "No independent transfer target or fresh artifact isolation has been established."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:sse-stale-session-registry-cleanup:2200",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2266-TRANSPORT-STREAM-CLEANUP",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 12,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2266",
+      "source_revision": "base 62eb08e5b23944510b8ec500a51c8f895fb58553; repair d532923ee00d1b2ed2ca6bfe807fbda9659cb196; merge e1fd62e0f324bf64479d663cf02ba492326f64df",
+      "theme": "RESOURCE_LIFECYCLE",
+      "secondary_themes": [
+        "CI_OR_DEPLOYMENT_FAILURE",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "All four stream ends close on connection-error and normal-exit paths, and forced garbage collection emits no MemoryObject stream ResourceWarning.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the same discriminating upstream regression oracle and pinned dependencies.",
+        "technical_oracle": [
+          "Checkout the fixed base SHA and freeze the three transport cleanup tests around sys.unraisablehook and forced garbage collection.",
+          "Confirm at least the affected transport paths fail before repair.",
+          "Apply minimal close/finally changes and confirm focused red-to-green behavior.",
+          "Run adjacent client transport tests and retain the exact environment and output."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream provenance; no publication, upstream interaction, deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 75,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2266",
+          "note": "The merged PR reports deterministic failures on its base and adds three regression tests; it also updates the minimum anyio version, which must be isolated from the causal repair during replay."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260916-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2266",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/e1fd62e0f324bf64479d663cf02ba492326f64df",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/62eb08e5b23944510b8ec500a51c8f895fb58553",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/d532923ee00d1b2ed2ca6bfe807fbda9659cb196"
+      ],
+      "limitations": [
+        "Historical replay only; the repair and tests are public.",
+        "Seven files and a dependency floor change make it essential to freeze a focused oracle and separate causal cleanup from packaging changes.",
+        "The PR carries an AI-use disclaimer; this is acceptable for authorized local replay but is not evidence of independent model transfer."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:anyio-client-transport-stream-cleanup:2266",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2257-ERROR-NOTIFICATION-RACE",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 13,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2257",
+      "source_revision": "base 7ba41dcfae2044987fbcca0e10744e992489091f; repair af8c597313bef14f7c59608d98c9131535f00533; merge 62eb08e5b23944510b8ec500a51c8f895fb58553",
+      "theme": "RESOURCE_LIFECYCLE",
+      "secondary_themes": [
+        "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "The server logs transport exceptions locally, writes no notification to a broken transport, and exits cleanly without ClosedResourceError while preserving raise_exceptions behavior.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the same discriminating upstream regression oracle and pinned dependencies.",
+        "technical_oracle": [
+          "Checkout the fixed base SHA and freeze the real anyio-stream integration regression.",
+          "Confirm the pre-repair path reproduces the teardown ClosedResourceError.",
+          "Apply the minimal removal of the transport write and confirm clean exit plus zero outbound message.",
+          "Run focused low-level server/session tests and archive red/green evidence."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream provenance; no publication, upstream interaction, deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 60,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2257",
+          "note": "The merged repair superseded two earlier proposals and reports a deterministic integration test for the shutdown race."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260916-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2257",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/62eb08e5b23944510b8ec500a51c8f895fb58553",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/7ba41dcfae2044987fbcca0e10744e992489091f",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/af8c597313bef14f7c59608d98c9131535f00533"
+      ],
+      "limitations": [
+        "Historical replay only; the public PR contains the correct diagnosis and repair.",
+        "A distinct response-write race noted upstream is out of scope and must not be conflated with this oracle.",
+        "No independent transfer target, telemetry boundary, or treatment-only delivery path is established."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:transport-error-notification-shutdown-race:2257",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
     }
   ],
   "local_consumer": {
@@ -418,9 +603,9 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-15T08:00:00-07:00",
-    "checked_candidates": 31,
-    "qualified_unique_candidates": 9,
+    "as_of": "2026-09-16T08:00:00-07:00",
+    "checked_candidates": 48,
+    "qualified_unique_candidates": 12,
     "ready_tasks": 1,
     "started": {
       "transfer_checks": 1,
@@ -439,7 +624,7 @@
       "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
     },
     "cash_increment_usd": 0,
-    "backlog_qualified": 8,
+    "backlog_qualified": 11,
     "starts_rolling_7_days": {
       "transfer_checks": 1,
       "historical_replays": 0,
