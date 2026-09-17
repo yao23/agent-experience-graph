@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 11,
+  "revision": 12,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-16T08:00:00-07:00",
+  "updated_at": "2026-09-17T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_ELEVEN_QUALIFIED_BACKLOG",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_FOURTEEN_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -549,6 +549,177 @@
         "advisory_only": true,
         "protocol_status": "PROPOSED_NOT_AUTHORIZED"
       }
+    },
+    {
+      "task_id": "OSS-LIVE-PYSDK-3522-STREAM-RECOVERY",
+      "revision": 1,
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "priority": 14,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3522",
+      "source_revision": "code 6affe5c0d3588fd1705713b3703dc68015cfe3eb; issue updated 2026-09-17T13:50:42Z",
+      "theme": "RESOURCE_LIFECYCLE",
+      "secondary_themes": [
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "The interrupted request fails in isolation; a following ping on the same ClientSession succeeds through a fresh HTTP connection; context exit raises no additional ExceptionGroup.",
+      "verification_method": {
+        "design": "Local-only validation on the frozen public revision with a deterministic disconnect fixture; no external contribution without separate authorization and maintainer direction.",
+        "technical_oracle": [
+          "Freeze the issue body, code SHA, Python 3.12, MCP 2.2.0, and disconnect sequence before diagnosis.",
+          "Reproduce the request failure, following Connection closed result, and cleanup ExceptionGroup.",
+          "Pin mcp-failure-lab 0.9.0 or replace it with a minimal deterministic local fixture.",
+          "Confirm a following ping succeeds and context exit is clean, then run adjacent Streamable HTTP client tests."
+        ],
+        "safety": "Isolated local checkout only; no production service, upstream comment or PR, private data, deployment, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 90,
+      "status": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT",
+      "existing_results": {
+        "upstream": "OPEN; no comments, assignee, or linked public repair observed at the frozen issue revision.",
+        "local_validation": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260917-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3522",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "limitations": [
+        "The reporter's reproducer depends on mcp-failure-lab 0.9.0; a deterministic local fixture must be pinned or constructed before CLAIM.",
+        "No maintainer response or repair direction exists.",
+        "External contribution remains disabled; this task authorizes no upstream interaction."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:streamable-http-interrupted-response-session-recovery:3522",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "task_id": "OSS-LIVE-PYSDK-3514-VARIADIC-SIGNATURE",
+      "revision": 1,
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "priority": 15,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+      "source_revision": "code 6affe5c0d3588fd1705713b3703dc68015cfe3eb; issue updated 2026-09-16T22:39:11Z",
+      "theme": "REGRESSION_TEST_GAP",
+      "secondary_themes": [
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "Unsupported variadic tool signatures fail closed at registration with InvalidSignature, while resource templates that legitimately use runtime URI kwargs continue to register and execute.",
+      "verification_method": {
+        "design": "Local-only repair-and-regression validation on the frozen public revision; preserve the resource-template counter-oracle and do not race the reporter's unpublished patch.",
+        "technical_oracle": [
+          "Add frozen failing tests for both *args and **kwargs tool registration.",
+          "Freeze a counter-oracle showing resource-template **kwargs remains accepted.",
+          "Confirm the minimal signature-scope repair makes tool tests green without breaking the counter-oracle.",
+          "Run focused schema, tool-registration, and resource-template test files."
+        ],
+        "safety": "Isolated local checkout only; no upstream interaction, private data, deployment, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 60,
+      "status": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT",
+      "existing_results": {
+        "upstream": "OPEN; reporter states an unpublished scoped patch exists and no linked public PR was observed.",
+        "local_validation": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260917-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "limitations": [
+        "The issue discloses the likely fail-closed repair boundary, so this cannot measure blind diagnosis.",
+        "Maintainer preference between rejection and schema support is not recorded.",
+        "The reporter already has a patch; no external contribution is authorized."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:variadic-tool-signature-impossible-schema:3514",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-2152-ACCEPT-WILDCARDS",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 16,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+      "source_revision": "base 7ba41dcfae2044987fbcca0e10744e992489091f; repair 8e2ec6f58757f400eed13aabbade3732d7d32cee; merge 51c53f2c189ddc8f5ed0925e582565a0f91b1d9b",
+      "theme": "ENVIRONMENT_DRIFT",
+      "secondary_themes": [
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "Accept matching recognizes */*, application/*, text/*, and q-parameter forms only where they cover required JSON/SSE response types, while missing or incompatible types still return 406.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay with the upstream wildcard and negative-control matrix on the same dependencies.",
+        "technical_oracle": [
+          "Checkout the fixed base SHA and apply the upstream wildcard, missing, and incompatible Accept regression matrix.",
+          "Confirm valid wildcard cases fail on the base while negative controls remain rejected.",
+          "Apply the minimal parser/matcher repair and confirm the full matrix becomes green.",
+          "Run adjacent Streamable HTTP request-validation tests and archive red/green evidence."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream provenance; no publication, upstream interaction, deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 60,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+          "note": "The public repair and comprehensive acceptance/rejection matrix make this suitable for deterministic historical replay, not blind diagnosis."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260917-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/7ba41dcfae2044987fbcca0e10744e992489091f",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/8e2ec6f58757f400eed13aabbade3732d7d32cee",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/51c53f2c189ddc8f5ed0925e582565a0f91b1d9b"
+      ],
+      "limitations": [
+        "Historical replay only; the correct repair is public and merged.",
+        "This measures deterministic replay and regression preservation, not independent discovery.",
+        "No independent transfer target or fresh artifact isolation has been established."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:accept-wildcard-quality-parameter-matching:2152",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
     }
   ],
   "local_consumer": {
@@ -603,9 +774,9 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-16T08:00:00-07:00",
-    "checked_candidates": 48,
-    "qualified_unique_candidates": 12,
+    "as_of": "2026-09-17T08:00:00-07:00",
+    "checked_candidates": 57,
+    "qualified_unique_candidates": 15,
     "ready_tasks": 1,
     "started": {
       "transfer_checks": 1,
@@ -624,7 +795,7 @@
       "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
     },
     "cash_increment_usd": 0,
-    "backlog_qualified": 11,
+    "backlog_qualified": 14,
     "starts_rolling_7_days": {
       "transfer_checks": 1,
       "historical_replays": 0,
