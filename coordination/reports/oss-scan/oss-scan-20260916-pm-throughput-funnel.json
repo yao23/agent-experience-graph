@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260916-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-16:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-17T00:30:38Z",
+  "observed_local_date": "2026-09-16",
+  "slot": "evening",
+  "classification": "DAILY_CANDIDATE_CAP_REACHED_MODEL_STRENGTH_ADVISORY_ONLY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "890e3edaa46db4d8d7b3d1f589abadc1187d71f1"
+  },
+  "funnel": {
+    "reviewed_total": 0,
+    "reviewed_daily_total": 17,
+    "reviewed_by_theme_and_work_type": {},
+    "qualified": 0,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {},
+    "stop_reason": "LOCAL_DAILY_CANDIDATE_CAP_REACHED_BEFORE_SLOT",
+    "ready_queue_age": "UNKNOWN; one historical replay is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-16T14:27:48Z",
+    "live_checked_through": "2026-09-16T14:27:48Z",
+    "search_performed_this_slot": false,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-16T14:27:48Z"
+  },
+  "candidates": [],
+  "proposed_tasks": [],
+  "daily_candidates_already_recorded": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2200",
+      "dedup_identity": "modelcontextprotocol/python-sdk:sse-stale-session-registry-cleanup:2200",
+      "task_id": "OSS-HIST-PYSDK-2200-SSE-STALE-SESSION",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2266",
+      "dedup_identity": "modelcontextprotocol/python-sdk:anyio-client-transport-stream-cleanup:2266",
+      "task_id": "OSS-HIST-PYSDK-2266-TRANSPORT-STREAM-CLEANUP",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2257",
+      "dedup_identity": "modelcontextprotocol/python-sdk:transport-error-notification-shutdown-race:2257",
+      "task_id": "OSS-HIST-PYSDK-2257-ERROR-NOTIFICATION-RACE",
+      "queue_status_at_fixed_revision": "BACKLOG_QUALIFIED",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    }
+  ],
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "The three daily historical repairs predate the Astra cutoff and have frozen local oracles. No independent target, telemetry, treatment-only delivery boundary, or fresh artifact isolation has been established, so suitability remains UNKNOWN."
+  },
+  "current_state": {
+    "queue_revision": 11,
+    "checked_candidates_cumulative": 48,
+    "qualified_unique_candidates_cumulative": 12,
+    "ready_tasks": 1,
+    "backlog_qualified": 11,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Wednesday evening slot cap is reserved. No additional search, model call, transfer arm, or replay budget was claimed after the daily candidate cap was reached."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "RECORD_OBSERVABLE_ADVISORY_FIELDS",
+    "ENFORCE_DAILY_CANDIDATE_CAP",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SEARCH_ADDITIONAL_CANDIDATES",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_REPLAY",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
