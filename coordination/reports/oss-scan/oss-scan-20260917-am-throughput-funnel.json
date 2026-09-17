@@ -1,0 +1,350 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260917-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-17:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-17T14:28:00Z",
+  "observed_local_date": "2026-09-17",
+  "slot": "morning",
+  "classification": "TWO_LIVE_ONE_HISTORICAL_CANDIDATES_QUALIFIED_MODEL_STRENGTH_ADVISORY_ONLY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "fixed_coordination_revision": "79fdef84ae03923bab5ecc735f0502150cb6d9c6"
+  },
+  "funnel": {
+    "reviewed_total": 9,
+    "reviewed_daily_total": 9,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION": {
+        "RESOURCE_LIFECYCLE": 2,
+        "CROSS_MODULE_REGRESSION": 2,
+        "DEPENDENCY_OR_SDK_MIGRATION": 1,
+        "ENVIRONMENT_DRIFT": 1,
+        "AUTH_OR_PERMISSION_HARD_EXCLUSION": 2
+      },
+      "HISTORICAL_REPLAY": {
+        "ENVIRONMENT_DRIFT": 1
+      }
+    },
+    "qualified": 3,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {
+      "AUTH_OR_PERMISSION_HARD_EXCLUSION": 2,
+      "NO_EXECUTABLE_REPOSITORY_ORACLE": 1,
+      "COMPLETE_SOLUTION_DISCLOSED_AND_REQUIRED_RUNTIME_TOOLING_NOT_AUTHORIZED": 1,
+      "UNBOUNDED_EXTERNAL_NETWORK_PERFORMANCE_ORACLE_AND_MULTIPLE_PUBLIC_SOLUTIONS": 1,
+      "LOWER_PRIORITY_AFTER_DAILY_QUALIFIED_CAP": 1
+    },
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_REACHED_AFTER_LIVE_INCREMENT_AND_HISTORICAL_SEARCH",
+    "ready_queue_age": "UNKNOWN; one historical replay is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-16T14:27:48Z",
+    "live_checked_through": "2026-09-17T14:28:00Z",
+    "search_performed_this_slot": true,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-17T14:28:00Z"
+  },
+  "candidates": [
+    {
+      "candidate_id": "LIVE-PYSDK-3522",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3522",
+      "source_revision": {
+        "code_sha": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "issue_updated_at": "2026-09-17T13:50:42Z"
+      },
+      "work_type": "LIVE_OSS_CONTRIBUTION",
+      "theme": [
+        "RESOURCE_LIFECYCLE",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "mechanism": "An interrupted Streamable HTTP response appears to close the reusable Python client session and later surfaces a second ExceptionGroup during context cleanup, while the server remains healthy.",
+      "target_behavior": "The interrupted request fails in isolation; a following ping on the same ClientSession succeeds through a fresh HTTP connection; context exit raises no additional ExceptionGroup.",
+      "verification_method": [
+        "Freeze the issue body, code SHA, Python 3.12, MCP 2.2.0, and the disconnect sequence before diagnosis.",
+        "Reproduce request failure, subsequent Connection closed, and cleanup ExceptionGroup on the frozen revision.",
+        "Build or pin a deterministic local disconnect fixture; do not depend on production infrastructure.",
+        "Apply a minimal repair, add a focused regression test, confirm the post-interruption ping and clean teardown, then run adjacent Streamable HTTP client tests."
+      ],
+      "budget_minutes_total": 90,
+      "existing_solution": {
+        "status": "NO_PUBLIC_REPAIR_FOUND",
+        "location": null,
+        "note": "At observation time the open issue had no comments, assignee, or discoverable linked pull request."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3522",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "fact_types": [
+        "MEASURED_PUBLIC_METADATA",
+        "REPORTED_REPRODUCTION",
+        "PROPOSED_LOCAL_VALIDATION"
+      ],
+      "limitations": [
+        "The reporter's reproduction uses mcp-failure-lab 0.9.0; execution must pin it or replace it with a minimal deterministic fixture before claiming a frozen oracle.",
+        "No maintainer response or repair direction exists yet.",
+        "External contribution remains disabled; this proposal grants local validation only."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "UNKNOWN_NOT_REQUESTED",
+        "maintainer_direction": "NONE_OBSERVED",
+        "ai_contribution_risk": "Do not publish model-generated analysis or code without separate authorization and repository-rule review."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:streamable-http-interrupted-response-session-recovery:3522",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "candidate_id": "LIVE-PYSDK-3514",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+      "source_revision": {
+        "code_sha": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "issue_updated_at": "2026-09-16T22:39:11Z"
+      },
+      "work_type": "LIVE_OSS_CONTRIBUTION",
+      "theme": [
+        "REGRESSION_TEST_GAP",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "mechanism": "Tool registration accepts VAR_POSITIONAL and VAR_KEYWORD parameters, but emits an impossible scalar JSON schema, leaving the listed tool permanently uncallable.",
+      "target_behavior": "Unsupported variadic tool signatures fail closed at registration with InvalidSignature, while resource templates that legitimately use runtime URI kwargs continue to register and execute.",
+      "verification_method": [
+        "Freeze the issue body and code SHA, then add failing tests for both *args and **kwargs tool registration.",
+        "Freeze a counter-oracle showing resource-template **kwargs behavior remains accepted.",
+        "Apply the minimal signature-scope repair, confirm the tool tests become green and the resource-template counter-oracle remains green.",
+        "Run the focused schema, tool registration, and resource-template test files."
+      ],
+      "budget_minutes_total": 60,
+      "existing_solution": {
+        "status": "NO_PUBLIC_REPAIR_FOUND_REPORTER_HAS_UNPUBLISHED_PATCH",
+        "location": null,
+        "note": "The issue discloses the intended fail-closed direction and says the reporter has a scoped patch, but no comments or linked public pull request were observed."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "fact_types": [
+        "MEASURED_PUBLIC_METADATA",
+        "REPORTED_REPRODUCTION",
+        "PROPOSED_LOCAL_VALIDATION"
+      ],
+      "limitations": [
+        "The issue already states the likely repair boundary, so this is unsuitable for blind-diagnosis measurement but useful for repair-and-regression throughput.",
+        "Maintainer preference between rejection and schema support is not yet recorded.",
+        "External contribution remains disabled; do not race the reporter's unpublished patch."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "UNKNOWN_NOT_REQUESTED",
+        "maintainer_direction": "AWAITING_DIRECTION",
+        "ai_contribution_risk": "High coordination risk because the reporter already has a patch; local replay only unless separately authorized and invited."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:variadic-tool-signature-impossible-schema:3514",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "candidate_id": "HIST-PYSDK-2152",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+      "source_revision": {
+        "base_sha": "7ba41dcfae2044987fbcca0e10744e992489091f",
+        "repair_sha": "8e2ec6f58757f400eed13aabbade3732d7d32cee",
+        "merge_commit_sha": "51c53f2c189ddc8f5ed0925e582565a0f91b1d9b",
+        "source_updated_at": "2026-03-09T16:30:02Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "ENVIRONMENT_DRIFT",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "mechanism": "The Streamable HTTP server treats Accept entries as exact media types, rejecting */*, type wildcards, and quality-parameter forms commonly sent by generic HTTP clients.",
+      "target_behavior": "Accept matching recognizes */*, application/*, text/*, and q-parameter forms only where they cover the required JSON/SSE response types, while missing or incompatible types still return 406.",
+      "verification_method": [
+        "Checkout the frozen base SHA and apply the upstream wildcard/missing/incompatible Accept regression matrix.",
+        "Confirm the valid wildcard cases fail on the base while negative controls remain rejected.",
+        "Apply the minimal parser/matcher repair and confirm the full matrix becomes green.",
+        "Run adjacent Streamable HTTP request-validation tests and archive the red/green evidence."
+      ],
+      "budget_minutes_total": 60,
+      "existing_solution": {
+        "status": "MERGED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+        "note": "The upstream repair changed two files and added a comprehensive acceptance/rejection matrix; it is suitable for historical replay, not blind diagnosis."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/51c53f2c189ddc8f5ed0925e582565a0f91b1d9b"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_RED_GREEN_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "The correct repair is public and merged.",
+        "This measures deterministic repair replay and regression preservation, not independent discovery.",
+        "No independent transfer target or fresh solver isolation is established."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_APPLICABLE_MERGED_HISTORY",
+        "maintainer_direction": "MERGED_UPSTREAM",
+        "ai_contribution_risk": "Local replay preserves upstream authorship; no external publication is authorized."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:accept-wildcard-quality-parameter-matching:2152",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3522",
+      "dedup_identity": "modelcontextprotocol/python-sdk:streamable-http-interrupted-response-session-recovery:3522",
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+      "target_behavior": "The interrupted request fails in isolation; a following ping on the same ClientSession succeeds through a fresh HTTP connection; context exit raises no additional ExceptionGroup.",
+      "verification_method": [
+        "Freeze the issue body, code SHA, Python 3.12, MCP 2.2.0, and the disconnect sequence before diagnosis.",
+        "Reproduce request failure, subsequent Connection closed, and cleanup ExceptionGroup on the frozen revision.",
+        "Build or pin a deterministic local disconnect fixture; do not depend on production infrastructure.",
+        "Apply a minimal repair, add a focused regression test, confirm the post-interruption ping and clean teardown, then run adjacent Streamable HTTP client tests."
+      ],
+      "budget_minutes_total": 90,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+      "dedup_identity": "modelcontextprotocol/python-sdk:variadic-tool-signature-impossible-schema:3514",
+      "task_type": "LIVE_OSS_CONTRIBUTION",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+      "target_behavior": "Unsupported variadic tool signatures fail closed at registration with InvalidSignature, while resource templates that legitimately use runtime URI kwargs continue to register and execute.",
+      "verification_method": [
+        "Freeze the issue body and code SHA, then add failing tests for both *args and **kwargs tool registration.",
+        "Freeze a counter-oracle showing resource-template **kwargs behavior remains accepted.",
+        "Apply the minimal signature-scope repair, confirm the tool tests become green and the resource-template counter-oracle remains green.",
+        "Run the focused schema, tool registration, and resource-template test files."
+      ],
+      "budget_minutes_total": 60,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/2152",
+      "dedup_identity": "modelcontextprotocol/python-sdk:accept-wildcard-quality-parameter-matching:2152",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "7ba41dcfae2044987fbcca0e10744e992489091f",
+      "target_behavior": "Accept matching recognizes */*, application/*, text/*, and q-parameter forms only where they cover the required JSON/SSE response types, while missing or incompatible types still return 406.",
+      "verification_method": [
+        "Checkout the frozen base SHA and apply the upstream wildcard/missing/incompatible Accept regression matrix.",
+        "Confirm the valid wildcard cases fail on the base while negative controls remain rejected.",
+        "Apply the minimal parser/matcher repair and confirm the full matrix becomes green.",
+        "Run adjacent Streamable HTTP request-validation tests and archive the red/green evidence."
+      ],
+      "budget_minutes_total": 60,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    }
+  ],
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "The historical repair predates the Astra cutoff and has a frozen local oracle. The two live issues postdate the cutoff and have no archived source experience. Independent targets, telemetry, treatment-only delivery, and fresh context/artifact isolation remain unestablished, so all model-strength suitability fields remain advisory or UNKNOWN."
+  },
+  "current_state": {
+    "queue_revision": 11,
+    "checked_candidates_cumulative": 48,
+    "qualified_unique_candidates_cumulative": 12,
+    "ready_tasks": 1,
+    "backlog_qualified": 11,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Thursday morning slot cap is reserved. No model call, transfer arm, local validation, paid API, or external write was used."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "CHECK_LIVE_INCREMENT_ACROSS_FOUR_AUTHORIZED_REPOSITORIES",
+    "SCREEN_ONE_HISTORICAL_REPAIR",
+    "RECORD_OBSERVABLE_ADVISORY_FIELDS",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
