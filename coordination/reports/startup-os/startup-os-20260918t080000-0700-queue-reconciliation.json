@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260918t080000-0700-queue-reconciliation",
+  "idempotency_key": "startup-os:2026-09-18:morning",
+  "observed_at": "2026-09-18T14:55:25Z",
+  "observed_local_date": "2026-09-18",
+  "slot": "morning",
+  "classification": "TWO_HISTORICAL_CANDIDATES_BACKLOGGED_SOLE_READY_UNCHANGED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "trusted_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "observed_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "28474e137457a95351cb9df9e82c08ec93c06f2a"
+  },
+  "scan_funnel": {
+    "reviewed": 9,
+    "qualified": 2,
+    "ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0
+  },
+  "queue_change": {
+    "previous_revision": 12,
+    "new_revision": 13,
+    "added": [
+      {
+        "task_id": "OSS-HIST-PYSDK-3442-CONFORMANCE-VACUITY",
+        "revision": 1,
+        "status": "BACKLOG_QUALIFIED",
+        "budget_minutes_total": 75
+      },
+      {
+        "task_id": "OSS-HIST-PYSDK-3510-WINDOWS-RESOLUTION-BLOCKING",
+        "revision": 1,
+        "status": "BACKLOG_QUALIFIED",
+        "budget_minutes_total": 60
+      }
+    ],
+    "sole_ready_task": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "status": "READY"
+    },
+    "backlog_qualified": 16,
+    "claim_result_observation": "No new CLAIM or RESULT receipt was added after the Sep 17 evening report.",
+    "interpretation": "Supply remains non-limiting. Both new historical tasks are backlog-only; #3076 remains the sole claimable task."
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "task_selected": false,
+    "queue_item_created": false,
+    "ready_order_changed": false,
+    "consumer_model_changed": false,
+    "budget_spent": false
+  },
+  "pmf_frontier_note": "No PMF candidate was activated. The two queue additions are DEV_EXECUTION scientific replay candidates, not Problem–Solution Frontier promotions.",
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "startup_os_reserved_agent_minutes": 3,
+    "oss_scan_morning_reserved_agent_minutes": 10,
+    "cloud_reserved_so_far_today": 13,
+    "cloud_daily_cap_agent_minutes": 30,
+    "accounting_note": "Unknown slot costs reserve their full caps. No duplicate slot budget was granted."
+  },
+  "evidence_locations": [
+    "coordination/AUTHORIZATION.json",
+    "coordination/README.md",
+    "coordination/SEARCH_CHECKLIST.md",
+    "coordination/tasks.json",
+    "coordination/MODEL_STRENGTH_TRANSFER_HANDOFF.md",
+    "experiments/model-strength-transfer-v1/protocol.json",
+    "coordination/reports/oss-scan/oss-scan-20260918-am-throughput-funnel.json"
+  ],
+  "actions_not_taken": [
+    "PROMOTE_SECOND_READY_TASK",
+    "LOCAL_VALIDATION",
+    "RETRY_TRANSFER_CHECK",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "PROMOTE_ACTIVE_PMF_CANDIDATE",
+    "EXTERNAL_OUTREACH",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "MODIFY_MAIN",
+    "DEPLOY",
+    "USE_PAID_API"
+  ]
+}

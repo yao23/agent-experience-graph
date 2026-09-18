@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 12,
+  "revision": 13,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-17T08:00:00-07:00",
+  "updated_at": "2026-09-18T08:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_FOURTEEN_QUALIFIED_BACKLOG",
+  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_SIXTEEN_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -720,6 +720,130 @@
         "advisory_only": true,
         "protocol_status": "PROPOSED_NOT_AUTHORIZED"
       }
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-3442-CONFORMANCE-VACUITY",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 17,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+      "source_revision": "base 979208c1157661eac0151f90974a1f96528003fa; repair 4f754765a4a21b8e328999d962c1a91d067f5da2; merge 10dc17363762b5438368f2d8969d8cf3046d7673",
+      "theme": "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+      "secondary_themes": [
+        "REGRESSION_TEST_GAP",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "target_behavior": "The frozen stateless fixture exposes the named streaming-elicitation and logging tools, and the conformance probes observe actual elicitation placement and request-scoped log-level gating rather than an unknown-tool result.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay of only the conformance-fixture mechanism, using the same conformance version and dependencies while excluding the PR's unrelated HTTP-header and README changes.",
+        "technical_oracle": [
+          "Checkout base 979208c1157661eac0151f90974a1f96528003fa and pin conformance 0.2.0-alpha.11 plus the 2026-07-28 protocol path.",
+          "Show the named calls return unknown-tool isError results while the original checks still report green, preserving the misleading vacuous baseline.",
+          "Apply only repair 4f754765a4a21b8e328999d962c1a91d067f5da2's fixture mechanism and assert elicitation returns input_required with the expected embedded request; missing capability must return -32021.",
+          "Assert the logging tool emits zero notifications without the requested log level and exactly one at debug; rerun focused server-stateless checks and archive red/green plus non-vacuity evidence."
+        ],
+        "safety": "Isolated local checkout only; preserve upstream provenance. No publication, upstream interaction, production deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 75,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+          "note": "The source PR bundles three independent changes; this task isolates the conformance-fixture repair."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260918-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/979208c1157661eac0151f90974a1f96528003fa",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/4f754765a4a21b8e328999d962c1a91d067f5da2",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/10dc17363762b5438368f2d8969d8cf3046d7673"
+      ],
+      "limitations": [
+        "The correct repair and detailed diagnosis are public, so this measures replay and regression discrimination rather than independent diagnosis.",
+        "The source PR bundles three independent changes; exclude its HTTP-header and README changes.",
+        "No independent target, treatment-only delivery, telemetry boundary, or fresh solver isolation is established."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:stateless-conformance-unknown-tool-vacuity:3442",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-3510-WINDOWS-RESOLUTION-BLOCKING",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "priority": 18,
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+      "source_revision": "base 9972c21aa42054fb1450c5fc614761ed11847ec6; repair 4cd5f410e096a3e22476b9d07733c7035280a079; merge 6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+      "theme": "CI_OR_DEPLOYMENT_FAILURE",
+      "secondary_themes": [
+        "ENVIRONMENT_DRIFT",
+        "REGRESSION_TEST_GAP"
+      ],
+      "target_behavior": "Windows command resolution runs off the event loop and cancellation of stdio_client returns before a deliberately blocked resolver finishes, without spawning a process.",
+      "verification_method": {
+        "design": "Frozen pre/post historical replay of the Windows executable-resolution subrepair, using the same deterministic blocking resolver and dependencies while excluding the PR's broader BlockBuster instrumentation.",
+        "technical_oracle": [
+          "Checkout base 9972c21aa42054fb1450c5fc614761ed11847ec6 and isolate the stdio executable-resolution path.",
+          "Use a deterministic blocking resolver plus heartbeat/cancellation oracle to show the base stalls event-loop progress before process creation.",
+          "Apply repair 4cd5f410e096a3e22476b9d07733c7035280a079's anyio.to_thread.run_sync change with abandon_on_cancel=True and run the frozen cancellation regression test.",
+          "Confirm cancellation completes before resolver release, no process is spawned, and adjacent stdio tests plus ruff and pyright remain green."
+        ],
+        "safety": "Isolated local checkout with a platform-simulated oracle only. No upstream interaction, production deployment, private data, paid API, or global Agent/plugin installation."
+      },
+      "budget_minutes_total": 60,
+      "status": "BACKLOG_QUALIFIED",
+      "existing_results": {
+        "upstream": {
+          "status": "MERGED",
+          "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+          "note": "The broader source PR is public; this task isolates only Windows executable resolution and its deterministic cancellation test."
+        },
+        "local_replay": "NOT_STARTED",
+        "registry_candidate": "NONE",
+        "independent_transfer": "NONE",
+        "external_adoption": "NONE"
+      },
+      "evidence_locations": [
+        "coordination/reports/oss-scan/oss-scan-20260918-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/4cd5f410e096a3e22476b9d07733c7035280a079",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "limitations": [
+        "The correct repair is public and the PR received automated AI review, so this cannot measure blind diagnosis or independent model contribution.",
+        "Exclude repository-wide blocking detection and other off-loop work from the replay.",
+        "The consumer must prove the platform-simulated oracle is discriminating on its host before claiming verification."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk:windows-stdio-command-resolution-event-loop-blocking:3510",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
     }
   ],
   "local_consumer": {
@@ -774,9 +898,9 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-17T08:00:00-07:00",
-    "checked_candidates": 57,
-    "qualified_unique_candidates": 15,
+    "as_of": "2026-09-18T08:00:00-07:00",
+    "checked_candidates": 66,
+    "qualified_unique_candidates": 17,
     "ready_tasks": 1,
     "started": {
       "transfer_checks": 1,
@@ -795,7 +919,7 @@
       "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
     },
     "cash_increment_usd": 0,
-    "backlog_qualified": 14,
+    "backlog_qualified": 16,
     "starts_rolling_7_days": {
       "transfer_checks": 1,
       "historical_replays": 0,
