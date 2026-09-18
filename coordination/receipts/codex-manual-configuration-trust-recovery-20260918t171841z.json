@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-manual-configuration-trust-recovery-20260918t171841z",
+  "receipt_type": "CONFIGURATION_RECOVERY",
+  "trigger_source": "manual_configuration",
+  "consumer": "aeg-experience-foundry-pilot-v0-1",
+  "observed_at": "2026-09-18T17:18:41Z",
+  "read_commit": "102a9b796641bb567e509f86bd3c4e26f5f0aba7",
+  "fixed_execution_spec": {
+    "commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "authorization_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "codex_entry_raw_sha256": "97a7e4ef264e1be070ec39d88786f6dc4a00057504cc9b8069081033b5ddfd98",
+    "search_checklist_raw_sha256": "7d93fbd76187c7bce471a624be77b4016ca6c0082109f4f9b908aeaa8da3262b"
+  },
+  "retained_provenance_format": {
+    "commit": "74c73ef335f5ecc87a26204d4a50ee839f96d620",
+    "addendum_raw_sha256": "cf7b7acb00381e4ffd685b4032bd59eb337c8c1a0abe259ab2fc35b963b4b1a6",
+    "schema_raw_sha256": "a0d5eef63b0c938aacffb398020b98c35d6f2e034f31a9f8b3907638d853e439",
+    "validator_raw_sha256": "3b99b3cc57422731b03b27991d69be3d5f6cdb12397f4cdf924002b773abae3d",
+    "existing_prompt_addendum_unchanged": true
+  },
+  "configuration_change": {
+    "method": "supported_existing_automation_update",
+    "in_place": true,
+    "backup_created_before_update": true,
+    "prompt_sha256_before": "a0fe0b9053259a17fb0223527124ac0386515a37fb8bea95378ca20d254a5ac2",
+    "prompt_sha256_after_readback": "1448358b9ff8a327d6da9a8dcf18ec4086686beab30fc151cd1533a623dbce5d",
+    "scope": "Fixed-commit execution entry and checklist; current-tip authorization, queue, receipts, budget evidence, and pause state remain dynamic. Current-tip entry/checklist changes are unadopted."
+  },
+  "readback_configuration": {
+    "status": "ACTIVE",
+    "kind": "cron",
+    "recurrence": "DTSTART:20260913T170000Z\nRRULE:FREQ=DAILY;BYHOUR=3,17;BYMINUTE=0;BYSECOND=0;UNTIL=20260925T065900Z",
+    "timezone_contract": "America/Los_Angeles",
+    "dispatch_tolerance_seconds": [
+      0,
+      300
+    ],
+    "deadline_local": "2026-09-24T23:59:00-07:00",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "execution_environment": "local",
+    "project_id": "local-3c2d5b47ae3f282074bdf431918e7e6d",
+    "max_concurrent_consumers": 1,
+    "max_tasks_per_invocation": 1,
+    "next_occurrence_anchor_local": "2026-09-18T20:00:00-07:00",
+    "scheduler_next_run_local": "2026-09-18T20:01:52-07:00"
+  },
+  "preflight": {
+    "policy_check": "PASS",
+    "fixed_files_digest_check": "PASS",
+    "current_authorization_digest_check": "PASS",
+    "applicable_explicit_pause_observed": false,
+    "current_tip_entry_checklist_differences": "UNADOPTED_NON_BLOCKING",
+    "queue_check": "PASS_ONE_READY",
+    "ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+    "ready_revision": 1,
+    "ready_task_type": "HISTORICAL_REPLAY",
+    "ready_task_budget_minutes_total": 45,
+    "ready_task_claim_found": false,
+    "prior_3494_result": "TERMINAL_BLOCKED_TRANSFER_ISOLATION",
+    "prior_3494_unknown_reservation_minutes_retained": 90,
+    "budget_admission_for_future_claim": "RECHECK_AT_SCHEDULED_INVOCATION",
+    "external_code_isolation_proven": false,
+    "claim_created": false,
+    "experiment_run": false,
+    "scheduled_execution_observed": false
+  },
+  "budget": {
+    "local_day_limit_minutes": 120,
+    "rolling_7_day_limit_minutes": 600,
+    "cloud_day_pool_minutes": 30,
+    "cloud_pool_separate": true,
+    "failed_policy_invocations_count": 10,
+    "failed_policy_invocations_observed_single_agent_turn_minutes": 9.868,
+    "failed_policy_invocations_actual_billable_minutes": "UNKNOWN",
+    "3494_retained_unknown_reservation_minutes": 90,
+    "current_maintenance_agent_minutes_max": 15,
+    "prior_local_work_actual_minutes": "UNKNOWN",
+    "remaining_day_minutes_exact": "UNKNOWN",
+    "remaining_rolling_7_day_minutes_exact": "UNKNOWN",
+    "unknown_not_reset_or_treated_as_zero": true
+  },
+  "remaining_blockers": [
+    "External repository code isolation boundary for a future #3076 replay has not been demonstrated.",
+    "Exact local agent-minute consumption for earlier work and failed invocations remains UNKNOWN; future admission must reconcile it before CLAIM."
+  ],
+  "limitations": [
+    "This manual configuration preflight is not a scheduled invocation.",
+    "No CLAIM, task execution, dependency installation, task queue write, or authorization file write occurred.",
+    "The #3494 blind solver requirement applies only to its completed transfer check, not to #3076 historical replay."
+  ]
+}
