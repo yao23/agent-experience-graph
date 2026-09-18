@@ -1,0 +1,189 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260917t180000-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-17:evening",
+  "observed_at": "2026-09-18T00:56:10Z",
+  "observed_local_date": "2026-09-17",
+  "slot": "evening",
+  "classification": "READY_TO_CLAIM_STALLED_CLOUD_DAILY_CAP_EXCEEDED_COMMERCE_TESTABILITY_SIGNAL",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "trusted_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "af0a124f3ea7c6120ceec63f609b436144030460"
+  },
+  "daily_funnel": {
+    "checked": 9,
+    "qualified_unique": 3,
+    "ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0
+  },
+  "cumulative_funnel": {
+    "checked": 57,
+    "qualified_unique": 15,
+    "ready": 1,
+    "backlog_qualified": 14,
+    "case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "verified_independent_cases": 0,
+    "archived_registry_candidates": 0
+  },
+  "queue": {
+    "queue_revision": 12,
+    "sole_ready_task": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "task_type": "HISTORICAL_REPLAY",
+      "budget_minutes_total": 45,
+      "status": "READY"
+    },
+    "ready_queue_age": "UNKNOWN; the queue does not record a READY transition timestamp.",
+    "claim_result_observation": "No scheduler-origin CLAIM or RESULT for revision 1 was present at the fixed coordination revision. The only files added after the morning queue commit were one competitive-research report and the evening OSS-scan report.",
+    "local_consumer_state": "V3_ACCEPTED_ONE_HISTORICAL_REPLAY_READY",
+    "interpretation": "Candidate supply is ample, but the accepted local consumer still has not claimed the sole READY replay. No queue reorder or additional READY item is justified."
+  },
+  "transfer": {
+    "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+    "revision": 1,
+    "status": "BLOCKED_TRANSFER_ISOLATION",
+    "solver_started": false,
+    "efficacy_measured": false,
+    "successful_cross_agent_transfer": 0,
+    "retry_allowed": false,
+    "model_strength_protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "model_strength_task_selected": false,
+    "model_strength_budget_spent": false
+  },
+  "throughput_assessment": {
+    "supply_state": "ONE_READY_FOURTEEN_QUALIFIED_BACKLOG",
+    "limiting_stage": "READY_TO_CLAIM",
+    "maximum_blocker": "The v3-accepted local consumer has produced no valid CLAIM/RESULT for #3076 revision 1.",
+    "next_action": "Inspect local scheduler, budget-admission and consumer handoff logs; keep #3076 revision 1 as the sole claimable task. Do not add supply, change ranking or retry #3494.",
+    "decisions_needed": [
+      "Operationally inspect the local scheduler/consumer handoff because multiple eligible consumer slots have produced no #3076 CLAIM.",
+      "Prevent another out-of-schedule competitive-research run from receiving a full reservation on the same local day as the four ordinary slots."
+    ]
+  },
+  "adoption": {
+    "external_adoption_events": 0,
+    "upstream_adoption_events": 0,
+    "successful_cross_agent_transfers": 0,
+    "note": "Historical replay, observation count, independent case, upstream adoption and cross-agent transfer remain separate measures."
+  },
+  "pmf_portfolio": {
+    "route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+    "evidence_policy": "Lanes remain separate. DEV_EXECUTION retains active ETP priority. The new commerce evidence improves testability but is not paired outcome, adoption or willingness-to-pay evidence and grants no execution authority.",
+    "lanes": {
+      "DEV_EXECUTION": {
+        "hypothesis": "Verified reusable coding experiences can improve objective task success, reliability or cost on developer-agent work.",
+        "strongest_evidence": "Fifteen unique objective-oracle coding candidates are qualified; one 45-minute historical replay is READY under the active ETP.",
+        "strongest_counterevidence": "No historical replay has started or verified, and the only transfer check ended BLOCKED_TRANSFER_ISOLATION without measuring efficacy.",
+        "objective_oracle_candidates": 15,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Local scheduler/consumer handoff inspection; existing #3076 execution needs no new founder approval.",
+        "expected_validation_cost": "45 local agent-minutes for #3076, plus the unresolved prior 90-minute transfer reservation already charged to rolling capacity.",
+        "plausible_buyer_or_user": "Coding-agent platforms, OSS maintainers, and agent-evaluation or reliability teams.",
+        "next_most_informative_action": "Obtain a valid CLAIM/RESULT for #3076 revision 1 and preserve a schema-valid Registry candidate or explicit ARCHIVAL_BLOCKED terminal."
+      },
+      "CONSUMER_COMMERCE": {
+        "hypothesis": "A verified decision procedure that binds facts to exact variant, seller, channel and observation time may improve factual grounding and completion reliability more safely than reusable product recommendations.",
+        "strongest_evidence": "Three public read-only candidates produced objective checks and three proposed paired-test designs; variant/seller/time binding and static-versus-dynamic field discipline are the two highest-information opportunities.",
+        "strongest_counterevidence": "All three are feasibility observations only: no paired arm ran, no repeatability, adoption or willingness-to-pay signal exists, and dynamic availability remained unresolved in one case.",
+        "objective_oracle_candidates": 3,
+        "valid_paired_test_opportunities": 3,
+        "paired_test_status": "PROPOSED_NOT_AUTHORIZED; two are rated HIGH_INFORMATION and one MEDIUM_HIGH_INFORMATION.",
+        "human_intervention_requirement": "No human intervention was observed for the bounded public read-only facts, but separate manual approval is required before any paired experiment.",
+        "expected_validation_cost": "UNKNOWN agent-minutes; cash can remain USD 0 for a public read-only test, but no budget is authorized.",
+        "plausible_buyer_or_user": "Consumers, commerce assistants, marketplaces and merchants seeking grounded agent recommendations.",
+        "next_most_informative_action": "PROPOSED_NOT_AUTHORIZED: after the active ETP and separate approval, run one frozen P1 or P2 information-gain pair; do not transact, log in or divert ETP budget."
+      },
+      "B2B_AGENT_READINESS": {
+        "hypothesis": "Public diagnostics can reveal whether agents can discover, understand, invoke, authenticate, verify and complete SaaS or developer-tool workflows.",
+        "strongest_evidence": "Public documentation and unauthenticated surfaces can support bounded read-only discoverability and comprehension checks; no lane-specific execution evidence exists.",
+        "strongest_counterevidence": "No frozen service workflow, objective completion oracle, paired test or buyer behavior has been recorded; production and private-system mutation remain forbidden.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Manual approval is required for any benchmark execution beyond public research and design.",
+        "expected_validation_cost": "UNKNOWN; no experiment is authorized or frozen.",
+        "plausible_buyer_or_user": "SaaS vendors, developer-tool companies and agent-platform teams.",
+        "next_most_informative_action": "PROPOSED_NOT_AUTHORIZED: specify one public, non-mutating readiness benchmark and its pass/fail oracle."
+      },
+      "TRUST_DECISION_LAYER": {
+        "hypothesis": "Provenance, compatibility, retrieval and outcome receipts can help agents decide which experience, skill or service evidence is safe to reuse.",
+        "strongest_evidence": "The coding queue binds immutable revisions and oracles, while the commerce scan independently highlights provenance and revalidation boundaries for dynamic facts.",
+        "strongest_counterevidence": "There is no successful cross-agent transfer, external adoption, repeat use or willingness-to-pay evidence for a standalone trust layer.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "No independent execution lane; it must consume evidence from DEV_EXECUTION, CONSUMER_COMMERCE or B2B_AGENT_READINESS.",
+        "expected_validation_cost": "Marginal schema and retrieval analysis only; any separate experiment is UNKNOWN and not authorized.",
+        "plausible_buyer_or_user": "Agent platforms, evaluation teams, tool registries and enterprises governing reusable agent artifacts.",
+        "next_most_informative_action": "Use verified or blocked receipts from active lanes to test retrieval and decision usefulness; do not launch a standalone trust experiment."
+      }
+    }
+  },
+  "cost": {
+    "actual_usd": 0,
+    "cloud_actual_agent_minutes": "UNKNOWN",
+    "cloud_reserved_agent_minutes": 34,
+    "cloud_daily_cap_agent_minutes": 30,
+    "cloud_reservation_overage_agent_minutes": 4,
+    "reservation_breakdown": {
+      "oss_scan_morning": 10,
+      "startup_os_morning": 3,
+      "competitive_research_observed_out_of_schedule": 8,
+      "oss_scan_evening": 10,
+      "startup_os_evening": 3
+    },
+    "budget_incident": "A competitive-research artifact was committed on Thursday even though the policy schedules that role for Monday. Because its actual cost is unobservable, the full 8-minute role cap is reserved. The resulting 34-minute total exceeds the shared daily cap by 4 minutes.",
+    "local_agent_minutes_observed_for_2026_09_17": "UNKNOWN; no new CLAIM or RESULT receipt was observed.",
+    "local_rolling_7_day_reserved_agent_minutes": 90,
+    "local_rolling_7_day_cap_agent_minutes": 600,
+    "accounting_note": "Unknown costs are charged at full role/slot caps. No optional evening search or queue expansion was performed after the overage was identified."
+  },
+  "evidence_locations": [
+    "coordination/AUTHORIZATION.json",
+    "coordination/README.md",
+    "coordination/SEARCH_CHECKLIST.md",
+    "coordination/tasks.json",
+    "coordination/MODEL_STRENGTH_TRANSFER_HANDOFF.md",
+    "experiments/model-strength-transfer-v1/protocol.json",
+    "coordination/reports/oss-scan/oss-scan-20260917-am-throughput-funnel.json",
+    "coordination/reports/oss-scan/oss-scan-20260917-pm-throughput-funnel.json",
+    "coordination/reports/competitive-research/20260917t1548-0700.md",
+    "coordination/receipts/codex-provenance-format-adoption-20260913t173950z.json"
+  ],
+  "changes": [
+    "Recorded the unique evening throughput and PMF portfolio summary.",
+    "Kept tasks.json revision 12 unchanged because no task state changed.",
+    "Kept #3076 revision 1 as the sole READY task and preserved fourteen qualified backlog entries.",
+    "Recorded three public read-only commerce candidates and three proposed paired-test opportunities without granting execution authority.",
+    "Recorded a 34/30 cloud reservation incident caused by an additional competitive-research artifact."
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "SEARCH_ADDITIONAL_CANDIDATES",
+    "LOCAL_VALIDATION",
+    "RETRY_TRANSFER_CHECK",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "DIVERT_ETP_BUDGET",
+    "AUTHORIZE_NEW_PMF_LANE_EXPERIMENT",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_EXTERNAL_MESSAGE",
+    "MODIFY_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
