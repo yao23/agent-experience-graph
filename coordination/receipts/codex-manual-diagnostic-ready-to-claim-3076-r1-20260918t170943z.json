@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-manual-diagnostic-ready-to-claim-3076-r1-20260918t170943z",
+  "receipt_type": "DIAGNOSTIC",
+  "trigger_source": "manual_diagnostic",
+  "consumer": "aeg-experience-foundry-pilot-v0-1",
+  "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+  "task_revision": 1,
+  "read_commit": "0d11275f2cf6dfdb85b6257ed057a4212235c1f3",
+  "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+  "policy_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+  "policy_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+  "observed_at": "2026-09-18T17:09:43Z",
+  "observed": {
+    "scheduler_status": "ACTIVE",
+    "scheduled_occurrences_since_2026_09_13": 11,
+    "attributable_run_records": 11,
+    "last_run_id": "01a0b576-def6-7810-9473-fb44efafc624",
+    "last_run_started_at": "2026-09-18T17:01:01Z",
+    "last_run_ended_at": "2026-09-18T17:02:04Z",
+    "last_successful_step": "INVOCATION",
+    "first_failed_step": "POLICY",
+    "error_code": "AUTHORIZATION_CHANGED_NEEDS_OPERATOR_REVIEW",
+    "authorization_digest_matches": true,
+    "entry_digest_matches": false,
+    "search_checklist_digest_matches": false,
+    "only_ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1",
+    "3494_terminal_result": "BLOCKED_TRANSFER_ISOLATION",
+    "3494_claim_and_result_counted_once": true,
+    "3076_claim_found": false,
+    "experiment_started": false,
+    "configuration_restore_performed": false
+  },
+  "inferred": {
+    "ready_to_claim_blocker": "The accepted raw-byte entry document digests differ from the pinned coordination tip; the consumer stops before queue and admission.",
+    "3494_blind_solver_rule_applies_to_3076": false
+  },
+  "unknown": {
+    "scheduler_native_timezone_field": "UNKNOWN",
+    "other_local_usage_outside_pinned_receipts": "UNKNOWN",
+    "3076_execution_isolation_availability": "UNKNOWN"
+  },
+  "budget": {
+    "local_day_limit_minutes": 120,
+    "rolling_7_day_limit_minutes": 600,
+    "3494_unknown_reservation_retained_minutes": 90,
+    "3076_case_limit_minutes": 45,
+    "manual_diagnostic_max_minutes": 15,
+    "conservative_day_remaining_after_full_diagnostic_reservation_minutes": 105,
+    "conservative_rolling_7_day_remaining_after_full_diagnostic_reservation_minutes": 495,
+    "cloud_day_pool_minutes": 30,
+    "cloud_pool_separate": true
+  },
+  "next_schedule": {
+    "anchor_local": "2026-09-18T20:00:00-07:00",
+    "scheduler_next_run_at_local": "2026-09-18T20:01:52-07:00"
+  },
+  "evidence": {
+    "scheduler": "Codex local automation database automation and run records",
+    "latest_run": "Codex task 01a0b576-def6-7810-9473-fb44efafc624 and automation memory",
+    "source_files": [
+      "coordination/AUTHORIZATION.json",
+      "coordination/CODEX_ENTRY.md",
+      "coordination/SEARCH_CHECKLIST.md",
+      "coordination/tasks.json",
+      "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+      "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json"
+    ]
+  },
+  "limitations": [
+    "This is a manual diagnostic, not a scheduler invocation or CLAIM.",
+    "No task code, solver, dependency installation, queue mutation, or budget reset occurred.",
+    "Entry-document digest mismatch requires operator reconciliation; this receipt does not authorize changing the accepted hashes."
+  ]
+}
