@@ -1,0 +1,289 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260918-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-18:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-18T14:29:13Z",
+  "observed_local_date": "2026-09-18",
+  "slot": "morning",
+  "classification": "TWO_HISTORICAL_CANDIDATES_QUALIFIED_MODEL_STRENGTH_ADVISORY_ONLY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "bf0521c1f7d321c89e8608d82c6cf0160ba3c641"
+  },
+  "funnel": {
+    "search_results_seen": 60,
+    "reviewed_total": 9,
+    "reviewed_daily_total": 9,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION": {
+        "REGRESSION_TEST_GAP": 2,
+        "RESOURCE_LIFECYCLE": 2,
+        "DEPENDENCY_OR_FRAMEWORK_UPGRADE": 1,
+        "CI_OR_DEPLOYMENT_FAILURE": 1,
+        "OUT_OF_SCOPE_PROPOSAL": 1
+      },
+      "HISTORICAL_REPLAY": {
+        "MISLEADING_REPAIR_OR_REPEATED_FAILURE": 1,
+        "CI_OR_DEPLOYMENT_FAILURE": 1
+      }
+    },
+    "qualified": 2,
+    "qualified_daily_total": 2,
+    "excluded_by_reason": {
+      "COMPLETE_OR_ACTIVE_PUBLIC_REPAIR_ALREADY_EXISTS": 3,
+      "NO_BOUNDED_PLATFORM_INDEPENDENT_LOCAL_ORACLE": 2,
+      "OUT_OF_SCOPE_OR_NO_DISCRIMINATING_EXECUTABLE_ORACLE": 2
+    },
+    "stop_reason": "SLOT_BUDGET_BOUND_REACHED_AFTER_BOUNDED_LIVE_AND_HISTORICAL_SCREEN",
+    "ready_queue_age": "UNKNOWN; one historical replay is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-17T14:28:00Z",
+    "live_checked_through": "2026-09-18T14:29:13Z",
+    "search_performed_this_slot": true,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-18T14:29:13Z"
+  },
+  "candidates": [
+    {
+      "candidate_id": "HIST-PYSDK-3442-CONFORMANCE-VACUITY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+      "source_revision": {
+        "base_sha": "979208c1157661eac0151f90974a1f96528003fa",
+        "repair_sha": "4f754765a4a21b8e328999d962c1a91d067f5da2",
+        "merge_commit_sha": "10dc17363762b5438368f2d8969d8cf3046d7673",
+        "source_updated_at": "2026-09-04T16:11:04Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "MISLEADING_REPAIR_OR_REPEATED_FAILURE",
+        "REGRESSION_TEST_GAP",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "mechanism": "Two stateless conformance probes passed vacuously because the Python everything-server lacked the tools named by the harness; an unknown-tool CallToolResult looked like a result frame and bypassed the harness's not-testable guard.",
+      "target_behavior": "The frozen stateless fixture exposes the named streaming-elicitation and logging tools, and the conformance probes observe actual elicitation placement and request-scoped log-level gating rather than an unknown-tool result.",
+      "verification_method": [
+        "Checkout the frozen base SHA and pin conformance 0.2.0-alpha.11 plus the 2026-07-28 protocol path.",
+        "Show the two named calls return unknown-tool isError results while the original conformance checks still report green, preserving the misleading baseline.",
+        "Apply only the fixture portion of the frozen repair and assert the elicitation call returns input_required with the expected embedded request, while missing elicitation capability returns -32021.",
+        "Assert the logging tool emits zero notifications without the requested log level and exactly one at debug; rerun the focused server-stateless checks and archive red/green and non-vacuity evidence."
+      ],
+      "budget_minutes_total": 75,
+      "existing_solution": {
+        "status": "MERGED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+        "note": "The merged PR contains a separate README case-only build fix; replay must isolate the conformance-fixture mechanism and must not count that unrelated commit as the same experience."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/979208c1157661eac0151f90974a1f96528003fa",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/4f754765a4a21b8e328999d962c1a91d067f5da2",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/10dc17363762b5438368f2d8969d8cf3046d7673"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_RED_GREEN_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "The correct repair and detailed diagnosis are public, so this measures replay and regression discrimination rather than independent diagnosis.",
+        "The PR bundles three independent changes; the replay must exclude the HTTP-header client change and README filename change.",
+        "No independent transfer target, treatment-only delivery path, telemetry boundary, or fresh solver isolation is established."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_APPLICABLE_MERGED_HISTORY",
+        "maintainer_direction": "MERGED_UPSTREAM",
+        "ai_contribution_risk": "The source PR discloses AI assistance. Preserve upstream provenance; do not treat replay as independent discovery or model-transfer evidence."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:stateless-conformance-unknown-tool-vacuity:3442",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "candidate_id": "HIST-PYSDK-3510-WINDOWS-RESOLUTION-BLOCKING",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+      "source_revision": {
+        "base_sha": "9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "repair_sha": "4cd5f410e096a3e22476b9d07733c7035280a079",
+        "merge_commit_sha": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "source_updated_at": "2026-09-16T10:12:30Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "CI_OR_DEPLOYMENT_FAILURE",
+        "ENVIRONMENT_DRIFT",
+        "REGRESSION_TEST_GAP"
+      ],
+      "mechanism": "Windows executable resolution used synchronous PATH probing on the event-loop thread; a slow or inaccessible PATH entry blocked cancellation before the child process was created.",
+      "target_behavior": "Windows command resolution runs off the event loop and cancellation of stdio_client returns before a deliberately blocked resolver finishes, without spawning a process.",
+      "verification_method": [
+        "Checkout the frozen base SHA and isolate the stdio executable-resolution path from the PR's broader BlockBuster instrumentation.",
+        "Use a deterministic blocking resolver plus heartbeat/cancellation oracle to show the base stalls event-loop progress before process creation.",
+        "Apply the async anyio.to_thread.run_sync repair with abandon_on_cancel=True and run the frozen cancellation regression test.",
+        "Confirm cancellation completes before releasing the resolver, no process is spawned, and adjacent stdio client tests plus ruff and pyright remain green."
+      ],
+      "budget_minutes_total": 60,
+      "existing_solution": {
+        "status": "MERGED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+        "note": "The source PR is broader than this case. Replay only the Windows executable-resolution subrepair and its deterministic cancellation test."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/9972c21aa42054fb1450c5fc614761ed11847ec6",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/4cd5f410e096a3e22476b9d07733c7035280a079",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_TEST_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "The correct repair is public and the PR received automated AI review, so the replay cannot measure blind diagnosis or independent model contribution.",
+        "The PR also adds repository-wide blocking detection and other off-loop work; those changes are excluded from this candidate.",
+        "The consumer must prove the platform-simulated oracle is discriminating on its host before claiming verification."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_APPLICABLE_MERGED_HISTORY",
+        "maintainer_direction": "MERGED_UPSTREAM",
+        "ai_contribution_risk": "The source PR discloses Claude/Codex assistance and automated reviews. Local replay may validate behavior but is not independent model-strength evidence."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:windows-stdio-command-resolution-event-loop-blocking:3510",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+      "dedup_identity": "modelcontextprotocol/python-sdk:stateless-conformance-unknown-tool-vacuity:3442",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "base 979208c1157661eac0151f90974a1f96528003fa; repair 4f754765a4a21b8e328999d962c1a91d067f5da2; merge 10dc17363762b5438368f2d8969d8cf3046d7673",
+      "target_behavior": "Named stateless conformance probes exercise real elicitation and logging behavior rather than passing on unknown-tool results.",
+      "verification_method": [
+        "Freeze the base and conformance version.",
+        "Capture the vacuous-green unknown-tool baseline.",
+        "Apply only the fixture repair and confirm the discriminating elicitation and logging assertions.",
+        "Run focused conformance checks and archive evidence."
+      ],
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+      "dedup_identity": "modelcontextprotocol/python-sdk:windows-stdio-command-resolution-event-loop-blocking:3510",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "base 9972c21aa42054fb1450c5fc614761ed11847ec6; repair 4cd5f410e096a3e22476b9d07733c7035280a079; merge 6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+      "target_behavior": "Windows executable resolution no longer blocks event-loop progress or cancellation before process creation.",
+      "verification_method": [
+        "Freeze the base and deterministic blocking resolver.",
+        "Show heartbeat/cancellation stalls on the base.",
+        "Apply the isolated thread-offload repair and confirm cancellation precedes resolver release.",
+        "Run adjacent stdio tests and static checks."
+      ],
+      "budget_minutes_total": 60,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    }
+  ],
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "Both public repairs postdate 2026-09-03 and are already solved upstream. Their frozen oracles appear reusable for future study preparation, but no archived pre-cutoff source experience, independent target, treatment-only delivery path, telemetry boundary, or fresh-context isolation is established."
+  },
+  "current_state": {
+    "queue_revision": 12,
+    "checked_candidates_cumulative": 57,
+    "qualified_unique_candidates_cumulative": 15,
+    "ready_tasks": 1,
+    "backlog_qualified": 14,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Friday morning slot cap is reserved. No model call, transfer arm, local validation, paid API, or upstream write was used."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "CHECK_LIVE_INCREMENT_ACROSS_FOUR_AUTHORIZED_REPOSITORIES",
+    "SCREEN_HISTORICAL_REPAIRS_WITHIN_AUTHORIZED_REPOSITORIES",
+    "RECORD_OBSERVABLE_ADVISORY_FIELDS",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
