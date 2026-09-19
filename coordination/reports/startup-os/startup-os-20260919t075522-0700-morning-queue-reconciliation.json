@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260919t075522-0700-morning-queue-reconciliation",
+  "idempotency_key": "startup-os:2026-09-19:morning",
+  "source_task": "AEG Startup OS",
+  "observed_at": "2026-09-19T14:55:22Z",
+  "observed_local_date": "2026-09-19",
+  "slot": "morning",
+  "classification": "AUTHORIZATION_PASS_QUEUE_STABLE_ONE_READY_NO_CLAIM",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS"
+  },
+  "fixed_snapshot": {
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "2a7b0331ab98f1e23b2556b312e9f7a8ad7cf7d2",
+    "files": {
+      "authorization_blob": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+      "readme_blob": "6b14413b86a3dd00af40a531b88026f2ae2dbfc5",
+      "search_checklist_blob": "bf007b07d296da78aa4622c5542350c3459e7699",
+      "tasks_blob": "15047f411d3bf151ec4032fc2911ebb514d66b03",
+      "model_strength_handoff_blob": "b261307637c7bbeedcd5a7d3648bb5695e64f652",
+      "model_strength_protocol_blob": "9bfd5d3203332d47c86e545ecdf669c9d2e3788f"
+    }
+  },
+  "queue_reconciliation": {
+    "tasks_revision": 14,
+    "tasks_updated_at": "2026-09-18T18:00:00-07:00",
+    "ready": [
+      {
+        "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+        "revision": 1,
+        "task_type": "HISTORICAL_REPLAY",
+        "budget_minutes_total": 45
+      }
+    ],
+    "blocked": [
+      {
+        "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+        "revision": 1,
+        "status": "BLOCKED_TRANSFER_ISOLATION",
+        "budget_minutes_total": 90
+      }
+    ],
+    "qualified_backlog": 16,
+    "started_rolling_7_days": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "claim_or_result_observed_for_ready_task": false,
+    "queue_change": "NONE"
+  },
+  "integration": {
+    "oss_scan_report": "coordination/reports/oss-scan/oss-scan-20260919-am-throughput-funnel.json",
+    "scanned_today": {
+      "reviewed": 9,
+      "qualified": 3,
+      "qualified_daily_cap": 3,
+      "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_REACHED"
+    },
+    "decision": "Do not add, replace, or reprioritize a task while one higher-priority historical replay remains READY and unclaimed."
+  },
+  "local_handoff": {
+    "state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY",
+    "receipt": "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
+    "required_before_claim": [
+      "Reconcile exact local day and rolling-seven-day usage, preserving the prior #3494 90-minute reservation.",
+      "Demonstrate external repository code isolation.",
+      "A valid scheduled consumer invocation must create the sole READY claim; this Startup OS run did not create one."
+    ]
+  },
+  "model_strength_transfer": {
+    "status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "arms_started": 0
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 3,
+    "slot_cap_agent_minutes": 3,
+    "known_cloud_reserved_today": 13,
+    "shared_daily_cap_agent_minutes": 30
+  },
+  "actions_taken": [
+    "READ_TRUSTED_AUTHORIZATION",
+    "VERIFY_CURRENT_AUTHORIZATION_BYTES",
+    "READ_FIXED_COORDINATION_SNAPSHOT",
+    "READ_MORNING_OSS_SCAN",
+    "RECONCILE_QUEUE_WITHOUT_MUTATION",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "CREATE_READY_TASK",
+    "CREATE_CLAIM",
+    "RUN_LOCAL_VALIDATION",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
