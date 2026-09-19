@@ -1,0 +1,425 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260919-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-19:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-19T14:31:23Z",
+  "observed_local_date": "2026-09-19",
+  "slot": "morning",
+  "classification": "THREE_HISTORICAL_REPLAY_CANDIDATES_ONE_LIVE_CANDIDATE_INVALIDATED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "a2337a7928f140822c51ef4bf696082b438370be"
+  },
+  "funnel": {
+    "search_results_seen": 95,
+    "reviewed_total": 9,
+    "reviewed_daily_total": 9,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION": {
+        "SECURITY_OR_SANDBOXING_HARD_EXCLUSION": 1,
+        "AUTHENTICATION_OR_PERMISSION_HARD_EXCLUSION": 2,
+        "REGRESSION_TEST_GAP": 2
+      },
+      "HISTORICAL_REPLAY": {
+        "RESOURCE_LIFECYCLE": 1,
+        "DEPENDENCY_OR_FRAMEWORK_UPGRADE": 2,
+        "CROSS_MODULE_REGRESSION": 1,
+        "ENVIRONMENT_DRIFT": 1
+      }
+    },
+    "qualified": 3,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {
+      "SECURITY_OR_SANDBOXING_HARD_EXCLUSION": 1,
+      "AUTHENTICATION_OR_PERMISSION_HARD_EXCLUSION": 2,
+      "COMPLETE_PUBLIC_REPAIR_INVALIDATES_LIVE_CASE": 1,
+      "INCOMPLETE_REPAIR_CHAIN": 1,
+      "NO_REPO_LOCAL_DISCRIMINATING_REGRESSION_ORACLE": 1
+    },
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_REACHED",
+    "ready_queue_age": "UNKNOWN; one historical replay is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-19T00:30:56Z",
+    "live_checked_through": "2026-09-19T14:31:23Z",
+    "search_performed_this_slot": true,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-19T14:31:23Z"
+  },
+  "status_changes": [
+    {
+      "task_id": "OSS-LIVE-PYSDK-3514-VARIADIC-SIGNATURE",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
+      "previous_status": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT",
+      "observed_status": "INVALIDATED_AS_LIVE_CASE_COMPLETE_PUBLIC_REPAIR_EXISTS",
+      "evidence": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3527",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3538",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3514#issuecomment-5742492969"
+      ],
+      "note": "Two public PRs now disclose the repair direction and tests. Both are closed and unmerged under the assignment gate, so this is not maintainer adoption, but the task no longer qualifies as a live no-known-solution case. The OSS-scan role did not modify tasks.json."
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3546",
+      "observed_status": "RECLASSIFIED_FROM_LIVE_TO_UNMERGED_HISTORICAL_REPLAY",
+      "evidence": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3548"
+      ],
+      "note": "The issue body and same-day public comments disclose the complete one-line repair and red/green test design; only independent replay value remains."
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "HIST-PYSDK-3548-TERMINATION-2XX",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3548",
+      "source_revision": {
+        "base_sha": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "repair_sha": "64907f9d17b3185a99e64d7ea94c78a1ffbd4a04",
+        "coverage_followup_sha": "c725630cd1d1edcf3435b4deeb4f95316d58bcaa",
+        "synthetic_merge_sha": "d7064fb723fe27abe5dd2f4d3e856e0c4aecbac2",
+        "source_updated_at": "2026-09-19T14:12:14Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "RESOURCE_LIFECYCLE",
+        "REGRESSION_TEST_GAP",
+        "MISLEADING_REPAIR_OR_REPEATED_FAILURE"
+      ],
+      "mechanism": "The Streamable HTTP client classified only 200 and 204 DELETE responses as successful termination, so valid asynchronous 202 Accepted responses emitted failure warnings and obscured genuine 4xx/5xx failures.",
+      "target_behavior": "Every 2xx session-termination response is silent success, 405 remains a debug-only unsupported path, and a 500 response still emits the failure warning.",
+      "verification_method": [
+        "Checkout the frozen base SHA and use the in-process ASGI transport from the public regression test to rewrite DELETE responses.",
+        "Freeze a red oracle showing 202 emits Session termination failed while 500 also warns.",
+        "Apply the pinned repair sequence and confirm 202 is silent, 500 still warns, and the existing 204 test remains green.",
+        "Run the focused streamable HTTP test file, strict-no-cover, ruff, and pyright; archive exact red/green outputs."
+      ],
+      "budget_minutes_total": 45,
+      "existing_solution": {
+        "status": "CLOSED_UNMERGED_PENDING_MAINTAINER_ASSIGNMENT",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3548",
+        "note": "The first repair commit has a follow-up that removes a stale no-cover pragma and marks Python 3.14 context-manager branches. The PR is auto-closed, not maintainer-adopted."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3546",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3548",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "https://github.com/deadczarvc/python-sdk/commit/64907f9d17b3185a99e64d7ea94c78a1ffbd4a04",
+        "https://github.com/deadczarvc/python-sdk/commit/c725630cd1d1edcf3435b4deeb4f95316d58bcaa"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_RED_GREEN_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "The issue body and multiple comments disclose the diagnosis and repair, so this cannot measure blind diagnosis.",
+        "The PR is unmerged and auto-closed; replay can validate behavior but cannot be called maintainer adoption.",
+        "The fork branch may continue changing, so only the pinned immutable commits are eligible."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_ELIGIBLE_WITHOUT_MAINTAINER_ASSIGNMENT",
+        "maintainer_direction": "PR_AUTO_CLOSED_UNTIL_ASSIGNMENT",
+        "ai_contribution_risk": "The author disclosed AI assistance. Preserve provenance and treat this only as independent replay of a public proposal."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:streamable-http-termination-2xx-warning:3548",
+      "model_strength_study": {
+        "experience_predates_astra": "NO",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "candidate_id": "HIST-PYSDK-3352-SETTINGS-MODEL-REBUILD",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3352",
+      "source_revision": {
+        "base_sha": "98b7159cb89274964055d2c016e3360a551280d0",
+        "repair_sha": "c7fb45d74715bbe33c958f2b161aea95f3b1e4cb",
+        "merge_commit_sha": "ae3338f6b396378217921aeadeca10a68e273c2d",
+        "source_updated_at": "2026-08-21T11:02:48Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "DEPENDENCY_OR_FRAMEWORK_UPGRADE",
+        "ENVIRONMENT_DRIFT",
+        "REGRESSION_TEST_GAP"
+      ],
+      "mechanism": "pydantic-settings 2.15 began warning when Settings.lifespan still held an unresolved FastMCP annotation; warnings-as-errors made the highest-dependency v1.x CI fail on every FastMCP construction.",
+      "target_behavior": "The Settings model is complete immediately after import, so FastMCP construction emits no IncompleteFieldDefinitionWarning under pydantic-settings 2.15 and existing settings behavior is unchanged.",
+      "verification_method": [
+        "Checkout the frozen v1.x base and pin the highest dependency resolution containing pydantic-settings 2.15.",
+        "Confirm the import-time completeness assertion fails or the warning becomes an error on FastMCP construction.",
+        "Apply the single model_rebuild repair and confirm Settings.__pydantic_complete__ is true immediately after import.",
+        "Run the focused FastMCP server test, warnings-as-errors path, ruff, and pyright; archive red/green evidence."
+      ],
+      "budget_minutes_total": 45,
+      "existing_solution": {
+        "status": "MERGED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3352",
+        "note": "The repair is one import-time Settings.model_rebuild call plus a focused regression assertion."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3352",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/98b7159cb89274964055d2c016e3360a551280d0",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/c7fb45d74715bbe33c958f2b161aea95f3b1e4cb",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/ae3338f6b396378217921aeadeca10a68e273c2d"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_RED_GREEN_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "Solved historical replay on the v1.x line, not independent diagnosis or live contribution.",
+        "The effect depends on the pinned highest dependency resolution; main does not use pydantic-settings.",
+        "No independent transfer target or fresh solver isolation is established."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_APPLICABLE_MERGED_HISTORY",
+        "maintainer_direction": "MERGED_UPSTREAM",
+        "ai_contribution_risk": "The source PR discloses AI assistance. Replay must preserve upstream provenance and cannot be counted as independent model contribution."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:pydantic-settings-incomplete-forward-ref:3352",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    },
+    {
+      "candidate_id": "HIST-PYSDK-3376-RECURSIVE-SCHEMA-ROOT",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3376",
+      "source_revision": {
+        "base_sha": "56af44727b291c5901d976bff6c6c8eff5649f23",
+        "repair_sha": "d56f6c137c67709bdd8ed06d37e0e747763e86cc",
+        "merge_commit_sha": "d8b638304ec6c65a583268eb4a1c691d7e77816f",
+        "source_updated_at": "2026-08-24T18:06:36Z"
+      },
+      "work_type": "HISTORICAL_REPLAY",
+      "theme": [
+        "CROSS_MODULE_REGRESSION",
+        "REGRESSION_TEST_GAP",
+        "ENVIRONMENT_DRIFT"
+      ],
+      "mechanism": "Pydantic emitted recursive return schemas as a bare root $ref without type: object; legacy MCP clients rejected the entire tools/list payload even though the referenced definition was an object.",
+      "target_behavior": "Recursive object return types publish an object-rooted output schema that retains nested $defs references, lists successfully on a legacy session, and round-trips structured tool results.",
+      "verification_method": [
+        "Checkout the frozen base and freeze a self-referential BaseModel tool under a legacy 2025-11-25 session.",
+        "Confirm tools/list fails the wire schema because the outputSchema root lacks type: object.",
+        "Apply the pinned repair and confirm the referenced definition is inlined at the root while nested references still use $defs.",
+        "Run the focused metadata and legacy-session list/call tests plus ruff and pyright; archive red/green evidence."
+      ],
+      "budget_minutes_total": 75,
+      "existing_solution": {
+        "status": "MERGED",
+        "location": "https://github.com/modelcontextprotocol/python-sdk/pull/3376",
+        "note": "The merged repair includes focused generated-shape and end-to-end legacy-session regression tests."
+      },
+      "evidence_locations": [
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3376",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/56af44727b291c5901d976bff6c6c8eff5649f23",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/d56f6c137c67709bdd8ed06d37e0e747763e86cc",
+        "https://github.com/modelcontextprotocol/python-sdk/commit/d8b638304ec6c65a583268eb4a1c691d7e77816f"
+      ],
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_UPSTREAM_RED_GREEN_RESULT",
+        "PROPOSED_LOCAL_REPLAY"
+      ],
+      "limitations": [
+        "Solved historical replay, not independent diagnosis.",
+        "Non-object RootModel outputs remain explicitly out of scope.",
+        "No independent transfer target, telemetry boundary, or fresh solver isolation is established."
+      ],
+      "maintenance_and_ai_risk": {
+        "external_contribution_eligibility": "NOT_APPLICABLE_MERGED_HISTORY",
+        "maintainer_direction": "MERGED_UPSTREAM",
+        "ai_contribution_risk": "The source PR discloses AI assistance. Preserve provenance and do not infer model-strength transfer."
+      },
+      "dedup_identity": "modelcontextprotocol/python-sdk:recursive-output-schema-object-root:3376",
+      "model_strength_study": {
+        "experience_predates_astra": "YES",
+        "independent_target": "UNKNOWN",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN",
+        "advisory_only": true,
+        "protocol_status": "PROPOSED_NOT_AUTHORIZED"
+      }
+    }
+  ],
+  "exclusions": [
+    {
+      "source_url": "https://github.com/anthropics/skills/issues/1793",
+      "reason": "SECURITY_OR_SANDBOXING_HARD_EXCLUSION"
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3505",
+      "reason": "AUTHENTICATION_OR_PERMISSION_HARD_EXCLUSION"
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3545",
+      "reason": "AUTHENTICATION_OR_PERMISSION_HARD_EXCLUSION"
+    },
+    {
+      "source_url": "https://github.com/anthropics/skills/pull/1605",
+      "reason": "INCOMPLETE_REPAIR_CHAIN",
+      "note": "The PR explicitly leaves a required export-script allowlist follow-up pending."
+    },
+    {
+      "source_url": "https://github.com/anthropics/skills/pull/1623",
+      "reason": "NO_REPO_LOCAL_DISCRIMINATING_REGRESSION_ORACLE",
+      "note": "The migration guide is broad and useful, but the source PR does not freeze a small repository-local red/green fixture suitable for a <=90-minute replay."
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3548",
+      "dedup_identity": "modelcontextprotocol/python-sdk:streamable-http-termination-2xx-warning:3548",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "base 6affe5c0d3588fd1705713b3703dc68015cfe3eb; repair 64907f9d17b3185a99e64d7ea94c78a1ffbd4a04; coverage follow-up c725630cd1d1edcf3435b4deeb4f95316d58bcaa",
+      "target_behavior": "Any 2xx termination response is silent success while 500 still warns.",
+      "verification_method": [
+        "Freeze red 202 and 500 log assertions on the base.",
+        "Apply the pinned two-commit repair.",
+        "Run focused transport tests, strict-no-cover, ruff, and pyright.",
+        "Archive red/green evidence."
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_QUEUED_UNMERGED_SOLUTION",
+      "proposal_grants_execution": false
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3352",
+      "dedup_identity": "modelcontextprotocol/python-sdk:pydantic-settings-incomplete-forward-ref:3352",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "base 98b7159cb89274964055d2c016e3360a551280d0; repair c7fb45d74715bbe33c958f2b161aea95f3b1e4cb; merge ae3338f6b396378217921aeadeca10a68e273c2d",
+      "target_behavior": "Settings is complete at import under pydantic-settings 2.15 and FastMCP construction emits no incomplete-field warning.",
+      "verification_method": [
+        "Freeze highest dependencies on the base.",
+        "Capture the import/completion failure.",
+        "Apply the one-call rebuild repair.",
+        "Run focused warnings-as-errors and static checks."
+      ],
+      "budget_minutes_total": 45,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3376",
+      "dedup_identity": "modelcontextprotocol/python-sdk:recursive-output-schema-object-root:3376",
+      "task_type": "HISTORICAL_REPLAY",
+      "source_repository": "modelcontextprotocol/python-sdk",
+      "source_revision": "base 56af44727b291c5901d976bff6c6c8eff5649f23; repair d56f6c137c67709bdd8ed06d37e0e747763e86cc; merge d8b638304ec6c65a583268eb4a1c691d7e77816f",
+      "target_behavior": "Recursive object return schemas list and call successfully on legacy sessions with an object-rooted schema.",
+      "verification_method": [
+        "Freeze a recursive model tool on the base.",
+        "Capture legacy tools/list rejection.",
+        "Apply the root-ref inlining repair.",
+        "Run focused metadata and legacy-session tests plus static checks."
+      ],
+      "budget_minutes_total": 75,
+      "status": "PROPOSED_NOT_QUEUED",
+      "proposal_grants_execution": false
+    }
+  ],
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "Two merged repairs predate the Astra cutoff and all three have potentially reusable frozen oracles. No independent target, treatment-only delivery path, telemetry boundary, or fresh-context isolation was established; these are advisory facts only."
+  },
+  "current_state": {
+    "queue_revision": 14,
+    "queue_updated_at": "2026-09-18T18:00:00-07:00",
+    "checked_candidates_cumulative": 70,
+    "qualified_unique_candidates_cumulative": 17,
+    "ready_tasks": 1,
+    "backlog_qualified": 16,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "same_day_cost_records_at_fixed_snapshot": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "scan_reserved_agent_minutes_today": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "known_other_cloud_task_agent_minutes_today": "NONE_RECORDED_AT_FIXED_SNAPSHOT",
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Saturday morning slot cap is reserved. No model call, transfer arm, local validation, paid API, or upstream write was used."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "CHECK_INCREMENTAL_LIVE_ACTIVITY_ACROSS_FOUR_AUTHORIZED_REPOSITORIES",
+    "SCREEN_RECENT_HISTORICAL_REPAIRS",
+    "VERIFY_ONE_LIVE_CANDIDATE_STATUS_CHANGE",
+    "RECORD_OBSERVABLE_ADVISORY_FIELDS",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
