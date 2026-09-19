@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260918-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-18:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-19T00:30:56Z",
+  "observed_local_date": "2026-09-18",
+  "slot": "evening",
+  "classification": "NO_ADDITIONAL_QUALIFIED_CANDIDATE_DAILY_TOTAL_TWO_MODEL_STRENGTH_ADVISORY_ONLY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "67e32e9e5d8e8b1252a9f5513bb2fb65428ff53e"
+  },
+  "funnel": {
+    "search_results_seen": 11,
+    "reviewed_total": 4,
+    "reviewed_daily_total": 13,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION": {
+        "SECURITY_OR_SANDBOXING_HARD_EXCLUSION": 3,
+        "RESOURCE_LIFECYCLE": 1
+      },
+      "HISTORICAL_REPLAY": {}
+    },
+    "qualified": 0,
+    "qualified_daily_total": 2,
+    "excluded_by_reason": {
+      "SECURITY_OR_SANDBOXING_HARD_EXCLUSION": 3,
+      "MIXED_CLIENT_PROTOCOL_VIOLATIONS_NO_SINGLE_BOUNDED_ORACLE": 1
+    },
+    "stop_reason": "BOUNDED_INCREMENTAL_LIVE_SEARCH_COMPLETE; DAILY_REMAINING_SLOT_UNFILLED_WITHOUT_FABRICATING_CANDIDATE",
+    "ready_queue_age": "UNKNOWN; one historical replay is READY at the fixed snapshot but the queue records no transition timestamp.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-18T14:29:13Z",
+    "live_checked_through": "2026-09-19T00:30:56Z",
+    "search_performed_this_slot": true,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-19T00:30:56Z"
+  },
+  "exclusions": [
+    {
+      "source_url": "https://github.com/anthropics/skills/issues/1789",
+      "reason": "SECURITY_OR_SANDBOXING_HARD_EXCLUSION",
+      "observable_basis": "Cross-origin POST security behavior is outside the authorized maintenance scope."
+    },
+    {
+      "source_url": "https://github.com/anthropics/skills/issues/1788",
+      "reason": "SECURITY_OR_SANDBOXING_HARD_EXCLUSION",
+      "observable_basis": "Script/JSON closing-tag injection is a security issue and is excluded."
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/1705",
+      "reason": "SECURITY_OR_SANDBOXING_HARD_EXCLUSION",
+      "observable_basis": "Sandboxing hooks are security-boundary work and are excluded."
+    },
+    {
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/423",
+      "source_revision": "issue updated_at 2026-09-18T22:19:16Z; fixed coordination review at 67e32e9e5d8e8b1252a9f5513bb2fb65428ff53e",
+      "reason": "MIXED_CLIENT_PROTOCOL_VIOLATIONS_NO_SINGLE_BOUNDED_ORACLE",
+      "observable_basis": "The open thread combines gateway double-initialize behavior, SSE reconnect without re-initialize, stale session IDs after restart, and a separately asserted server-side sequencing race. Related public repairs #2200 and #2411 address different subcases. No single frozen root cause and discriminating <=90-minute local oracle was established without weakening the initialization guard.",
+      "fact_types": [
+        "MEASURED_UPSTREAM_METADATA",
+        "REPORTED_MULTIPLE_PUBLIC_MECHANISMS",
+        "SCREENING_JUDGMENT"
+      ]
+    }
+  ],
+  "candidates": [],
+  "proposed_tasks": [],
+  "daily_candidates_already_recorded": [
+    {
+      "task_id": "OSS-HIST-PYSDK-3442-CONFORMANCE-VACUITY",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3442",
+      "status_at_fixed_snapshot": "BACKLOG_QUALIFIED"
+    },
+    {
+      "task_id": "OSS-HIST-PYSDK-3510-WINDOWS-RESOLUTION-BLOCKING",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3510",
+      "status_at_fixed_snapshot": "BACKLOG_QUALIFIED"
+    }
+  ],
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "No additional candidate passed the authorized maintenance and frozen-oracle gates. No model-strength study action was authorized or performed."
+  },
+  "current_state": {
+    "queue_revision": 13,
+    "queue_updated_at": "2026-09-18T08:00:00-07:00",
+    "checked_candidates_cumulative": 66,
+    "qualified_unique_candidates_cumulative": 17,
+    "ready_tasks": 1,
+    "backlog_qualified": 16,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 10,
+    "slot_cap_agent_minutes": 10,
+    "scan_reserved_agent_minutes_today": 20,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable; the full Friday evening slot cap is reserved. Combined morning and evening scan reservations are 20 agent-minutes. No model call, transfer arm, local validation, paid API, or upstream write was used."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "VERIFY_MORNING_CANDIDATES_PRESENT_IN_QUEUE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "CHECK_INCREMENTAL_LIVE_ACTIVITY_ACROSS_FOUR_AUTHORIZED_REPOSITORIES",
+    "INSPECT_MIXED_PROTOCOL_LIFECYCLE_REPORT",
+    "ENFORCE_HARD_EXCLUSIONS_AND_OBJECTIVE_ORACLE_GATE",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
