@@ -1,0 +1,322 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260918t180000-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-18:evening",
+  "observed_at": "2026-09-19T00:56:26Z",
+  "observed_local_date": "2026-09-18",
+  "slot": "evening",
+  "classification": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_READY_TO_CLAIM_STILL_BLOCKED_FRONTIER_RESEARCH_ONLY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "trusted_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "a544a51addeb9e17ddb4eb464c4b7451b42e0796"
+  },
+  "daily_funnel": {
+    "checked": 13,
+    "qualified_unique": 2,
+    "ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0
+  },
+  "cumulative_funnel": {
+    "checked": 70,
+    "qualified_unique": 17,
+    "ready": 1,
+    "backlog_qualified": 16,
+    "case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "verified_independent_cases": 0,
+    "archived_registry_candidates": 0
+  },
+  "queue": {
+    "queue_revision": 14,
+    "sole_ready_task": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076",
+      "task_type": "HISTORICAL_REPLAY",
+      "budget_minutes_total": 45,
+      "status": "READY"
+    },
+    "ready_queue_age": "UNKNOWN; the queue does not record a READY transition timestamp.",
+    "new_backlog_tasks": [
+      "OSS-HIST-PYSDK-3442-CONFORMANCE-VACUITY",
+      "OSS-HIST-PYSDK-3510-WINDOWS-RESOLUTION-BLOCKING"
+    ],
+    "claim_result_observation": "No #3076 CLAIM or RESULT exists. The manual diagnostic and configuration-recovery receipts explicitly report claim_created=false and experiment_run=false.",
+    "local_consumer_state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_ONE_HISTORICAL_REPLAY_READY",
+    "configuration_recovery": {
+      "status": "COMPLETED_IN_PLACE",
+      "receipt": "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
+      "prior_failure_count": 10,
+      "prior_failure_step": "POLICY",
+      "prior_error_code": "AUTHORIZATION_CHANGED_NEEDS_OPERATOR_REVIEW",
+      "recovered_fixed_entry_and_checklist": true,
+      "scheduled_use_after_recovery": false
+    },
+    "remaining_admission_blockers": [
+      "External repository code isolation for the #3076 replay has not been demonstrated.",
+      "Exact local day and rolling-seven-day usage, including failed policy invocations, remains UNKNOWN and must be reconciled before CLAIM."
+    ]
+  },
+  "throughput_assessment": {
+    "supply_state": "ONE_READY_SIXTEEN_QUALIFIED_BACKLOG",
+    "limiting_stage": "READY_TO_CLAIM_BUDGET_AND_ISOLATION_ADMISSION",
+    "maximum_blocker": "Configuration drift was corrected, but no scheduled post-recovery invocation has yet passed budget and isolation admission to create a #3076 CLAIM.",
+    "next_action": "At the next eligible local invocation, re-read current policy and queue, reconcile unknown local usage, prove the isolated checkout boundary, then claim only #3076 revision 1 if all caps pass.",
+    "decisions_needed": [
+      "No scope or priority decision is needed. Operationally preserve the recovered configuration and require auditable budget plus isolation admission before #3076 CLAIM."
+    ]
+  },
+  "transfer": {
+    "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+    "revision": 1,
+    "status": "BLOCKED_TRANSFER_ISOLATION",
+    "solver_started": false,
+    "efficacy_measured": false,
+    "successful_cross_agent_transfer": 0,
+    "retry_allowed": false,
+    "model_strength_protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "model_strength_task_selected": false,
+    "model_strength_budget_spent": false
+  },
+  "adoption": {
+    "external_adoption_events": 0,
+    "upstream_adoption_events": 0,
+    "successful_cross_agent_transfers": 0,
+    "note": "Historical replay, observation count, independent case, upstream adoption and cross-agent transfer remain separate measures."
+  },
+  "problem_solution_frontier": {
+    "cadence": "WEEKLY_VIEW_UPDATED_IN_EVENING_SUMMARY",
+    "max_candidates": 5,
+    "active_pmf_candidates": 0,
+    "status_reason": "Every item has at least one materially UNKNOWN required field, especially willingness-to-pay and repeat frequency; all remain OBSERVATION/RESEARCH or PROPOSED_NOT_VALIDATED.",
+    "items": [
+      {
+        "rank": 1,
+        "lane": "DEV_EXECUTION",
+        "status": "OBSERVATION_RESEARCH",
+        "pain": "A trusted local consumer can repeatedly stop before queue admission when its accepted entry/checklist digests drift from the pinned execution specification.",
+        "customer": "Operators of scheduled coding-agent evaluation and replay pipelines.",
+        "current_workaround": "Manual scheduler diagnosis, trusted-digest comparison, configuration backup, and in-place prompt recovery.",
+        "AEG_advantage": "Immutable policy/entry/checklist digests plus append-only receipts make false authorization stops diagnosable without weakening the trust boundary.",
+        "evidence": "Ten attributable scheduled failures stopped at POLICY; manual recovery passed fixed-file and current-authorization checks but has not yet produced a scheduled CLAIM.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "Observe the next scheduled post-recovery invocation and require either one valid #3076 CLAIM or a new precise admission failure receipt.",
+        "confidence": "MEDIUM_HIGH_FOR_PAIN_LOW_FOR_PMF",
+        "strongest_counterevidence": "This may be an AEG-specific configuration defect rather than a recurring buyer problem; no external operator, repeat user or payment signal exists.",
+        "required_record": {
+          "problem": "KNOWN",
+          "who_has_it": "PARTIALLY_KNOWN",
+          "frequency": "OBSERVED_10_LOCAL_FAILURES_EXTERNAL_UNKNOWN",
+          "current_workaround": "KNOWN",
+          "why_current_solution_fails": "KNOWN",
+          "AEG_unique_advantage": "PROPOSED_NOT_VALIDATED",
+          "objective_outcome": "KNOWN",
+          "data_supply": "KNOWN_LOCAL_RECEIPTS",
+          "willingness_to_pay_signal": "UNKNOWN",
+          "time_to_validate": "NEXT_SCHEDULED_INVOCATION"
+        }
+      },
+      {
+        "rank": 2,
+        "lane": "CONSUMER_COMMERCE",
+        "status": "PROPOSED_NOT_VALIDATED",
+        "pain": "Shopping agents can attach stale prices or policies to the wrong variant, seller, channel or locality and may invent unresolved availability.",
+        "customer": "Consumers and teams building commerce assistants.",
+        "current_workaround": "Re-open retailer pages, manually cross-check variant/seller/policy scope, and abstain when dynamic fields are unresolved.",
+        "AEG_advantage": "A provenance-bound decision procedure can label stable versus revalidate-at-query facts and preserve variant, seller, channel and observation time.",
+        "evidence": "Three public read-only tasks across Best Buy, IKEA and Walmart exposed variant, channel and dynamic-availability risks; three objective paired designs exist but none ran.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "PROPOSED_NOT_AUTHORIZED: one frozen P1 or P2 control/treatment pair with factual-error and unsupported-inference counts.",
+        "confidence": "MEDIUM_FOR_TESTABILITY_LOW_FOR_PMF",
+        "strongest_counterevidence": "No paired outcome, repeatability, user behavior, operational adoption or willingness-to-pay signal exists.",
+        "required_record": {
+          "problem": "OBSERVED",
+          "who_has_it": "INFERRED_NOT_CONFIRMED",
+          "frequency": "THREE_PUBLIC_OBSERVATIONS_REAL_USER_FREQUENCY_UNKNOWN",
+          "current_workaround": "OBSERVED_AND_INFERRED",
+          "why_current_solution_fails": "OBSERVED",
+          "AEG_unique_advantage": "PROPOSED_NOT_VALIDATED",
+          "objective_outcome": "DEFINED",
+          "data_supply": "PUBLIC_READ_ONLY_AVAILABLE",
+          "willingness_to_pay_signal": "UNKNOWN",
+          "time_to_validate": "UNKNOWN_UNAUTHORIZED"
+        }
+      },
+      {
+        "rank": 3,
+        "lane": "DEV_EXECUTION",
+        "status": "PROPOSED_NOT_VALIDATED",
+        "pain": "Conformance checks can report green while exercising an unknown-tool error instead of the intended elicitation or logging behavior.",
+        "customer": "MCP SDK maintainers and coding-agent evaluation teams relying on conformance results.",
+        "current_workaround": "Manual fixture inspection and upstream regression repair.",
+        "AEG_advantage": "Preserve the vacuous-green failure map and bind replay to non-vacuity assertions, not only a green suite.",
+        "evidence": "Merged python-sdk PR #3442 provides frozen pre/post commits and a deterministic 75-minute historical replay design.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "After #3076 completes and existing ordering permits, replay only the fixture mechanism and archive red/green plus non-vacuity evidence.",
+        "confidence": "MEDIUM_FOR_TECHNICAL_PAIN_LOW_FOR_PMF",
+        "strongest_counterevidence": "The repair is already public and merged; recurrence, independent reuse and buyer value are UNKNOWN.",
+        "required_record": {
+          "problem": "KNOWN",
+          "who_has_it": "PARTIALLY_KNOWN",
+          "frequency": "UNKNOWN",
+          "current_workaround": "KNOWN_MERGED_REPAIR",
+          "why_current_solution_fails": "KNOWN",
+          "AEG_unique_advantage": "PROPOSED_NOT_VALIDATED",
+          "objective_outcome": "DEFINED",
+          "data_supply": "PUBLIC_COMMITS_AND_TESTS",
+          "willingness_to_pay_signal": "UNKNOWN",
+          "time_to_validate": "75_AGENT_MINUTES_AFTER_QUEUE_PRIORITY"
+        }
+      },
+      {
+        "rank": 4,
+        "lane": "DEV_EXECUTION",
+        "status": "PROPOSED_NOT_VALIDATED",
+        "pain": "Windows executable resolution can block the event loop and delay cancellation before a subprocess is created.",
+        "customer": "MCP Python users and maintainers running stdio clients on Windows.",
+        "current_workaround": "Merged thread-offload repair plus deterministic cancellation regression test.",
+        "AEG_advantage": "A frozen replay can preserve the platform-specific failure signature, isolation boundary and cancellation oracle for environment drift.",
+        "evidence": "Merged python-sdk PR #3510 provides frozen pre/post commits and a scoped 60-minute historical replay design.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "After higher-priority READY/backlog work, prove the simulated Windows oracle discriminates on the consumer host before replay.",
+        "confidence": "MEDIUM_FOR_TECHNICAL_PAIN_LOW_FOR_PMF",
+        "strongest_counterevidence": "Only one public repair is observed; recurrence, cross-environment reuse and buyer value are UNKNOWN.",
+        "required_record": {
+          "problem": "KNOWN",
+          "who_has_it": "PARTIALLY_KNOWN",
+          "frequency": "UNKNOWN",
+          "current_workaround": "KNOWN_MERGED_REPAIR",
+          "why_current_solution_fails": "KNOWN",
+          "AEG_unique_advantage": "PROPOSED_NOT_VALIDATED",
+          "objective_outcome": "DEFINED",
+          "data_supply": "PUBLIC_COMMITS_AND_TESTS",
+          "willingness_to_pay_signal": "UNKNOWN",
+          "time_to_validate": "60_AGENT_MINUTES_AFTER_QUEUE_PRIORITY"
+        }
+      }
+    ]
+  },
+  "pmf_portfolio": {
+    "route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+    "evidence_policy": "DEV_EXECUTION retains active ETP priority. All frontier items remain research because required Problem–Solution Frontier fields are incomplete; no outreach or new experiment is authorized.",
+    "lanes": {
+      "DEV_EXECUTION": {
+        "hypothesis": "Verified reusable coding experiences can improve objective task success, reliability or cost on developer-agent work.",
+        "strongest_evidence": "Seventeen objective-oracle candidates are qualified, one historical replay is READY, and ten policy-stage failures plus configuration recovery provide a concrete operational failure map.",
+        "strongest_counterevidence": "No historical replay has started or verified, and the only transfer check ended BLOCKED_TRANSFER_ISOLATION without measuring efficacy.",
+        "objective_oracle_candidates": 17,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Local budget reconciliation and external-code isolation proof before the next claim; no new founder approval for the existing #3076 task.",
+        "expected_validation_cost": "#3076 allows 45 local agent-minutes; 120 minutes of known local reservations plus UNKNOWN failed-invocation cost already count against rolling capacity.",
+        "plausible_buyer_or_user": "Coding-agent platforms, OSS maintainers, and agent-evaluation or reliability teams.",
+        "next_most_informative_action": "Obtain the first valid scheduled post-recovery CLAIM/RESULT for #3076 and preserve a Registry candidate or ARCHIVAL_BLOCKED terminal."
+      },
+      "CONSUMER_COMMERCE": {
+        "hypothesis": "A provenance-bound decision procedure may reduce factual errors in shopping and service selection more safely than reusable product recommendations.",
+        "strongest_evidence": "Three public objective tasks and three proposed paired designs expose variant, seller, time and dynamic-field failure modes.",
+        "strongest_counterevidence": "No paired arm, repeat use, adoption or willingness-to-pay signal exists; every frontier record remains incomplete.",
+        "objective_oracle_candidates": 3,
+        "valid_paired_test_opportunities": 3,
+        "paired_test_status": "PROPOSED_NOT_AUTHORIZED",
+        "human_intervention_requirement": "No intervention for bounded public facts; separate approval before any pair, login, transaction or personal-data use.",
+        "expected_validation_cost": "UNKNOWN agent-minutes and USD 0 cash for a public read-only design; no budget is authorized.",
+        "plausible_buyer_or_user": "Consumers, commerce assistants, marketplaces and merchants seeking grounded recommendations.",
+        "next_most_informative_action": "After active ETP work and separate approval, run one smallest P1/P2 information-gain pair rather than expand commerce research."
+      },
+      "B2B_AGENT_READINESS": {
+        "hypothesis": "Public diagnostics can reveal whether agents can discover, understand, invoke, authenticate, verify and complete SaaS or developer-tool workflows.",
+        "strongest_evidence": "Public documentation could support bounded read-only checks.",
+        "strongest_counterevidence": "No specific recurring pain with a complete frontier record, frozen oracle, paired test or buyer behavior exists.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Manual approval for any execution beyond public research and design.",
+        "expected_validation_cost": "UNKNOWN; no candidate or experiment is frozen.",
+        "plausible_buyer_or_user": "SaaS vendors, developer-tool companies and agent-platform teams.",
+        "next_most_informative_action": "Do not promote a technology direction; first observe one concrete recurring public workflow pain."
+      },
+      "TRUST_DECISION_LAYER": {
+        "hypothesis": "Provenance, compatibility, retrieval and outcome receipts can help agents decide which experience, skill or service evidence is safe to reuse.",
+        "strongest_evidence": "Pinned-digest receipts diagnosed configuration drift, while commerce observations independently require provenance and revalidation boundaries.",
+        "strongest_counterevidence": "There is no standalone customer pain record, successful transfer, external adoption, repeat use or willingness-to-pay evidence.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "No independent execution lane; consume evidence from A-C.",
+        "expected_validation_cost": "Marginal schema analysis only; standalone experimentation is UNKNOWN and not authorized.",
+        "plausible_buyer_or_user": "Agent platforms, evaluation teams, tool registries and enterprises governing reusable artifacts.",
+        "next_most_informative_action": "Use active-lane receipts to test decision usefulness; do not create a standalone frontier item without a specific pain."
+      }
+    }
+  },
+  "cost": {
+    "actual_usd": 0,
+    "cloud_actual_agent_minutes": "UNKNOWN",
+    "cloud_reserved_agent_minutes": 26,
+    "cloud_daily_cap_agent_minutes": 30,
+    "cloud_reservation_breakdown": {
+      "oss_scan_morning": 10,
+      "startup_os_morning": 3,
+      "oss_scan_evening": 10,
+      "startup_os_evening": 3
+    },
+    "local_actual_agent_minutes": "UNKNOWN",
+    "local_known_reservations_rolling_7_days": 120,
+    "local_reservation_breakdown": {
+      "prior_3494_transfer": 90,
+      "sep18_manual_diagnostic": 15,
+      "sep18_configuration_recovery": 15
+    },
+    "local_failed_policy_invocations_count": 10,
+    "local_failed_policy_invocations_observed_single_agent_turn_minutes": 9.868,
+    "local_failed_policy_invocations_actual_billable_minutes": "UNKNOWN",
+    "local_day_cap_agent_minutes": 120,
+    "local_rolling_7_day_cap_agent_minutes": 600,
+    "local_remaining": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "accounting_note": "Cloud unknown costs reserve full role caps. Local diagnostic and configuration work reserve their stated maxima; failed policy invocations remain UNKNOWN and cannot be treated as free capacity."
+  },
+  "evidence_locations": [
+    "coordination/AUTHORIZATION.json",
+    "coordination/README.md",
+    "coordination/SEARCH_CHECKLIST.md",
+    "coordination/tasks.json",
+    "coordination/MODEL_STRENGTH_TRANSFER_HANDOFF.md",
+    "experiments/model-strength-transfer-v1/protocol.json",
+    "coordination/reports/oss-scan/oss-scan-20260918-am-throughput-funnel.json",
+    "coordination/reports/oss-scan/oss-scan-20260918-pm-throughput-funnel.json",
+    "coordination/receipts/codex-manual-diagnostic-ready-to-claim-3076-r1-20260918t170943z.json",
+    "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json"
+  ],
+  "changes": [
+    "Integrated the evening scan totals without adding a candidate.",
+    "Recorded the manual configuration recovery as preflight-only and kept #3076 revision 1 as the sole READY task.",
+    "Updated tasks.json to revision 14 with cumulative funnel and conservative local-cost accounting.",
+    "Added the weekly Problem–Solution Frontier with zero active PMF candidates because required evidence fields remain incomplete."
+  ],
+  "actions_not_taken": [
+    "PROMOTE_SECOND_READY_TASK",
+    "LOCAL_VALIDATION",
+    "CREATE_3076_CLAIM",
+    "RETRY_TRANSFER_CHECK",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "PROMOTE_ACTIVE_PMF_CANDIDATE",
+    "EXTERNAL_OUTREACH",
+    "AUTHORIZE_NEW_PMF_EXPERIMENT",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "MODIFY_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}

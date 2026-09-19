@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 13,
+  "revision": 14,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-18T08:00:00-07:00",
+  "updated_at": "2026-09-18T18:00:00-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "ONE_HISTORICAL_REPLAY_READY_SIXTEEN_QUALIFIED_BACKLOG",
+  "delivery_state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_ONE_HISTORICAL_REPLAY_READY_SIXTEEN_QUALIFIED_BACKLOG",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -848,13 +848,14 @@
   ],
   "local_consumer": {
     "name": "aeg-experience-foundry-pilot-v0-1",
-    "state": "V3_ACCEPTED_ONE_HISTORICAL_REPLAY_READY",
+    "state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_ONE_HISTORICAL_REPLAY_READY",
     "max_concurrent_consumers": 1,
-    "evidence_location": "coordination/receipts/codex-provenance-format-adoption-20260913t173950z.json",
+    "evidence_location": "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
     "limitations": [
       "The #3494 revision 1 RESULT is terminal BLOCKED_TRANSFER_ISOLATION and must not be retried without a demonstrable fresh-context boundary.",
       "Only OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1 is READY; all other tasks remain non-claimable.",
-      "The consumer must perform budget admission before CLAIM. The Sep 13 transfer claim retains a 90-minute reservation with actual use UNKNOWN."
+      "The Sep 18 configuration recovery was a manual preflight, not a scheduled invocation or CLAIM; no task code or experiment ran.",
+      "Before CLAIM, reconcile exact local day and rolling-seven-day usage and demonstrate external repository code isolation. The prior #3494 90-minute reservation remains charged."
     ]
   },
   "historical_queue": {
@@ -898,8 +899,8 @@
     "scheduled_execution_occurred": false
   },
   "measurement_accounting": {
-    "as_of": "2026-09-18T08:00:00-07:00",
-    "checked_candidates": 66,
+    "as_of": "2026-09-18T18:00:00-07:00",
+    "checked_candidates": 70,
     "qualified_unique_candidates": 17,
     "ready_tasks": 1,
     "started": {
@@ -916,7 +917,14 @@
       "transfer_reserved": 90,
       "transfer_actual": "UNKNOWN",
       "historical_actual": 0,
-      "remaining_today": "RECOMPUTE_BEFORE_CLAIM"
+      "manual_diagnostic_reserved_2026_09_18": 15,
+      "configuration_recovery_reserved_2026_09_18": 15,
+      "failed_policy_invocations_count": 10,
+      "failed_policy_invocations_observed_single_agent_turn_minutes": 9.868,
+      "failed_policy_invocations_actual_billable_minutes": "UNKNOWN",
+      "rolling_7_day_known_reservations": 120,
+      "remaining_today": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+      "remaining_rolling_7_days": "UNKNOWN_RECONCILE_BEFORE_CLAIM"
     },
     "cash_increment_usd": 0,
     "backlog_qualified": 16,
