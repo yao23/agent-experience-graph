@@ -1,0 +1,360 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260920t080139-0700-first-window-review",
+  "idempotency_key": "startup-os:2026-09-20:first-window-review",
+  "source_task": "AEG Startup OS",
+  "observed_at": "2026-09-20T15:01:39Z",
+  "observed_local_date": "2026-09-20",
+  "slot": "morning_review",
+  "classification": "SUPPLY_VALIDATED_EXECUTION_THROUGHPUT_FAILED_READY_TO_CLAIM_STALLED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "trusted_and_current_bytes_equal": true,
+    "result": "PASS",
+    "valid_until": "2026-09-24T23:59:00-07:00"
+  },
+  "fixed_snapshot": {
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "f42799918c6b82a946c17a5c85fe168fa6402d56",
+    "authorization_blob": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "readme_blob": "6b14413b86a3dd00af40a531b88026f2ae2dbfc5",
+    "search_checklist_blob": "bf007b07d296da78aa4622c5542350c3459e7699",
+    "tasks_blob": "7ccf2239301f611e440f985d6c01c66832f6be1c",
+    "model_strength_handoff_blob": "b261307637c7bbeedcd5a7d3648bb5695e64f652",
+    "model_strength_protocol_blob": "9bfd5d3203332d47c86e545ecdf669c9d2e3788f"
+  },
+  "measurement_window": {
+    "starts_on": "2026-09-13",
+    "ends_on": "2026-09-19",
+    "timezone": "America/Los_Angeles",
+    "status": "COMPLETE",
+    "target_verified_independent_cases": [
+      7,
+      10
+    ],
+    "target_result": "MISSED_0_OF_7_MINIMUM",
+    "deadline_unchanged": "2026-09-24T23:59:00-07:00"
+  },
+  "funnel": {
+    "reports_counted": {
+      "oss_scan_slots": 14,
+      "scheduled_claims": 1,
+      "scheduled_results": 1
+    },
+    "by_date": {
+      "2026-09-13": {
+        "checked": 8,
+        "qualified_observations": 3,
+        "started": 1,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-14": {
+        "checked": 12,
+        "qualified_observations": 3,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-15": {
+        "checked": 11,
+        "qualified_observations": 3,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-16": {
+        "checked": 17,
+        "qualified_observations": 3,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-17": {
+        "checked": 9,
+        "qualified_observations": 3,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-18": {
+        "checked": 13,
+        "qualified_observations": 2,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      },
+      "2026-09-19": {
+        "checked": 9,
+        "qualified_observations": 3,
+        "started": 0,
+        "verified": 0,
+        "archived": 0
+      }
+    },
+    "totals": {
+      "checked": 79,
+      "qualified_observations": 20,
+      "unique_qualified_candidates_at_window_end_before_invalidation": 17,
+      "subsequently_invalidated_live_candidate": 1,
+      "remaining_unique_objective_oracle_candidates": 16,
+      "distinct_tasks_entered_ready": 2,
+      "case_starts": 1,
+      "verified": 0,
+      "archived": 0
+    },
+    "counting_notes": [
+      "Qualified observations are daily scan outputs and include repeats/status updates; they are not case starts.",
+      "The queue held 17 unique qualified non-transfer candidates before #3514 was invalidated; 16 remain.",
+      "The one case start is the #3494 transfer check. Historical replay starts and live contribution starts are both zero."
+    ]
+  },
+  "outcomes": {
+    "transfer_check": {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "revision": 1,
+      "status": "BLOCKED_TRANSFER_ISOLATION",
+      "solver_contexts_started": 0,
+      "external_repository_code_executed": false,
+      "valid_pair": false,
+      "transfer_efficacy": "UNMEASURED",
+      "registry_candidate": "NONE",
+      "reservation_agent_minutes": 90,
+      "actual_agent_minutes": "UNKNOWN"
+    },
+    "historical_replay": {
+      "ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "status": "READY_UNCLAIMED",
+      "starts": 0,
+      "verified": 0,
+      "archived": 0,
+      "first_ready_date": "2026-09-13",
+      "wait_at_review": "MORE_THAN_6_DAYS; exact transition timestamp not recorded"
+    },
+    "live_oss": {
+      "starts": 0,
+      "verified": 0,
+      "upstream_adoption": 0
+    },
+    "external_adoption": 0,
+    "successful_cross_agent_transfer": 0,
+    "new_registry_candidates": 0
+  },
+  "bottlenecks": [
+    {
+      "rank": 1,
+      "name": "READY_TO_CLAIM",
+      "evidence": "#3076 remained READY and unclaimed from 2026-09-13 through the review snapshot.",
+      "cause": "Ten scheduled invocations stopped at stale entry/checklist digest validation; configuration recovery passed preflight on 2026-09-18 but no post-recovery scheduled CLAIM/RESULT was observed."
+    },
+    {
+      "rank": 2,
+      "name": "LOCAL_BUDGET_ADMISSION",
+      "evidence": "Known rolling reservation is 120 minutes (#3494 90 + diagnostic 15 + recovery 15), while failed policy-invocation billable minutes remain UNKNOWN.",
+      "cause": "Exact local day and rolling-seven-day consumption cannot be reconciled under the unknown-cost rule."
+    },
+    {
+      "rank": 3,
+      "name": "EXTERNAL_CODE_ISOLATION",
+      "evidence": "#3494 terminated without solvers; #3076 isolation boundary remains unproven.",
+      "cause": "No auditable fresh/isolated external-code execution mechanism was demonstrated."
+    }
+  ],
+  "cost": {
+    "cash_increment_usd": 0,
+    "cloud_actual_agent_minutes": "UNKNOWN",
+    "cloud_conservative_reservations_by_date": {
+      "2026-09-13": 18,
+      "2026-09-14": 26,
+      "2026-09-15": 20,
+      "2026-09-16": 26,
+      "2026-09-17": 34,
+      "2026-09-18": 26,
+      "2026-09-19": 33
+    },
+    "cloud_conservative_recorded_minimum_agent_minutes": 183,
+    "cloud_accounting_limitations": "The 2026-09-15 total includes recorded OSS-scan reservations only because no daily Startup OS cost record exists. Therefore 183 is a documented minimum, not an exact total.",
+    "cloud_budget_incidents": [
+      {
+        "date": "2026-09-17",
+        "overrun_agent_minutes": 4,
+        "cause": "out-of-schedule competitive research with UNKNOWN cost"
+      },
+      {
+        "date": "2026-09-19",
+        "overrun_agent_minutes": 3,
+        "cause": "unplanned competitive research consumed capacity needed by regular slots"
+      }
+    ],
+    "local_actual_agent_minutes": "UNKNOWN",
+    "local_known_reservations_agent_minutes": 120,
+    "local_failed_policy_invocations": 10,
+    "local_failed_policy_invocations_actual_billable_minutes": "UNKNOWN",
+    "case_costs": {
+      "started_case_count": 1,
+      "per_started_case_reserved_agent_minutes": 90,
+      "per_verified_case": "UNDEFINED_NO_VERIFIED_CASES",
+      "per_archived_case": "UNDEFINED_NO_ARCHIVED_CASES"
+    }
+  },
+  "interpretation": {
+    "positive": [
+      "Bounded OSS scanning consistently produced objective-oracle supply: the daily qualification target was met on six of seven days and nearly met on the seventh.",
+      "The queue accumulated 16 still-eligible candidates without expanding repository scope or cash spend.",
+      "The system preserved a failed transfer attempt and did not mislabel it as efficacy evidence."
+    ],
+    "negative": [
+      "The scientific objective was not met: 0 verified independent cases versus a 7-10 target.",
+      "Supply work outran execution: 79 reviews and 20 qualified observations produced only one start and zero completed replays.",
+      "The consumer trust configuration failed closed as designed but prevented task execution for most of the window.",
+      "Cloud budget enforcement failed on two days; unknown costs were detected only after commitments."
+    ],
+    "decision": "KEEP_SCOPE_AND_BUDGET_FIXED; STOP_EXPANDING_SUPPLY; FIX_ADMISSION_AND_COMPLETE_AT_MOST_THE_EXISTING_READY_TASK_BEFORE_DEADLINE",
+    "success_claim": false
+  },
+  "current_queue": {
+    "revision": 15,
+    "ready_count": 1,
+    "ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "change_in_this_review": "NONE"
+  },
+  "post_window_scan": {
+    "local_date": "2026-09-20",
+    "excluded_from_window_totals": true,
+    "checked": 6,
+    "qualified": 3,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "decision": "Do not queue additional supply while #3076 remains READY and backlog is sufficient.",
+    "reserved_agent_minutes": 6
+  },
+  "model_strength_transfer": {
+    "status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "arms_started": 0,
+    "evidence": "Protocol readiness exists; actual transfer evidence remains zero."
+  },
+  "pmf_lanes": {
+    "DEV_EXECUTION": {
+      "hypothesis": "Verifier-bound Experience can improve objective developer task success, reliability, or cost.",
+      "strongest_evidence": "16 objective-oracle candidates remain and #3076 has immutable pre/post commits plus a discriminating regression oracle.",
+      "strongest_counterevidence": "No completed replay or valid paired test in the window.",
+      "objective_oracle_candidates": 16,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "Operational repair of budget admission and code isolation; no external outreach.",
+      "expected_validation_cost": "45 local agent-minutes for the existing READY replay, subject to admission.",
+      "plausible_buyer_user": "SDK/framework maintainers and coding-agent evaluation teams.",
+      "next_most_informative_action": "One valid scheduled #3076 replay before the existing deadline."
+    },
+    "CONSUMER_COMMERCE": {
+      "hypothesis": "Provenance-aware Experience can reduce source-conflict, entitlement and locality errors in public shopping tasks.",
+      "strongest_evidence": "Three objective read-only cases and three frozen proposed paired-test opportunities.",
+      "strongest_counterevidence": "No paired result, adoption, repeat use or willingness-to-pay evidence.",
+      "objective_oracle_candidates": 3,
+      "valid_paired_test_opportunities": 3,
+      "human_intervention_requirement": "Separate approval for any paired run; no login, purchase or payment.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "Shopping-assistant and comparison-product teams.",
+      "next_most_informative_action": "After DEV execution is unblocked, seek approval for one smallest public read-only P4 or P5 pair."
+    },
+    "B2B_AGENT_READINESS": {
+      "hypothesis": "Public workflow diagnostics can reveal where services are not agent-ready.",
+      "strongest_evidence": "None collected in this window.",
+      "strongest_counterevidence": "No concrete recurring pain, candidate, objective outcome or buyer signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "Research/benchmark design only.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "SaaS/developer-tool operators.",
+      "next_most_informative_action": "Remain observation-only until a concrete public workflow failure appears."
+    },
+    "TRUST_DECISION_LAYER": {
+      "hypothesis": "Receipts, provenance and compatibility boundaries can improve decisions across the other lanes.",
+      "strongest_evidence": "DEV receipts prevented false transfer claims; commerce cases show why provenance/scope matters.",
+      "strongest_counterevidence": "No independent buyer pain, paired test, adoption or WTP signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "None as a supporting layer.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "Teams operating agents in DEV or commerce workflows.",
+      "next_most_informative_action": "Continue as a cross-lane evidence layer; do not launch an independent experiment."
+    }
+  },
+  "problem_solution_frontier": [
+    {
+      "status": "OBSERVATION_RESEARCH",
+      "lane": "DEV_EXECUTION",
+      "problem": "Merged fixes can pass upstream CI without an independently replayed, verifier-bound record that future agents can trust.",
+      "who_has_it": "SDK/framework maintainers and coding-agent evaluation teams.",
+      "frequency": "UNKNOWN",
+      "current_workaround": "Trust the merged patch, review discussion and CI history.",
+      "why_current_solution_fails": "It does not preserve a portable red/green replay, rejected approaches, applicability and cost.",
+      "AEG_unique_advantage": "Immutable pre/post replay with discriminating oracle, provenance and a portable receipt.",
+      "objective_outcome": "#3076 base fails intended trailing-newline tests; repair passes them without valid-name regression.",
+      "data_supply": "Public commits and regression tests are available.",
+      "willingness_to_pay_signal": "UNKNOWN",
+      "time_to_validate": "45 local agent-minutes after admission.",
+      "evidence": "READY but unclaimed; no AEG outcome.",
+      "confidence": "Technical MODERATE, commercial LOW",
+      "strongest_counterevidence": "0 verified cases in the window.",
+      "next_experiment": "Existing #3076 replay only."
+    },
+    {
+      "status": "OBSERVATION_RESEARCH",
+      "lane": "CONSUMER_COMMERCE",
+      "problem": "Agents can silently resolve conflicting product facts or mistake a displayed price for transaction entitlement/local availability.",
+      "who_has_it": "Shopping-assistant and comparison-product teams.",
+      "frequency": "UNKNOWN",
+      "current_workaround": "Ad hoc search, source selection and text summarization.",
+      "why_current_solution_fails": "Claims often lose source surface, authority, membership and locality scope.",
+      "AEG_unique_advantage": "Preserve claim provenance, precedence, entitlement and unresolved conflict state.",
+      "objective_outcome": "Lower factual, conflict-suppression and unsupported-entitlement errors on frozen public cases.",
+      "data_supply": "Three public cases and frozen sources exist.",
+      "willingness_to_pay_signal": "UNKNOWN",
+      "time_to_validate": "UNKNOWN; paired runs not authorized.",
+      "evidence": "Read-only Target/Apple, Costco and Home Depot observations; no paired result.",
+      "confidence": "Problem MODERATE, solution/market LOW",
+      "strongest_counterevidence": "No user behavior, repeat use or payment signal.",
+      "next_experiment": "One separately approved public P4 or P5 pair after DEV throughput is unblocked."
+    }
+  ],
+  "pmf_route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+  "judgment_items": [
+    "Repair local budget accounting and external-code isolation under existing authority before allowing #3076 to CLAIM.",
+    "Prevent out-of-schedule competitive research from consuming regular daily slot capacity.",
+    "Do not add tasks, budget, parallel consumers, repositories, transfer arms or models; use the remaining deadline only for the existing READY task if admission becomes valid."
+  ],
+  "actions_taken": [
+    "VERIFY_TRUSTED_AND_CURRENT_AUTHORIZATION_BYTES",
+    "READ_FIXED_COORDINATION_SNAPSHOT",
+    "AGGREGATE_14_SCAN_REPORTS",
+    "READ_REAL_BOOTSTRAP_CLAIM_RESULT_DIAGNOSTIC_AND_RECOVERY_RECEIPTS",
+    "PRESERVE_FAILURES_AND_DENOMINATORS",
+    "WRITE_FIRST_WINDOW_REVIEW"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "CREATE_READY_TASK",
+    "CREATE_CLAIM",
+    "RUN_LOCAL_VALIDATION",
+    "RETRY_3494",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
