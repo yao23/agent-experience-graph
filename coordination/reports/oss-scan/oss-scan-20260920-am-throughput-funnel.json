@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260920-am-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-20:morning",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-20T14:30:37Z",
+  "observed_local_date": "2026-09-20",
+  "slot": "morning",
+  "classification": "THREE_QUALIFIED_CANDIDATES_DAILY_CAP_REACHED_FIRST_WINDOW_REVIEW_DAY",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "fixed_coordination_revision": "8c2e4953acaf0bdd1f03a19e0b136f8edc96f649",
+    "result": "PASS"
+  },
+  "funnel": {
+    "search_results_seen": 36,
+    "reviewed_total": 6,
+    "reviewed_by_theme_and_work_type": {
+      "LIVE_OSS_CONTRIBUTION/RESOURCE_LIFECYCLE_AND_CANCELLATION": 1,
+      "LIVE_OSS_CONTRIBUTION/CROSS_MODULE_REGRESSION": 1,
+      "LIVE_OSS_CONTRIBUTION/ENVIRONMENT_DRIFT": 1,
+      "HISTORICAL_REPLAY/RESOURCE_LIFECYCLE": 1,
+      "HISTORICAL_REPLAY/MISLEADING_REPAIR_OR_FALSE_SUCCESS": 1,
+      "HISTORICAL_REPLAY/CROSS_MODULE_REGRESSION": 1
+    },
+    "qualified": 3,
+    "qualified_by_work_type": {
+      "LIVE_OSS_CONTRIBUTION": 1,
+      "HISTORICAL_REPLAY": 2
+    },
+    "qualified_by_theme": {
+      "RESOURCE_LIFECYCLE_AND_CANCELLATION": 2,
+      "MISLEADING_REPAIR_OR_FALSE_SUCCESS": 1
+    },
+    "excluded_by_reason": {
+      "CONCURRENT_PUBLIC_WORK_REDUCES_LIVE_PRIORITY": 2,
+      "NO_ADDED_DISCRIMINATING_REGRESSION_TEST": 1
+    },
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_REACHED",
+    "ready_queue_age": "UNKNOWN; one historical replay remains READY and unclaimed, with no transition timestamp in tasks.json.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-19T14:31:23Z",
+    "live_checked_through": "2026-09-20T14:30:37Z",
+    "search_performed_this_slot": true,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "query_boundary": "Open issue and pull-request activity updated on or after 2026-09-19; six items received source-level review after exact-cursor filtering and prioritization.",
+    "next_live_cursor": "2026-09-20T14:30:37Z"
+  },
+  "candidates": [
+    {
+      "candidate_id": "LIVE-PYSDK-3551-STDIO-SIGINT-CANCELLATION",
+      "repository": "modelcontextprotocol/python-sdk",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/3551",
+      "source_updated_at": "2026-09-20T13:48:22Z",
+      "source_revision": "6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+      "source_status": "OPEN_UNASSIGNED_NO_COMMENTS_NO_LINKED_REPAIR_OBSERVED",
+      "work_type": "LIVE_OSS_CONTRIBUTION",
+      "topics": [
+        "CROSS_MODULE_REGRESSION",
+        "ENVIRONMENT_CHANGE_INVALIDATES_EXPERIENCE"
+      ],
+      "mechanism_theme": "RESOURCE_LIFECYCLE_AND_CANCELLATION",
+      "expected_behavior": "A terminal-run stdio server exits after one SIGINT within the frozen timeout and does not hang on or emit a threading._shutdown traceback.",
+      "objective_verification": "Run the issue's PTY harness on the frozen Linux/Python 3.14/AnyIO matrix; require pre-repair non-exit after the first SIGINT, then post-repair single-signal exit with the agreed code and no shutdown traceback, plus focused stdio tests.",
+      "estimated_total_minutes": 90,
+      "existing_solution": {
+        "status": "PARTIAL_MECHANISM_AND_THREE_POSSIBLE_FIX_DIRECTIONS_DISCLOSED_NO_COMPLETE_REPAIR",
+        "source": "https://github.com/modelcontextprotocol/python-sdk/issues/3551",
+        "note": "The report identifies the blocking AnyIO worker-thread mechanism and suggests signal handling, nonblocking POSIX reads, or abandon-on-cancel; none is validated."
+      },
+      "limitations": [
+        "The frozen reproduction is POSIX TTY-specific and was not tested on macOS or Windows.",
+        "The disclosed root cause makes this unsuitable as a blind-diagnosis case.",
+        "External contribution would still require normal maintainer assignment; local replay does not."
+      ],
+      "dedup_identity": "modelcontextprotocol/python-sdk#3551@6affe5c0:stdio-tty-worker-thread-sigint-cancellation",
+      "model_strength_study": {
+        "experience_predates_astra": "UNKNOWN",
+        "independent_target": "YES",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "candidate_id": "HIST-SKILLS-1796-PACKAGE-SELF-INCLUSION",
+      "repository": "anthropics/skills",
+      "source_url": "https://github.com/anthropics/skills/pull/1796",
+      "source_updated_at": "2026-09-20T07:43:28Z",
+      "source_revision": "924ae2639cf27ede936e56897084ffc1d710956d",
+      "base_revision": "34040c9c568585f6929bedeaad110ad08f079624",
+      "source_status": "OPEN_UNMERGED_MERGEABLE_AT_OBSERVATION",
+      "work_type": "HISTORICAL_REPLAY",
+      "topics": [
+        "CROSS_MODULE_REGRESSION",
+        "MISLEADING_FIX_OR_REPEATED_FAILURE"
+      ],
+      "mechanism_theme": "RESOURCE_LIFECYCLE_AND_SELF_REFERENTIAL_OUTPUT",
+      "expected_behavior": "Packaging into a directory inside the skill tree never reads the archive being written, terminates within the test timeout, and preserves all other intended assets.",
+      "objective_verification": "Freeze base and head; run the nine real CLI ZIP-content tests. Require the bounded self-inclusion regressions to fail on base for the intended reason and pass on head, with archive CRC/content assertions and git diff checks.",
+      "estimated_total_minutes": 60,
+      "existing_solution": {
+        "status": "UNMERGED_COMPLETE_PUBLIC_PATCH_WITH_CLAIMED_LINUX_AND_WINDOWS_TESTS",
+        "source": "https://github.com/anthropics/skills/pull/1796",
+        "note": "The patch resolves the output path and skips only the current output archive during traversal."
+      },
+      "limitations": [
+        "Upstream correctness and adoption are unverified because the proposal is unmerged.",
+        "The Windows junction assertion needs a Windows runner; the remaining oracle is locally portable.",
+        "This is a replay candidate, not an independent discovery or upstream adoption claim."
+      ],
+      "dedup_identity": "anthropics/skills#1796@924ae263:package-skill-output-self-inclusion",
+      "model_strength_study": {
+        "experience_predates_astra": "UNKNOWN",
+        "independent_target": "YES",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "candidate_id": "HIST-SKILLS-1792-DOCX-POSTCONDITION-FALSE-RESULTS",
+      "repository": "anthropics/skills",
+      "source_url": "https://github.com/anthropics/skills/pull/1792",
+      "source_updated_at": "2026-09-19T17:07:36Z",
+      "source_revision": "ad42dbab1c52485a6b724c3e803f986d3d626e66",
+      "base_revision": "34040c9c568585f6929bedeaad110ad08f079624",
+      "source_status": "OPEN_UNMERGED_CURRENT_HEAD_PUBLICLY_SHOWN_INCOMPLETE",
+      "work_type": "HISTORICAL_REPLAY",
+      "topics": [
+        "MISLEADING_FIX_OR_REPEATED_FAILURE",
+        "CROSS_MODULE_REGRESSION"
+      ],
+      "mechanism_theme": "MISLEADING_SUCCESS_AND_REGRESSION_ORACLE_GAP",
+      "expected_behavior": "Timeouts and residual tracked changes never report success, while clean OOXML with inside-border or field-code elements is not rejected and namespace-aliased revision elements are detected.",
+      "objective_verification": "At frozen base/head, use five minimal DOCX fixtures: clean, w:insideH, w:instrText, literal w:ins, and namespace-aliased x:ins. Demonstrate the original false success, the current head's false positives/negative, then require a namespace-aware repair to classify all five correctly and preserve fail-closed handling for unreadable XML.",
+      "estimated_total_minutes": 75,
+      "existing_solution": {
+        "status": "PARTIAL_PUBLIC_PATCH_PLUS_PUBLICLY_VALIDATED_COUNTEREXAMPLES_AND_UNCOMMITTED_REPAIR_DIRECTION",
+        "source": "https://github.com/anthropics/skills/pull/1792",
+        "note": "The head fixes timeout truthfulness but uses raw prefix matching; reviews reproduce two false-positive classes and one namespace false negative, and propose namespace-aware XML parsing."
+      },
+      "limitations": [
+        "The corrected namespace-aware implementation is not present at the frozen head.",
+        "LibreOffice is unavailable in the public validation described, so the full conversion integration remains unverified.",
+        "Upstream adoption is unverified because the proposal is open and unmerged."
+      ],
+      "dedup_identity": "anthropics/skills#1792@ad42dbab:ooxml-tracked-change-postcondition-prefix-matching",
+      "model_strength_study": {
+        "experience_predates_astra": "UNKNOWN",
+        "independent_target": "YES",
+        "shared_frozen_oracle_possible": "YES",
+        "treatment_only_experience_possible": "UNKNOWN",
+        "telemetry_available": "UNKNOWN",
+        "fresh_context_and_artifact_isolation": "UNKNOWN",
+        "status": "UNKNOWN"
+      }
+    }
+  ],
+  "proposed_tasks": [
+    {
+      "candidate_id": "LIVE-PYSDK-3551-STDIO-SIGINT-CANCELLATION",
+      "status": "PROPOSED_ONLY_NOT_QUEUED"
+    },
+    {
+      "candidate_id": "HIST-SKILLS-1796-PACKAGE-SELF-INCLUSION",
+      "status": "PROPOSED_ONLY_NOT_QUEUED"
+    },
+    {
+      "candidate_id": "HIST-SKILLS-1792-DOCX-POSTCONDITION-FALSE-RESULTS",
+      "status": "PROPOSED_ONLY_NOT_QUEUED"
+    }
+  ],
+  "first_window_review_context": {
+    "measurement_window": "2026-09-13/2026-09-19",
+    "review_date": "2026-09-20",
+    "interpretation": "This slot begins after the first measurement window. It records candidate supply only; independent verification, archival, and any go/no-go review remain separate authorized roles.",
+    "queue_revision": 15,
+    "queue_updated_at": "2026-09-19T18:04:59-07:00",
+    "ready_tasks": 1,
+    "backlog_qualified_tasks": 15,
+    "invalidated_live_tasks": 1,
+    "verified_experiences": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "nominal_slot_cap_agent_minutes": 6,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable, so the full six-minute Sunday slot allowance is conservatively reserved. No candidate execution, model call, transfer arm, paid API, or upstream write occurred."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "VERIFY_AUTHORIZATION_IDENTITY",
+    "READ_SEARCH_CHECKLIST_AND_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "READ_QUEUE_AND_PRIOR_CURSOR",
+    "CHECK_INCREMENTAL_LIVE_ACTIVITY_IN_FOUR_AUTHORIZED_REPOSITORIES",
+    "REVIEW_SIX_PRIORITIZED_SOURCES",
+    "DEDUPLICATE_AGAINST_TASKS_JSON_AND_PRIOR_REPORTS",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "RUN_CANDIDATE",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
