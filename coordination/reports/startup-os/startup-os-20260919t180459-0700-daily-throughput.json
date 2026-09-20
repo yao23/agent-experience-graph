@@ -1,0 +1,205 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260919t180459-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-19:evening",
+  "source_task": "AEG Startup OS",
+  "observed_at": "2026-09-20T01:04:59Z",
+  "observed_local_date": "2026-09-19",
+  "slot": "evening",
+  "classification": "READY_TO_CLAIM_BLOCKED_BY_LOCAL_ADMISSION_AND_CLOUD_BUDGET_OVERRUN",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS"
+  },
+  "fixed_snapshot": {
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "e73cf0caed63143d6f0460efa8d41b85c5b51782",
+    "authorization_blob": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "tasks_blob_before": "15047f411d3bf151ec4032fc2911ebb514d66b03"
+  },
+  "daily_funnel": {
+    "checked": 9,
+    "qualified": 3,
+    "ready_new": 0,
+    "ready_active": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "qualified_daily_cap": 3,
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_REACHED_IN_MORNING_SLOT; evening scan correctly did not re-screen."
+  },
+  "queue": {
+    "tasks_revision_before": 14,
+    "tasks_revision_after": 15,
+    "sole_ready": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "budget_minutes_total": 45
+    },
+    "claim_or_result_for_ready_task": "NONE_OBSERVED",
+    "qualified_backlog_before": 16,
+    "qualified_backlog_after": 15,
+    "terminal_transfer": {
+      "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
+      "revision": 1,
+      "status": "BLOCKED_TRANSFER_ISOLATION",
+      "transfer_effect": "UNMEASURED",
+      "retry": "NOT_AUTHORIZED"
+    },
+    "invalidation": {
+      "task_id": "OSS-LIVE-PYSDK-3514-VARIADIC-SIGNATURE",
+      "status": "INVALIDATED_AS_LIVE_CASE_COMPLETE_PUBLIC_REPAIR_EXISTS",
+      "reason": "Public PRs #3527 and #3538 disclose repair direction/tests; closed/unmerged does not prove adoption but eliminates a live no-known-solution case."
+    }
+  },
+  "local_handoff": {
+    "state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY",
+    "configuration_receipt": "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
+    "v3_scheduler_claim_or_result": "NONE_OBSERVED",
+    "required_before_claim": [
+      "reconcile exact local day and rolling-seven-day use, carrying the #3494 90-minute reservation",
+      "demonstrate external-repository code isolation",
+      "valid scheduled consumer invocation creates the sole READY claim"
+    ],
+    "summary_label": "LOCAL_HANDOFF_PENDING"
+  },
+  "measurements": {
+    "independent_case_starts_rolling_7_days": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_checks_started": 1,
+    "verified_registry_candidates": 0,
+    "external_adoption": 0,
+    "successful_cross_agent_transfer": 0,
+    "observations": "No local replay result or new external adoption was observed."
+  },
+  "cost": {
+    "cash_increment_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": {
+      "oss_scan_am": 10,
+      "startup_os_am": 3,
+      "competitive_research_unplanned": 10,
+      "oss_scan_pm": 7,
+      "startup_os_pm": 3
+    },
+    "conservative_total_reserved_today": 33,
+    "shared_daily_cap_agent_minutes": 30,
+    "overrun_agent_minutes": 3,
+    "accounting": "The competitive-research run recorded UNKNOWN cost; full-cap reservation consumes capacity. The evening OSS scan used the seven-minute remainder. This required daily summary brings conservative total to 33, so no further cloud research/admission is allowed today."
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "arms_started": 0,
+    "local_consumer_model_changed": false
+  },
+  "pmf_lanes": {
+    "DEV_EXECUTION": {
+      "hypothesis": "Verifier-bound Experience can improve objective developer task success, reliability, or cost.",
+      "strongest_evidence": "16 remaining objectively specified OSS cases, including one 45-minute READY historical replay with frozen pre/post commits and regression oracle.",
+      "strongest_counterevidence": "No local replay/Registry candidate this window; #3494 paired transfer is BLOCKED_TRANSFER_ISOLATION.",
+      "objective_oracle_candidates": 16,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "No external outreach; local budget reconciliation and code-isolation proof are required before CLAIM.",
+      "expected_validation_cost": "45 minutes for sole READY task, subject to admission.",
+      "plausible_buyer_user": "SDK/framework maintainers and coding-agent evaluation teams.",
+      "next_most_informative_action": "A valid scheduled CLAIM for #3076 revision 1 after budget and isolation admission."
+    },
+    "CONSUMER_COMMERCE": {
+      "hypothesis": "Provenance-aware Experience reduces factual and entitlement errors in public shopping/service selection.",
+      "strongest_evidence": "Three public read-only cases show source-conflict, member-entitlement, and indexed-vs-local-state failure modes.",
+      "strongest_counterevidence": "No paired outcomes, real user use, transaction verification, or willingness-to-pay signal.",
+      "objective_oracle_candidates": 3,
+      "valid_paired_test_opportunities": 3,
+      "human_intervention_requirement": "None for public research; any login, purchase, payment, or model experiment needs separate approval.",
+      "expected_validation_cost": "UNKNOWN; all P4-P6 remain PROPOSED_NOT_AUTHORIZED.",
+      "plausible_buyer_user": "Consumer-shopping assistants and comparison/recommendation teams.",
+      "next_most_informative_action": "Seek separate approval only for a small public read-only P4 or P5 paired test; do not divert active ETP execution."
+    },
+    "B2B_AGENT_READINESS": {
+      "hypothesis": "Public service diagnostics can expose agent workflow readiness gaps.",
+      "strongest_evidence": "None collected in this window.",
+      "strongest_counterevidence": "No concrete customer pain, objective candidate, paired test, or buyer signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "Research/benchmark design only.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "SaaS/developer-tool operators.",
+      "next_most_informative_action": "Remain observation-only until a public, concrete workflow pain is found."
+    },
+    "TRUST_DECISION_LAYER": {
+      "hypothesis": "Receipts, provenance, compatibility and outcome records can make agent decisions more reliable across other lanes.",
+      "strongest_evidence": "The commerce scan identified concrete source-precedence/entitlement facts; DEV queue preserves immutable source/oracle provenance.",
+      "strongest_counterevidence": "No independent buyer pain, paired test, adoption, or WTP signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "None as a supporting layer.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "Teams operating agents in DEV_EXECUTION or commerce.",
+      "next_most_informative_action": "Keep as a cross-lane evidence layer; do not start an independent experiment."
+    }
+  },
+  "problem_solution_frontier": [
+    {
+      "status": "PROPOSED_NOT_VALIDATED",
+      "lane": "DEV_EXECUTION",
+      "pain": "Maintainers need a replayable proof that malformed tool/URI names are rejected without breaking valid behavior.",
+      "customer": "MCP SDK/framework maintainers and coding-agent evaluators.",
+      "current_workaround": "Trust the merged upstream patch and CI.",
+      "AEG_advantage": "Immutable pre/post replay plus discriminating oracle and receipt.",
+      "evidence": "PR #3076 and frozen commits; no AEG replay yet.",
+      "WTP_signal": "UNKNOWN",
+      "next_experiment": "Claim #3076 r1 only after local admission.",
+      "confidence": "Technical MODERATE; commercial LOW",
+      "strongest_counterevidence": "No completed local replay or external reuse."
+    },
+    {
+      "status": "PROPOSED_NOT_VALIDATED",
+      "lane": "CONSUMER_COMMERCE",
+      "pain": "Agents can silently resolve conflicting retailer/manufacturer facts or mistake displayed prices for purchase entitlement.",
+      "customer": "Shopping-assistant and comparison-product teams.",
+      "current_workaround": "Ad hoc source selection and text summarization.",
+      "AEG_advantage": "Bind claims to source authority, policy precedence, entitlement and locality scope; preserve unresolved conflicts.",
+      "evidence": "Target/Apple, Costco, and Home Depot public cases from 2026-09-19.",
+      "WTP_signal": "UNKNOWN",
+      "next_experiment": "Separately approve one public read-only P4/P5 paired test.",
+      "confidence": "Problem MODERATE; solution and market LOW",
+      "strongest_counterevidence": "No valid paired outcome, user adoption, or payment signal."
+    }
+  ],
+  "route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+  "measurement_window": {
+    "status": "IN_PROGRESS_THROUGH_END_OF_2026-09-19_AMERICA_LOS_ANGELES",
+    "next_summary": "Aggregate the complete 2026-09-13 to 2026-09-19 window on 2026-09-20; preserve all failures and denominators and do not increase budget, parallelism, or repository scope."
+  },
+  "actions_taken": [
+    "VERIFY_AUTHORIZATION",
+    "READ_FIXED_COORDINATION_SNAPSHOT",
+    "READ_AM_AND_PM_OSS_SCAN",
+    "READ_REAL_RECEIPTS_DIRECTORY",
+    "RECONCILE_QUEUE",
+    "INVALIDATE_PUBLICLY_SOLVED_LIVE_CASE",
+    "WRITE_DAILY_SUMMARY"
+  ],
+  "actions_not_taken": [
+    "CREATE_CLAIM",
+    "RUN_LOCAL_VALIDATION",
+    "CREATE_NEW_READY_TASK",
+    "REORDER_READY_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}

@@ -1,15 +1,15 @@
 {
   "schema_version": "2.0.0",
-  "revision": 14,
+  "revision": 15,
   "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
   "writer": "startup-os",
-  "updated_at": "2026-09-18T18:00:00-07:00",
+  "updated_at": "2026-09-19T18:04:59-07:00",
   "sprint": {
     "starts_on": "2026-09-11",
     "valid_until": "2026-09-24T23:59:00-07:00",
     "timezone": "America/Los_Angeles"
   },
-  "delivery_state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_ONE_HISTORICAL_REPLAY_READY_SIXTEEN_QUALIFIED_BACKLOG",
+  "delivery_state": "CONFIGURATION_RECOVERED_PREFLIGHT_ONLY_ONE_HISTORICAL_REPLAY_READY_FIFTEEN_QUALIFIED_BACKLOG_ONE_INVALIDATED_LIVE_CASE",
   "tasks": [
     {
       "task_id": "OSS-PYSDK-3494-RESTART-LIFECYCLE",
@@ -629,23 +629,29 @@
         "safety": "Isolated local checkout only; no upstream interaction, private data, deployment, paid API, or global Agent/plugin installation."
       },
       "budget_minutes_total": 60,
-      "status": "BACKLOG_QUALIFIED_REQUIRES_MAINTAINER_ASSIGNMENT",
+      "status": "INVALIDATED_AS_LIVE_CASE_COMPLETE_PUBLIC_REPAIR_EXISTS",
       "existing_results": {
         "upstream": "OPEN; reporter states an unpublished scoped patch exists and no linked public PR was observed.",
         "local_validation": "NOT_STARTED",
         "registry_candidate": "NONE",
         "independent_transfer": "NONE",
-        "external_adoption": "NONE"
+        "external_adoption": "NONE",
+        "current_upstream_observation": "2026-09-19: PR #3527 and PR #3538 publicly disclose the repair direction and tests. Both are closed and unmerged, so this is not maintainer adoption; nevertheless #3514 no longer qualifies as a live no-known-solution case."
       },
       "evidence_locations": [
         "coordination/reports/oss-scan/oss-scan-20260917-am-throughput-funnel.json",
         "https://github.com/modelcontextprotocol/python-sdk/issues/3514",
-        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb"
+        "https://github.com/modelcontextprotocol/python-sdk/commit/6affe5c0d3588fd1705713b3703dc68015cfe3eb",
+        "coordination/reports/oss-scan/oss-scan-20260919-am-throughput-funnel.json",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3527",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/3538",
+        "https://github.com/modelcontextprotocol/python-sdk/issues/3514#issuecomment-5742492969"
       ],
       "limitations": [
         "The issue discloses the likely fail-closed repair boundary, so this cannot measure blind diagnosis.",
         "Maintainer preference between rejection and schema support is not recorded.",
-        "The reporter already has a patch; no external contribution is authorized."
+        "The reporter already has a patch; no external contribution is authorized.",
+        "Invalidated only as a live no-known-solution case; do not create a duplicate historical replay from the same public repair chain without a separate queue decision."
       ],
       "dedup_identity": "modelcontextprotocol/python-sdk:variadic-tool-signature-impossible-schema:3514",
       "model_strength_study": {
