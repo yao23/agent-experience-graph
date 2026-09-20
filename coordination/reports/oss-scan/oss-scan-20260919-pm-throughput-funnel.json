@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260919-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-19:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-20T00:31:52Z",
+  "observed_local_date": "2026-09-19",
+  "slot": "evening",
+  "classification": "DAILY_CANDIDATE_CAP_REACHED_NO_ADDITIONAL_SEARCH_QUEUE_PENDING_RECONCILIATION",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "fixed_coordination_revision": "725c2674d49cc42ab2c7edb0f1b617f205010aab"
+  },
+  "funnel": {
+    "search_results_seen": 0,
+    "reviewed_total": 0,
+    "reviewed_daily_total": 9,
+    "reviewed_by_theme_and_work_type": {},
+    "qualified": 0,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {},
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_ALREADY_REACHED_IN_MORNING_SLOT",
+    "ready_queue_age": "UNKNOWN; one historical replay remains READY and unclaimed, with no transition timestamp in tasks.json.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-19T14:31:23Z",
+    "live_checked_through": "2026-09-19T14:31:23Z",
+    "search_performed_this_slot": false,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-19T14:31:23Z"
+  },
+  "candidates": [],
+  "proposed_tasks": [],
+  "morning_result": {
+    "report": "coordination/reports/oss-scan/oss-scan-20260919-am-throughput-funnel.json",
+    "qualified": 3,
+    "candidates": [
+      "HIST-PYSDK-3548-TERMINATION-2XX",
+      "HIST-PYSDK-3352-SETTINGS-MODEL-REBUILD",
+      "HIST-PYSDK-3376-RECURSIVE-SCHEMA-ROOT"
+    ],
+    "status_change": "OSS-LIVE-PYSDK-3514-VARIADIC-SIGNATURE was observed invalidated as a live no-known-solution case."
+  },
+  "queue_reconciliation": {
+    "startup_os_report": "coordination/reports/startup-os/startup-os-20260919t075522-0700-morning-queue-reconciliation.json",
+    "queue_revision": 14,
+    "queue_updated_at": "2026-09-18T18:00:00-07:00",
+    "morning_candidates_present_in_tasks_json": 0,
+    "stale_live_candidate_still_present": "OSS-LIVE-PYSDK-3514-VARIADIC-SIGNATURE",
+    "startup_os_decision": "No add, replacement, or reprioritization while one higher-priority historical replay remains READY and unclaimed.",
+    "interpretation": "Pending coordination state only. The OSS-scan role is not authorized to update tasks.json and did not do so."
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false,
+    "interpretation": "No candidate selection or study action occurred. Morning advisory metadata remains unchanged."
+  },
+  "current_state": {
+    "queue_revision": 14,
+    "queue_updated_at": "2026-09-18T18:00:00-07:00",
+    "checked_candidates_cumulative": 70,
+    "qualified_unique_candidates_cumulative": 17,
+    "ready_tasks": 1,
+    "backlog_qualified": 16,
+    "new_case_starts_rolling_7_days": 1,
+    "sprint_case_starts": 1,
+    "transfer_checks_started": 1,
+    "historical_replays_started": 0,
+    "live_oss_contributions_started": 0,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 7,
+    "nominal_slot_cap_agent_minutes": 10,
+    "effective_slot_cap_after_shared_budget_admission": 7,
+    "morning_oss_scan_reserved_agent_minutes": 10,
+    "morning_startup_os_reserved_agent_minutes": 3,
+    "competitive_research_actual_agent_minutes": "UNKNOWN",
+    "competitive_research_conservative_reservation_for_admission": 10,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable. The competitive-research report records UNKNOWN time, so the full remaining seven-minute allowance is conservatively reserved and no additional research was admitted. No model call, transfer arm, local validation, paid API, or upstream write was used."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "READ_SEARCH_CHECKLIST",
+    "READ_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "READ_MORNING_OSS_SCAN",
+    "READ_SAME_DAY_STARTUP_OS_AND_COMPETITIVE_RESEARCH_REPORTS",
+    "RECONCILE_DAILY_CANDIDATE_AND_SHARED_BUDGET_CAPS",
+    "VERIFY_QUEUE_STATE_WITHOUT_MUTATION",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SEARCH_ADDITIONAL_CANDIDATES",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "UPDATE_TASKS_JSON",
+    "RUN_LOCAL_VALIDATION",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
