@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "oss-scan-20260920-pm-throughput-funnel",
+  "idempotency_key": "oss-scan:2026-09-20:evening",
+  "source_task": "OSS migration scan",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-21T00:27:25Z",
+  "observed_local_date": "2026-09-20",
+  "slot": "evening",
+  "classification": "DAILY_CAP_REACHED_FIRST_WINDOW_REVIEW_CONFIRMS_SUPPLY_SUFFICIENT_EXECUTION_STALLED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "fixed_coordination_revision": "9b849d3e22855e272ade2dfac367766cb74567e1",
+    "result": "PASS"
+  },
+  "funnel": {
+    "search_results_seen": 0,
+    "reviewed_total": 0,
+    "reviewed_daily_total": 6,
+    "reviewed_by_theme_and_work_type": {},
+    "qualified": 0,
+    "qualified_daily_total": 3,
+    "excluded_by_reason": {},
+    "stop_reason": "DAILY_QUALIFIED_CANDIDATE_CAP_ALREADY_REACHED_AND_FIRST_WINDOW_REVIEW_DIRECTS_STOP_EXPANDING_SUPPLY",
+    "ready_queue_age": "MORE_THAN_6_DAYS; exact transition timestamp not recorded.",
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "budget_used_or_unknown": "UNKNOWN"
+  },
+  "cursor": {
+    "previous_live_observation": "2026-09-20T14:30:37Z",
+    "live_checked_through": "2026-09-20T14:30:37Z",
+    "search_performed_this_slot": false,
+    "repositories": [
+      "anthropics/skills",
+      "modelcontextprotocol/python-sdk",
+      "andrewyng/context-hub",
+      "agentskills/agentskills"
+    ],
+    "next_live_cursor": "2026-09-20T14:30:37Z"
+  },
+  "candidates": [],
+  "proposed_tasks": [],
+  "morning_result": {
+    "report": "coordination/reports/oss-scan/oss-scan-20260920-am-throughput-funnel.json",
+    "qualified": 3,
+    "candidates": [
+      "LIVE-PYSDK-3551-STDIO-SIGINT-CANCELLATION",
+      "HIST-SKILLS-1796-PACKAGE-SELF-INCLUSION",
+      "HIST-SKILLS-1792-DOCX-POSTCONDITION-FALSE-RESULTS"
+    ],
+    "interpretation": "Recorded as post-window supply only. They were not queued or executed."
+  },
+  "first_window_review": {
+    "report": "coordination/reports/startup-os/startup-os-20260920t080139-0700-first-window-review.json",
+    "measurement_window": "2026-09-13/2026-09-19",
+    "target_verified_independent_cases": [
+      7,
+      10
+    ],
+    "target_result": "MISSED_0_OF_7_MINIMUM",
+    "checked": 79,
+    "qualified_observations": 20,
+    "unique_qualified_candidates_before_invalidation": 17,
+    "subsequently_invalidated_live_candidates": 1,
+    "remaining_unique_objective_oracle_candidates": 16,
+    "distinct_tasks_entered_ready": 2,
+    "case_starts": 1,
+    "historical_replay_starts": 0,
+    "live_oss_starts": 0,
+    "verified": 0,
+    "archived": 0,
+    "primary_bottleneck": "READY_TO_CLAIM",
+    "secondary_bottlenecks": [
+      "LOCAL_BUDGET_ADMISSION",
+      "EXTERNAL_CODE_ISOLATION"
+    ],
+    "decision": "KEEP_SCOPE_AND_BUDGET_FIXED; STOP_EXPANDING_SUPPLY; FIX_ADMISSION_AND_COMPLETE_AT_MOST_THE_EXISTING_READY_TASK_BEFORE_DEADLINE",
+    "success_claim": false
+  },
+  "current_state": {
+    "queue_revision": 15,
+    "queue_updated_at": "2026-09-19T18:04:59-07:00",
+    "ready_tasks": 1,
+    "ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "transfer_check_terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+    "verified_experiences": 0,
+    "archived_registry_candidates": 0,
+    "tasks_json_modified_by_this_role": false
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "selected_experience": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_arm_started": false,
+    "local_consumer_model_changed": false
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "reserved_agent_minutes": 6,
+    "nominal_slot_cap_agent_minutes": 6,
+    "morning_oss_scan_reserved_agent_minutes": 6,
+    "startup_os_actual_agent_minutes": "UNKNOWN",
+    "startup_os_conservative_reservation_for_admission": 10,
+    "shared_daily_conservative_reservation_after_this_report": 22,
+    "shared_daily_cap_agent_minutes": 30,
+    "accounting_note": "Actual platform agent-minutes are not observable. The full six-minute evening allowance and a conservative ten-minute Startup OS allowance are reserved for admission accounting. No search, candidate execution, model call, transfer arm, paid API, or upstream write occurred."
+  },
+  "actions_taken": [
+    "READ_FIXED_COORDINATION_STATE",
+    "VERIFY_AUTHORIZATION_IDENTITY",
+    "READ_SEARCH_CHECKLIST_AND_MODEL_STRENGTH_PREPARATION_MATERIALS",
+    "READ_MORNING_OSS_SCAN",
+    "READ_FIRST_WINDOW_REVIEW",
+    "RECONCILE_DAILY_CANDIDATE_CAP_AND_SHARED_BUDGET",
+    "VERIFY_QUEUE_STATE_WITHOUT_MUTATION",
+    "WRITE_PUBLIC_SAFE_REPORT"
+  ],
+  "actions_not_taken": [
+    "SEARCH_ADDITIONAL_CANDIDATES",
+    "UPDATE_TASKS_JSON",
+    "RUN_CANDIDATE",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CALL_MODEL",
+    "START_TRANSFER_ARM",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ]
+}
