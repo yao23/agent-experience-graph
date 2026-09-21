@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "bayesian-review-20260920-first-window",
+  "idempotency_key": "bayesian-review:2026-09-20:first-window",
+  "source_task": "AEG Bayesian review",
+  "observed_at": "2026-09-20T19:58:43-07:00",
+  "observed_local_date": "2026-09-20",
+  "classification": "SUPPLY_PROVEN_EXECUTION_THROUGHPUT_NOT_PROVEN",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "PASS",
+    "valid_until": "2026-09-24T23:59:00-07:00"
+  },
+  "fixed_snapshot": {
+    "repository": "yao23/agent-experience-graph",
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "67ed230c27c943154517f55e608cdf85a23de615",
+    "tree": "ba30d2c12e06d1720531a4f981ad887d14002661"
+  },
+  "measurement_window": {
+    "starts_on": "2026-09-13",
+    "ends_on": "2026-09-19",
+    "timezone": "America/Los_Angeles",
+    "status": "COMPLETE",
+    "target_verified_independent_cases": [
+      7,
+      10
+    ],
+    "achieved_verified_independent_cases": 0,
+    "target_result": "MISSED_0_OF_7_MINIMUM",
+    "deadline_unchanged": "2026-09-24T23:59:00-07:00"
+  },
+  "evidence_classification": {
+    "repair": {
+      "count": 0,
+      "note": "No new live repair or local historical repair replay completed."
+    },
+    "historical_replay": {
+      "qualified_unique_before_invalidation": 17,
+      "remaining_eligible": 16,
+      "started": 0,
+      "verified": 0,
+      "archived": 0
+    },
+    "principle_boundary": {
+      "count": 1,
+      "note": "#3494 established only that the ownership/context boundary was not met; it did not test repair efficacy or beneficial abstention."
+    },
+    "external_adoption": {
+      "count": 0
+    },
+    "independent_reuse": {
+      "count": 0
+    },
+    "successful_cross_agent_transfer": {
+      "count": 0
+    }
+  },
+  "candidate_funnel": {
+    "scan_slots": 14,
+    "checked": 79,
+    "qualified_observations": 20,
+    "unique_qualified_candidates_before_invalidation": 17,
+    "invalidated_after_public_repair_disclosure": 1,
+    "remaining_unique_objective_oracle_candidates": 16,
+    "qualification_yield_of_checked": 0.215,
+    "distinct_tasks_entered_ready": 2,
+    "active_ready_at_window_end": 1,
+    "case_starts": 1,
+    "valid_experimental_completions": 0,
+    "verified": 0,
+    "archived_registry_candidates": 0,
+    "topic_families_present": 7,
+    "replay_verified_mechanism_families": 0,
+    "accepted_pattern": "Bounded public cases with frozen revisions and deterministic local oracles, especially lifecycle, regression, upgrade, drift, misleading-repair, and CI/test-gap cases.",
+    "rejection_reasons": [
+      "security/authentication/permission hard exclusions",
+      "complete or active public repair invalidating a live no-known-solution case",
+      "duplicate root cause or backport",
+      "no bounded discriminating executable oracle",
+      "unavailable platform/locale or nondeterministic network/CI dependency",
+      "scope or bundled change exceeds the 90-minute case bound",
+      "out-of-scope enhancement or documentation-only change"
+    ]
+  },
+  "completion_by_work_type": {
+    "TRANSFER_CHECK": {
+      "eligible_or_ready": 1,
+      "started": 1,
+      "terminal_receipt": 1,
+      "valid_pair": 0,
+      "verified": 0,
+      "archived": 0,
+      "scientific_completion_rate": 0,
+      "terminal_status": "BLOCKED_TRANSFER_ISOLATION",
+      "warning": "#3494 is an ownership/context-isolation boundary failure. It is neither positive transfer, negative transfer, nor observed beneficial refusal."
+    },
+    "HISTORICAL_REPLAY": {
+      "unique_candidates": 15,
+      "entered_ready": 1,
+      "started": 0,
+      "verified": 0,
+      "archived": 0,
+      "ready_to_started_rate": 0,
+      "ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+      "ready_wait": "MORE_THAN_6_DAYS"
+    },
+    "LIVE_OSS_CONTRIBUTION": {
+      "remaining_eligible": 1,
+      "invalidated": 1,
+      "started": 0,
+      "verified": 0,
+      "upstream_adoption": 0,
+      "completion_rate": 0
+    }
+  },
+  "time_and_intervention": {
+    "cloud_candidate_preparation": {
+      "conservative_recorded_minimum_agent_minutes": 183,
+      "actual_agent_minutes": "UNKNOWN",
+      "note": "Documented minimum includes scan/startup/research reservations and is not a clean stage timer."
+    },
+    "local_preparation_and_admission": {
+      "manual_diagnostic_reserved_minutes": 15,
+      "configuration_recovery_reserved_minutes": 15,
+      "known_reserved_total_minutes": 30,
+      "actual_minutes": "UNKNOWN"
+    },
+    "local_transfer_attempt": {
+      "reserved_minutes": 90,
+      "actual_minutes": "UNKNOWN",
+      "solver_contexts_started": 0,
+      "external_repository_code_executed": false
+    },
+    "execution_minutes": "NO_TASK_EXECUTION_OBSERVED; exact administrative minutes UNKNOWN",
+    "archival_minutes": "UNKNOWN; no Registry candidate was produced",
+    "human_intervention": {
+      "founder_identity": "UNKNOWN",
+      "recorded_manual_operator_interventions": 2,
+      "scope": "scheduler diagnosis and configuration trust recovery only",
+      "domain_oracle_override": false
+    },
+    "cost": {
+      "cash_increment_usd": 0,
+      "local_known_reservations_agent_minutes": 120,
+      "local_actual_agent_minutes": "UNKNOWN",
+      "cloud_actual_agent_minutes": "UNKNOWN",
+      "verified_case_unit_cost": "UNDEFINED_NO_VERIFIED_CASES"
+    },
+    "telemetry_gap": "Preparation, execution, evaluation, and archival were not measured as mutually exclusive actual durations; throughput economics cannot yet be calculated."
+  },
+  "verified_experience_effect": {
+    "current_window": {
+      "valid_control_treatment_pairs": 0,
+      "success_rate_delta": "UNMEASURED",
+      "command_delta": "UNMEASURED",
+      "token_delta": "UNMEASURED",
+      "dollar_cost_delta": "UNMEASURED",
+      "latency_delta": "UNMEASURED",
+      "ordinary_memory_comparator": 0,
+      "negative_transfer_observations": 0,
+      "context_or_answer_leakage_check": "#3494 stopped before solvers because evaluator/context isolation could not be demonstrated.",
+      "version_drift_observations": 0
+    },
+    "conclusion": "No posterior update is justified for Verified Experience versus no experience or ordinary memory. The window tested the operating system around validation, not the product effect.",
+    "prior_historical_result_not_recounted": "Earlier single-family work showed equal success, small command/token reductions and worse wall time; it remains non-generalizable and is not new evidence in this window."
+  },
+  "model_strength_transfer_readiness": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "authorized_runs": 0,
+    "arms_started": 0,
+    "annotated_candidates": 8,
+    "experience_predates_astra": {
+      "YES": 4,
+      "NO": 4,
+      "UNKNOWN": 0
+    },
+    "independently_originated_target": {
+      "YES": 0,
+      "NO": 0,
+      "UNKNOWN": 8
+    },
+    "shared_objective_oracle_feasible": {
+      "YES": 8,
+      "NO": 0,
+      "UNKNOWN": 0
+    },
+    "treatment_only_experience_isolation": {
+      "YES": 0,
+      "NO": 0,
+      "UNKNOWN": 8
+    },
+    "telemetry_ready": {
+      "YES": 0,
+      "NO": 0,
+      "UNKNOWN": 8
+    },
+    "fresh_context_and_artifact_isolation": {
+      "YES": 0,
+      "NO": 0,
+      "UNKNOWN": 8
+    },
+    "suitable_for_future_review": 0,
+    "interpretation": "Oracle readiness is not transfer evidence. With no independently originated target, treatment isolation, telemetry, or fresh contexts established, the correct result is zero suitable candidates and zero runs."
+  },
+  "agent_accessibility_hypothesis": {
+    "status": "UNPROVEN_KEEP_OPTIONAL_PROPOSED",
+    "prior": "30-50%",
+    "support": [
+      "Six public commerce observations show that structured surfaces, auth/entitlement requirements, dynamic availability, and machine-fetch restrictions are useful context for describing where tasks stop.",
+      "DECLARED and OBSERVED labels prevented partner APIs, UI buttons, or public price strings from being misread as replayed transaction capability."
+    ],
+    "counterevidence": [
+      "No paired replay tested whether these fields improve retrieval, route selection, success, latency, or human-intervention prediction.",
+      "Home Depot returned a direct-fetch 403 while indexed facts remained available, a counterexample to collapsing access into browser_only.",
+      "Partner/seller APIs at Best Buy and Walmart do not automatically imply consumer-agent access."
+    ],
+    "evidence_state_counts": {
+      "DECLARED": "PRESENT",
+      "OBSERVED": "PRESENT",
+      "REPLAYED": 0
+    },
+    "field_judgment": {
+      "discovery": "UNKNOWN_PREDICTIVE_VALUE",
+      "structured_data": "CONTEXTUALLY_USEFUL_NOT_PREDICTIVELY_VALIDATED",
+      "api_available": "CONTEXTUALLY_USEFUL_SCOPE_SENSITIVE",
+      "auth_supported": "CONTEXTUALLY_USEFUL_SCOPE_SENSITIVE",
+      "transaction_supported": "DECLARED_ONLY_NO_EXECUTION",
+      "verification_supported": "MOSTLY_UNKNOWN",
+      "browser_only": "NOT_SUPPORTED_AS_BINARY_PREDICTOR",
+      "human_intervention_required": "TASK_SCOPE_DEPENDENT_NOT_VALIDATED"
+    },
+    "posterior": "30-50% unchanged",
+    "next_most_informative_test": "On one separately authorized frozen public read-only task, compare routing/answer quality with and without the metadata while keeping sources and model fixed; score factual scope, abstention, tool choice, latency, and intervention.",
+    "schema_decision": "Do not create a score or promote fields into required schema/ranking."
+  },
+  "rsi_evidence_hypothesis": {
+    "hypothesis_id": "H-RSI-EVIDENCE",
+    "statement": "In automated self-improvement loops, provenance-backed experience selection with counterexamples, degradation tracking, independent replay and revalidation may reduce false-positive experience accumulation relative to retaining successful trajectories alone.",
+    "status": "UNPROVEN_KEEP_PROPOSED",
+    "prior": "25-45%",
+    "evidence_tiers": {
+      "provider_claims": "No window evidence that proves recursive self-improvement.",
+      "leaked_or_rumored": "None used.",
+      "third_party_measurements": "LifeMem authors report cross-environment gains but also incompatible retrieval, negative backward transfer in some cells, token overhead, and over-clustering failures; this is adjacent memory evidence, not RSI proof.",
+      "reproducible_public_evidence": "No independent AEG reproduction, longitudinal self-improvement loop, or public rollback/revalidation study was completed."
+    },
+    "review_questions": {
+      "inherited_artifact": "LifeMem inherits distilled skills and selected trajectories; AEG window produced no new inherited Registry artifact.",
+      "evaluator_identity": "Paper benchmark evaluators are author-defined; AEG #3494 evaluator was isolated from solvers by stopping before execution.",
+      "rejected_paths_retained": "AEG preserves the falsified final-send path and blocked receipts; no comparative self-improvement loop used them.",
+      "applicability_conditions": "Proposed in AEG metadata, not validated by independent replay.",
+      "independent_replay": false,
+      "negative_transfer_or_degradation": "Reported in adjacent paper; not measured in this pilot.",
+      "rollback_and_revalidation": "Proposed only; not exercised.",
+      "cross_version_transfer": false,
+      "cross_environment_transfer": "Author-reported adjacent evidence only; not AEG evidence.",
+      "compounding_error_risk": "Material and unresolved when successful trajectories are retained without counterexamples or freshness boundaries."
+    },
+    "posterior": "25-45% unchanged",
+    "proposed_schema_concepts": [
+      "experience_retention_policy",
+      "improvement_origin",
+      "evaluator_identity",
+      "independent_replay",
+      "counterexample_retention",
+      "degradation_detection",
+      "rollback_supported",
+      "revalidation_trigger",
+      "cross_version_transfer",
+      "cross_environment_transfer",
+      "inheritance_scope"
+    ],
+    "next_most_informative_test": "Before any schema promotion, run a separately authorized longitudinal comparison in which success-only retention and provenance-plus-counterexample retention face the same repeated task stream, hidden holdouts, version drift, rollback triggers, and independent replay.",
+    "schema_decision": "All concepts remain PROPOSED; no active ETP, ranking, budget, model, or schedule change."
+  },
+  "bayesian_updates": [
+    {
+      "hypothesis": "Bounded OSS scanning can supply objective-oracle candidates",
+      "prior": "65-75%",
+      "support": "79 screened, 17 unique qualified before one invalidation, 16 remain eligible; daily qualification target met on six of seven days.",
+      "counterevidence": "Only about 21.5% of reviewed items qualified, and none reached verification.",
+      "posterior": "80-90%",
+      "next_most_informative_action": "Stop adding supply and test conversion of the existing READY case."
+    },
+    {
+      "hypothesis": "The current pipeline can deliver 7-10 independently verified cases per week",
+      "prior": "25-40%",
+      "support": "One task remained objectively specified and READY.",
+      "counterevidence": "0 verified, 0 archived, 0 historical starts; READY stalled more than six days.",
+      "posterior": "5-15%",
+      "next_most_informative_action": "Complete at most #3076 under valid budget admission and code isolation, then measure stage times."
+    },
+    {
+      "hypothesis": "Existing scheduler/consumer configuration converts READY work into completed evidence",
+      "prior": "40-55%",
+      "support": "Ten failures stopped closed; configuration trust preflight was recovered.",
+      "counterevidence": "No post-recovery scheduled CLAIM/RESULT; exact budget and external-code isolation remain unresolved.",
+      "posterior": "10-25%",
+      "next_most_informative_action": "One scheduled #3076 claim/result with read-back and actual stage telemetry before deadline."
+    },
+    {
+      "hypothesis": "Verified Experience improves independent-task correctness or efficiency versus no experience or ordinary memory",
+      "prior": "30-45%",
+      "support": "No new support.",
+      "counterevidence": "No valid pair, comparator, solver, command, token, cost, or latency observation.",
+      "posterior": "30-45% unchanged",
+      "next_most_informative_action": "Do not infer efficacy from replay readiness; require a later isolated comparator study."
+    },
+    {
+      "hypothesis": "Explicit ownership/applicability boundaries reduce negative transfer",
+      "prior": "55-65%",
+      "support": "The protocol prevented an invalid self-evaluated pair.",
+      "counterevidence": "#3494 did not observe a solver choosing to reject an inapplicable Experience and did not measure task outcome.",
+      "posterior": "55-65% unchanged",
+      "next_most_informative_action": "Later test abstention on a clearly mismatched Experience in fresh contexts."
+    }
+  ],
+  "decisions": {
+    "continue": [
+      "Preserve strict objective-oracle and negative/inconclusive evidence standards.",
+      "Keep the existing repository, cash, case, and time scope fixed.",
+      "Use the remaining period only for the already READY #3076 replay if admission and isolation become auditable."
+    ],
+    "adjust": [
+      "Treat READY-to-CLAIM and budget reconciliation as the binding bottleneck, not candidate discovery.",
+      "Record actual mutually exclusive preparation, execution, evaluation, and archival durations in future claims/results.",
+      "Count topics as search coverage, not verified mechanism families."
+    ],
+    "pause": [
+      "Additional candidate expansion while one READY item is stalled and 15 qualified backlog items remain.",
+      "Any model-strength run, accessibility score, RSI schema promotion, or new transfer arm.",
+      "Any claim that #3494 demonstrates repair gain, transfer gain, or beneficial abstention."
+    ],
+    "falsified_or_rejected": [
+      "The first-window 7-10 verified-case throughput expectation was not achieved.",
+      "Candidate scarcity was not the first-window bottleneck.",
+      "Operational readiness is not demonstrated by queue depth or protocol readiness."
+    ]
+  },
+  "highest_information_action_before_deadline": {
+    "action": "If and only if exact local budget admission and external-code isolation are demonstrable, allow the existing scheduled consumer to complete OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1 and produce a Registry candidate or explicit ARCHIVAL_BLOCKED result.",
+    "success_contract": [
+      "frozen pre/post revisions and discriminating tests",
+      "actual preparation/execution/evaluation/archival time",
+      "commands, tokens, cost and latency where observable",
+      "no counting as independent diagnosis or transfer",
+      "write/read-back of terminal receipt and candidate or ARCHIVAL_BLOCKED evidence"
+    ],
+    "otherwise": "Stop without substituting more scans, reports, or speculative experiments."
+  },
+  "slot_cost": {
+    "cash_increment_usd": 0,
+    "agent_minutes_actual": "UNKNOWN",
+    "reserved_agent_minutes": 8,
+    "accounting": "Full slot cap retained because actual cost is not independently observable."
+  },
+  "actions_taken": [
+    "VERIFY_TRUSTED_AND_CURRENT_AUTHORIZATION_BYTES",
+    "READ_FIXED_POLICY_README_CHECKLIST_QUEUE_AND_REQUIRED_EVIDENCE",
+    "AGGREGATE_2026_09_13_THROUGH_2026_09_19_FUNNEL_AND_TERMINAL_RECEIPTS",
+    "SEPARATE_READINESS_FROM_TRANSFER_EVIDENCE",
+    "UPDATE_BAYESIAN_HYPOTHESES_WITHOUT_EXECUTION"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "CREATE_OR_CLAIM_TASK",
+    "RUN_LOCAL_VALIDATION",
+    "RETRY_3494",
+    "RUN_MODEL_STRENGTH_PROTOCOL",
+    "CHANGE_BUDGET_SCOPE_MODEL_OR_SCHEDULE",
+    "ALTER_ACTIVE_SCHEMA_OR_RANKING",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_MESSAGE",
+    "CHANGE_MAIN",
+    "MERGE_OR_RELEASE",
+    "DEPLOY",
+    "INSTALL_AGENT_OR_PLUGIN",
+    "USE_PAID_API"
+  ],
+  "evidence_locations": [
+    "coordination/reports/startup-os/startup-os-20260920t080139-0700-first-window-review.json",
+    "coordination/tasks.json",
+    "coordination/receipts/codex-claim-oss-pysdk-3494-restart-lifecycle-r1-20260913t170051-0700.json",
+    "coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json",
+    "coordination/receipts/codex-manual-diagnostic-ready-to-claim-3076-r1-20260918t170943z.json",
+    "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
+    "coordination/MODEL_STRENGTH_TRANSFER_HANDOFF.md",
+    "experiments/model-strength-transfer-v1/protocol.json",
+    "coordination/reports/competitive-research/20260914t0847-0700.md",
+    "coordination/reports/competitive-research/20260917t1548-0700.md",
+    "coordination/reports/competitive-research/20260919t1506-0700.md"
+  ]
+}
