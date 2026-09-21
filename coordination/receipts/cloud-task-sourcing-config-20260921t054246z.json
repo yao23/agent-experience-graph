@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "cloud-task-sourcing-config-20260921t054246z",
+  "receipt_type": "CLOUD_CONFIGURATION_UPDATE",
+  "trigger_source": "manual_operator_requested_configuration",
+  "scope": "Evidence-first task sourcing and queue backpressure; no case execution",
+  "repository": "yao23/agent-experience-graph",
+  "branch": "codex/aeg-task-bridge-v1",
+  "baseline_commit": "c723dcb2cbd4ee32c9df9f91eddc4c3bbd8bfc72",
+  "sourcing_commit": "ee192ccc7541e60fc9808d885b7492de700c6d1b",
+  "sourcing_document": "coordination/TASK_SOURCING_V1.md",
+  "sourcing_document_git_blob": "0c085bc6957f09ee338af017ea27cce2637752bb",
+  "changed_configuration_files": [
+    "coordination/README.md",
+    "coordination/SEARCH_CHECKLIST.md",
+    "coordination/TASK_SOURCING_V1.md"
+  ],
+  "preserved": {
+    "execution_spec_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "authorization_expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "authorization_baseline_git_blob_matches_trusted_commit": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "authorization_file_modified": false,
+    "codex_entry_modified": false,
+    "queue_modified": false,
+    "queue_baseline_git_blob": "7ccf2239301f611e440f985d6c01c66832f6be1c",
+    "provenance_format_commit": "74c73ef335f5ecc87a26204d4a50ee839f96d620",
+    "deadline_local": "2026-09-24T23:59:00-07:00",
+    "timezone": "America/Los_Angeles",
+    "schedules_models_budgets_and_permissions_expanded": false,
+    "frozen_task_inputs_and_claims_modified": false,
+    "main_modified": false,
+    "force_push_used": false,
+    "external_publication_performed": false
+  },
+  "cloud_updates": [
+    {
+      "task_id": "6a96098511748191b11a2407dbb9950e",
+      "title": "OSS 迁移扫描",
+      "update_status": "SUCCESS",
+      "updated_at_returned": "2026-09-21T05:41:44.802623+00:00",
+      "changed_fields": ["prompt"],
+      "enabled_returned": true,
+      "timing_mode_returned": "exact_schedule",
+      "schedule_returned": "BEGIN:VEVENT\nDTSTART;TZID=America/Los_Angeles:20260913T073000\nRRULE:FREQ=DAILY;BYHOUR=7,17;BYMINUTE=30;BYSECOND=0;COUNT=24\nEND:VEVENT",
+      "schedule_unchanged_from_pre_update_read": true,
+      "returned_prompt_pins_sourcing_commit": true
+    },
+    {
+      "task_id": "6a7033a261488191bdfa6d03419695ca",
+      "title": "AEG Startup OS",
+      "update_status": "SUCCESS",
+      "updated_at_returned": "2026-09-21T05:42:46.414654+00:00",
+      "changed_fields": ["prompt"],
+      "enabled_returned": true,
+      "timing_mode_returned": "flexible_schedule",
+      "schedule_returned": "BEGIN:VEVENT\nDTSTART;TZID=America/Los_Angeles:20260913T080000\nRRULE:FREQ=DAILY;BYHOUR=8,18;BYMINUTE=0;BYSECOND=0;COUNT=24\nEND:VEVENT",
+      "schedule_unchanged_from_pre_update_read": true,
+      "returned_prompt_pins_sourcing_commit": true
+    }
+  ],
+  "local_consumer": {
+    "task_id": "aeg-experience-foundry-pilot-v0-1",
+    "modified_by_this_change": false,
+    "adoption_state": "NOT_OBSERVED_FOR_THIS_ADDENDUM",
+    "handoff": "Supported in-place read/optional minimal prompt addendum only; preserve fixed execution/provenance specs, recurrence, model, permissions, budgets and expiry. No scheduler database writes or new scheduler. No experiment during configuration sync.",
+    "latest_isolation_evidence_read": "coordination/receipts/codex-isolation-preflight-20260921t053325z.json",
+    "latest_isolation_evidence_state": "BLOCKED_ISOLATION_PREFLIGHT",
+    "isolation_fixed_by_this_change": false,
+    "unknown_budget_reservations_cleared": false
+  },
+  "verification": {
+    "git_compare": "PASS: sourcing commit changes exactly three documentation files, no executable or queue/policy payload",
+    "sourcing_document_readback": "PASS",
+    "branch_ref_readback": "PASS: ee192ccc7541e60fc9808d885b7492de700c6d1b before this receipt commit",
+    "cloud_configuration_readback": "PASS: returned update objects contain new prompts and unchanged schedules/timing modes/enabled states",
+    "independent_cloud_post_update_list": "NOT_RUN",
+    "project_tests": "NOT_RUN: documentation and saved-prompt change only",
+    "scheduled_post_update_behavior": "NOT_OBSERVED",
+    "claims_created_by_this_change": 0,
+    "case_executions_by_this_change": 0
+  },
+  "limitations": [
+    "Saved configuration and repository readback do not prove a scheduled run or successful task execution.",
+    "This change does not resolve local isolation or reconcile earlier UNKNOWN local consumption.",
+    "Evidence-card examples and acceptance scenarios are templates, not real candidates, tests, repairs, adoption or PMF evidence.",
+    "Discovery backpressure does not delete backlog, change frozen tasks or make commercial WTP a technical replay gate."
+  ]
+}
