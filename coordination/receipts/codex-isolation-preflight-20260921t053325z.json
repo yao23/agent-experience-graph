@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-isolation-preflight-20260921t053325z",
+  "receipt_type": "ISOLATION_PREFLIGHT",
+  "trigger_source": "manual",
+  "consumer": "aeg-experience-foundry-pilot-v0-1",
+  "read_commit": "84360949bd3514dbba99ced7232a2f16a9afb877",
+  "observed_at": "2026-09-21T05:33:25Z",
+  "scope": {
+    "target_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+    "target_revision": 1,
+    "python_sdk_code_executed": false,
+    "dependencies_installed": false,
+    "claim_created": false,
+    "tasks_json_modified": false
+  },
+  "runner": {
+    "new_codex_task_id": "01a0c273-b9ba-7f73-bd75-dce324edb97a",
+    "workspace_path": "REDACTED_MACHINE_LOCAL_PATH; suffix=Documents/Codex/2026-09-20/aeg-isolation-runner-20260920",
+    "requested_workspace_path": "REDACTED_MACHINE_LOCAL_PATH; suffix=Documents/New project/aeg-isolation-runner-20260920",
+    "workspace_outside_aeg_repository": true,
+    "observed_sandbox_mode": "workspace-write",
+    "observed_approval_reviewer": "auto_review",
+    "required_approval_reviewer": "user",
+    "full_access_used": false
+  },
+  "denied_read_probes": [
+    {
+      "command": "stat -f 'mode=%Sp size=%z path=%N' '<AEG>/coordination/tasks.json'",
+      "exit_code": 1,
+      "result": "No such file or directory",
+      "permission_denied": false
+    },
+    {
+      "command": "stat -f 'mode=%Sp path=%N' '<AEG>/coordination/receipts'",
+      "exit_code": 1,
+      "result": "No such file or directory",
+      "permission_denied": false
+    },
+    {
+      "command": "sed -n '1,3p' '<AEG>/coordination/tasks.json'",
+      "exit_code": 1,
+      "result": "No such file or directory",
+      "permission_denied": false
+    },
+    {
+      "command": "ls -la '<AEG>/coordination/receipts'",
+      "exit_code": 1,
+      "result": "No such file or directory",
+      "permission_denied": false
+    }
+  ],
+  "result": "BLOCKED_ISOLATION_PREFLIGHT",
+  "proof_of_deny_boundary": false,
+  "blockers": [
+    "BLOCKED_PERMISSION_MODE: runner reported auto_review rather than the required Ask for approval user reviewer.",
+    "BLOCKED_RUNNER_WORKSPACE_MISMATCH: the newly created task used its Codex-managed projectless workspace rather than the supplied runner directory.",
+    "NO_PERMISSION_DENIAL_PROOF: all probes failed with No such file or directory, not Permission denied; that result does not distinguish a sandbox boundary from an absent path."
+  ],
+  "caveats": [
+    "A workspace-write sandbox alone does not prove the requested deny boundary without a verified user-reviewer configuration and a denied read of a known-present coordination object.",
+    "No workaround, approval escalation, external repository checkout, dependency install, credential access, or target-code execution was attempted.",
+    "The receipt redacts machine-local absolute paths as required for public-safe coordination evidence."
+  ]
+}
