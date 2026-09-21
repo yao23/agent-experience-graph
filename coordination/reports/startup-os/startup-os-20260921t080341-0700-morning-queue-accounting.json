@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260921t080341-0700-morning-queue-accounting",
+  "report_type": "MORNING_QUEUE_ACCOUNTING",
+  "observed_at": "2026-09-21T08:03:41-07:00",
+  "immutable_snapshot": "c723dcb2cbd4ee32c9df9f91eddc4c3bbd8bfc72",
+  "authorization": {
+    "trusted_execution_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "result": "MATCH"
+  },
+  "slot": {
+    "local_date": "2026-09-21",
+    "kind": "morning",
+    "idempotency_key": "startup-os:2026-09-21:morning",
+    "digest_sent": false,
+    "cost_agent_minutes": "UNKNOWN_RESERVED_3"
+  },
+  "funnel": {
+    "inspected": 0,
+    "shortlisted_or_qualified": 0,
+    "ready_existing": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "denominator_scope": "No acquisition: shared execution prerequisite remains unresolved."
+  },
+  "queue": {
+    "tasks_revision": 15,
+    "active_execution": 0,
+    "selected_dispatch_ready": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "qualified_backlog": 15,
+    "transfer": "OSS-PYSDK-3494-RESTART-LIFECYCLE#1 remains BLOCKED_TRANSFER_ISOLATION"
+  },
+  "local_admission": {
+    "budget": "UNKNOWN_RECONCILE_BEFORE_CLAIM; 45-minute #3076 capacity is not provable",
+    "isolation": "BLOCKED_ISOLATION_PREFLIGHT; runner used auto_review and projectless managed workspace; negative probes were not an auditable deny-boundary proof",
+    "claim_created": false,
+    "repository_code_executed": false
+  },
+  "disposition": "EXECUTION_BLOCKED_NOT_SUPPLY",
+  "next_permitted_action": "Resolve existing local user-reviewer workspace isolation evidence and budget reconciliation; do not source, queue, claim, or execute until both hold.",
+  "model_strength_transfer": "PROPOSED_NOT_AUTHORIZED; no selection, queue change, arm, model change, or spend.",
+  "pmf_route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+  "changes": {
+    "tasks_json": false,
+    "scheduler": false,
+    "new_candidates": 0,
+    "new_ready": 0
+  }
+}
