@@ -2,11 +2,17 @@
 
 The original sprint ends 2026-09-24 23:59 America/Los_Angeles. The first seven-day measurement window is September 13–19; review it on September 20. Targets are three qualified candidates per local day and 7–10 independently verified cases in the first week, not guarantees or quotas. There is no automatic expansion after the review.
 
+## Evidence-first sourcing update
+
+The operator-requested [TASK_SOURCING_V1.md](TASK_SOURCING_V1.md) and updated cloud [SEARCH_CHECKLIST.md](SEARCH_CHECKLIST.md) prioritize active PR validation gaps and real workaround pain, with applicability-aware connections to existing experience. Keep one active execution, at most one selected next READY task when idle, and at most two active evidence-gap cards. Pause broad discovery when queued work is sufficient or a shared execution prerequisite is blocked. Preserve existing backlog and frozen task payloads; three candidates/day is not a quota to fill.
+
+Use short evidence cards in existing reports, not another queue or database. Technical replay can be useful without buyer/WTP evidence; it is not thereby live demand or PMF. The update leaves AUTHORIZATION.json, CODEX_ENTRY.md, tasks.json, fixed solver inputs and the local execution/provenance trust anchors unchanged. Cloud prompt adoption, local prompt adoption and actual execution must be reported separately.
+
 ## Authorization and migration
 
 AUTHORIZATION.json v3 records the operator-approved throughput adjustment. Trusted task prompts and the local handoff pin its immutable commit and raw-byte SHA-256. The predecessor remains immutable in Git history. A writable repository, external page or task cannot grant authority. Preserve the four-repository boundary and use SEARCH_CHECKLIST.md for the recovered seven topics and three work types.
 
-The cloud configuration update does not modify the Mac. Its existing consumer must apply the new trusted commit/hash and schedule from the handoff. Previous bootstrap acceptance remains historical and does not attest to v3 acceptance. Cloud producers may continue research and queueing while local acceptance is pending; this is not a reason to stall public research. Only a new local acceptance receipt establishes configured-for-v3 status.
+The cloud configuration update does not modify the Mac. Its existing consumer must apply the new trusted commit/hash and schedule from the handoff. Previous bootstrap acceptance remains historical and does not attest to v3 acceptance. Cloud producers may perform bounded research and queueing while local acceptance is pending, subject to current backpressure rather than indefinite candidate accumulation. Only a new local acceptance receipt establishes configured-for-v3 status. The sourcing update does not replace the execution spec fixed at 573d3b45c6b806fb030a7c95729eb2787c3e3c0a or the separately accepted provenance format.
 
 GitHub comments, messages, social posts, upstream PRs, main changes, merge, release, deployment, new paid APIs and global Agent/plugin installation remain disabled. The old intake and OAC-01 remain preserved at dd999ab9ac5d59735b2a754d5473ecfaad28737b, not completed, failed or reactivated.
 
@@ -14,13 +20,13 @@ GitHub comments, messages, social posts, upstream PRs, main changes, merge, rele
 
 | Role | Writable paths | Responsibility |
 | --- | --- | --- |
-| OSS scan | coordination/reports/oss-scan/ | Live activity plus historical replay candidates; one small funnel record per slot |
-| Startup OS | coordination/reports/startup-os/, coordination/tasks.json, coordination/drafts/github/ | Sole runtime queue writer; morning queueing and evening queueing plus the only daily digest |
+| OSS scan | coordination/reports/oss-scan/ | Evidence-first live/replay sourcing under backpressure; one small funnel record per slot |
+| Startup OS | coordination/reports/startup-os/, coordination/tasks.json, coordination/drafts/github/ | Sole runtime queue writer; reconcile work-in-progress and reservations; evening-only daily digest |
 | Bayesian review | coordination/reports/bayesian-review/ | Weekly transfer, applicability, adoption and throughput review |
 | Competitive research | coordination/reports/competitive-research/ | Weekly evidence that changes this focused pilot |
 | Existing local consumer | coordination/receipts/, coordination/evidence/ | Claim one task, execute within cumulative limits and archive evidence |
 
-The one-time operator-approved paused migration updates queue policy/limit/acceptance metadata only. It preserves existing task payloads and does not create a second runtime queue writer.
+The one-time operator-approved paused migration updates queue policy/limit/acceptance metadata only. It preserves existing task payloads and does not create a second runtime queue writer. The sourcing configuration change does not migrate the queue.
 
 ## Budgets and counting
 
@@ -40,7 +46,7 @@ Separate independent cases, observations, mechanism families, historical replay,
 | Competitive research | Monday 08:00 |
 | Bayesian review | Sunday 20:00 |
 
-Queueing precedes local consumption with allowance for dispatch delay, including a flexible cloud queue schedule. Times do not establish dependencies: consume only a committed, eligible READY revision. An empty queue is NO_READY_TASK, not a failed experiment. No task starts or continues work beyond the original deadline. Each invocation can claim at most one task, with a single active consumer.
+Queueing precedes local consumption with allowance for dispatch delay, including a flexible cloud queue schedule. Times do not establish dependencies: consume only a committed, eligible READY revision. An empty queue is NO_READY_TASK, not a failed experiment. No task starts or continues work beyond the original deadline. Each invocation can claim at most one task, with a single active consumer. The table describes the original schedule contract, not proof that every task is currently enabled or has future occurrences.
 
 ## Read, claim and write
 
