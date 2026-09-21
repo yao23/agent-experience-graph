@@ -1,0 +1,235 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260920t175602-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-20:evening",
+  "source_task": "AEG Startup OS",
+  "observed_at": "2026-09-21T00:56:02Z",
+  "observed_local_date": "2026-09-20",
+  "slot": "evening",
+  "classification": "FIRST_WINDOW_REVIEW_COMPLETE_EXECUTION_STILL_BLOCKED_NO_NEW_CLAIM",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "bootstrap_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "bootstrap_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "current_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS"
+  },
+  "fixed_snapshot": {
+    "commit": "26339bdd3b66b32f9a98508bc076197080903a89",
+    "tree": "3d18949b16849d3f05f660f870eefaa9eb541582",
+    "files_read": [
+      "coordination/AUTHORIZATION.json",
+      "coordination/README.md",
+      "coordination/SEARCH_CHECKLIST.md",
+      "coordination/tasks.json",
+      "coordination/MODEL_STRENGTH_TRANSFER_HANDOFF.md",
+      "experiments/model-strength-transfer-v1/protocol.json",
+      "coordination/reports/oss-scan/oss-scan-20260920-am-throughput-funnel.json",
+      "coordination/reports/oss-scan/oss-scan-20260920-pm-throughput-funnel.json",
+      "coordination/reports/startup-os/startup-os-20260920t080139-0700-first-window-review.json",
+      "coordination/receipts/codex-manual-configuration-trust-recovery-20260918t171841z.json",
+      "coordination/receipts/codex-manual-diagnostic-ready-to-claim-3076-r1-20260918t170943z.json"
+    ]
+  },
+  "daily_funnel": {
+    "checked": 6,
+    "qualified": 3,
+    "new_ready": 0,
+    "active_ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "note": "The three qualified observations are post-window supply only and were not queued. Supply expansion remains stopped."
+  },
+  "first_window_review": {
+    "window": "2026-09-13/2026-09-19",
+    "target_verified_independent_cases": [
+      7,
+      10
+    ],
+    "checked": 79,
+    "qualified_observations": 20,
+    "remaining_unique_objective_oracle_candidates": 16,
+    "distinct_tasks_entered_ready": 2,
+    "case_starts": 1,
+    "verified": 0,
+    "archived": 0,
+    "result": "MISSED_0_OF_7_MINIMUM",
+    "report": "coordination/reports/startup-os/startup-os-20260920t080139-0700-first-window-review.json"
+  },
+  "queue": {
+    "revision": 15,
+    "modified": false,
+    "ready_count": 1,
+    "ready_task": {
+      "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+      "revision": 1,
+      "task_type": "HISTORICAL_REPLAY",
+      "budget_minutes_total": 45,
+      "status": "READY",
+      "source_url": "https://github.com/modelcontextprotocol/python-sdk/pull/3076"
+    },
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "transfer_check_status": "BLOCKED_TRANSFER_ISOLATION",
+    "claim_result_update": "NONE_OBSERVED",
+    "deadline": "2026-09-24T23:59:00-07:00"
+  },
+  "local_runtime_diagnosis": {
+    "hardware_failure_evidence": "NONE",
+    "conclusion": "No evidence identifies a Mac mini hardware failure. The observed failures are policy-entry digest staleness, admission accounting uncertainty, and missing external-code isolation evidence.",
+    "evidence": [
+      "Ten scheduled invocations reached INVOCATION and stopped at POLICY because accepted entry/checklist digests were stale.",
+      "The 2026-09-18 in-place configuration recovery passed policy, fixed-file and queue preflight.",
+      "No scheduler-origin CLAIM or RESULT followed the recovery.",
+      "Exact prior local agent-minute use remains UNKNOWN and the #3494 90-minute reservation is retained.",
+      "The external repository checkout/isolation boundary for #3076 has not been demonstrated."
+    ],
+    "operator_action_needed": "Give the existing local Codex consumer a bounded recovery instruction; no new automation, model, budget or task is needed.",
+    "bounded_codex_instruction": [
+      "Read trusted commit 573d3b45c6b806fb030a7c95729eb2787c3e3c0a and verify current AUTHORIZATION.json raw SHA-256 equals 73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da.",
+      "At one immutable current branch tip, read README, SEARCH_CHECKLIST, tasks, receipts and budget evidence.",
+      "Reconcile the 120-minute local-day and 600-minute rolling-seven-day ledgers, retaining every UNKNOWN reservation. If at least 45 minutes cannot be proven available, write a blocked diagnostic receipt and do not CLAIM.",
+      "Demonstrate an isolated external-repository checkout that cannot read coordination reports, receipts or evaluator-only files. If isolation cannot be proven, write a blocked diagnostic receipt and do not CLAIM.",
+      "If both gates pass before the deadline, CLAIM only OSS-HIST-PYSDK-3076-REGEX-FULLMATCH revision 1, execute its frozen 45-minute historical replay, then write RESULT plus a Registry candidate with evidence or explicit ARCHIVAL_BLOCKED.",
+      "Do not retry #3494, change tasks.json, add a task, publish upstream, install global plugins, change model, or continue after 2026-09-24T23:59:00-07:00."
+    ]
+  },
+  "bottlenecks": [
+    {
+      "rank": 1,
+      "name": "READY_TO_CLAIM",
+      "evidence": "#3076 remains READY with no CLAIM/RESULT after more than six days."
+    },
+    {
+      "rank": 2,
+      "name": "LOCAL_BUDGET_ADMISSION",
+      "evidence": "Prior actual use and failed invocation cost are UNKNOWN; unknown reservations cannot be treated as free."
+    },
+    {
+      "rank": 3,
+      "name": "EXTERNAL_CODE_ISOLATION",
+      "evidence": "No auditable isolated checkout boundary for #3076 is recorded."
+    }
+  ],
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "this_slot_reserved_agent_minutes": 3,
+    "shared_daily_conservative_reservation_already_recorded_agent_minutes": 22,
+    "reservation_note": "The evening OSS scan already conservatively included Startup OS capacity; this report does not double count it.",
+    "remaining_scheduled_bayesian_capacity_agent_minutes": 8,
+    "shared_daily_cap_agent_minutes": 30
+  },
+  "model_strength_transfer": {
+    "status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "arms_started": 0,
+    "model_changed": false,
+    "budget_spent": false
+  },
+  "pmf_lanes": {
+    "DEV_EXECUTION": {
+      "hypothesis": "Verifier-bound Experience can improve objective developer task success, reliability or cost.",
+      "strongest_evidence": "16 objective-oracle candidates remain; #3076 has frozen pre/post commits and a discriminating oracle.",
+      "strongest_counterevidence": "No replay completed and no valid paired test exists.",
+      "objective_oracle_candidates": 16,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "Local admission and isolation recovery only.",
+      "expected_validation_cost": "45 local agent-minutes if admitted.",
+      "plausible_buyer_user": "SDK/framework maintainers and coding-agent evaluation teams.",
+      "next_most_informative_action": "Existing #3076 replay only."
+    },
+    "CONSUMER_COMMERCE": {
+      "hypothesis": "Provenance-aware Experience can reduce public shopping source-conflict, entitlement and locality errors.",
+      "strongest_evidence": "Three objective read-only candidates and three proposed pairs.",
+      "strongest_counterevidence": "No paired result, adoption, repeat use or willingness-to-pay signal.",
+      "objective_oracle_candidates": 3,
+      "valid_paired_test_opportunities": 3,
+      "human_intervention_requirement": "Separate approval required for any paired run.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "Shopping-assistant and comparison-product teams.",
+      "next_most_informative_action": "Remain research-only until DEV execution is unblocked."
+    },
+    "B2B_AGENT_READINESS": {
+      "hypothesis": "Public diagnostics may reveal agent-readiness gaps.",
+      "strongest_evidence": "None collected.",
+      "strongest_counterevidence": "No concrete recurring pain, candidate, outcome or buyer signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "Research/benchmark design only.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "SaaS/developer-tool operators.",
+      "next_most_informative_action": "Remain observation-only."
+    },
+    "TRUST_DECISION_LAYER": {
+      "hypothesis": "Receipts, provenance and compatibility boundaries can improve decisions in other lanes.",
+      "strongest_evidence": "Receipts prevented a false transfer claim; commerce observations show scope/provenance risk.",
+      "strongest_counterevidence": "No independent buyer pain, paired test, adoption or willingness-to-pay signal.",
+      "objective_oracle_candidates": 0,
+      "valid_paired_test_opportunities": 0,
+      "human_intervention_requirement": "None as a supporting layer.",
+      "expected_validation_cost": "UNKNOWN",
+      "plausible_buyer_user": "Teams operating agents in DEV or commerce workflows.",
+      "next_most_informative_action": "Remain a cross-lane evidence layer."
+    }
+  },
+  "problem_solution_frontier": [
+    {
+      "status": "OBSERVATION_RESEARCH",
+      "lane": "DEV_EXECUTION",
+      "problem": "Merged fixes lack an independently replayed verifier-bound record.",
+      "who_has_it": "SDK/framework maintainers and coding-agent evaluation teams.",
+      "frequency": "UNKNOWN",
+      "current_workaround": "Trust merged patch, review discussion and CI.",
+      "why_current_solution_fails": "No portable red/green replay, rejected approaches, applicability or cost record.",
+      "AEG_unique_advantage": "Immutable pre/post replay with discriminating oracle, provenance and portable receipt.",
+      "objective_outcome": "#3076 base fails intended trailing-newline tests; repair passes without valid-name regression.",
+      "data_supply": "Public commits and tests available.",
+      "willingness_to_pay_signal": "UNKNOWN",
+      "time_to_validate": "45 local agent-minutes after admission.",
+      "evidence": "READY but unclaimed.",
+      "confidence": "Technical MODERATE, commercial LOW",
+      "strongest_counterevidence": "0 verified cases.",
+      "next_experiment": "Existing #3076 replay only."
+    },
+    {
+      "status": "OBSERVATION_RESEARCH",
+      "lane": "CONSUMER_COMMERCE",
+      "problem": "Agents can suppress product-fact conflicts or mistake displayed price for entitlement/local availability.",
+      "who_has_it": "Shopping-assistant and comparison-product teams.",
+      "frequency": "UNKNOWN",
+      "current_workaround": "Ad hoc search and summarization.",
+      "why_current_solution_fails": "Claims lose source surface, authority, membership and locality scope.",
+      "AEG_unique_advantage": "Preserve claim provenance, precedence, entitlement and unresolved conflict.",
+      "objective_outcome": "Lower factual, conflict-suppression and unsupported-entitlement errors on frozen public cases.",
+      "data_supply": "Three public cases and frozen sources.",
+      "willingness_to_pay_signal": "UNKNOWN",
+      "time_to_validate": "UNKNOWN; paired runs not authorized.",
+      "evidence": "Read-only observations only.",
+      "confidence": "Problem MODERATE, solution/market LOW",
+      "strongest_counterevidence": "No user behavior, repeat use or payment signal.",
+      "next_experiment": "Separately approved smallest public pair only after DEV unblocks."
+    }
+  ],
+  "pmf_route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+  "judgment_items": [
+    "Use the bounded local recovery instruction; do not diagnose this as a Mac mini hardware failure without runtime evidence.",
+    "Do not CLAIM #3076 unless both exact budget admission and external-code isolation are proven.",
+    "Do not expand supply, budget, parallelism, repositories, transfer arms or models."
+  ],
+  "actions_taken": [
+    "Verified trusted and current authorization bytes.",
+    "Read the current immutable queue, scans, review and receipts.",
+    "Recorded the evening summary without changing tasks.json."
+  ],
+  "actions_not_taken": [
+    "No local CLAIM or execution.",
+    "No new queue item.",
+    "No upstream write or outreach.",
+    "No model-strength or PMF experiment."
+  ]
+}
