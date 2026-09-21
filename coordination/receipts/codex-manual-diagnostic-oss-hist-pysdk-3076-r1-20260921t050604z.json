@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0.0",
+  "receipt_id": "codex-manual-diagnostic-oss-hist-pysdk-3076-r1-20260921t050604z",
+  "receipt_type": "DIAGNOSTIC",
+  "trigger_source": "manual_diagnostic",
+  "consumer": "aeg-experience-foundry-pilot-v0-1",
+  "task_id": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH",
+  "task_revision": 1,
+  "task_type": "HISTORICAL_REPLAY",
+  "read_commit": "a933fdd69f202b803305ad775d02d1bed5205878",
+  "fixed_execution_policy": {
+    "commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "authorization_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "authorization_verification": "PASS",
+    "entry_raw_sha256": "97a7e4ef264e1be070ec39d88786f6dc4a00057504cc9b8069081033b5ddfd98",
+    "search_checklist_raw_sha256": "7d93fbd76187c7bce471a624be77b4016ca6c0082109f4f9b908aeaa8da3262b"
+  },
+  "observed_at": "2026-09-21T05:06:04Z",
+  "policy_window": {
+    "effective_at": "2026-09-13T00:00:00-07:00",
+    "valid_until": "2026-09-24T23:59:00-07:00",
+    "within_window": true,
+    "applicable_explicit_pause_at_pinned_tip": false,
+    "automation_status_observed_locally": "PAUSED",
+    "automation_pause_reason": "The delayed 2026-09-20 10:00 local invocation exceeded the authorized +300-second dispatch tolerance."
+  },
+  "deduplication": {
+    "claim_found_for_task_revision": false,
+    "result_found_for_task_revision": false,
+    "sole_ready_task_at_pinned_tip": true,
+    "prior_transfer_task": "OSS-PYSDK-3494-RESTART-LIFECYCLE revision 1",
+    "prior_transfer_result": "BLOCKED_TRANSFER_ISOLATION",
+    "prior_transfer_retry": false
+  },
+  "evidence_provenance": {
+    "tasks_json_sha256": "cf3f58fbf241be8b0cf96971b3ef2b0fa12038b34053a88790eaf6dcef6d373a",
+    "readme_sha256": "6ac559d1efb0620469fd77edbc1a56e8312e430d801466ce62e43f902d4ecb97",
+    "claim_3494_sha256": "1df8d240ee10023775d4de2efb94eb76ba7d7576da15a96e8739341a5e9673af",
+    "result_3494_sha256": "8f90dba0ad45c53f39727e4ce0ca90f06056c6485dcfdf6b80241820d6601a8e",
+    "configuration_recovery_sha256": "a061a849f939133dba3eb0077570b4d772d577816d7610975548b6834a4bce76",
+    "prior_3076_diagnostic_sha256": "7dff5509c71953ef9db269b56cd17b50e2e922ac7ed832476a2a931ff75f7c36"
+  },
+  "ledger_reconciliation": {
+    "local_day_limit_minutes": 120,
+    "rolling_7_day_limit_minutes": 600,
+    "retained_unknown_transfer_reservation_minutes": 90,
+    "known_maintenance_reservations_minutes": 30,
+    "known_rolling_reservations_minutes": 120,
+    "failed_policy_invocations_count": 10,
+    "failed_policy_invocations_actual_billable_minutes": "UNKNOWN",
+    "prior_local_work_actual_minutes": "UNKNOWN",
+    "current_day_remaining_minutes": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "rolling_7_day_remaining_minutes": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "unknown_capacity_treated_as_free": false,
+    "minimum_45_minutes_provably_available": false,
+    "calculation": "Known reservations retain 90 + 15 + 15 = 120 minutes. Additional prior local and failed-invocation consumption is UNKNOWN; no exact daily or rolling-seven-day remainder can be derived, so the required 45-minute reservation cannot be admitted."
+  },
+  "isolation_assessment": {
+    "result": "BLOCKED_EXECUTION_ISOLATION",
+    "external_repository_code_executed": false,
+    "boundary_demonstrated": false,
+    "evidence": [
+      "The same local execution environment can read coordination/tasks.json.",
+      "The same local execution environment can read coordination/receipts/codex-result-oss-pysdk-3494-restart-lifecycle-r1-20260913t1701-0700.json.",
+      "The same local execution environment can read coordination/reports/startup-os/startup-os-20260920t175602-0700-daily-throughput.json.",
+      "No demonstrated sandbox, VM, or credential-/personal-directory-/work-repository-denying boundary is available; a venv or worktree would be insufficient."
+    ],
+    "conclusion": "A python-sdk replay checkout launched by this environment could access prohibited coordination and evaluator-adjacent material. Do not execute external repository code."
+  },
+  "decision": {
+    "budget_gate": "FAIL",
+    "isolation_gate": "FAIL",
+    "claim_created": false,
+    "replay_started": false,
+    "result_created": false,
+    "registry_candidate_created": false,
+    "exact_blockers": [
+      "BUDGET_RECONCILIATION_REQUIRED",
+      "BLOCKED_EXECUTION_ISOLATION",
+      "EXISTING_AUTOMATION_PAUSED_AFTER_DISPATCH_TOLERANCE_VIOLATION"
+    ]
+  },
+  "limitations": [
+    "This manual diagnostic is not a scheduler-origin invocation and cannot create a scheduler-origin CLAIM.",
+    "No dependency installation, target checkout, external repository code execution, task mutation, upstream interaction, model change, or budget change occurred.",
+    "No assertion is made about hardware or runtime health beyond this control-path evidence."
+  ]
+}
