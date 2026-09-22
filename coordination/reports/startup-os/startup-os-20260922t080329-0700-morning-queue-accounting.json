@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260922t080329-0700-morning-queue-accounting",
+  "idempotency_key": "startup-os:2026-09-22:morning",
+  "source_task": "AEG Startup OS",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-22T15:03:29Z",
+  "observed_local_date": "2026-09-22",
+  "slot": "morning",
+  "classification": "EXECUTION_BLOCKED_NOT_SUPPLY_BACKPRESSURE_EXISTING_READY_WORK_UNCHANGED",
+  "immutable_snapshot": {
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "a94019e9ad12a1b33fe7f4b403ec83f5a21e970c"
+  },
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "trusted_execution_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "verification_basis": "Current immutable snapshot has the same content-addressed authorization blob as the previously raw-byte-verified trusted digest; the same-snapshot OSS report independently records PASS.",
+    "result": "PASS",
+    "within_window": true,
+    "valid_until": "2026-09-24T23:59:00-07:00"
+  },
+  "sourcing_policy": {
+    "adopted_commit": "ee192ccc7541e60fc9808d885b7492de700c6d1b",
+    "capacity_decision": "BACKPRESSURE_EXISTING_WORK",
+    "new_sourcing_performed": false
+  },
+  "queue_accounting": {
+    "queue_revision": 15,
+    "tasks_blob": "7ccf2239301f611e440f985d6c01c66832f6be1c",
+    "tasks_json_modified": false,
+    "active_execution_count": 0,
+    "selected_ready_count": 1,
+    "selected_ready_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "claim_observed": false,
+    "result_observed": false,
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "status_change_since_prior_evening": false
+  },
+  "local_handoff": {
+    "previously_configured": true,
+    "consumer_status": "PAUSED",
+    "consumer_pause_reason": "The delayed 2026-09-20 10:00 local invocation exceeded the authorized +300-second dispatch tolerance.",
+    "latest_manual_diagnostic": "coordination/receipts/codex-manual-diagnostic-oss-hist-pysdk-3076-r1-20260921t050604z.json",
+    "latest_isolation_preflight": "coordination/receipts/codex-isolation-preflight-20260921t053325z.json",
+    "budget_gate": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "isolation_gate": "BLOCKED_ISOLATION_PREFLIGHT",
+    "local_execution_claimed": false
+  },
+  "evidence_gap": {
+    "card_id": "EVIDENCE-GAP-PYSDK-3076-ISOLATION-BUDGET",
+    "material_change": false,
+    "disposition": "WAIT",
+    "next_permitted_action": "Outside this cloud role, reconcile the exact local ledger and use a user-reviewed project-backed runner to prove denied reads against known-present coordination material.",
+    "stop_condition": "Do not CLAIM or execute unless both gates pass before the pilot deadline."
+  },
+  "morning_funnel": {
+    "inspected_existing_gap": 1,
+    "newly_qualified": 0,
+    "existing_ready": 1,
+    "new_ready": 0,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "inspection_scope": "Immutable queue, receipts, and the 2026-09-22 morning OSS evidence-gap report only; no repository search or duplicate probe."
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_agent_minutes": "UNKNOWN",
+    "startup_os_reserved_agent_minutes": 3,
+    "oss_scan_morning_reserved_agent_minutes": 10,
+    "shared_daily_reserved_total_after_this_report": 13,
+    "shared_daily_cap_agent_minutes": 30,
+    "shared_daily_nominal_remaining": 17,
+    "local_available_45_minute_remainder": "UNKNOWN_RECONCILE_BEFORE_CLAIM"
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "transfer_arm_started": false,
+    "model_changed": false,
+    "budget_spent": false
+  },
+  "actions_taken": [
+    "VERIFY_CURRENT_AUTHORIZATION_AND_IMMUTABLE_SNAPSHOT",
+    "RECONCILE_QUEUE_RECEIPTS_BUDGET_AND_PAUSE_STATE",
+    "CONFIRM_EXISTING_EVIDENCE_GAP_UNCHANGED",
+    "APPLY_BACKPRESSURE",
+    "WRITE_MORNING_QUEUE_ACCOUNTING_REPORT"
+  ],
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "SEARCH_NEW_CANDIDATES",
+    "CREATE_CLAIM",
+    "RUN_REPOSITORY_CODE",
+    "INSTALL_DEPENDENCIES",
+    "RUN_LOCAL_ISOLATION_PROBE",
+    "RETRY_3494",
+    "START_MODEL_STRENGTH_EXPERIMENT",
+    "CHANGE_LOCAL_MODEL",
+    "CHANGE_SCHEDULER",
+    "PUBLISH_DIGEST_OR_CONTACT_UPSTREAM"
+  ]
+}
