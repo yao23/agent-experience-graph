@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260922t180346-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-22:evening",
+  "source_task": "AEG Startup OS",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-23T01:03:46Z",
+  "observed_local_date": "2026-09-22",
+  "slot": "evening",
+  "classification": "EXECUTION_BLOCKED_NOT_SUPPLY_BACKPRESSURE_EXISTING_READY_WORK_WITH_RESEARCH_ONLY_PMF_UPDATE",
+  "immutable_snapshot": {
+    "branch": "codex/aeg-task-bridge-v1",
+    "commit": "13577fb9a5ef172851c8a79f0f9dfda432ce4776"
+  },
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "trusted_execution_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "result": "PASS",
+    "within_window": true,
+    "valid_until": "2026-09-24T23:59:00-07:00"
+  },
+  "sourcing_policy": {
+    "adopted_commit": "ee192ccc7541e60fc9808d885b7492de700c6d1b",
+    "capacity_decision": "BACKPRESSURE_EXISTING_WORK",
+    "new_oss_sourcing_performed": false,
+    "reason": "The only selected replay still lacks shared local admission prerequisites; more supply cannot improve current throughput."
+  },
+  "daily_funnel": {
+    "technical_gap_inspected": 1,
+    "new_oss_candidates_inspected": 0,
+    "newly_qualified": 0,
+    "new_ready": 0,
+    "existing_ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "oldest_relevant_wait": {
+      "task_revision": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+      "ready_since_local_date": "2026-09-13",
+      "age": "approximately_9_days"
+    },
+    "largest_blocker": "The local ledger cannot prove an admissible 45-minute remainder and the isolation preflight cannot prove denied reads against known-present coordination material."
+  },
+  "selected_execution": {
+    "task_revision": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "task_type": "HISTORICAL_REPLAY",
+    "status": "READY",
+    "budget_minutes_total": 45,
+    "claim_observed": false,
+    "result_observed": false,
+    "local_consumer_status": "PAUSED",
+    "budget_gate": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "isolation_gate": "BLOCKED_ISOLATION_PREFLIGHT",
+    "next_action": "Under existing local-consumer authority, reconcile the exact ledger and use a user-reviewed project-backed runner to prove denied reads against known-present coordination material.",
+    "stop_condition": "Do not CLAIM or execute unless both gates pass before 2026-09-24T23:59:00-07:00."
+  },
+  "evidence_gaps": [
+    {
+      "card_id": "EVIDENCE-GAP-PYSDK-3076-ISOLATION-BUDGET",
+      "material_change": false,
+      "disposition": "WAIT",
+      "missing": [
+        "provable 45-minute local budget remainder",
+        "auditable access-denied isolation boundary"
+      ],
+      "likely_wasted_work_reason": "Additional sourcing or a duplicate probe cannot resolve shared local admission gates."
+    }
+  ],
+  "queue_and_receipts": {
+    "queue_revision": 15,
+    "tasks_blob": "7ccf2239301f611e440f985d6c01c66832f6be1c",
+    "ready_count": 1,
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "tasks_json_modified": false,
+    "new_claims": 0,
+    "new_results": 0,
+    "new_isolation_proofs": 0,
+    "new_budget_reconciliations": 0
+  },
+  "reusable_artifacts_and_outcomes": {
+    "execution_artifacts_created": 0,
+    "registry_candidates_created": 0,
+    "archival_blocked_records_created": 0,
+    "external_adoption": 0,
+    "repeat_requests_or_payments": 0,
+    "successful_cross_agent_transfer": 0,
+    "research_only_schema_implications": [
+      "model compatibility as a versioned relation with exact identities, source authority, and observation time",
+      "commercial value state: advertised, estimated, verified, revised, or realized",
+      "price-stage semantics with included and excluded components",
+      "action capability bound to actual access tier rather than inferred from discovery access"
+    ],
+    "research_is_not_execution_evidence": true
+  },
+  "cost": {
+    "actual_usd": 0,
+    "actual_cloud_agent_minutes": "UNKNOWN",
+    "shared_daily_cap_agent_minutes": 30,
+    "reservations_agent_minutes": {
+      "oss_scan_morning": 10,
+      "startup_os_morning": 3,
+      "competitive_research": 8,
+      "oss_scan_evening": 6,
+      "startup_os_evening": 3
+    },
+    "shared_daily_reserved_total": 30,
+    "shared_daily_reserved_remaining": 0,
+    "local_known_reservations_agent_minutes": 120,
+    "local_additional_failed_or_prior_work_cost": "UNKNOWN",
+    "local_available_45_minute_remainder": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "verified_case_cost": "NOT_COMPUTABLE_ZERO_VERIFIED_CASES"
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "candidate_selection_performed": false,
+    "model_call_performed": false,
+    "transfer_budget_spent": false,
+    "local_model_changed": false
+  },
+  "pmf_portfolio": {
+    "route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+    "material_update": "Consumer Commerce now has three additional public, objective failure modes, but no authorized paired result, actual use, repeat request, or willingness-to-pay evidence.",
+    "lanes": {
+      "DEV_EXECUTION": {
+        "hypothesis": "Verifier-bound reusable experience can improve objective developer-agent success, reliability, or cost.",
+        "strongest_evidence": "Sixteen in-scope objective-oracle candidates remain and #3076 has a frozen historical replay oracle.",
+        "strongest_counterevidence": "No historical replay completed, no paired transfer result, and no verified or archived case.",
+        "objective_oracle_candidates": 16,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Local budget reconciliation and user-reviewed isolation setup.",
+        "expected_validation_cost": "45 local agent-minutes for #3076 if admission gates pass.",
+        "plausible_buyer_or_user": "Maintainers and coding-agent evaluation or reliability teams.",
+        "next_most_informative_action": "Resolve the two #3076 admission gates; do not expand supply."
+      },
+      "CONSUMER_COMMERCE": {
+        "hypothesis": "Verified relation, state, price-stage, and access-tier Experience can reduce factual and completion errors in public shopping or service-selection tasks.",
+        "strongest_evidence": "Six public read-only objective candidates and six proposed paired designs; the current Best Buy/Apple compatibility conflict is falsifiable against two manufacturer sources.",
+        "strongest_counterevidence": "No authorized paired execution, actual use, repeat request, adoption, or willingness-to-pay signal.",
+        "objective_oracle_candidates": 6,
+        "proposed_paired_test_opportunities": 6,
+        "valid_authorized_paired_test_opportunities": 0,
+        "human_intervention_requirement": "None for public read-only research; separate manual approval for any experiment.",
+        "expected_validation_cost": "UNKNOWN; execution not authorized.",
+        "plausible_buyer_or_user": "Consumers and comparison, commerce-agent, or service-selection providers.",
+        "next_most_informative_action": "Retain P7 compatibility-edge freshness as the smallest future information-gain test; do not activate it during this pilot."
+      },
+      "B2B_AGENT_READINESS": {
+        "hypothesis": "Evidence-bound diagnostics may reveal whether agents can discover, understand, verify, and complete public SaaS or developer-tool workflows.",
+        "strongest_evidence": "A benchmarkable research question exists.",
+        "strongest_counterevidence": "No objective-oracle candidate, paired opportunity, or observed outcome.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "Separate approval for any active test.",
+        "expected_validation_cost": "UNKNOWN",
+        "plausible_buyer_or_user": "Developer-tool and SaaS product teams.",
+        "next_most_informative_action": "Wait for one concrete recurring pain with a complete frontier record."
+      },
+      "TRUST_DECISION_LAYER": {
+        "hypothesis": "Provenance, compatibility, state, access tier, retrieval, and outcome receipts can support decisions in the other lanes.",
+        "strongest_evidence": "Current pilot and commerce observations expose recurring needs for immutable sources, exact relation identity, state transitions, and verifier binding.",
+        "strongest_counterevidence": "No independent lane, buyer evidence, or paid behavior.",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "human_intervention_requirement": "None for passive synthesis; separate approval for experiments.",
+        "expected_validation_cost": "Not independently estimated.",
+        "plausible_buyer_or_user": "Users and operators in the three application lanes.",
+        "next_most_informative_action": "Keep as a support layer rather than a standalone route."
+      }
+    },
+    "weekly_problem_solution_frontier": [
+      {
+        "lane": "DEV_EXECUTION",
+        "status": "OBSERVATION_RESEARCH",
+        "pain": "Public fixes and regression tests are costly to reconstruct into reproducible, verifier-bound agent evaluation cases.",
+        "customer": "Open-source maintainers and coding-agent reliability teams.",
+        "current_workaround": "Manual issue, commit, dependency, and regression-test archaeology.",
+        "AEG_advantage": "Immutable source binding, explicit oracle, receipts, and reusable failure-map packaging.",
+        "evidence": "#3076 is frozen and READY but blocked before CLAIM; zero verified cases.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "Complete #3076 only after budget and isolation gates pass.",
+        "confidence": "LOW",
+        "strongest_counterevidence": "Zero completed replay, adoption, or successful transfer."
+      },
+      {
+        "lane": "CONSUMER_COMMERCE",
+        "status": "OBSERVATION_RESEARCH",
+        "pain": "Structured retailer compatibility data can conflict with current manufacturer compatibility relations.",
+        "customer": "Consumers, comparison providers, and commerce-agent developers.",
+        "current_workaround": "Manual cross-checking against manufacturer matrices.",
+        "AEG_advantage": "Exact versioned relation identity, source authority, freshness, and preserved conflict state.",
+        "evidence": "Best Buy lists Apple Pencil 2 for iPad mini A17 Pro while two current Apple sources omit it and list Pencil Pro or USB-C.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "P7 three-arm compatibility-edge test after separate approval.",
+        "confidence": "MEDIUM_FOR_PROBLEM_LOW_FOR_PRODUCT",
+        "strongest_counterevidence": "One observed conflict; frequency, real user harm, incremental benefit over a static checklist, and WTP remain unknown."
+      },
+      {
+        "lane": "CONSUMER_COMMERCE",
+        "status": "OBSERVATION_RESEARCH",
+        "pain": "Estimated trade-in credits are often presented as if they were guaranteed realized value.",
+        "customer": "Consumers and commerce assistants calculating effective purchase price.",
+        "current_workaround": "Read terms manually and wait for physical inspection.",
+        "AEG_advantage": "Explicit commercial-value state and verification-event lifecycle.",
+        "evidence": "Apple public terms distinguish estimate, inspection, revision, acceptance, and realized value.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "P8 synthetic, public-source paired test after separate approval.",
+        "confidence": "LOW",
+        "strongest_counterevidence": "No observed agent failure, use behavior, repeat demand, or payment signal."
+      },
+      {
+        "lane": "CONSUMER_COMMERCE",
+        "status": "OBSERVATION_RESEARCH",
+        "pain": "Displayed price semantics and API discovery access can be mistaken for final price or transaction entitlement.",
+        "customer": "Ticket shoppers and commerce-agent developers.",
+        "current_workaround": "Manual fee review and separate transaction-access checks.",
+        "AEG_advantage": "Bind prices to stages/components and actions to actual access tiers.",
+        "evidence": "Ticketmaster documents possible tax/delivery additions to All-In pricing and restricts purchase APIs to official partners.",
+        "WTP_signal": "UNKNOWN",
+        "next_experiment": "P9 public-source semantics test after separate approval.",
+        "confidence": "LOW",
+        "strongest_counterevidence": "No transaction was tested and no user or buyer behavior was observed."
+      }
+    ]
+  },
+  "decision_needed": {
+    "count": 0,
+    "note": "No founder decision is needed tonight. #3076 remains the only permitted execution target, conditional on the two existing local admission gates."
+  },
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "SEARCH_NEW_OSS_CANDIDATES",
+    "CREATE_CLAIM",
+    "RUN_REPOSITORY_CODE",
+    "INSTALL_DEPENDENCIES",
+    "RUN_LOCAL_ISOLATION_PROBE",
+    "RETRY_3494",
+    "ACTIVATE_COMMERCE_EXPERIMENT",
+    "START_MODEL_STRENGTH_EXPERIMENT",
+    "CHANGE_LOCAL_MODEL",
+    "CHANGE_SCHEDULER",
+    "PUBLISH_OR_CONTACT_UPSTREAM"
+  ]
+}
