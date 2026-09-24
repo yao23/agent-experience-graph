@@ -1,0 +1,149 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "startup-os-20260923t180317-0700-daily-throughput",
+  "idempotency_key": "startup-os:2026-09-23:evening",
+  "source_task": "AEG Startup OS",
+  "source_run_id": "UNKNOWN",
+  "observed_at": "2026-09-24T01:03:17Z",
+  "observed_local_date": "2026-09-23",
+  "slot": "evening",
+  "classification": "EXECUTION_BLOCKED_NOT_SUPPLY_BACKPRESSURE_EXISTING_READY_WORK_UNCHANGED",
+  "authorization": {
+    "policy_id": "AEG-THROUGHPUT-AUTH-20260913-01",
+    "trusted_execution_commit": "573d3b45c6b806fb030a7c95729eb2787c3e3c0a",
+    "expected_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_raw_sha256": "73843e5ce34041635fddec1e53c0cd6c95fa46bf12e7be55697d296fe31331da",
+    "observed_authorization_blob_sha": "c9bd4a3dbbf7bcbbcfe1a510e2ad09d3949f5661",
+    "immutable_coordination_snapshot": "76469cd90c4f8e9409b43bbf941e5100815812bb",
+    "result": "PASS",
+    "within_window": true,
+    "valid_until": "2026-09-24T23:59:00-07:00",
+    "deadline_proximity_at_observation": "approximately_29_hours_56_minutes_remaining"
+  },
+  "sourcing_policy": {
+    "adopted_commit": "ee192ccc7541e60fc9808d885b7492de700c6d1b",
+    "task_sourcing_v1_blob": "0c085bc6957f09ee338af017ea27cce2637752bb",
+    "search_checklist_blob": "10d3a5c486cd2474bbcc432486a160dbb4eea392",
+    "capacity_decision": "BACKPRESSURE_EXISTING_WORK",
+    "acquisition_performed": false
+  },
+  "daily_funnel": {
+    "inspected_existing_evidence_gaps": 1,
+    "newly_shortlisted_or_qualified": 0,
+    "new_ready": 0,
+    "existing_ready": 1,
+    "started": 0,
+    "verified": 0,
+    "archived": 0,
+    "true_inspection_scope": "One existing shared admission gap was reconciled across the morning Startup OS report, latest OSS reports, queue and real local receipts; no new repository search was performed."
+  },
+  "queue_and_execution": {
+    "queue_revision": 15,
+    "tasks_blob": "7ccf2239301f611e440f985d6c01c66832f6be1c",
+    "tasks_json_modified": false,
+    "active_execution_count": 0,
+    "selected_next_task": "OSS-HIST-PYSDK-3076-REGEX-FULLMATCH#1",
+    "selected_next_task_type": "HISTORICAL_REPLAY",
+    "selected_task_ready_since": "2026-09-13",
+    "oldest_relevant_wait": "approximately_10_days",
+    "qualified_backlog": 15,
+    "blocked_transfer_count": 1,
+    "invalidated_count": 1,
+    "claim_for_3076_observed": false,
+    "result_for_3076_observed": false,
+    "registry_candidate_count": 0,
+    "largest_blocker": "The local runner cannot yet prove both an admissible 45-minute budget remainder and a denied-read boundary against a known-present coordination object.",
+    "local_consumer_status": "PAUSED",
+    "latest_budget_gate": "UNKNOWN_RECONCILE_BEFORE_CLAIM",
+    "latest_isolation_gate": "BLOCKED_ISOLATION_PREFLIGHT",
+    "stop_condition": "Only CLAIM revision 1 if both gates pass before 2026-09-24T23:59:00-07:00; otherwise do not start or continue execution."
+  },
+  "evidence_gaps": [
+    {
+      "card_id": "EVIDENCE-GAP-PYSDK-3076-ISOLATION-BUDGET",
+      "main_unknown": "Whether a local runner can prove a 45-minute remainder and denied access to known-present coordination material.",
+      "cheapest_permitted_probe": "Reconcile the exact local time ledger, then use a user-reviewed project-backed runner to test a known-present deny target without checking out or executing python-sdk.",
+      "strongest_wasted_work_reason": "Additional sourcing cannot improve throughput while the selected replay cannot pass shared admission gates.",
+      "disposition": "WAIT"
+    }
+  ],
+  "cost": {
+    "actual_usd": 0,
+    "cloud_actual_agent_minutes": "UNKNOWN",
+    "cloud_reserved_agent_minutes": 26,
+    "cloud_daily_cap_agent_minutes": 30,
+    "cloud_nominal_remaining_agent_minutes": 4,
+    "local_known_reservations_agent_minutes": 120,
+    "local_additional_failed_or_prior_work_agent_minutes": "UNKNOWN",
+    "local_45_minute_remainder_proven": false,
+    "per_verified_case_cost": "UNAVAILABLE_ZERO_VERIFIED_CASES"
+  },
+  "outcomes": {
+    "reusable_execution_artifacts": 0,
+    "historical_replays_completed": 0,
+    "live_contributions_completed": 0,
+    "successful_cross_agent_transfer": 0,
+    "external_adoption": 0,
+    "repeat_requests_or_payments": 0,
+    "archival_blocked_count": 0
+  },
+  "model_strength_transfer": {
+    "protocol_status": "PROPOSED_NOT_AUTHORIZED",
+    "selected_task": null,
+    "model_call_performed": false,
+    "transfer_budget_spent": false,
+    "local_consumer_model_changed": false
+  },
+  "pmf_portfolio": {
+    "route_decision": "NO_PMF_ROUTE_DECISION_NEEDED",
+    "new_evidence_today": false,
+    "lanes": {
+      "DEV_EXECUTION": {
+        "status": "ACTIVE_SCIENTIFIC_PRIORITY_EXECUTION_BLOCKED",
+        "objective_oracle_candidates": 16,
+        "valid_paired_test_opportunities": 0,
+        "strongest_evidence": "A qualified historical replay with a deterministic oracle remains selected.",
+        "strongest_counterevidence": "No verified or archived case was produced and admission remains blocked.",
+        "next_most_informative_action": "Resolve the existing budget and isolation gates without expanding supply."
+      },
+      "CONSUMER_COMMERCE": {
+        "status": "OBSERVATION_RESEARCH_PROPOSED_NOT_AUTHORIZED",
+        "objective_oracle_candidates": 6,
+        "valid_paired_test_opportunities": 0,
+        "proposed_paired_designs": 6,
+        "strongest_evidence": "Public read-only evidence supports compatibility, provisional-value and price/access-tier checks.",
+        "strongest_counterevidence": "No authorized paired result, actual use, repeat request or willingness-to-pay signal exists.",
+        "next_most_informative_action": "Preserve the cheapest proposed compatibility test for future manual approval; do not divert ETP."
+      },
+      "B2B_AGENT_READINESS": {
+        "status": "OBSERVATION_RESEARCH",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "next_most_informative_action": "No action before a specific recurring pain and objective public oracle appear."
+      },
+      "TRUST_DECISION_LAYER": {
+        "status": "PLATFORM_HYPOTHESIS_NOT_INDEPENDENT_EXECUTION_LANE",
+        "objective_oracle_candidates": 0,
+        "valid_paired_test_opportunities": 0,
+        "next_most_informative_action": "Continue supporting evidence provenance across authorized lanes only."
+      }
+    },
+    "frontier_status": "UNCHANGED_MAX_FOUR_OBSERVATION_RESEARCH_ITEMS",
+    "active_pmf_candidates": 0
+  },
+  "decisions_needed": [],
+  "next_action": "Do not source around the blocker. Before the deadline, accept only exact ledger reconciliation plus a user-reviewed project-backed denied-read isolation proof; otherwise leave #3076 unclaimed.",
+  "actions_not_taken": [
+    "UPDATE_TASKS_JSON",
+    "SEARCH_NEW_CANDIDATES",
+    "CREATE_CLAIM",
+    "RUN_REPOSITORY_CODE",
+    "INSTALL_DEPENDENCIES",
+    "RUN_LOCAL_ISOLATION_PROBE",
+    "RETRY_3494",
+    "SELECT_MODEL_STRENGTH_TASK",
+    "CHANGE_LOCAL_CONSUMER_MODEL",
+    "PUBLISH_OR_SEND_OUTREACH",
+    "CHANGE_SCHEDULER"
+  ]
+}
