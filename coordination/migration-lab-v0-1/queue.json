@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "lab": "aeg-migration-lab-v0-1",
+  "migration_family": "REACT_18_TO_19",
+  "branch": "codex/aeg-migration-lab-v0.1",
+  "updated_at": "2026-09-29T10:07:00-07:00",
+  "writer": "AEG Migration Lab cloud coordinator",
+  "status_values": [
+    "CANDIDATE",
+    "NEEDS_EVIDENCE",
+    "READY",
+    "CLAIMED",
+    "BLOCKED",
+    "INCONCLUSIVE",
+    "COMPLETE"
+  ],
+  "required_task_fields": [
+    "task_id",
+    "revision",
+    "source_repository",
+    "source_url",
+    "source_revision",
+    "migration_family",
+    "target_goal",
+    "environment",
+    "verification_commands",
+    "arm_plan",
+    "budget_minutes_total",
+    "status",
+    "experience_frozen_before_target",
+    "evidence_locations",
+    "restrictions"
+  ],
+  "tasks": []
+}
