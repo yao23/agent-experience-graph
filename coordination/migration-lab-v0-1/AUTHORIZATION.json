@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "AEG-MIGRATION-LAB-AUTH-20260929-01",
+  "repository": "yao23/agent-experience-graph",
+  "branch": "codex/aeg-migration-lab-v0.1",
+  "effective_at": "2026-09-29T10:07:00-07:00",
+  "phase": "MIGRATION_LAB_V0_1",
+  "authority": "Explicit operator approval in the 2026-09-29 ChatGPT conversation to pause the prior AEG scheduled tasks, create a new Migration Lab scheduled task, update GitHub, and create a new local Codex task for the Migration Lab.",
+  "supersedes_for_new_work": [
+    "AEG Experience Foundry pilot",
+    "OSS migration scan",
+    "Consumer Agent Readiness scan",
+    "Startup OS throughput pilot",
+    "AEG Tuesday Progress",
+    "AEG Friday Insight"
+  ],
+  "history_policy": "Do not delete or rewrite historical reports, receipts, experiments, or registry evidence from prior pilots.",
+  "initial_focus": {
+    "migration_family": "REACT_18_TO_19",
+    "task_class": "FRAMEWORK_MAJOR_VERSION_MIGRATION",
+    "goal": "Measure whether verified experience from earlier migrations reduces unnecessary exploration while preserving or improving correctness on later independent migrations.",
+    "initial_case_target": "3-5 independent public repositories; this is a study target, not a quota."
+  },
+  "allowed_sources": {
+    "public_open_source_only": true,
+    "private_or_employer_data": false,
+    "ebay_internal_skill_or_content": false,
+    "public_first_party_docs_allowed": true,
+    "public_issue_pr_history_allowed": true
+  },
+  "cloud_coordination": {
+    "scheduled_task_name": "AEG Migration Lab",
+    "allowed_writes": [
+      "coordination/migration-lab-v0-1/",
+      "experiments/migration-lab-v0-1/"
+    ],
+    "candidate_sourcing": true,
+    "local_code_execution": false,
+    "external_publication": false
+  },
+  "local_execution": {
+    "task_name": "aeg-migration-lab-v0-1",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "max_concurrent_consumers": 1,
+    "max_tasks_per_invocation": 1,
+    "local_agent_minutes_max_per_case": 90,
+    "local_agent_minutes_max_per_day": 120,
+    "local_agent_minutes_max_per_rolling_7_days": 600,
+    "global_agent_or_plugin_install_allowed": false,
+    "new_paid_api_allowed": false,
+    "cash_increment_usd_max": 0,
+    "external_code_isolation_required": true
+  },
+  "experiment_arms": [
+    "A_BASELINE_NO_EXPERIENCE",
+    "B_COMPACT_SKILL",
+    "C_COMPACT_SKILL_PLUS_DYNAMIC_EVIDENCE"
+  ],
+  "hard_rules": [
+    "Freeze the target repository revision, environment, goal, and objective oracle before any arm runs.",
+    "Use fresh non-inheriting solver contexts for compared arms.",
+    "An experience used on a target must have been frozen before that target is inspected by the treatment solver.",
+    "Correctness is the first gate. Efficiency claims are invalid for an incorrect migration.",
+    "Preserve negative transfer, failed attempts, abstention, and inapplicability.",
+    "Do not combine exploration metrics into a single opaque score.",
+    "Do not publish upstream pull requests, comments, social posts, releases, or deployments without separate explicit approval."
+  ],
+  "forbidden_actions": [
+    "ACCESS_PRIVATE_OR_EMPLOYER_DATA",
+    "USE_EBAY_INTERNAL_REACT19_SKILL",
+    "PUBLISH_GITHUB_COMMENT",
+    "CREATE_UPSTREAM_PULL_REQUEST",
+    "SEND_DIRECT_MESSAGE",
+    "PUBLISH_SOCIAL_POST",
+    "MERGE_OR_RELEASE",
+    "DEPLOY_PRODUCT_CHANGE",
+    "INSTALL_GLOBAL_AGENT_OR_PLUGIN",
+    "ADD_PAID_API",
+    "SECURITY_OR_AUTH_REPAIR",
+    "PAYMENT_SYSTEM_WORK",
+    "FORCE_PUSH",
+    "CHANGE_MAIN"
+  ]
+}
