@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-10-02T05:34:00Z",
+  "task_id": "ML-REACT19-001",
+  "status": "NEEDS_EVIDENCE",
+  "scope": "Bounded recovery and read-only revalidation of the existing lead; no new candidate search, no target code execution.",
+  "observed_coordination_revision": "049c197cd03cbd6b2af9ff2808f2b3965d221e80",
+  "recovery": {
+    "historical_claims_only": [
+      "Previously named ML-REACT19-001 at the same candidate revision.",
+      "Previously proposed A_BASELINE_NO_EXPERIENCE only.",
+      "Previously proposed command sketch: npm install, Rush update/check, npm run build --verbose, npm run test --verbose.",
+      "Prior cloud sourcing reportedly stopped before publishing candidate/queue evidence."
+    ],
+    "source_status": "Historical conversation search supplied by coordinator; direct source task read unavailable. Historical assistant claims are not execution evidence or readiness.",
+    "scheduler_state": "No scheduler created, resumed or modified by this recovery; paused sourcing must remain paused."
+  },
+  "candidate": {
+    "repository": "microsoft/applicationinsights-react-js",
+    "source_revision": "9869676e82113c336342abbc7adb424acede2940",
+    "source_url": "https://github.com/microsoft/applicationinsights-react-js/tree/9869676e82113c336342abbc7adb424acede2940",
+    "commit_url": "https://github.com/microsoft/applicationinsights-react-js/commit/9869676e82113c336342abbc7adb424acede2940",
+    "tree_sha": "6ee219eae2495caa4cd43462d2b3364e72d6c754",
+    "revision_verified": true,
+    "migration_family": "REACT_18_TO_19",
+    "applicability": "Plausible, not admitted: library and sample manifests declare react/react-dom ^18.0.0. No migration-specific failure has been verified."
+  },
+  "verified_static_evidence": {
+    "files": [
+      {
+        "path": "package.json",
+        "blob_sha": "121290c8cc50caa7fef37f380953d3bcdd528e37",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/package.json"
+      },
+      {
+        "path": "rush.json",
+        "blob_sha": "b5ccc3637254f98ee4d0e1ab9a60a7815c7d6144",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/rush.json"
+      },
+      {
+        "path": "applicationinsights-react-js/package.json",
+        "blob_sha": "b302ab4cccc8f388c1ac22882197efe4e5e988d7",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/package.json"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "blob_sha": "4f2d213b84756e553e1eae48ee515029f242cd4b",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/.github/workflows/ci.yml"
+      },
+      {
+        "path": ".github/workflows/npm-grunt.yml",
+        "blob_sha": "ca36cf450d54ffce912b9ca0321e086d64bf87ac",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/.github/workflows/npm-grunt.yml"
+      },
+      {
+        "path": "sample/applicationinsights-react-sample/package.json",
+        "blob_sha": "8a304fc15e6da802255039f1988fc4ad083af2b5",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/sample/applicationinsights-react-sample/package.json"
+      },
+      {
+        "path": "applicationinsights-react-js/test/jestconfig.json",
+        "blob_sha": "6557830e67a70b1e3f95beffe1ec7b603d122af3",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/test/jestconfig.json"
+      },
+      {
+        "path": "common/config/rush/command-line.json",
+        "blob_sha": "5a8f493c470fc0e3d25fb5db7205c88204c8cf28",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/common/config/rush/command-line.json"
+      },
+      {
+        "path": "sample/applicationinsights-react-sample/src/App.test.js",
+        "blob_sha": "0137b783959b3387a40029c6be5bb1a0c6490b67",
+        "url": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/sample/applicationinsights-react-sample/src/App.test.js"
+      }
+    ],
+    "package_manager": {
+      "npm": "9.9.3",
+      "rush": "5.148.0",
+      "source": "rush.json"
+    },
+    "node_runtime": "UNKNOWN; upstream CI matrix uses floating 16.x/18.x/20.x",
+    "lockfile_entries": [
+      {
+        "path": "common/config/rush/npm-shrinkwrap.json",
+        "blob_sha": "db1beed647743fda6bad44d5e2487c51d72b0ee3"
+      },
+      {
+        "path": "yarn.lock",
+        "blob_sha": "05f2121d6c520f3211c0876fca29285ed666c319"
+      }
+    ],
+    "lockfile_limitation": "Presence and blob identity verified from complete pinned tree; lockfile contents/resolved graph and replay consistency not audited.",
+    "commands": "Root build invokes Rush rebuild --verbose; root test invokes Rush test --verbose. Library build includes TypeScript, Rollup and declaration generation; library test invokes Jest with jsdom/ts-jest.",
+    "oracle_limitations": [
+      "Rush project list excludes sample/applicationinsights-react-sample.",
+      "Sample App.test.js asserts true equals true; sample test green would be vacuous.",
+      "Root postinstall runs Rush update. Upstream CI performs update --full --recheck and global rollup installation, so it is not a frozen lab replay contract.",
+      "No baseline checks or React 19 checks were executed."
+    ]
+  },
+  "receipt_reconciliation": {
+    "branch_tree_complete": true,
+    "branch_revision": "049c197cd03cbd6b2af9ff2808f2b3965d221e80",
+    "published_migration_lab_receipts": 0,
+    "published_migration_lab_run_evidence": 0,
+    "local_receipts": "UNKNOWN; absence on GitHub does not establish local absence."
+  },
+  "failure": {
+    "command": "UNKNOWN",
+    "signature": "UNKNOWN",
+    "exit_code": "UNKNOWN",
+    "public_failure_log": "UNKNOWN",
+    "reproduction": "NOT_RUN"
+  },
+  "objective_oracle": {
+    "status": "UNFROZEN",
+    "commands_historically_proposed_not_approved_as_contract": [
+      "npm install",
+      "Rush update/check (exact order and arguments unfrozen)",
+      "npm run build --verbose",
+      "npm run test --verbose"
+    ],
+    "correctness": "NOT_RUN",
+    "nontrivial_migration_work": "UNVERIFIED"
+  },
+  "solution_exposure": {
+    "current_recovery_role": "COORDINATOR_ONLY",
+    "current_sources": "Pinned pre-migration metadata, manifests, configuration and one sample test; candidate commit changed README only.",
+    "pr_153_or_later_history_inspected": false,
+    "patch_or_solution_produced": false,
+    "prior_sourcing_exposure": "UNKNOWN",
+    "solver_handoff": "Do not provide this evaluator report or answer-bearing queue fields to a solver. Fresh non-inheriting context required; exclude PR #153 and later history."
+  },
+  "missing_fields": [
+    {
+      "field": "failure_reproduction",
+      "required": "Exact command sequence, working directories, frozen React 19 dependency change/setup, exit code and normalized migration-specific failure signature backed by a public log or isolation-approved reproduction. None recovered."
+    },
+    {
+      "field": "environment.node_and_os",
+      "required": "Freeze exact Node/runtime version and OS/image rather than upstream floating CI matrix; record isolated execution boundary and package/tool availability."
+    },
+    {
+      "field": "environment.dependency_snapshot",
+      "required": "Freeze reproducible root and Rush dependency state and React 19 target versions. Root npm install runs a Rush update postinstall; upstream update --full --recheck rewrites shrinkwrap. Existing lockfiles alone do not establish replay integrity."
+    },
+    {
+      "field": "target_goal.scope",
+      "required": "Predeclare whether the library alone or library plus sample is migrated; exact React 19/runtime/type target versions and completion invariants remain unfrozen."
+    },
+    {
+      "field": "verification_commands_and_oracle",
+      "required": "Freeze executable install/check/build/test commands with working directories, dependency-integrity rules and a behavior-sensitive React 19 oracle. Root Rush omits the sample; sample App.test.js is a tautology and cannot demonstrate migration correctness. Specify how migrated local library is exercised if sample is included."
+    },
+    {
+      "field": "environment.setup_compatibility",
+      "required": "Resolve admissible local-only tooling setup without copying upstream global rollup installation or silently expanding policy; distinguish setup failure from migration failure."
+    },
+    {
+      "field": "solution_exposure_record",
+      "required": "Recover any original sourcing solution exposure and record fresh non-inheriting solver inputs/access restrictions. This recovery did not inspect PR #153, later commits, solutions or other-arm artifacts, but cannot certify prior sourcing exposure."
+    },
+    {
+      "field": "dispatch_prerequisites",
+      "required": "Reconcile existing local task/pending admission and receipts, verify isolation, reserve case/day/week budget, then write CLAIM before any execution. No local inventory or isolation proof is established by this report."
+    }
+  ],
+  "execution": {
+    "authorized_arm_hint": "A_BASELINE_NO_EXPERIENCE only, recovered historical plan; not dispatched",
+    "target_code_executed": false,
+    "claims_created": 0,
+    "results_created": 0,
+    "tests": "NOT_RUN",
+    "migration_result": "NOT_RUN",
+    "cost": "UNKNOWN"
+  },
+  "decision": "NEEDS_EVIDENCE. This record preserves the existing lead and verified static facts, but does not satisfy the frozen environment, reproducible failure, objective oracle or exposure requirements for READY. Do not dispatch.",
+  "controls": {
+    "authorization_changed": false,
+    "trust_or_budget_changed": false,
+    "protocol_changed": false,
+    "upstream_posts": 0,
+    "schedulers_changed": 0,
+    "main_changed": false
+  }
+}
