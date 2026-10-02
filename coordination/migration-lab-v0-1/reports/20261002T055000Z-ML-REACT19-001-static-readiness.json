@@ -416,7 +416,8 @@
     "baseline_replay": "NOT_RUN",
     "target_dependency_graph": "NOT_RESOLVED_OR_FROZEN",
     "tool_availability": "NOT_VERIFIED",
-    "note": "Historical isolated-experiment pins, not production security recommendations. Root yarn.lock does not establish npm/Rush replay. No root npm install is proposed."
+    "note": "Historical isolated-experiment pins, not production security recommendations. Root yarn.lock does not establish npm/Rush replay. No root npm install is proposed.",
+    "host_authority": "Linux is a reproducibility proposal only. It does not authorize changing the user's Mac, installing virtualization/containers, or switching execution environments. Actual authorized local isolation and compatibility remain preflight; otherwise request an explicit environment decision."
   },
   "oracle": {
     "status": "PROPOSED_TEST_DESIGN_ONLY",
@@ -435,7 +436,8 @@
       "runtime resolution to built local tarball; no registry/source alias escape",
       "legacy-warning and unexpected-network failure checks"
     ],
-    "nonvacuity_preflight": "Evaluator must implement and hash fixtures, verify a passing neutral React 19 control and intentionally broken behavior controls, ensure each focused assertion detects disabled telemetry/cleanup, and preserve results separately. These controls must not expose a solution to the solver. All currently NOT_RUN."
+    "nonvacuity_preflight": "Evaluator must implement and hash fixtures, verify a passing neutral React 19 control and intentionally broken behavior controls, ensure each focused assertion detects disabled telemetry/cleanup, and preserve results separately. These controls must not expose a solution to the solver. All currently NOT_RUN.",
+    "expectation_review": "The idle/resume candidate 2-second value is derived from the pinned engagement calculation and needs timer-order validation. StrictMode event initial-skip replay counts are proposed from pinned cleanup logic, not an observed baseline or an independent deduplication requirement. Evaluator must preserve declared API/baseline semantics and review/freeze both expectations before a solver; never add new behavior merely to satisfy proposed tests."
   },
   "remaining_pre_execution_checks": [
     "Reconcile actual local admission state and all receipts; no duplicate case/consumer. Manual re-trigger is required; do not auto-resume or poll.",
