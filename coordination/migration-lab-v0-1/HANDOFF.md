@@ -9,7 +9,9 @@ This is a **new local task**. Do not re-enable or overwrite the paused `aeg-expe
 - Local task: `aeg-migration-lab-v0-1`
 - Model: `gpt-5.6-terra`
 - Reasoning effort: `low`
-- Primary project path: `/Users/yaoli/Documents/New project/agent-experience-graph`
+- Primary project path: `/Users/yaoli/Documents/New project/agent-experience-graph-migration-lab-v0.1`
+- The operator supplied this dedicated worktree path on 2026-10-02. Verify its remote, branch, HEAD and working-tree status before use; this path correction is not evidence of a completed local check.
+- Do not switch, reset, stash, clean or modify the original dirty checkout at `/Users/yaoli/Documents/New project/agent-experience-graph`.
 - Max concurrent local consumers: 1
 
 Read before every run:
