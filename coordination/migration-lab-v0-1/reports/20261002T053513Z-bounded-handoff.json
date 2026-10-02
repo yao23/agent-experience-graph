@@ -52,7 +52,13 @@
       "Verify dedicated worktree remote, branch, HEAD, cleanliness without touching original checkout.",
       "If no matching or pending consumer exists and interface recovery is confirmed, create exactly the already-authorized consumer; otherwise reuse actual matching ID.",
       "Candidate remains non-executable until manifest evidence gaps are closed; require READY, reconciled case/day/week budget and isolation preflight before one CLAIM."
-    ]
+    ],
+    "resumption_status": "需要再次触发",
+    "automatic_resumption_scheduled": false,
+    "recovery_trigger": "NONE_CONFIRMED",
+    "polling_enabled": false,
+    "candidate_preparation": "Static readiness and Task Packet preparation proceed independently of local API; no target-code execution.",
+    "updated_at": "2026-10-02T05:44:12Z"
   },
   "constraints": {
     "cloud_sourcing_resumed": false,
