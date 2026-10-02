@@ -3,7 +3,7 @@
   "lab": "aeg-migration-lab-v0-1",
   "migration_family": "REACT_18_TO_19",
   "branch": "codex/aeg-migration-lab-v0.1",
-  "updated_at": "2026-09-29T10:07:00-07:00",
+  "updated_at": "2026-10-02T05:35:00Z",
   "writer": "AEG Migration Lab cloud coordinator",
   "status_values": [
     "CANDIDATE",
@@ -31,5 +31,90 @@
     "evidence_locations",
     "restrictions"
   ],
-  "tasks": []
+  "tasks": [
+    {
+      "task_id": "ML-REACT19-001",
+      "revision": 1,
+      "source_repository": "microsoft/applicationinsights-react-js",
+      "source_url": "https://github.com/microsoft/applicationinsights-react-js/tree/9869676e82113c336342abbc7adb424acede2940",
+      "source_revision": "9869676e82113c336342abbc7adb424acede2940",
+      "migration_family": "REACT_18_TO_19",
+      "target_goal": {
+        "summary": "Migrate the existing React 18 library lead to React 19.",
+        "scope": "UNFROZEN: library alone versus library plus sample",
+        "target_versions": "UNKNOWN"
+      },
+      "environment": {
+        "npm_version": "9.9.3",
+        "rush_version": "5.148.0",
+        "node_version": "UNKNOWN",
+        "os_image": "UNKNOWN",
+        "isolation_preflight": "NOT_VERIFIED",
+        "dependency_snapshot": "UNFROZEN; pinned tree contains npm-shrinkwrap.json and yarn.lock, but replay/target dependency state is not verified."
+      },
+      "verification_commands": [],
+      "verification_status": "UNFROZEN; historical root command sketch is not an admitted oracle",
+      "arm_plan": {
+        "proposed_arms": [
+          "A_BASELINE_NO_EXPERIENCE"
+        ],
+        "dispatch_authorized": false,
+        "note": "Recovered historical A-only plan; no arm may run until all admission and execution gates are met."
+      },
+      "budget_minutes_total": 90,
+      "budget_reservation": "NOT_RESERVED",
+      "status": "NEEDS_EVIDENCE",
+      "experience_frozen_before_target": "NOT_APPLICABLE_TO_PROPOSED_A_ONLY; no B/C experience admitted",
+      "evidence_locations": [
+        "coordination/migration-lab-v0-1/reports/20261002T053400Z-ML-REACT19-001-recovery.json"
+      ],
+      "missing_fields": [
+        {
+          "field": "failure_reproduction",
+          "required": "Exact command sequence, working directories, frozen React 19 dependency change/setup, exit code and normalized migration-specific failure signature backed by a public log or isolation-approved reproduction. None recovered."
+        },
+        {
+          "field": "environment.node_and_os",
+          "required": "Freeze exact Node/runtime version and OS/image rather than upstream floating CI matrix; record isolated execution boundary and package/tool availability."
+        },
+        {
+          "field": "environment.dependency_snapshot",
+          "required": "Freeze reproducible root and Rush dependency state and React 19 target versions. Root npm install runs a Rush update postinstall; upstream update --full --recheck rewrites shrinkwrap. Existing lockfiles alone do not establish replay integrity."
+        },
+        {
+          "field": "target_goal.scope",
+          "required": "Predeclare whether the library alone or library plus sample is migrated; exact React 19/runtime/type target versions and completion invariants remain unfrozen."
+        },
+        {
+          "field": "verification_commands_and_oracle",
+          "required": "Freeze executable install/check/build/test commands with working directories, dependency-integrity rules and a behavior-sensitive React 19 oracle. Root Rush omits the sample; sample App.test.js is a tautology and cannot demonstrate migration correctness. Specify how migrated local library is exercised if sample is included."
+        },
+        {
+          "field": "environment.setup_compatibility",
+          "required": "Resolve admissible local-only tooling setup without copying upstream global rollup installation or silently expanding policy; distinguish setup failure from migration failure."
+        },
+        {
+          "field": "solution_exposure_record",
+          "required": "Recover any original sourcing solution exposure and record fresh non-inheriting solver inputs/access restrictions. This recovery did not inspect PR #153, later commits, solutions or other-arm artifacts, but cannot certify prior sourcing exposure."
+        },
+        {
+          "field": "dispatch_prerequisites",
+          "required": "Reconcile existing local task/pending admission and receipts, verify isolation, reserve case/day/week budget, then write CLAIM before any execution. No local inventory or isolation proof is established by this report."
+        }
+      ],
+      "restrictions": [
+        "Coordinator-only evidence recovery; no code execution or CLAIM from this entry.",
+        "Do not dispatch unless status is READY and current authorization, receipt, budget, isolation and local-task admission checks pass.",
+        "Use fresh non-inheriting solver contexts and omit evaluator reports/answer-bearing queue fields.",
+        "Do not expose PR #153, later history, held-out solutions or other-arm artifacts to a solver.",
+        "Public OSS only; no private/employer materials, global installation, paid API, upstream posts, merges or deployments.",
+        "Paused sourcing and old Foundry tasks remain paused; this record grants no scheduler authority."
+      ],
+      "failure_command": "UNKNOWN",
+      "failure_signature": "UNKNOWN",
+      "objective_oracle": "UNFROZEN",
+      "solution_exposure": "Current recovery did not inspect PR #153/later history; prior sourcing exposure UNKNOWN.",
+      "execution_status": "NOT_RUN"
+    }
+  ]
 }
