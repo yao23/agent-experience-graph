@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-10-02T05:35:13Z",
+  "kind": "BOUNDED_SOURCING_QUEUE_CONSUMER_HANDOFF",
+  "branch": "codex/aeg-migration-lab-v0.1",
+  "consumer": {
+    "expected_name": "aeg-migration-lab-v0-1",
+    "actual_task_id": "UNKNOWN",
+    "actual_thread_id": "UNKNOWN",
+    "status": "BLOCKED_UNCONFIRMED_PRIOR_CREATION",
+    "worktree": "/Users/yaoli/Documents/New project/agent-experience-graph-migration-lab-v0.1",
+    "worktree_provenance": "Operator supplied; historical setup output, not current filesystem verification",
+    "current_remote": "UNKNOWN",
+    "current_branch": "UNKNOWN",
+    "current_head": "UNKNOWN",
+    "current_worktree_status": "UNKNOWN",
+    "entrypoint": "coordination/migration-lab-v0-1/HANDOFF.md",
+    "manifest": "coordination/migration-lab-v0-1/queue.json",
+    "local_inventory": "UNKNOWN; cloud child listing is not local scheduled-task inventory",
+    "prior_attempt": {
+      "purpose": "Inspection-only coordinator child, not migration consumer",
+      "result": "TimeoutError",
+      "error_code": "UNKNOWN",
+      "returned_thread_id": null,
+      "reconciliation": "Direct child listing repeatedly returned empty including 05:35 UTC; does not prove no pending creation. No retry or new consumer creation."
+    },
+    "execution_interface_recovery": "UNKNOWN"
+  },
+  "sourcing": {
+    "automation_id": "6abbf183bc60819197956650730a6fba",
+    "automation_state": "PAUSED per operator; not resumed",
+    "cloud_conversation_id": "6abb4ef5-2a14-83e8-bf4d-c8aaab6448ca",
+    "source_read_error": "unsupported placement format version 2",
+    "recovery_route": "Historical conversation retrieval and public pinned-source revalidation; original full sourcing transcript not fetched",
+    "candidate_id": "ML-REACT19-001",
+    "source_repository": "microsoft/applicationinsights-react-js",
+    "source_revision": "9869676e82113c336342abbc7adb424acede2940"
+  },
+  "handoff_path_correction": {
+    "commit": "049c197cd03cbd6b2af9ff2808f2b3965d221e80",
+    "readback_verified": true,
+    "original_dirty_checkout_modified": false
+  },
+  "claim": {
+    "created_by_this_coordinator": false,
+    "local_or_other_unpublished_claims": "UNKNOWN"
+  },
+  "next_action": {
+    "owner": "Coordinator through supported desktop execution/task interface",
+    "preconditions": [
+      "Obtain authoritative local task inventory and resolve prior pending creation outcome.",
+      "Verify dedicated worktree remote, branch, HEAD, cleanliness without touching original checkout.",
+      "If no matching or pending consumer exists and interface recovery is confirmed, create exactly the already-authorized consumer; otherwise reuse actual matching ID.",
+      "Candidate remains non-executable until manifest evidence gaps are closed; require READY, reconciled case/day/week budget and isolation preflight before one CLAIM."
+    ]
+  },
+  "constraints": {
+    "cloud_sourcing_resumed": false,
+    "old_foundry_changed": false,
+    "new_schedulers_created": 0,
+    "authorization_changed": false,
+    "trust_digest_changed": false,
+    "budget_changed": false,
+    "experiment_conditions_changed": false,
+    "untrusted_target_code_executed": false,
+    "solver_answer_material_transmitted": false
+  },
+  "metrics": {
+    "human_coordination_time": "UNKNOWN",
+    "human_additional_intervention_messages_observed": 1,
+    "actual_copy_paste_count": "UNKNOWN",
+    "migration_result": "NOT_RUN",
+    "independent_tests": "NOT_RUN",
+    "rework": "NOT_RUN",
+    "measurable_execution_cost": "UNKNOWN",
+    "external_real_use": "UNKNOWN",
+    "external_repeat_demand": "UNKNOWN",
+    "external_payment": "UNKNOWN"
+  }
+}
