@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-10-02T05:18:38Z",
+  "scope": "Public OSS React 18 -> 19 only",
+  "branch": "codex/aeg-migration-lab-v0.1",
+  "observed_tip": "0297d94c85fbf8e8616f8b73b978400bc6fc27b1",
+  "status": "BLOCKED_BEFORE_DISPATCH",
+  "first_workflow_blocker": "NO_READY_MIGRATION_CASE",
+  "findings": [
+    "Queue contains zero tasks.",
+    "Complete tree at observed tip contains only the four bootstrap Migration Lab files; no published sourcing reports, candidate manifests, receipts, run evidence, or frozen experiences.",
+    "Current automation tool scope returns no tasks; this does not establish absence of a local task or a task in another conversation.",
+    "Desktop reports connected, attached and authorized. One inspection-only child launch returned TimeoutError with UNKNOWN error code and no thread ID. Follow-up direct-child list was empty; latest global thread IDs were unchanged. Launch outcome remains unconfirmed; no retry was issued to avoid duplicate execution."
+  ],
+  "next_step": "Resolve the existing sourcing/execution entry through supported desktop task access, reconcile pending work, then publish an authorized candidate admission if available. Do not dispatch or claim while queue is empty.",
+  "operator_metrics": {
+    "measurement_window": "Since coordinator request at approximately 2026-10-02T05:16:24Z",
+    "human_coordination_minutes": "UNKNOWN",
+    "additional_human_interventions_observed": 0,
+    "additional_user_copy_paste_requests": 0,
+    "actual_user_copy_paste_count": "UNKNOWN",
+    "historical_counts": "UNKNOWN",
+    "note": "Initial assignment excluded from additional interventions. No time saved claim."
+  },
+  "migration_metrics": {
+    "dispatch_confirmed": false,
+    "claims_created": 0,
+    "migration_result": "NOT_RUN",
+    "independent_tests": "NOT_RUN",
+    "migration_rework": "NOT_RUN",
+    "model_tokens": "UNKNOWN",
+    "monetary_cost": "UNKNOWN",
+    "local_agent_minutes": "UNKNOWN",
+    "note": "Tool/coordination elapsed time is not migration execution cost; authorization limits are not measured cost."
+  },
+  "external_demand_metrics": {
+    "real_use": "UNKNOWN",
+    "repeat_demand": "UNKNOWN",
+    "payments": "UNKNOWN",
+    "note": "Internal coordination or migration results are not external demand."
+  },
+  "controls": {
+    "authorization_changed": false,
+    "trust_digest_changed": false,
+    "budget_changed": false,
+    "experiment_conditions_changed": false,
+    "queue_changed": false,
+    "schedulers_created": 0,
+    "old_foundry_changed": false,
+    "old_foundry_actual_state": "UNKNOWN",
+    "held_out_answers_inspected": false,
+    "upstream_communications_sent": 0
+  }
+}
