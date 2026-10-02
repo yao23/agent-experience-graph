@@ -1,0 +1,479 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-10-02T05:50:00Z",
+  "task_id": "ML-REACT19-001",
+  "packet_revision": 2,
+  "status": "NEEDS_EVIDENCE",
+  "role": "COORDINATOR_ONLY_DO_NOT_HAND_TO_SOLVER",
+  "scope": "One bounded static pass on the existing candidate. No candidate search, dependency installation, target-code execution, solver dispatch or upstream solution/history inspection.",
+  "source_revision": "9869676e82113c336342abbc7adb424acede2940",
+  "inputs": {
+    "coordination_revision": "20fbcda55bf21e0f682829c912a844993e9bd9c5",
+    "protocol_path": "experiments/migration-lab-v0-1/PROTOCOL.md",
+    "authorization_path": "coordination/migration-lab-v0-1/AUTHORIZATION.json",
+    "recovery_path": "coordination/migration-lab-v0-1/reports/20261002T053400Z-ML-REACT19-001-recovery.json",
+    "repo_skill": "Root SKILL.md read; no prior trace/experience retrieval or script execution. Pinned target tree contains no AGENTS.md or .agents/skills instructions."
+  },
+  "correction": {
+    "previous_gate": "The recovery/queue treated an observed reproducible migration failure as a mandatory readiness prerequisite.",
+    "interpretation": "PROTOCOL target admission requires a real major-version migration, a frozen environment/goal/dependency state, predeclared verification and a nonvacuous behavior-sensitive oracle. It does not require a pre-existing public failure signature. A failure signature is conditional evidence if observed, not a mandatory gate.",
+    "failure_command": "NOT_OBSERVED",
+    "failure_signature": "NOT_OBSERVED",
+    "exit_code": "NOT_OBSERVED",
+    "public_failure_log": "NOT_OBSERVED",
+    "execution": "NOT_RUN",
+    "history_policy": "Original recovery report preserved unchanged; this additive report supersedes only its mandatory-failure interpretation. Candidate remains NEEDS_EVIDENCE for independent reasons."
+  },
+  "scope_decision": {
+    "proposed": "LIBRARY_ONLY",
+    "reason": "The library has its own public React component/hook API and nontrivial migration surface. Adding the independent CRA sample would add a second dependency/toolchain graph without being necessary to establish behavior-sensitive migration correctness. Rush does not include the sample and its App.test.js is vacuous.",
+    "included": [
+      "applicationinsights-react-js/",
+      "necessary shared Rush dependency/configuration changes",
+      "library regression tests",
+      "evaluator-owned packaged-consumer fixture"
+    ],
+    "excluded": [
+      "sample/applicationinsights-react-sample/",
+      "unrelated SDK upgrades",
+      "upstream publishing",
+      "new candidate search"
+    ],
+    "frozen": false
+  },
+  "static_evidence": [
+    {
+      "finding": "Source library manifests use React/react-dom ^18.0.0, while dev types are React 16 and test renderer is testing-library 11.",
+      "source": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/package.json",
+      "observation": "READ_ONLY"
+    },
+    {
+      "finding": "Pinned Rush shrinkwrap actually resolves React/react-dom 18.3.1; @types/react 16.14.62; @types/react-dom 16.9.25; RTL 11.2.7; TypeScript 4.9.5; Jest 27.5.1; ts-jest 27.1.5; API Extractor 7.52.1 (nested compiler 5.8.2). This is parsed lock metadata, not installation evidence.",
+      "source": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/common/config/rush/npm-shrinkwrap.json",
+      "observation": "READ_ONLY",
+      "blob_sha": "db1beed647743fda6bad44d5e2487c51d72b0ee3"
+    },
+    {
+      "finding": "useTrackMetric contains a zero-argument typed useRef call. Official React 19 guidance requires a useRef argument; this supplies concrete source-level nontrivial type-migration evidence without asserting any observed compiler failure.",
+      "source": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/useTrackMetric.ts",
+      "documentation": "https://react.dev/blog/2024/04/25/react-19-upgrade-guide",
+      "classification": "STATIC_COMPATIBILITY_INFERENCE_NOT_RUN"
+    },
+    {
+      "finding": "Library tsconfig uses the classic React JSX transform. React 19 documentation requires the modern transform. Packaging must continue to keep React and its runtime subpaths external and preserve generated declarations.",
+      "source": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/tsconfig.json",
+      "related": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/rollup.config.js",
+      "classification": "STATIC_COMPATIBILITY_INFERENCE_NOT_RUN"
+    },
+    {
+      "finding": "The source-lock RTL 11.2.7 implementation calls ReactDOM.render and unmountComponentAtNode; React 19 removes those APIs. Existing HOC and boundary tests call RTL render. Thus keeping the old runner would not establish React 19 behavior.",
+      "source": "https://raw.githubusercontent.com/testing-library/react-testing-library/v11.2.7/src/pure.js",
+      "related": [
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/test/withAITracking.test.tsx",
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/test/AppInsightsErrorBoundary.test.tsx"
+      ],
+      "classification": "STATIC_COMPATIBILITY_INFERENCE_NOT_RUN"
+    },
+    {
+      "finding": "Boundary implements fallback and exception telemetry; hook/HOC implementations implement activity timing and interval cleanup; event hook implements initial skip and effect cleanup. These directly support meaningful behavior oracles independent of a known patch.",
+      "sources": [
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/AppInsightsErrorBoundary.tsx",
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/useTrackMetric.ts",
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/withAITracking.tsx",
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/useTrackEvent.ts",
+        "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/applicationinsights-react-js/src/AppInsightsContext.tsx"
+      ]
+    },
+    {
+      "finding": "Root postinstall invokes Rush update, which is not frozen replay. Proposed install path uses Rush install with local tools; exact pinned bootstrap/rebuild behavior still requires admitted preflight.",
+      "source": "https://github.com/microsoft/applicationinsights-react-js/blob/9869676e82113c336342abbc7adb424acede2940/package.json",
+      "documentation": "https://rushjs.io/pages/commands/rush_install/"
+    }
+  ],
+  "target_proposal": {
+    "pin_status": "PROPOSED_NOT_FROZEN",
+    "direct_exact_pins": {
+      "react": "19.0.0",
+      "react-dom": "19.0.0",
+      "@types/react": "19.0.0",
+      "@types/react-dom": "19.0.0",
+      "@testing-library/react": "16.1.0",
+      "@testing-library/dom": "10.4.0",
+      "typescript": "5.1.6",
+      "jest": "29.7.0",
+      "jest-environment-jsdom": "29.7.0",
+      "ts-jest": "29.2.5",
+      "@types/jest": "29.5.12",
+      "@types/node": "20.16.1"
+    },
+    "react_peer": ">=19.0.0 <20.0.0",
+    "compatibility_claim": "React 19 only; React 18 retained support not claimed.",
+    "unchanged_dependency_policy": "Retain unrelated source-lock resolutions; minimally necessary transitive changes frozen and reviewed. No SDK upgrade shortcut. One React 19/type major in consumer graph; no force/legacy-peer-deps.",
+    "tooling_rationale": "React types 19 declare TypeScript baseline 5.0. Propose compiler 5.1.6, RTL 16.1.0 and DOM 10.4.0 for React 19 peers. ts-jest 29.2.5 declares TS >=4.3 <6 and Jest ^29; align Jest/jsdom 29.7.0 and Jest/Node declarations. Avoid unrelated API Extractor/Rollup upgrades by retaining source-lock versions.",
+    "metadata_vs_execution": "All 12 name/version entries and reported dist integrity/peer/engine metadata retrieved from official npm registry by read-only HTTP. No tarballs downloaded, integrity independently recomputed, packages installed, or tools executed.",
+    "registry_metadata": [
+      {
+        "url": "https://registry.npmjs.org/react/19.0.0",
+        "name": "react",
+        "version": "19.0.0",
+        "engines": {
+          "node": ">=0.10.0"
+        },
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "dependencies": null,
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==",
+          "shasum": "6e1969251b9f108870aa4bff37a0ce9ddfaaabdd",
+          "tarball": "https://registry.npmjs.org/react/-/react-19.0.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/react-dom/19.0.0",
+        "name": "react-dom",
+        "version": "19.0.0",
+        "engines": null,
+        "peerDependencies": {
+          "react": "^19.0.0"
+        },
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "scheduler": "^0.25.0"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==",
+          "shasum": "43446f1f01c65a4cd7f7588083e686a6726cfb57",
+          "tarball": "https://registry.npmjs.org/react-dom/-/react-dom-19.0.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40types%2Freact/19.0.0",
+        "name": "@types/react",
+        "version": "19.0.0",
+        "engines": null,
+        "peerDependencies": {},
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "csstype": "^3.0.2"
+        },
+        "typeScriptVersion": "5.0",
+        "dist": {
+          "integrity": "sha512-MY3oPudxvMYyesqs/kW1Bh8y9VqSmf+tzqw3ae8a9DZW68pUe3zAdHeI1jc6iAysuRdACnVknHP8AhwD4/dxtg==",
+          "shasum": "fbbb53ce223f4e2b750ad5dd09580b2c43522bbf",
+          "tarball": "https://registry.npmjs.org/@types/react/-/react-19.0.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40types%2Freact-dom/19.0.0",
+        "name": "@types/react-dom",
+        "version": "19.0.0",
+        "engines": null,
+        "peerDependencies": {},
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "@types/react": "*"
+        },
+        "typeScriptVersion": "5.0",
+        "dist": {
+          "integrity": "sha512-1KfiQKsH1o00p9m5ag12axHQSb3FOU9H20UTrujVSkNhuCrRHiQWFqgEnTNK5ZNfnzZv8UWrnXVqCmCF9fgY3w==",
+          "shasum": "e7f5d618a080486eaf9952246dbf59eaa2c64130",
+          "tarball": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.0.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40testing-library%2Freact/16.1.0",
+        "name": "@testing-library/react",
+        "version": "16.1.0",
+        "engines": {
+          "node": ">=18"
+        },
+        "peerDependencies": {
+          "react": "^18.0.0 || ^19.0.0",
+          "react-dom": "^18.0.0 || ^19.0.0",
+          "@types/react": "^18.0.0 || ^19.0.0",
+          "@types/react-dom": "^18.0.0 || ^19.0.0",
+          "@testing-library/dom": "^10.0.0"
+        },
+        "peerDependenciesMeta": {
+          "@types/react": {
+            "optional": true
+          },
+          "@types/react-dom": {
+            "optional": true
+          }
+        },
+        "dependencies": {
+          "@babel/runtime": "^7.12.5"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-Q2ToPvg0KsVL0ohND9A3zLJWcOXXcO8IDu3fj11KhNt0UlCWyFyvnCIBkd12tidB2lkiVRG8VFqdhcqhqnAQtg==",
+          "shasum": "aa0c61398bac82eaf89776967e97de41ac742d71",
+          "tarball": "https://registry.npmjs.org/@testing-library/react/-/react-16.1.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40testing-library%2Fdom/10.4.0",
+        "name": "@testing-library/dom",
+        "version": "10.4.0",
+        "engines": {
+          "node": ">=18"
+        },
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "chalk": "^4.1.0",
+          "lz-string": "^1.5.0",
+          "aria-query": "5.3.0",
+          "pretty-format": "^27.0.2",
+          "@babel/runtime": "^7.12.5",
+          "@babel/code-frame": "^7.10.4",
+          "@types/aria-query": "^5.0.1",
+          "dom-accessibility-api": "^0.5.9"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==",
+          "shasum": "82a9d9462f11d240ecadbf406607c6ceeeff43a8",
+          "tarball": "https://registry.npmjs.org/@testing-library/dom/-/dom-10.4.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/typescript/5.1.6",
+        "name": "typescript",
+        "version": "5.1.6",
+        "engines": {
+          "node": ">=14.17"
+        },
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "dependencies": null,
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==",
+          "shasum": "02f8ac202b6dad2c0dd5e0913745b47a37998274",
+          "tarball": "https://registry.npmjs.org/typescript/-/typescript-5.1.6.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/jest/29.7.0",
+        "name": "jest",
+        "version": "29.7.0",
+        "engines": {
+          "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+        },
+        "peerDependencies": {
+          "node-notifier": "^8.0.1 || ^9.0.0 || ^10.0.0"
+        },
+        "peerDependenciesMeta": {
+          "node-notifier": {
+            "optional": true
+          }
+        },
+        "dependencies": {
+          "jest-cli": "^29.7.0",
+          "@jest/core": "^29.7.0",
+          "@jest/types": "^29.6.3",
+          "import-local": "^3.0.2"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-NIy3oAFp9shda19hy4HK0HRTWKtPJmGdnvywu01nOqNC2vZg+Z+fvJDxpMQA88eb2I9EcafcdjYgsDthnYTvGw==",
+          "shasum": "994676fc24177f088f1c5e3737f5697204ff2613",
+          "tarball": "https://registry.npmjs.org/jest/-/jest-29.7.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/jest-environment-jsdom/29.7.0",
+        "name": "jest-environment-jsdom",
+        "version": "29.7.0",
+        "engines": {
+          "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+        },
+        "peerDependencies": {
+          "canvas": "^2.5.0"
+        },
+        "peerDependenciesMeta": {
+          "canvas": {
+            "optional": true
+          }
+        },
+        "dependencies": {
+          "jsdom": "^20.0.0",
+          "jest-mock": "^29.7.0",
+          "jest-util": "^29.7.0",
+          "@jest/types": "^29.6.3",
+          "@types/node": "*",
+          "@types/jsdom": "^20.0.0",
+          "@jest/environment": "^29.7.0",
+          "@jest/fake-timers": "^29.7.0"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-k9iQbsf9OyOfdzWH8HDmrRT0gSIcX+FLNW7IQq94tFX0gynPwqDTW0Ho6iMVNjGz/nb+l/vW3dWM2bbLLpkbXA==",
+          "shasum": "d206fa3551933c3fd519e5dfdb58a0f5139a837f",
+          "tarball": "https://registry.npmjs.org/jest-environment-jsdom/-/jest-environment-jsdom-29.7.0.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/ts-jest/29.2.5",
+        "name": "ts-jest",
+        "version": "29.2.5",
+        "engines": {
+          "node": "^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0"
+        },
+        "peerDependencies": {
+          "jest": "^29.0.0",
+          "babel-jest": "^29.0.0",
+          "typescript": ">=4.3 <6",
+          "@babel/core": ">=7.0.0-beta.0 <8",
+          "@jest/types": "^29.0.0",
+          "@jest/transform": "^29.0.0"
+        },
+        "peerDependenciesMeta": {
+          "esbuild": {
+            "optional": true
+          },
+          "babel-jest": {
+            "optional": true
+          },
+          "@babel/core": {
+            "optional": true
+          },
+          "@jest/types": {
+            "optional": true
+          },
+          "@jest/transform": {
+            "optional": true
+          }
+        },
+        "dependencies": {
+          "ejs": "^3.1.10",
+          "json5": "^2.2.3",
+          "semver": "^7.6.3",
+          "bs-logger": "^0.2.6",
+          "jest-util": "^29.0.0",
+          "make-error": "^1.3.6",
+          "yargs-parser": "^21.1.1",
+          "lodash.memoize": "^4.1.2",
+          "fast-json-stable-stringify": "^2.1.0"
+        },
+        "typeScriptVersion": null,
+        "dist": {
+          "integrity": "sha512-KD8zB2aAZrcKIdGk4OwpJggeLcH1FgrICqDSROWqlnJXGCXK4Mn6FcdK2B6670Xr73lHMG1kHw8R87A0ecZ+vA==",
+          "shasum": "591a3c108e1f5ebd013d3152142cb5472b399d63",
+          "tarball": "https://registry.npmjs.org/ts-jest/-/ts-jest-29.2.5.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40types%2Fjest/29.5.12",
+        "name": "@types/jest",
+        "version": "29.5.12",
+        "engines": null,
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "expect": "^29.0.0",
+          "pretty-format": "^29.0.0"
+        },
+        "typeScriptVersion": "4.6",
+        "dist": {
+          "integrity": "sha512-eDC8bTvT/QhYdxJAulQikueigY5AsdBRH2yDKW3yveW7svY3+DzN84/2NUgkw10RTiJbWqZrTtoGVdYlvFJdLw==",
+          "shasum": "7f7dc6eb4cf246d2474ed78744b05d06ce025544",
+          "tarball": "https://registry.npmjs.org/@types/jest/-/jest-29.5.12.tgz"
+        }
+      },
+      {
+        "url": "https://registry.npmjs.org/%40types%2Fnode/20.16.1",
+        "name": "@types/node",
+        "version": "20.16.1",
+        "engines": null,
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "dependencies": {
+          "undici-types": "~6.19.2"
+        },
+        "typeScriptVersion": "4.8",
+        "dist": {
+          "integrity": "sha512-zJDo7wEadFtSyNz5QITDfRcrhqDvQI1xQNQ0VoizPjM/dVAODqqIUWbJPkvsxmTI0MYRGRikcdjMPhOssnPejQ==",
+          "shasum": "0b44b15271d0e2191ca68faf1fbe506e06aed732",
+          "tarball": "https://registry.npmjs.org/@types/node/-/node-20.16.1.tgz"
+        }
+      }
+    ]
+  },
+  "environment_proposal": {
+    "status": "UNFROZEN",
+    "node": "20.18.0",
+    "npm": "9.9.3",
+    "rush": "5.148.0",
+    "platform": "linux/amd64",
+    "userspace": "Ubuntu 22.04.5",
+    "immutable_image_digest": "UNKNOWN",
+    "isolation": "NOT_VERIFIED",
+    "baseline_replay": "NOT_RUN",
+    "target_dependency_graph": "NOT_RESOLVED_OR_FROZEN",
+    "tool_availability": "NOT_VERIFIED",
+    "note": "Historical isolated-experiment pins, not production security recommendations. Root yarn.lock does not establish npm/Rush replay. No root npm install is proposed."
+  },
+  "oracle": {
+    "status": "PROPOSED_TEST_DESIGN_ONLY",
+    "packet_path": "coordination/migration-lab-v0-1/task-packets/ML-REACT19-001-r2.md",
+    "implementation": "NOT_WRITTEN",
+    "freeze_hash": "UNKNOWN",
+    "results": "NOT_RUN",
+    "coverage": [
+      "full build, declarations and typed packaged consumer",
+      "React 19 real-DOM boundary fallback and exact exception payload/count",
+      "HOC and hook engagement time with exact deterministic active/idle durations",
+      "timer cleanup and no-activity negative case",
+      "context identity/update",
+      "event initial-skip/update and StrictMode replay semantics",
+      "existing page-view behavior and teardown",
+      "runtime resolution to built local tarball; no registry/source alias escape",
+      "legacy-warning and unexpected-network failure checks"
+    ],
+    "nonvacuity_preflight": "Evaluator must implement and hash fixtures, verify a passing neutral React 19 control and intentionally broken behavior controls, ensure each focused assertion detects disabled telemetry/cleanup, and preserve results separately. These controls must not expose a solution to the solver. All currently NOT_RUN."
+  },
+  "remaining_pre_execution_checks": [
+    "Reconcile actual local admission state and all receipts; no duplicate case/consumer. Manual re-trigger is required; do not auto-resume or poll.",
+    "Establish an authorized isolated environment and immutable OS/runtime/tool identities. Do not run preparation or solver work while budget remaining is UNKNOWN.",
+    "Determine remaining case/day/rolling-seven-day agent-minute balances from authoritative receipts, reserve permitted time, obey 90/120/600 ceilings and one-task/one-consumer limits. Ceilings are not balances.",
+    "Verify source revision and full source lock/blob; perform separately authorized baseline replay/check/build/test and classify setup or pre-existing failures. No need invent a migration failure signature.",
+    "Resolve only proposed target constraints using local tools in isolation; capture all target transitive metadata/integrities and freeze graph/manifest overlay. Do not create a source fix or use later target revisions.",
+    "Validate exact install/check/rebuild/test/pack command behavior with pinned Rush and project-local tools; remove placeholders, account for root dependencies if actually necessary with a separate frozen snapshot, never global install or root postinstall update.",
+    "Author evaluator fixture and scripts before the solver; freeze hashes/config/locks, prove real React19 and built local tarball resolution, test nonvacuity/mutation controls and expected baseline/target distinctions. Ordinary sample suite never substitutes.",
+    "Finalize peer policy/scope/goal and allowed file changes; handle any incompatibility with a reviewed packet revision before arms, not silent pin drift.",
+    "Complete solution-exposure ledger for historical sourcing. Current static coordinator inspected only pinned source and first-party package/docs, no upstream migration PRs/later target history. Use fresh non-inheriting A-only solver, exclude coordinator report/queue clues.",
+    "Only after all independent gates and execution authority pass may existing process change status to READY and write CLAIM. This pass creates neither."
+  ],
+  "assessment": {
+    "nontriviality": "SUPPORTED_BY_PINNED_SOURCE_AND_FIRST_PARTY_DOCS; execution not observed",
+    "decisive_unsuitability": "NONE_ESTABLISHED",
+    "conditional_exclusions": "Reject or reassess if preflight shows only a trivial edit, no reliable behavior oracle, unresolvable lock/tooling, prohibited setup, contamination or insufficient authorized resources. Setup failure is BLOCKED, not a migration failure.",
+    "decision": "Retain existing candidate NEEDS_EVIDENCE. Static goal/pin/oracle proposal is now concrete; runtime readiness is not established.",
+    "claimed_efficacy": "NONE; A-only preparation cannot establish experience-transfer benefit."
+  },
+  "execution": {
+    "target_code": "NOT_RUN",
+    "dependency_install": "NOT_RUN",
+    "baseline": "NOT_RUN",
+    "solver": "NOT_RUN",
+    "correctness": "NOT_RUN",
+    "remaining_budget": "UNKNOWN",
+    "budget_reservation": "NOT_RESERVED",
+    "claims_created": 0,
+    "results_created": 0
+  },
+  "controls": {
+    "protocol_changed": false,
+    "authorization_changed": false,
+    "budget_or_trust_changed": false,
+    "upstream_posts": 0,
+    "scheduler_changes": 0,
+    "main_changed": false,
+    "prior_recovery_rewritten": false
+  }
+}

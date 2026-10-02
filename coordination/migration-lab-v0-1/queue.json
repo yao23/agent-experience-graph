@@ -3,7 +3,7 @@
   "lab": "aeg-migration-lab-v0-1",
   "migration_family": "REACT_18_TO_19",
   "branch": "codex/aeg-migration-lab-v0.1",
-  "updated_at": "2026-10-02T05:35:00Z",
+  "updated_at": "2026-10-02T05:52:00Z",
   "writer": "AEG Migration Lab cloud coordinator",
   "status_values": [
     "CANDIDATE",
@@ -66,13 +66,10 @@
       "status": "NEEDS_EVIDENCE",
       "experience_frozen_before_target": "NOT_APPLICABLE_TO_PROPOSED_A_ONLY; no B/C experience admitted",
       "evidence_locations": [
-        "coordination/migration-lab-v0-1/reports/20261002T053400Z-ML-REACT19-001-recovery.json"
+        "coordination/migration-lab-v0-1/reports/20261002T053400Z-ML-REACT19-001-recovery.json",
+        "coordination/migration-lab-v0-1/reports/20261002T055000Z-ML-REACT19-001-static-readiness.json"
       ],
       "missing_fields": [
-        {
-          "field": "failure_reproduction",
-          "required": "Exact command sequence, working directories, frozen React 19 dependency change/setup, exit code and normalized migration-specific failure signature backed by a public log or isolation-approved reproduction. None recovered."
-        },
         {
           "field": "environment.node_and_os",
           "required": "Freeze exact Node/runtime version and OS/image rather than upstream floating CI matrix; record isolated execution boundary and package/tool availability."
@@ -110,11 +107,15 @@
         "Public OSS only; no private/employer materials, global installation, paid API, upstream posts, merges or deployments.",
         "Paused sourcing and old Foundry tasks remain paused; this record grants no scheduler authority."
       ],
-      "failure_command": "UNKNOWN",
-      "failure_signature": "UNKNOWN",
+      "failure_command": "NOT_OBSERVED",
+      "failure_signature": "NOT_OBSERVED",
       "objective_oracle": "UNFROZEN",
       "solution_exposure": "Current recovery did not inspect PR #153/later history; prior sourcing exposure UNKNOWN.",
-      "execution_status": "NOT_RUN"
+      "execution_status": "NOT_RUN",
+      "failure_observation_status": "NOT_OBSERVED",
+      "failure_signature_gate": "NOT_REQUIRED_BY_PROTOCOL; record failures if observed. Absence of a public or reproduced failure is not by itself a readiness blocker.",
+      "static_task_packet": "coordination/migration-lab-v0-1/task-packets/ML-REACT19-001-r2.md",
+      "static_proposal_status": "PROPOSED_NOT_FROZEN; environment, dependency replay, executable oracle and dispatch prerequisites remain unverified."
     }
   ]
 }
