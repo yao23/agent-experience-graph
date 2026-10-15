@@ -10,6 +10,7 @@ PAGES = (
     ROOT / "pitch" / "index.html",
     ROOT / "docs" / "install-vscode-extension.html",
     ROOT / "docs" / "60-second-demo.html",
+    ROOT / "docs" / "react19-migration-pack" / "index.html",
     ROOT / "experiences" / "index.html",
     *sorted((ROOT / "experiences").glob("*/index.html")),
 )

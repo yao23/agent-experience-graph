@@ -1,0 +1,60 @@
+name: React 19 learning-pack feedback
+description: Tell us about a check you tried, skipped, or only read. Failures are welcome.
+title: "[Learning pack]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Which check did you use, what happened, and what did not apply?
+        GitHub submission requires an account. Your feedback will be public.
+        Do not submit private code, personal information, credentials, or raw agent transcripts.
+        Failed attempts, NOT_APPLICABLE, NOT_CHECKED, and read-only visits are welcome.
+        No complete verification evidence or Registry submission is required.
+  - type: dropdown
+    id: check_id
+    attributes:
+      label: Check ID
+      multiple: true
+      options:
+        - R19-01
+        - R19-02
+        - R19-03
+        - R19-04
+        - R19-05
+        - R19-06
+        - Read only / no check used
+    validations:
+      required: true
+  - type: textarea
+    id: action_result
+    attributes:
+      label: Actual action and result
+      description: Which check did you use, what happened, and what did not apply? A few sentences are enough. You may say it failed, was not applicable, was not checked, or you only read it.
+      placeholder: "I tried R19-04 on a controlled input. Middle editing passed; native IME was NOT_CHECKED because..."
+    validations:
+      required: true
+  - type: checkboxes
+    id: public_information
+    attributes:
+      label: Public information confirmation
+      options:
+        - label: I understand this submission is public and have excluded private code, personal information, credentials, and raw agent transcripts.
+          required: true
+  - type: input
+    id: project
+    attributes:
+      label: Public project link (optional)
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and versions (optional)
+      description: React, renderer, type packages, browser/OS/IME, or relevant dependency versions. UNKNOWN is fine.
+  - type: input
+    id: agent_model
+    attributes:
+      label: Agent and model (optional)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized test notes or log link (optional)
+      description: Share only public-safe excerpts if useful. Do not paste raw agent transcripts or private logs.
