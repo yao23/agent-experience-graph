@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import pathlib
+import re
 import unittest
 
 
@@ -92,9 +93,18 @@ class ExperienceRegistryTest(unittest.TestCase):
         self.assertIn("Search text is never included", docs)
 
     def test_issue_forms_preserve_privacy_and_no_execution_boundary(self):
-        forms = sorted((ROOT / ".github" / "ISSUE_TEMPLATE").glob("*.yml"))
-        self.assertEqual(len(forms), 3)
-        for form in forms:
+        form_dir = ROOT / ".github" / "ISSUE_TEMPLATE"
+        registry_forms = {
+            "candidate-experience.yml",
+            "experience-replay-failure.yml",
+            "experience-replay-success.yml",
+        }
+        self.assertEqual(
+            {form.name for form in form_dir.glob("*.yml")},
+            registry_forms | {"learning-pack-feedback.yml"},
+        )
+        for name in sorted(registry_forms):
+            form = form_dir / name
             text = form.read_text(encoding="utf-8")
             with self.subTest(form=form.name):
                 self.assertTrue(text.startswith("name: "))
@@ -106,6 +116,51 @@ class ExperienceRegistryTest(unittest.TestCase):
                 self.assertIn("Permission to retain and publish sanitized information", text)
                 self.assertIn("credentials", text)
                 self.assertIn("executed automatically", text)
+
+    def test_learning_pack_feedback_preserves_lightweight_and_privacy_contract(self):
+        text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "learning-pack-feedback.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertTrue(text.startswith("name: "))
+        self.assertIn("\nbody:\n", text)
+        for notice in (
+            "Which check did you use, what happened, and what did not apply?",
+            "GitHub submission requires an account",
+            "Your feedback will be public",
+            "private code",
+            "personal information",
+            "credentials",
+            "raw agent transcripts",
+            "NOT_APPLICABLE",
+            "NOT_CHECKED",
+            "Read only / no check used",
+            "No complete verification evidence or Registry submission is required",
+        ):
+            self.assertIn(notice, text)
+        for number in range(1, 7):
+            self.assertIn(f"- R19-{number:02d}\n", text)
+
+        # Inspect this form's existing block structure without adding a YAML dependency.
+        fields = {}
+        for block in re.split(r"(?m)^  - type: ", text)[1:]:
+            match = re.search(r"(?m)^    id: (\w+)$", block)
+            if match:
+                self.assertNotIn(match[1], fields)
+                fields[match[1]] = block
+        self.assertEqual(
+            set(fields),
+            {"check_id", "action_result", "public_information", "project", "environment", "agent_model", "logs"},
+        )
+        self.assertEqual(
+            {name for name, block in fields.items() if re.search(r"(?m)^\s+required: true$", block)},
+            {"check_id", "action_result", "public_information"},
+        )
+        self.assertIn("multiple: true", fields["check_id"])
+        self.assertIn("checkboxes\n", fields["public_information"])
+        for notice in ("submission is public", "private code", "personal information", "credentials", "raw agent transcripts"):
+            self.assertIn(notice, fields["public_information"])
+        self.assertNotIn("experience_id", fields)
+        self.assertNotIn("Objective verification evidence", text)
 
 
 if __name__ == "__main__":

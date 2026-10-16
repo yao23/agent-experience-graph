@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "browser": "155.0.8059.40",
+  "layouts": [
+    {
+      "width": 1440,
+      "documentWidth": 1440,
+      "bodyFont": "16px"
+    },
+    {
+      "width": 390,
+      "documentWidth": 390,
+      "bodyFont": "16px"
+    },
+    {
+      "width": 320,
+      "documentWidth": 320,
+      "bodyFont": "16px"
+    }
+  ],
+  "checks": [
+    "HTTP 200",
+    "six check sections",
+    "shared-rule copy",
+    "six self-contained brief copies",
+    "receipt copy",
+    "Markdown download filename and exact bytes",
+    "single feedback URL (not submitted)",
+    "1440/390/320px no horizontal overflow",
+    "dark code text on light code background",
+    "clipboard-denial fallback and focus",
+    "no JS errors",
+    "no external requests",
+    "content/download present with JavaScript disabled"
+  ],
+  "limits": [
+    "No target React app or native IME was tested",
+    "GitHub hosted issue-form rendering/submission UNKNOWN before publication",
+    "Other browser engines and real devices UNKNOWN",
+    "Screenshots require human visual inspection"
+  ]
+}
