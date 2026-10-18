@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "MANUAL_INTEGRATION_PREFLIGHT",
+  "observed_at": "2026-09-29T18:07:05.641816+00:00",
+  "task_id": "aeg-migration-lab-v0-1",
+  "trigger_origin": "manual_operator_request",
+  "stop_reason": "NO_READY_TASK",
+  "handoff_stop_reason": "NO_READY_MIGRATION_CASE",
+  "repository": "yao23/agent-experience-graph",
+  "branch": "codex/aeg-migration-lab-v0.1",
+  "pinned_read_commit": "0297d94c85fbf8e8616f8b73b978400bc6fc27b1",
+  "remote_tip_verification": {
+    "method": "Connected GitHub compare of dedicated branch to pinned commit",
+    "status": "identical",
+    "ahead_by": 0,
+    "behind_by": 0,
+    "immutable_files_fetched": true,
+    "shell_network_available": false
+  },
+  "contract_sha256": {
+    "coordination/migration-lab-v0-1/AUTHORIZATION.json": "2390ef855802f9f0c9e3a98490a069138bd1dddf87cfe332414fa3cfbb846091",
+    "coordination/migration-lab-v0-1/HANDOFF.md": "561bb2122f49a755a94484289c9ec0acd69f6cbd6bca0ed2dffc6a4682df5698",
+    "experiments/migration-lab-v0-1/PROTOCOL.md": "51f08bc720fdb47b13b01fc350360d2dcd6b39ebe8a832e2776eb8e546b8ee80",
+    "coordination/migration-lab-v0-1/queue.json": "a69c1c225f1d499cce488368474707ceafe438a647bebff5365d1d038322ef76"
+  },
+  "configuration": {
+    "status": "ACTIVE",
+    "unique_local_migration_automation_count": 1,
+    "project_matches_operator_requested_directory": true,
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "schedule_local_times": [
+      "10:00",
+      "20:00"
+    ],
+    "timezone": "America/Los_Angeles",
+    "timezone_basis": "Application local-wall-clock recurrence; host timezone readback matches America/Los_Angeles",
+    "end_date": null,
+    "end_date_basis": "Not specified for Migration Lab; old Foundry deadline is not inherited",
+    "next_run_at_utc": "2026-09-30T03:01:28+00:00",
+    "next_run_at_local": "2026-09-29T20:01:28-07:00",
+    "old_foundry_status": "PAUSED"
+  },
+  "preflight": {
+    "authorization": "PASS",
+    "required_contract_bytes": "PASS",
+    "queue_task_count": 0,
+    "ready_task_count": 0,
+    "migration_lab_receipt_count": 0,
+    "claims_created": 0,
+    "cases_executed": 0,
+    "target_code_executed": false,
+    "budget_limits_minutes": {
+      "case": 90,
+      "day": 120,
+      "rolling_7_days": 600
+    },
+    "budget_admission": "NOT_REACHED_NO_READY_TASK",
+    "budget_reserved_minutes": 0,
+    "historical_consumption": "NOT_RECONCILED_FOR_CASE_ADMISSION",
+    "execution_isolation": "NOT_ESTABLISHED_NOT_REQUIRED_FOR_EMPTY_QUEUE_READ",
+    "worktree_is_security_boundary": false,
+    "original_dirty_checkout_head_and_status_unchanged": true,
+    "incremental_cash_usd": 0
+  },
+  "scheduler_execution": {
+    "observed": false,
+    "automation_run_count": 0,
+    "last_run_at": null,
+    "configuration_or_manual_preflight_proves_dispatch": false
+  },
+  "limitations": [
+    "No target code, dependency install, oracle, or experiment arm ran.",
+    "No case budget or external-code execution isolation has been certified.",
+    "The next run is a stored scheduler timestamp, not evidence that dispatch has occurred.",
+    "Administrative token and agent-minute consumption are not measured by this receipt and must not be inferred to be zero."
+  ],
+  "publication": "Local evidence only; not committed or pushed."
+}
