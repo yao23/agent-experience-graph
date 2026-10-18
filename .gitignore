@@ -3,4 +3,5 @@ __pycache__/
 .DS_Store
 .aeg/
 .aeg-private/
+.aeg-foundry-private/
 traces.json
