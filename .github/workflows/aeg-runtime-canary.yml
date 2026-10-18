@@ -1,0 +1,43 @@
+name: AEG runtime canary
+
+on:
+  push:
+    branches:
+      - codex/aeg-runtime-canary-v0.1
+    paths:
+      - .github/workflows/aeg-runtime-canary.yml
+      - runtime-canary/**
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-canary:
+    if: >-
+      github.event.forced == false &&
+      github.event.before == '4942049e632bf9442fe7809fe2450697a884fba0' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - name: Check out canary control
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Run focused probe regression
+        run: python3 -m unittest -v control/runtime-canary/test_run_canary.py
+
+      - name: Check out pinned public source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 3
+          fetch-tags: false
+          persist-credentials: false
+          ref: 999efa64e9ba016efc9d3327df4b70e1fc79b804
+          path: source
+
+      - name: Run one bounded canary
+        run: bash control/runtime-canary/run.sh
