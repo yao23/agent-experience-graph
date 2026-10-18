@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Six practical React 19 migration acceptance checks for developers and coding agents, with source links, agent briefs and honest result criteria.">
   <meta name="theme-color" content="#121b18">
-  <meta name="pack-source-sha256" content="c234bbef7b777138fab1f2ed17f570f24499ca0bf88228690543f102935c9011">
+  <meta name="pack-source-sha256" content="c49c414e63705e55a4fa49233156eee0ef90208829c702605858f23cb7eeecb4">
   <title>React 19 Migration Acceptance Pack</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../site.css">
@@ -150,22 +150,32 @@ unreviewed hunks as NOT_CHECKED and retain failing checks.</code></pre>
 <p>The type subcases apply when the app or a shared library consumes React TypeScript declarations. Ref runtime subcases apply to JavaScript and TypeScript components using refs, wrapper ref props, imperative handles, or element introspection. If neither types nor ref-related code is present after inspection, record NOT_APPLICABLE. Missing compiler access is NOT_CHECKED.</p>
 <h3>What to check</h3>
 <p><strong>Official React 19 changes:</strong> ref callbacks may return cleanup functions; non-cleanup implicit return values can be rejected by TypeScript. useRef requires an initial argument in the new types. ReactElement&#x27;s default props type becomes unknown, and JSX typing is scoped through React.JSX. Function components can receive ref as a prop; class refs retain instance semantics.</p>
+<ul>
+<li><strong>Callback return example:</strong> ref={el =&gt; (node = el)} implicitly returns the assigned node. When assignment is the intent, use ref={el =&gt; { node = el; }} to return nothing. Preserve an intentional cleanup-function return; do not remove it merely to silence a diagnostic.</li>
+<li><strong>Initialization example:</strong> a bare useRef() is rejected by React 19 types. Choose an initial value for the actual contract: useRef&lt;HTMLInputElement&gt;(null) for a DOM ref, useRef&lt;number | undefined&gt;(undefined) for an initially unset number, or useRef&lt;number&gt;(0) when zero is the intended initial value. Do not mechanically replace every missing argument with the same value.</li>
+</ul>
+<p><strong>Type-check evidence:</strong> a passing build counts for this subcase only when its actual script/configuration includes a type check covering the affected consumers. Transpilation or bundling alone is insufficient. Otherwise run the project&#x27;s existing authorized type-check command separately; do not install a new tool just for this check. Record the exact command, covered project/configuration, exit status and diagnostics, and any baseline comparison. If the applicable type check was not run, or its coverage/result is unknown, mark it NOT_CHECKED.</p>
 <p><strong>General migration acceptance recommendation:</strong> run the existing type check for affected consumers, review callback return intent, null/undefined handling, declaration emit, JSX augmentations and wrapper forwarding. Test focus/select/imperative methods at the actual consumer boundary. Do not “fix” types by blanket any casts, new suppressions, or removing assertions. Converting every forwardRef component is not a prerequisite for this pack; preserve supported public contracts unless a separate change is approved.</p>
 <h3>Agent instruction</h3>
 <button class="button" type="button" data-pack-copy="#copy-block-4" data-shared-rules="#copy-block-1">Copy R19-03 agent brief</button>
 <pre id="copy-block-4" tabindex="0"><code>Apply the shared agent rules first. Identify applicable type and runtime ref
-subcases. Run the existing authorized type-check command and compare diagnostics
-with baseline. Inspect useRef initialization, callback returns, element props
+subcases. Confirm whether the build actually type-checks the affected consumers;
+otherwise run the existing authorized type-check command separately. Compare
+diagnostics with baseline. Inspect useRef initialization, callback returns, element props
 narrowing, JSX augmentation, wrapper forwarding and public declarations. Exercise
 the affected focus/select/imperative contract with existing tests or a documented
 manual check. Propose minimal fixes; do not weaken typing or rewrite all refs.
-Record commands, diagnostics, observed behavior and untested consumers.</code></pre>
+Check assignment-only ref callbacks for unintended implicit returns; preserve
+intentional cleanup returns. Give useRef an initial value matching its contract.
+Record the exact type-check command, project/configuration coverage, exit status,
+diagnostics, observed behavior and untested consumers. If the applicable type
+check was not run or its coverage/result is unknown, mark it NOT_CHECKED.</code></pre>
 <h3>Decide the result</h3>
 <ul>
-<li><strong>PASS:</strong> Applicable type checks complete without new unresolved diagnostics, all inspected ref/type contracts are accounted for, and applicable consumer behavior checks meet recorded expectations.</li>
+<li><strong>PASS:</strong> Applicable type checks complete without new unresolved diagnostics, with the actual command, affected-consumer coverage, exit status and diagnostics recorded; all inspected ref/type contracts are accounted for, and applicable consumer behavior checks meet recorded expectations.</li>
 <li><strong>FAIL:</strong> A relevant diagnostic, invalid ref return, broken forwarding, or changed imperative behavior is observed. Mark baseline failures explicitly.</li>
 <li><strong>NOT_APPLICABLE:</strong> Inspection confirms neither React type consumers nor ref-related behavior in the declared scope; absent subcases may be excluded individually.</li>
-<li><strong>NOT_CHECKED:</strong> Compilation, declarations, downstream consumers, or required runtime checks were not examined. A type-only pass cannot accept an untested ref behavior subcase.</li>
+<li><strong>NOT_CHECKED:</strong> The applicable type check was not run or its coverage/result is unknown; declarations, downstream consumers, or required runtime checks were not examined. A build without confirmed type checking cannot accept the type subcase. A type-only pass cannot accept an untested ref behavior subcase.</li>
 </ul>
 <h3>Sources, versions, and limits</h3>
 <p>Primary sources: <a href="https://react.dev/blog/2024/04/25/react-19-upgrade-guide#typescript-changes">React 19 TypeScript changes</a>, <a href="https://react.dev/blog/2024/12/05/react-19#ref-as-a-prop">React 19 ref as a prop and cleanup</a>, <a href="https://github.com/eps1lon/types-react-codemod#no-implicit-ref-callback-return-react-19">type codemod ref limitations</a>.</p>
