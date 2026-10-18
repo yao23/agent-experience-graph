@@ -124,26 +124,36 @@ The type subcases apply when the app or a shared library consumes React TypeScri
 
 **Official React 19 changes:** ref callbacks may return cleanup functions; non-cleanup implicit return values can be rejected by TypeScript. useRef requires an initial argument in the new types. ReactElement's default props type becomes unknown, and JSX typing is scoped through React.JSX. Function components can receive ref as a prop; class refs retain instance semantics.
 
+- **Callback return example:** ref={el => (node = el)} implicitly returns the assigned node. When assignment is the intent, use ref={el => { node = el; }} to return nothing. Preserve an intentional cleanup-function return; do not remove it merely to silence a diagnostic.
+- **Initialization example:** a bare useRef() is rejected by React 19 types. Choose an initial value for the actual contract: useRef<HTMLInputElement>(null) for a DOM ref, useRef<number | undefined>(undefined) for an initially unset number, or useRef<number>(0) when zero is the intended initial value. Do not mechanically replace every missing argument with the same value.
+
+**Type-check evidence:** a passing build counts for this subcase only when its actual script/configuration includes a type check covering the affected consumers. Transpilation or bundling alone is insufficient. Otherwise run the project's existing authorized type-check command separately; do not install a new tool just for this check. Record the exact command, covered project/configuration, exit status and diagnostics, and any baseline comparison. If the applicable type check was not run, or its coverage/result is unknown, mark it NOT_CHECKED.
+
 **General migration acceptance recommendation:** run the existing type check for affected consumers, review callback return intent, null/undefined handling, declaration emit, JSX augmentations and wrapper forwarding. Test focus/select/imperative methods at the actual consumer boundary. Do not “fix” types by blanket any casts, new suppressions, or removing assertions. Converting every forwardRef component is not a prerequisite for this pack; preserve supported public contracts unless a separate change is approved.
 
 ### Agent instruction
 
 ```text
 Apply the shared agent rules first. Identify applicable type and runtime ref
-subcases. Run the existing authorized type-check command and compare diagnostics
-with baseline. Inspect useRef initialization, callback returns, element props
+subcases. Confirm whether the build actually type-checks the affected consumers;
+otherwise run the existing authorized type-check command separately. Compare
+diagnostics with baseline. Inspect useRef initialization, callback returns, element props
 narrowing, JSX augmentation, wrapper forwarding and public declarations. Exercise
 the affected focus/select/imperative contract with existing tests or a documented
 manual check. Propose minimal fixes; do not weaken typing or rewrite all refs.
-Record commands, diagnostics, observed behavior and untested consumers.
+Check assignment-only ref callbacks for unintended implicit returns; preserve
+intentional cleanup returns. Give useRef an initial value matching its contract.
+Record the exact type-check command, project/configuration coverage, exit status,
+diagnostics, observed behavior and untested consumers. If the applicable type
+check was not run or its coverage/result is unknown, mark it NOT_CHECKED.
 ```
 
 ### Decide the result
 
-- **PASS:** Applicable type checks complete without new unresolved diagnostics, all inspected ref/type contracts are accounted for, and applicable consumer behavior checks meet recorded expectations.
+- **PASS:** Applicable type checks complete without new unresolved diagnostics, with the actual command, affected-consumer coverage, exit status and diagnostics recorded; all inspected ref/type contracts are accounted for, and applicable consumer behavior checks meet recorded expectations.
 - **FAIL:** A relevant diagnostic, invalid ref return, broken forwarding, or changed imperative behavior is observed. Mark baseline failures explicitly.
 - **NOT_APPLICABLE:** Inspection confirms neither React type consumers nor ref-related behavior in the declared scope; absent subcases may be excluded individually.
-- **NOT_CHECKED:** Compilation, declarations, downstream consumers, or required runtime checks were not examined. A type-only pass cannot accept an untested ref behavior subcase.
+- **NOT_CHECKED:** The applicable type check was not run or its coverage/result is unknown; declarations, downstream consumers, or required runtime checks were not examined. A build without confirmed type checking cannot accept the type subcase. A type-only pass cannot accept an untested ref behavior subcase.
 
 ### Sources, versions, and limits
 
@@ -294,3 +304,4 @@ Recoverable change reference / restoration exercise result:
 [Open the learning-pack feedback form](https://github.com/yao23/agent-experience-graph/issues/new?template=learning-pack-feedback.yml). This is the single feedback destination for this pack. GitHub submission requires an account and is public. Do not submit private code, personal information, credentials, or raw agent transcripts. Project links, versions, agent/model and sanitized logs are optional. Failed attempts, non-applicability, and reading without using a check are welcome; no complete verification bundle is required.
 
 This v0.1 form becomes available after the maintainer publishes its template to the repository's default branch. If reviewing this pack locally before that step, keep feedback locally until the same form is available; no test issue is needed. No usage has been established merely by publishing or downloading this pack.
+
